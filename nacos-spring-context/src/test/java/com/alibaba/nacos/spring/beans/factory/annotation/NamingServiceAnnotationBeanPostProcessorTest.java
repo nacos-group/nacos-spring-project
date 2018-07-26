@@ -18,6 +18,7 @@ package com.alibaba.nacos.spring.beans.factory.annotation;
 
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.exception.NacosException;
+import com.alibaba.nacos.api.naming.NamingService;
 import com.alibaba.nacos.spring.context.annotation.NacosService;
 import org.junit.Assert;
 import org.junit.Test;
@@ -44,12 +45,19 @@ public class NamingServiceAnnotationBeanPostProcessorTest {
     @NacosService(serverAddr = "11.163.128.36")
     private ConfigService configService2;
 
+    @NacosService(serverAddr = "11.163.128.36")
+    private NamingService namingService;
+
+    @NacosService(serverAddr = "11.163.128.36")
+    private NamingService namingService2;
+
     String dataId = "testDataId";
     String groupId = "testGroupId";
 
     @Test
     public void testInjection() {
         Assert.assertEquals(configService, configService2);
+        Assert.assertEquals(namingService, namingService2);
     }
 
     @Test
