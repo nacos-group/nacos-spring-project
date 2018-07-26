@@ -14,36 +14,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.alibaba.nacos.spring;
+package com.alibaba.nacos.spring.beans.factory.annotation;
 
-import com.alibaba.nacos.api.NacosFactory;
-import com.alibaba.nacos.api.config.ConfigService;
-import com.alibaba.nacos.api.exception.NacosException;
-import com.alibaba.nacos.spring.context.annotation.NacosService;
-import org.junit.Test;
-
-import java.util.Properties;
+import com.alibaba.nacos.spring.context.annotation.EnableNacos;
+import com.alibaba.nacos.spring.context.annotation.NacosBeanDefinitionRegistrar;
+import com.alibaba.nacos.spring.context.annotation.NacosProperties;
 
 /**
- * TODO
+ * {@link NacosBeanDefinitionRegistrar} Test
  *
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
- * @since
+ * @since 0.1.0
  */
-public class ConfigServiceTest {
-
-    @NacosService()
-    private ConfigService configService;
-
-    @Test
-    public void testConfigService() throws NacosException {
-        String dataId = "testDataId";
-        String group = "testGroupId";
-        Properties properties = new Properties();
-        configService.publishConfig(dataId, group, "Hello,World");
-        // Actively get the configuration.
-        String content = configService.getConfig(dataId, group, 5000);
-        System.out.println(content);
-    }
-
+@EnableNacos(globalProperties = @NacosProperties)
+public class NacosBeanDefinitionRegistrarTest {
 }

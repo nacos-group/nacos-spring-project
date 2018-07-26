@@ -20,10 +20,16 @@ import com.alibaba.nacos.api.NacosFactory;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.naming.NamingService;
 import com.alibaba.nacos.spring.context.annotation.NacosService;
+import com.alibaba.nacos.spring.factory.NacosServiceFactory;
+import com.alibaba.nacos.spring.util.NacosBeanUtils;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.AnnotationUtils;
 
 import java.util.Map;
 import java.util.Properties;
+
+import static com.alibaba.nacos.spring.util.NacosUtils.resolveProperties;
 
 /**
  * {@link org.springframework.beans.factory.config.BeanPostProcessor} implementation
@@ -33,24 +39,31 @@ import java.util.Properties;
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
  * @since 0.1.0
  */
-public class NamingServiceAnnotationBeanPostProcessor extends AbstractAnnotationBeanPostProcessor<NacosService, Object> {
+public class NamingServiceInjectedBeanPostProcessor extends AnnotationInjectedBeanPostProcessor<NacosService, Object>
+        implements InitializingBean {
+
+    /**
+     * The name of {@link NamingServiceInjectedBeanPostProcessor} bean
+     */
+    public static final String BEAN_NAME = "namingServiceInjectedBeanPostProcessor";
+
+    private Properties globalNacosPropertiesBean;
+
+    private NacosServiceFactory nacosServiceFactoryBean;
 
     @Override
     protected Object resolveInjectedBean(NacosService annotation, Class<?> beanClass) throws Exception {
 
-        Map<String, Object> attributes = AnnotationUtils.getAnnotationAttributes(annotation);
-
-        Properties properties = new Properties();
-
-        properties.putAll(attributes);
+        Properties properties = resolveProperties(annotation.properties(), getEnvironment(), globalNacosPropertiesBean);
 
         if (ConfigService.class.equals(beanClass)) {
-            return NacosFactory.createConfigService(properties);
+            return nacosServiceFactoryBean.createConfigService(properties);
         } else if (NamingService.class.equals(beanClass)) {
-            return NacosFactory.createNamingService(properties);
+            return nacosServiceFactoryBean.createNamingService(properties);
         }
 
-        throw new UnsupportedOperationException("Only support to inject ConfigService or NamingService instance, actual class : " + beanClass.getName());
+        throw new UnsupportedOperationException("Only support to inject ConfigService or NamingService instance, " +
+                "actual class : " + beanClass.getName());
     }
 
     @Override
@@ -63,5 +76,16 @@ public class NamingServiceAnnotationBeanPostProcessor extends AbstractAnnotation
         keyBuilder.append(annotation);
 
         return keyBuilder.toString();
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        // Get ApplicationContext from super
+        ApplicationContext context = getApplicationContext();
+
+        // Get Beans from ApplicationContext
+        this.globalNacosPropertiesBean = NacosBeanUtils.getGlobalPropertiesBean(context);
+        this.nacosServiceFactoryBean = NacosBeanUtils.getNacosServiceFactory(context);
+
     }
 }

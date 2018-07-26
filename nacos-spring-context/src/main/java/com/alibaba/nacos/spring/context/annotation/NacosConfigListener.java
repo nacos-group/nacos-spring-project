@@ -16,25 +16,37 @@
  */
 package com.alibaba.nacos.spring.context.annotation;
 
-import com.alibaba.nacos.api.PropertyKeyConst;
-import com.alibaba.nacos.api.config.ConfigService;
-import com.alibaba.nacos.api.naming.NamingService;
+import com.alibaba.nacos.client.config.common.Constants;
+import com.alibaba.nacos.spring.util.NacosUtils;
 
 import java.lang.annotation.*;
 
+import static com.alibaba.nacos.client.config.common.Constants.DEFAULT_GROUP;
+
 /**
- * An annotation to inject {@link ConfigService} or {@link NamingService} instance into a Spring Bean.
+ * Annotation that marks a method as a listener for Nacos Config change.
  *
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
- * @see ConfigService
- * @see NamingService
- * @see PropertyKeyConst
  * @since 0.1.0
  */
-@Target({ElementType.CONSTRUCTOR, ElementType.FIELD, ElementType.METHOD, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
 @Documented
-public @interface NacosService {
+public @interface NacosConfigListener {
+
+    /**
+     * Nacos Group ID
+     *
+     * @return default value {@link Constants#DEFAULT_GROUP};
+     */
+    String groupId() default DEFAULT_GROUP;
+
+    /**
+     * Nacos Data ID
+     *
+     * @return required value.
+     */
+    String dataId();
 
     /**
      * The {@link NacosProperties} attribute, If not specified, it will use

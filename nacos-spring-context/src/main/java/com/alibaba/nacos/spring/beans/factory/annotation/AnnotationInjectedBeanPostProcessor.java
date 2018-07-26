@@ -31,8 +31,10 @@ import org.springframework.beans.factory.support.MergedBeanDefinitionPostProcess
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.EnvironmentAware;
 import org.springframework.core.Ordered;
 import org.springframework.core.PriorityOrdered;
+import org.springframework.core.env.Environment;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
@@ -62,9 +64,9 @@ import static org.springframework.core.annotation.AnnotationUtils.getAnnotation;
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
  * @since 0.1.0
  */
-public abstract class AbstractAnnotationBeanPostProcessor<A extends Annotation, B> extends
+public abstract class AnnotationInjectedBeanPostProcessor<A extends Annotation, B> extends
         InstantiationAwareBeanPostProcessorAdapter implements MergedBeanDefinitionPostProcessor, PriorityOrdered,
-        ApplicationContextAware, BeanClassLoaderAware, DisposableBean {
+        ApplicationContextAware, BeanClassLoaderAware, EnvironmentAware, DisposableBean {
 
     private final Log logger = LogFactory.getLog(getClass());
 
@@ -77,11 +79,13 @@ public abstract class AbstractAnnotationBeanPostProcessor<A extends Annotation, 
 
     private ApplicationContext applicationContext;
 
+    private Environment environment;
+
     private ClassLoader classLoader;
 
     private int order = Ordered.LOWEST_PRECEDENCE;
 
-    public AbstractAnnotationBeanPostProcessor() {
+    public AnnotationInjectedBeanPostProcessor() {
         this.annotationType = resolveAnnotationType();
     }
 
@@ -488,4 +492,19 @@ public abstract class AbstractAnnotationBeanPostProcessor<A extends Annotation, 
 
     }
 
+    public void setEnvironment(Environment environment) {
+        this.environment = environment;
+    }
+
+    public ApplicationContext getApplicationContext() {
+        return applicationContext;
+    }
+
+    public Environment getEnvironment() {
+        return environment;
+    }
+
+    public ClassLoader getClassLoader() {
+        return classLoader;
+    }
 }

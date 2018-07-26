@@ -16,6 +16,8 @@
  */
 package com.alibaba.nacos.spring.context.constants;
 
+import java.util.Properties;
+
 /**
  * Nacos Constants
  *
@@ -25,13 +27,8 @@ package com.alibaba.nacos.spring.context.constants;
 public interface NacosConstants {
 
     /**
-     * The property name of server address
-     */
-    String SERVER_ADDRESS = "serverAddr";
-
-
-    /**
      * The prefix of property name of Nacos server address
      */
     String SERVER_ADDRESS_PROPERTY_NAME_PREFIX = "nacos";
+
 }

@@ -19,40 +19,60 @@ package com.alibaba.nacos.spring.beans.factory.annotation;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.api.naming.NamingService;
+import com.alibaba.nacos.spring.MockNacosServiceFactory;
 import com.alibaba.nacos.spring.context.annotation.NacosService;
+import com.alibaba.nacos.spring.factory.NacosServiceFactory;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.util.Properties;
+
+import static com.alibaba.nacos.spring.MockNacosServiceFactory.*;
+import static com.alibaba.nacos.spring.util.NacosBeanUtils.GLOBAL_NACOS_PROPERTIES_BEAN_NAME;
+import static com.alibaba.nacos.spring.util.NacosBeanUtils.NACOS_SERVICE_FACTORY_BEAN_NAME;
+
 /**
- * {@link NamingServiceAnnotationBeanPostProcessor}
+ * {@link NamingServiceInjectedBeanPostProcessor}
  *
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
  * @since 0.1.0
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
-        NamingServiceAnnotationBeanPostProcessor.class,
-        NamingServiceAnnotationBeanPostProcessorTest.class
+        NamingServiceInjectedBeanPostProcessor.class,
+        NamingServiceInjectedBeanPostProcessorTest.class
 })
-public class NamingServiceAnnotationBeanPostProcessorTest {
+public class NamingServiceInjectedBeanPostProcessorTest {
 
-    @NacosService(serverAddr = "11.163.128.36")
+    @Bean(name = GLOBAL_NACOS_PROPERTIES_BEAN_NAME)
+    public Properties globalNacosProperties() {
+        Properties properties = new Properties();
+        properties.put("serverAddr", "11.163.128.36");
+        return properties;
+    }
+
+    @Bean(name = NACOS_SERVICE_FACTORY_BEAN_NAME)
+    public NacosServiceFactory nacosServiceFactory() {
+        return new MockNacosServiceFactory();
+    }
+
+
+    @NacosService
     private ConfigService configService;
 
-    @NacosService(serverAddr = "11.163.128.36")
+    @NacosService
     private ConfigService configService2;
 
-    @NacosService(serverAddr = "11.163.128.36")
+    @NacosService
     private NamingService namingService;
 
-    @NacosService(serverAddr = "11.163.128.36")
+    @NacosService
     private NamingService namingService2;
 
-    String dataId = "testDataId";
-    String groupId = "testGroupId";
 
     @Test
     public void testInjection() {
@@ -63,11 +83,7 @@ public class NamingServiceAnnotationBeanPostProcessorTest {
     @Test
     public void test() throws NacosException {
 
-        String content = "Hello,World 2018";
-
-        configService.publishConfig(dataId, groupId, content);
-
-        Assert.assertEquals(content, configService.getConfig(dataId, groupId, 5000));
+        Assert.assertEquals(CONTENT, configService.getConfig(DATA_ID, GROUP_ID, 5000));
 
     }
 }

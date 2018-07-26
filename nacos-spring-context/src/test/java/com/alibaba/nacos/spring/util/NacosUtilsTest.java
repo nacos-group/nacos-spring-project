@@ -14,36 +14,46 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.alibaba.nacos.spring;
+package com.alibaba.nacos.spring.util;
 
-import com.alibaba.nacos.api.NacosFactory;
-import com.alibaba.nacos.api.config.ConfigService;
-import com.alibaba.nacos.api.exception.NacosException;
+import com.alibaba.nacos.spring.context.annotation.NacosProperties;
 import com.alibaba.nacos.spring.context.annotation.NacosService;
+import org.junit.Assert;
 import org.junit.Test;
+import org.springframework.util.ReflectionUtils;
 
-import java.util.Properties;
+import java.lang.reflect.Field;
 
 /**
- * TODO
+ * {@link NacosUtils} Test
  *
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
- * @since
+ * @since 0.1.0
  */
-public class ConfigServiceTest {
+public class NacosUtilsTest {
 
-    @NacosService()
-    private ConfigService configService;
+    @NacosService
+    private Object object = new Object();
+
+    @NacosService(properties = @NacosProperties(serverAddr = "test"))
+    private Object object2 = new Object();
 
     @Test
-    public void testConfigService() throws NacosException {
-        String dataId = "testDataId";
-        String group = "testGroupId";
-        Properties properties = new Properties();
-        configService.publishConfig(dataId, group, "Hello,World");
-        // Actively get the configuration.
-        String content = configService.getConfig(dataId, group, 5000);
-        System.out.println(content);
+    public void testIsDefault() {
+
+        testIsDefault("object", true);
+        testIsDefault("object2", false);
     }
 
+    private void testIsDefault(String fieldName, boolean expectedValue) {
+
+        Field objectField = ReflectionUtils.findField(getClass(), fieldName);
+
+        NacosService nacosService = objectField.getAnnotation(NacosService.class);
+
+        NacosProperties nacosProperties = nacosService.properties();
+
+        Assert.assertEquals(expectedValue, NacosUtils.isDefault(nacosProperties));
+
+    }
 }

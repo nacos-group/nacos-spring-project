@@ -14,36 +14,41 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.alibaba.nacos.spring;
+package com.alibaba.nacos.spring.factory;
 
 import com.alibaba.nacos.api.NacosFactory;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.exception.NacosException;
-import com.alibaba.nacos.spring.context.annotation.NacosService;
-import org.junit.Test;
+import com.alibaba.nacos.api.naming.NamingService;
 
 import java.util.Properties;
 
 /**
- * TODO
+ * Nacos Service Factory
  *
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
- * @since
+ * @see NacosFactory
+ * @since 0.1.0
  */
-public class ConfigServiceTest {
+public interface NacosServiceFactory {
 
-    @NacosService()
-    private ConfigService configService;
+    /**
+     * Create {@link ConfigService} instance
+     *
+     * @param properties init param
+     * @throws NacosException If creation is failed.
+     * @see NacosFactory#createConfigService(Properties)
+     */
+    ConfigService createConfigService(Properties properties) throws NacosException;
 
-    @Test
-    public void testConfigService() throws NacosException {
-        String dataId = "testDataId";
-        String group = "testGroupId";
-        Properties properties = new Properties();
-        configService.publishConfig(dataId, group, "Hello,World");
-        // Actively get the configuration.
-        String content = configService.getConfig(dataId, group, 5000);
-        System.out.println(content);
-    }
+    /**
+     * Create {@link NamingService} instance
+     *
+     * @param properties init param
+     * @throws NacosException If creation is failed.
+     * @see NacosFactory#createNamingService(Properties)
+     */
+    NamingService createNamingService(Properties properties) throws NacosException;
+
 
 }
