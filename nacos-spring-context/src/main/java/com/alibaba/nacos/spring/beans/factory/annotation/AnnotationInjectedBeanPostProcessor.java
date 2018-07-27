@@ -51,7 +51,6 @@ import java.util.concurrent.ConcurrentMap;
 import static com.alibaba.nacos.spring.util.NacosUtils.resolveGenericType;
 import static org.springframework.core.BridgeMethodResolver.findBridgedMethod;
 import static org.springframework.core.BridgeMethodResolver.isVisibilityBridgeMethodPair;
-import static org.springframework.core.GenericTypeResolver.resolveTypeArgument;
 import static org.springframework.core.annotation.AnnotationUtils.findAnnotation;
 import static org.springframework.core.annotation.AnnotationUtils.getAnnotation;
 

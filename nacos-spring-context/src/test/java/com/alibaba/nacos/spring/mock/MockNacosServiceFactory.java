@@ -20,13 +20,11 @@ import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.api.naming.NamingService;
 import com.alibaba.nacos.spring.factory.NacosServiceFactory;
-import org.junit.Test;
 import org.mockito.Mockito;
 
 import java.util.Properties;
 
 import static com.alibaba.nacos.spring.util.NacosUtils.DEFAULT_TIMEOUT;
-import static org.mockito.Mockito.when;
 
 /**
  * Mock {@link NacosServiceFactory}

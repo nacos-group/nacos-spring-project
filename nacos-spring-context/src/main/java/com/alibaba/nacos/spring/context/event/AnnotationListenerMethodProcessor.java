@@ -27,14 +27,11 @@ import org.springframework.util.ReflectionUtils;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.Map;
 
 import static com.alibaba.nacos.spring.util.NacosUtils.resolveGenericType;
 import static java.lang.reflect.Modifier.*;
-import static org.springframework.core.GenericTypeResolver.resolveTypeArgument;
 
 
 /**

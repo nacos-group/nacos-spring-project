@@ -24,7 +24,6 @@ import com.alibaba.nacos.spring.convert.converter.DefaultNacosConfigConverter;
 import com.alibaba.nacos.spring.convert.converter.NacosConfigConverter;
 import com.alibaba.nacos.spring.factory.NacosServiceFactory;
 import com.alibaba.nacos.spring.util.NacosBeanUtils;
-import com.alibaba.spring.util.BeanUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.context.ApplicationContext;
