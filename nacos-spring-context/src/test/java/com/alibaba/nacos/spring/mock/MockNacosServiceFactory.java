@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.alibaba.nacos.spring;
+package com.alibaba.nacos.spring.mock;
 
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.exception.NacosException;
@@ -88,9 +88,7 @@ public class MockNacosServiceFactory implements NacosServiceFactory {
     @Override
     public ConfigService createConfigService(Properties properties) throws NacosException {
 
-        ConfigService configService = Mockito.mock(ConfigService.class);
-
-        when(configService.getConfig(dataId, groupId, timeout)).thenReturn(content);
+        ConfigService configService = new MockConfigService();
 
         return configService;
     }

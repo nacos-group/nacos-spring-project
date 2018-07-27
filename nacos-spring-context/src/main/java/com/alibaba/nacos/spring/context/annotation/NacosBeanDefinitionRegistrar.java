@@ -56,11 +56,9 @@ public class NacosBeanDefinitionRegistrar implements ImportBeanDefinitionRegistr
 
         registerNacosServiceFactoryIfAbsent(attributes, registry);
 
-        registerInfrastructureBean(registry, NamingServiceInjectedBeanPostProcessor.BEAN_NAME,
-                NamingServiceInjectedBeanPostProcessor.class);
+        registerNamingServiceInjectedBeanPostProcessor(registry);
 
-        registerInfrastructureBean(registry, NacosConfigPropertiesBindingPostProcessor.BEAN_NAME,
-                NacosConfigPropertiesBindingPostProcessor.class);
+        registerNacosConfigPropertiesBindingPostProcessor(registry);
 
     }
 
@@ -79,6 +77,15 @@ public class NacosBeanDefinitionRegistrar implements ImportBeanDefinitionRegistr
         registerInfrastructureBean(registry, beanName, CacheableNacosServiceFactory.class);
     }
 
+    private void registerNamingServiceInjectedBeanPostProcessor(BeanDefinitionRegistry registry) {
+        registerInfrastructureBean(registry, NamingServiceInjectedBeanPostProcessor.BEAN_NAME,
+                NamingServiceInjectedBeanPostProcessor.class);
+    }
+
+    private void registerNacosConfigPropertiesBindingPostProcessor(BeanDefinitionRegistry registry) {
+        registerInfrastructureBean(registry, NacosConfigPropertiesBindingPostProcessor.BEAN_NAME,
+                NacosConfigPropertiesBindingPostProcessor.class);
+    }
 
     @Override
     public void setEnvironment(Environment environment) {

@@ -52,7 +52,7 @@ public @interface NacosConfigurationProperties {
     String dataId();
 
     /**
-     * It indicates the properties of current bind bean is auto-refreshed
+     * It indicates the properties of current doBind bean is auto-refreshed
      * when Nacos configuration is changed.
      *
      * @return default value is <code>false</code>

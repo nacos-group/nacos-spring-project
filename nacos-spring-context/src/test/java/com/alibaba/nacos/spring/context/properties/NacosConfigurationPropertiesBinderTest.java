@@ -18,14 +18,12 @@ package com.alibaba.nacos.spring.context.properties;
 
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.exception.NacosException;
-import com.alibaba.nacos.spring.MockNacosServiceFactory;
-import com.alibaba.nacos.spring.factory.NacosServiceFactory;
+import com.alibaba.nacos.spring.mock.MockNacosServiceFactory;
 import org.junit.Assert;
 import org.junit.Test;
 
 import static com.alibaba.nacos.client.config.common.Constants.DEFAULT_GROUP;
-import static com.alibaba.nacos.spring.MockNacosServiceFactory.DATA_ID;
-import static com.alibaba.nacos.spring.MockNacosServiceFactory.GROUP_ID;
+import static com.alibaba.nacos.spring.mock.MockNacosServiceFactory.DATA_ID;
 
 /**
  * {@link NacosConfigurationPropertiesBinder} Test
@@ -35,7 +33,7 @@ import static com.alibaba.nacos.spring.MockNacosServiceFactory.GROUP_ID;
  */
 public class NacosConfigurationPropertiesBinderTest {
 
-    @NacosConfigurationProperties(dataId = DATA_ID)
+    @NacosConfigurationProperties(dataId = DATA_ID, autoRefreshed = true)
     private static class Data {
 
         private int id;
@@ -76,10 +74,9 @@ public class NacosConfigurationPropertiesBinderTest {
 
         Data data = new Data();
 
-        nacosServiceFactory.setContent("id=1\n name=mercyblitz\nvalue = 0.95");
-        nacosServiceFactory.setGroupId(DEFAULT_GROUP);
-
         ConfigService configService = nacosServiceFactory.createConfigService(null);
+
+        configService.publishConfig(DATA_ID, DEFAULT_GROUP, "id=1\n name=mercyblitz\nvalue = 0.95");
 
         NacosConfigurationPropertiesBinder binder = new NacosConfigurationPropertiesBinder(configService);
 
@@ -88,6 +85,14 @@ public class NacosConfigurationPropertiesBinderTest {
         Assert.assertEquals(1, data.getId());
         Assert.assertEquals("mercyblitz", data.getName());
         Assert.assertTrue(0.95 == data.getValue());
+
+        // Publishing config emits change
+        configService.publishConfig(DATA_ID, DEFAULT_GROUP, "id=1\n name=mercyblitz@gmail.com\nvalue = 9527");
+
+        Assert.assertEquals(1, data.getId());
+        Assert.assertEquals("mercyblitz@gmail.com", data.getName());
+        Assert.assertTrue(9527 == data.getValue());
+
     }
 
 }

@@ -22,7 +22,6 @@ import com.alibaba.nacos.spring.context.annotation.NacosProperties;
 import com.alibaba.nacos.spring.factory.NacosServiceFactory;
 import com.alibaba.nacos.spring.util.NacosBeanUtils;
 import com.alibaba.nacos.spring.util.NacosUtils;
-import com.alibaba.spring.util.PropertyValuesUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.factory.BeanCreationException;
@@ -56,9 +55,9 @@ public class NacosConfigPropertiesBindingPostProcessor implements BeanPostProces
      */
     public static final String BEAN_NAME = "nacosConfigPropertiesBindingPostProcessor";
 
-    private Properties globalNacosPropertiesBean;
+    private Properties globalNacosProperties;
 
-    private NacosServiceFactory nacosServiceFactoryBean;
+    private NacosServiceFactory nacosServiceFactory;
 
     private Environment environment;
 
@@ -78,22 +77,9 @@ public class NacosConfigPropertiesBindingPostProcessor implements BeanPostProces
 
         ConfigService configService = resolveConfigService(nacosConfigurationProperties);
 
-        String dataId = nacosConfigurationProperties.dataId();
+        NacosConfigurationPropertiesBinder binder = new NacosConfigurationPropertiesBinder(configService);
 
-        String groupId = nacosConfigurationProperties.groupId();
-
-        String content = NacosUtils.getContent(configService, dataId, groupId);
-
-        DataBinder dataBinder = new DataBinder(bean);
-
-        Properties properties = new Properties();
-
-        try {
-            properties.load(new StringReader(content));
-            dataBinder.bind(new MutablePropertyValues(properties));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        binder.bind(bean, nacosConfigurationProperties);
 
     }
 
@@ -102,12 +88,12 @@ public class NacosConfigPropertiesBindingPostProcessor implements BeanPostProces
 
         NacosProperties nacosProperties = nacosConfigurationProperties.properties();
 
-        Properties properties = resolveProperties(nacosProperties, environment, globalNacosPropertiesBean);
+        Properties properties = resolveProperties(nacosProperties, environment, globalNacosProperties);
 
         ConfigService configService = null;
 
         try {
-            configService = nacosServiceFactoryBean.createConfigService(properties);
+            configService = nacosServiceFactory.createConfigService(properties);
         } catch (NacosException e) {
             throw new BeanCreationException(e.getErrMsg(), e);
         }
@@ -122,8 +108,8 @@ public class NacosConfigPropertiesBindingPostProcessor implements BeanPostProces
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        globalNacosPropertiesBean = NacosBeanUtils.getGlobalPropertiesBean(applicationContext);
-        nacosServiceFactoryBean = NacosBeanUtils.getNacosServiceFactory(applicationContext);
+        globalNacosProperties = NacosBeanUtils.getGlobalPropertiesBean(applicationContext);
+        nacosServiceFactory = NacosBeanUtils.getNacosServiceFactory(applicationContext);
     }
 
     @Override

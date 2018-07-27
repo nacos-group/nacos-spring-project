@@ -17,20 +17,21 @@
 package com.alibaba.nacos.spring.context.properties;
 
 import com.alibaba.nacos.api.config.ConfigService;
-import com.alibaba.nacos.spring.util.NacosBeanUtils;
+import com.alibaba.nacos.api.config.listener.AbstractListener;
+import com.alibaba.nacos.api.config.listener.Listener;
+import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.spring.util.NacosUtils;
-import org.apache.commons.logging.LogFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.DataBinder;
-import sun.rmi.runtime.Log;
 
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.Properties;
+import java.util.concurrent.Executor;
 
 import static org.springframework.core.annotation.AnnotationUtils.findAnnotation;
 
@@ -55,21 +56,49 @@ public class NacosConfigurationPropertiesBinder {
 
         NacosConfigurationProperties properties = findAnnotation(bean.getClass(), NacosConfigurationProperties.class);
 
-        if (properties == null) {
-            // ignore when No @NacosConfigurationProperties binding
-            return;
-        }
+        bind(bean, properties);
+
+    }
+
+    public void bind(final Object bean, final NacosConfigurationProperties properties) {
+
+        Assert.notNull(bean, "Bean must not be null!");
+
+        Assert.notNull(properties, "NacosConfigurationProperties must not be null!");
 
         String dataId = properties.dataId();
 
         String groupId = properties.groupId();
 
-        String content = NacosUtils.getContent(configService, dataId, groupId);
+        if (properties.autoRefreshed()) { // Add a Listener if auto-refreshed
+
+            try {
+                configService.addListener(dataId, groupId, new AbstractListener() {
+
+                    @Override
+                    public void receiveConfigInfo(String configInfo) {
+                        doBind(bean, properties, configInfo);
+                    }
+                });
+            } catch (NacosException e) {
+                if (logger.isErrorEnabled()) {
+                    logger.error(e.getMessage(), e);
+                }
+            }
+        }
+
+        final String content = NacosUtils.getContent(configService, dataId, groupId);
 
         if (!StringUtils.hasText(content)) {
             // ignore when content is blank
             return;
         }
+
+        doBind(bean, properties, content);
+
+    }
+
+    protected void doBind(Object bean, NacosConfigurationProperties properties, String content) {
 
         DataBinder dataBinder = new DataBinder(bean);
 
