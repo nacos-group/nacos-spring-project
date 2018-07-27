@@ -19,6 +19,7 @@ package com.alibaba.nacos.spring.beans.factory.annotation;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.api.naming.NamingService;
+import com.alibaba.nacos.spring.mock.MockConfiguration;
 import com.alibaba.nacos.spring.mock.MockNacosServiceFactory;
 import com.alibaba.nacos.spring.context.annotation.NacosService;
 import com.alibaba.nacos.spring.factory.NacosServiceFactory;
@@ -43,23 +44,11 @@ import static com.alibaba.nacos.spring.util.NacosBeanUtils.NACOS_SERVICE_FACTORY
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
+        MockConfiguration.class,
         NamingServiceInjectedBeanPostProcessor.class,
         NamingServiceInjectedBeanPostProcessorTest.class
 })
 public class NamingServiceInjectedBeanPostProcessorTest {
-
-    @Bean(name = GLOBAL_NACOS_PROPERTIES_BEAN_NAME)
-    public Properties globalNacosProperties() {
-        Properties properties = new Properties();
-        properties.put("serverAddr", "11.163.128.36");
-        return properties;
-    }
-
-    @Bean(name = NACOS_SERVICE_FACTORY_BEAN_NAME)
-    public NacosServiceFactory nacosServiceFactory() {
-        return new MockNacosServiceFactory();
-    }
-
 
     @NacosService
     private ConfigService configService;
@@ -82,8 +71,7 @@ public class NamingServiceInjectedBeanPostProcessorTest {
 
     @Test
     public void test() throws NacosException {
-
+        configService.publishConfig(DATA_ID, GROUP_ID, CONTENT);
         Assert.assertEquals(CONTENT, configService.getConfig(DATA_ID, GROUP_ID, 5000));
-
     }
 }

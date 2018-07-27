@@ -14,36 +14,49 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.alibaba.nacos.spring;
+package com.alibaba.nacos.spring.mock;
 
-import com.alibaba.nacos.api.NacosFactory;
-import com.alibaba.nacos.api.config.ConfigService;
-import com.alibaba.nacos.api.exception.NacosException;
-import com.alibaba.nacos.spring.context.annotation.NacosService;
-import org.junit.Test;
+import com.alibaba.nacos.spring.context.properties.NacosConfigurationProperties;
 
-import java.util.Properties;
+import static com.alibaba.nacos.spring.mock.MockNacosServiceFactory.DATA_ID;
 
 /**
- * TODO
+ * Mock  {@link NacosConfigurationProperties Nacos Config}
  *
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
- * @since
+ * @see NacosConfigurationProperties
+ * @since 0.1.0
  */
-public class ConfigServiceTest {
+@NacosConfigurationProperties(dataId = DATA_ID, autoRefreshed = true)
+public class MockNacosConfig {
 
-    @NacosService()
-    private ConfigService configService;
+    private int id;
 
-    @Test
-    public void testConfigService() throws NacosException {
-        String dataId = "testDataId";
-        String group = "testGroupId";
-        Properties properties = new Properties();
-        configService.publishConfig(dataId, group, "Hello,World");
-        // Actively get the configuration.
-        String content = configService.getConfig(dataId, group, 5000);
-        System.out.println(content);
+    private String name;
+
+    private double value;
+
+    public int getId() {
+        return id;
     }
 
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public double getValue() {
+        return value;
+    }
+
+    public void setValue(double value) {
+        this.value = value;
+    }
 }

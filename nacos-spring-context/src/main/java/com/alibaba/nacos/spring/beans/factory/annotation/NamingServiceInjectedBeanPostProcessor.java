@@ -16,7 +16,6 @@
  */
 package com.alibaba.nacos.spring.beans.factory.annotation;
 
-import com.alibaba.nacos.api.NacosFactory;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.naming.NamingService;
 import com.alibaba.nacos.spring.context.annotation.NacosService;
@@ -47,19 +46,19 @@ public class NamingServiceInjectedBeanPostProcessor extends AnnotationInjectedBe
      */
     public static final String BEAN_NAME = "namingServiceInjectedBeanPostProcessor";
 
-    private Properties globalNacosPropertiesBean;
+    private Properties globalNacosProperties;
 
-    private NacosServiceFactory nacosServiceFactoryBean;
+    private NacosServiceFactory nacosServiceFactory;
 
     @Override
     protected Object resolveInjectedBean(NacosService annotation, Class<?> beanClass) throws Exception {
 
-        Properties properties = resolveProperties(annotation.properties(), getEnvironment(), globalNacosPropertiesBean);
+        Properties properties = resolveProperties(annotation.properties(), getEnvironment(), globalNacosProperties);
 
         if (ConfigService.class.equals(beanClass)) {
-            return nacosServiceFactoryBean.createConfigService(properties);
+            return nacosServiceFactory.createConfigService(properties);
         } else if (NamingService.class.equals(beanClass)) {
-            return nacosServiceFactoryBean.createNamingService(properties);
+            return nacosServiceFactory.createNamingService(properties);
         }
 
         throw new UnsupportedOperationException("Only support to inject ConfigService or NamingService instance, " +
@@ -84,8 +83,8 @@ public class NamingServiceInjectedBeanPostProcessor extends AnnotationInjectedBe
         ApplicationContext context = getApplicationContext();
 
         // Get Beans from ApplicationContext
-        this.globalNacosPropertiesBean = NacosBeanUtils.getGlobalPropertiesBean(context);
-        this.nacosServiceFactoryBean = NacosBeanUtils.getNacosServiceFactory(context);
+        this.globalNacosProperties = NacosBeanUtils.getGlobalPropertiesBean(context);
+        this.nacosServiceFactory = NacosBeanUtils.getNacosServiceFactory(context);
 
     }
 }

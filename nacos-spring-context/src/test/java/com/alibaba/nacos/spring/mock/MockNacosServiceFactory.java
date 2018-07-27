@@ -50,6 +50,8 @@ public class MockNacosServiceFactory implements NacosServiceFactory {
 
     private String content;
 
+    private MockConfigService configService = new MockConfigService();
+
     public MockNacosServiceFactory() {
         this(DATA_ID, GROUP_ID, DEFAULT_TIMEOUT, CONTENT);
     }
@@ -87,9 +89,6 @@ public class MockNacosServiceFactory implements NacosServiceFactory {
 
     @Override
     public ConfigService createConfigService(Properties properties) throws NacosException {
-
-        ConfigService configService = new MockConfigService();
-
         return configService;
     }
 

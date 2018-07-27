@@ -18,36 +18,53 @@ package com.alibaba.nacos.spring.context.properties;
 
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.exception.NacosException;
+import com.alibaba.nacos.spring.beans.factory.annotation.NamingServiceInjectedBeanPostProcessor;
+import com.alibaba.nacos.spring.context.annotation.NacosService;
+import com.alibaba.nacos.spring.factory.NacosServiceFactory;
+import com.alibaba.nacos.spring.mock.MockConfiguration;
 import com.alibaba.nacos.spring.mock.MockNacosConfig;
-import com.alibaba.nacos.spring.mock.MockNacosServiceFactory;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static com.alibaba.nacos.client.config.common.Constants.DEFAULT_GROUP;
 import static com.alibaba.nacos.spring.mock.MockNacosServiceFactory.DATA_ID;
 
 /**
- * {@link NacosConfigurationPropertiesBinder} Test
+ * {@link NacosConfigPropertiesBindingPostProcessor} Test
  *
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
  * @since 0.1.0
  */
-public class NacosConfigurationPropertiesBinderTest {
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = {
+        MockConfiguration.class,
+        NacosConfigPropertiesBindingPostProcessor.class,
+        NamingServiceInjectedBeanPostProcessor.class,
+        NacosConfigPropertiesBindingPostProcessorTest.class
+})
+public class NacosConfigPropertiesBindingPostProcessorTest {
 
-    private MockNacosServiceFactory nacosServiceFactory = new MockNacosServiceFactory();
+    @Bean
+    public MockNacosConfig config() {
+        return new MockNacosConfig();
+    }
+
+    @Autowired
+    private MockNacosConfig config;
+
+    @NacosService
+    private ConfigService configService;
 
     @Test
-    public void testBind() throws NacosException {
-
-        MockNacosConfig config = new MockNacosConfig();
-
-        ConfigService configService = nacosServiceFactory.createConfigService(null);
+    public void test() throws NacosException {
 
         configService.publishConfig(DATA_ID, DEFAULT_GROUP, "id=1\n name=mercyblitz\nvalue = 0.95");
-
-        NacosConfigurationPropertiesBinder binder = new NacosConfigurationPropertiesBinder(configService);
-
-        binder.bind(config);
 
         Assert.assertEquals(1, config.getId());
         Assert.assertEquals("mercyblitz", config.getName());
@@ -59,6 +76,7 @@ public class NacosConfigurationPropertiesBinderTest {
         Assert.assertEquals(1, config.getId());
         Assert.assertEquals("mercyblitz@gmail.com", config.getName());
         Assert.assertTrue(9527 == config.getValue());
+
 
     }
 
