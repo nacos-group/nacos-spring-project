@@ -57,13 +57,15 @@ public class NacosBeanDefinitionRegistrar implements ImportBeanDefinitionRegistr
 
         registerNacosConfigPropertiesBindingPostProcessor(registry);
 
+        registerNacosConfigListenerMethodProcessor(registry);
+
     }
 
     private void registerGlobalNacosProperties(AnnotationAttributes attributes, BeanDefinitionRegistry registry) {
         AnnotationAttributes globalPropertiesAttributes = attributes.getAnnotation("globalProperties");
         // Resolve Global Nacos Properties from @EnableNacos
         Properties globalProperties = NacosUtils.resolveProperties(globalPropertiesAttributes, environment);
-        registerInfrastructureBean(registry, GLOBAL_NACOS_PROPERTIES_BEAN_NAME, CacheableNacosServiceFactory.class, globalProperties);
+        registerInfrastructureBean(registry, GLOBAL_NACOS_PROPERTIES_BEAN_NAME, Properties.class, globalProperties);
     }
 
     private void registerNacosServiceFactoryIfAbsent(AnnotationAttributes attributes, BeanDefinitionRegistry registry) {
@@ -82,6 +84,11 @@ public class NacosBeanDefinitionRegistrar implements ImportBeanDefinitionRegistr
     private void registerNacosConfigPropertiesBindingPostProcessor(BeanDefinitionRegistry registry) {
         registerInfrastructureBean(registry, NacosConfigPropertiesBindingPostProcessor.BEAN_NAME,
                 NacosConfigPropertiesBindingPostProcessor.class);
+    }
+
+    private void registerNacosConfigListenerMethodProcessor(BeanDefinitionRegistry registry) {
+        registerInfrastructureBean(registry, NacosConfigListenerMethodProcessor.BEAN_NAME,
+                NacosConfigListenerMethodProcessor.class);
     }
 
     @Override

@@ -14,38 +14,42 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.alibaba.nacos.spring.context.annotation;
-
-import com.alibaba.nacos.api.PropertyKeyConst;
-
-import java.lang.annotation.*;
+package com.alibaba.nacos.spring.test;
 
 /**
- * An annotation for Nacos Properties
+ * User POJO
  *
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
- * @see PropertyKeyConst
  * @since 0.1.0
  */
-@Target(ElementType.ANNOTATION_TYPE)
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-public @interface NacosProperties {
+public class User {
 
-    String endpoint() default "${nacos.endpoint:}";
+    private Long id;
 
-    String namespace() default "${nacos.namespace:}";
+    private String name;
 
-    String accessKey() default "${nacos.accessKey:}";
+    public Long getId() {
+        return id;
+    }
 
-    String secretKey() default "${nacos.secretKey:}";
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    String serverAddr() default "${nacos.serverAddr:}";
+    public String getName() {
+        return name;
+    }
 
-    String contextPath() default "${nacos.contextPath:}";
+    public void setName(String name) {
+        this.name = name;
+    }
 
-    String clusterName() default "${nacos.clusterName:}";
-
-    String encode() default "${nacos.encode:}";
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                '}';
+    }
 
 }

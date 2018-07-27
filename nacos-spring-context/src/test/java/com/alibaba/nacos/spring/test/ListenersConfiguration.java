@@ -14,35 +14,41 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.alibaba.nacos.spring.mock;
+package com.alibaba.nacos.spring.test;
 
-import com.alibaba.nacos.spring.factory.NacosServiceFactory;
-import org.springframework.context.annotation.Bean;
+import com.alibaba.nacos.spring.context.annotation.NacosConfigListener;
+import com.alibaba.nacos.spring.convert.converter.UserNacosConfigConverter;
 import org.springframework.context.annotation.Configuration;
 
-import java.util.Properties;
-
-import static com.alibaba.nacos.spring.util.NacosBeanUtils.GLOBAL_NACOS_PROPERTIES_BEAN_NAME;
-import static com.alibaba.nacos.spring.util.NacosBeanUtils.NACOS_SERVICE_FACTORY_BEAN_NAME;
+import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.DATA_ID;
 
 /**
- * Mock {@link Configuration @Configuration} Class
+ * {@link NacosConfigListener} {@link Configuration}
  *
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
  * @since 0.1.0
  */
 @Configuration
-public class MockConfiguration {
+public class ListenersConfiguration {
 
-    @Bean(name = GLOBAL_NACOS_PROPERTIES_BEAN_NAME)
-    public Properties globalNacosProperties() {
-        Properties properties = new Properties();
-        return properties;
+    @NacosConfigListener(dataId = DATA_ID)
+    public void onMessage(String value) {
+        System.out.println("onMessage : " + value);
     }
 
-    @Bean(name = NACOS_SERVICE_FACTORY_BEAN_NAME)
-    public NacosServiceFactory nacosServiceFactory() {
-        return new MockNacosServiceFactory();
+    @NacosConfigListener(dataId = DATA_ID)
+    public void onInteger(Integer value) {
+        System.out.println("onInteger : " + value);
+    }
+
+    @NacosConfigListener(dataId = DATA_ID)
+    public void onDouble(Double value) {
+        System.out.println("onDouble : " + value);
+    }
+
+    @NacosConfigListener(dataId = "user", converter = UserNacosConfigConverter.class)
+    public void onUser(User user) {
+        System.out.println("onUser : " + user);
     }
 
 }

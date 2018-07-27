@@ -18,18 +18,17 @@ package com.alibaba.nacos.spring.beans.factory.annotation;
 
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.exception.NacosException;
-import com.alibaba.nacos.spring.context.annotation.NacosConfigListener;
 import com.alibaba.nacos.spring.context.annotation.NacosConfigListenerMethodProcessor;
 import com.alibaba.nacos.spring.context.annotation.NacosService;
-import com.alibaba.nacos.spring.mock.MockConfiguration;
+import com.alibaba.nacos.spring.test.ListenersConfiguration;
+import com.alibaba.nacos.spring.test.MockConfiguration;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static com.alibaba.nacos.client.config.common.Constants.DEFAULT_GROUP;
-import static com.alibaba.nacos.spring.mock.MockNacosServiceFactory.DATA_ID;
+import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.DATA_ID;
 
 /**
  * {@link NacosConfigListenerMethodProcessor} Test
@@ -40,40 +39,24 @@ import static com.alibaba.nacos.spring.mock.MockNacosServiceFactory.DATA_ID;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
         MockConfiguration.class,
+        ListenersConfiguration.class,
         NamingServiceInjectedBeanPostProcessor.class,
         NacosConfigListenerMethodProcessor.class,
         NacosConfigListenerMethodProcessorTest.class,
-        NacosConfigListenerMethodProcessorTest.ListenersConfiguration.class
+
 })
 public class NacosConfigListenerMethodProcessorTest {
 
     @NacosService
     private ConfigService configService;
 
-    @Configuration
-    public static class ListenersConfiguration {
-
-        @NacosConfigListener(dataId = DATA_ID)
-        public void onMessage(String value) {
-            System.out.println("onMessage : " + value);
-        }
-
-        @NacosConfigListener(dataId = DATA_ID)
-        public void onInteger(Integer value) {
-            System.out.println("onInteger : " + value);
-        }
-
-        @NacosConfigListener(dataId = DATA_ID)
-        public void onDouble(Double value) {
-            System.out.println("onDouble : " + value);
-        }
-
-    }
 
     @Test
     public void testOn() throws NacosException {
 
         configService.publishConfig(DATA_ID, DEFAULT_GROUP, "9527");
+        // Publish User
+        configService.publishConfig("user", DEFAULT_GROUP, "{\"id\":1,\"name\":\"mercyblitz\"}");
 
     }
 

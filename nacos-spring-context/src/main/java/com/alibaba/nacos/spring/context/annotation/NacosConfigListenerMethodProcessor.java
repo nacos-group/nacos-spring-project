@@ -50,16 +50,21 @@ import static org.springframework.beans.BeanUtils.instantiateClass;
 public class NacosConfigListenerMethodProcessor extends AnnotationListenerMethodProcessor<NacosConfigListener>
         implements ApplicationContextAware {
 
-    private Properties globalNacosProperties;
-
-    private NacosServiceFactory nacosServiceFactory;
-
-    private ConversionService conversionService;
+    /**
+     * The bean name of {@link NacosConfigListenerMethodProcessor}
+     */
+    public static final String BEAN_NAME = "nacosConfigListenerMethodProcessor";
 
     /**
      * The bean name of {@link ConversionService} for Nacos Configuration
      */
     public static final String NACOS_CONFIG_CONVERSION_SERVICE_BEAN_NAME = "nacosConfigConversionService";
+
+    private Properties globalNacosProperties;
+
+    private NacosServiceFactory nacosServiceFactory;
+
+    private ConversionService conversionService;
 
     @Override
     protected void processListenerMethod(final Object bean, Class<?> beanClass, final NacosConfigListener listener,

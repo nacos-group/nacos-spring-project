@@ -14,38 +14,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.alibaba.nacos.spring.context.annotation;
+package com.alibaba.nacos.spring.test;
 
-import com.alibaba.nacos.api.PropertyKeyConst;
+import com.alibaba.nacos.spring.factory.NacosServiceFactory;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
-import java.lang.annotation.*;
+import java.util.Properties;
+
+import static com.alibaba.nacos.spring.util.NacosBeanUtils.GLOBAL_NACOS_PROPERTIES_BEAN_NAME;
+import static com.alibaba.nacos.spring.util.NacosBeanUtils.NACOS_SERVICE_FACTORY_BEAN_NAME;
 
 /**
- * An annotation for Nacos Properties
+ * Mock {@link Configuration @Configuration} Class
  *
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
- * @see PropertyKeyConst
  * @since 0.1.0
  */
-@Target(ElementType.ANNOTATION_TYPE)
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-public @interface NacosProperties {
+@Configuration
+public class MockConfiguration {
 
-    String endpoint() default "${nacos.endpoint:}";
+    @Bean(name = GLOBAL_NACOS_PROPERTIES_BEAN_NAME)
+    public Properties globalNacosProperties() {
+        Properties properties = new Properties();
+        return properties;
+    }
 
-    String namespace() default "${nacos.namespace:}";
-
-    String accessKey() default "${nacos.accessKey:}";
-
-    String secretKey() default "${nacos.secretKey:}";
-
-    String serverAddr() default "${nacos.serverAddr:}";
-
-    String contextPath() default "${nacos.contextPath:}";
-
-    String clusterName() default "${nacos.clusterName:}";
-
-    String encode() default "${nacos.encode:}";
+    @Bean(name = NACOS_SERVICE_FACTORY_BEAN_NAME)
+    public NacosServiceFactory nacosServiceFactory() {
+        return new MockNacosServiceFactory();
+    }
 
 }

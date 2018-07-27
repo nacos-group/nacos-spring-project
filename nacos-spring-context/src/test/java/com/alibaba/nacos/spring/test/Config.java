@@ -14,38 +14,49 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.alibaba.nacos.spring.context.annotation;
+package com.alibaba.nacos.spring.test;
 
-import com.alibaba.nacos.api.PropertyKeyConst;
+import com.alibaba.nacos.spring.context.properties.NacosConfigurationProperties;
 
-import java.lang.annotation.*;
+import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.DATA_ID;
 
 /**
- * An annotation for Nacos Properties
+ * {@link NacosConfigurationProperties Nacos Config}
  *
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
- * @see PropertyKeyConst
+ * @see NacosConfigurationProperties
  * @since 0.1.0
  */
-@Target(ElementType.ANNOTATION_TYPE)
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-public @interface NacosProperties {
+@NacosConfigurationProperties(dataId = DATA_ID, autoRefreshed = true)
+public class Config {
 
-    String endpoint() default "${nacos.endpoint:}";
+    private int id;
 
-    String namespace() default "${nacos.namespace:}";
+    private String name;
 
-    String accessKey() default "${nacos.accessKey:}";
+    private double value;
 
-    String secretKey() default "${nacos.secretKey:}";
+    public int getId() {
+        return id;
+    }
 
-    String serverAddr() default "${nacos.serverAddr:}";
+    public void setId(int id) {
+        this.id = id;
+    }
 
-    String contextPath() default "${nacos.contextPath:}";
+    public String getName() {
+        return name;
+    }
 
-    String clusterName() default "${nacos.clusterName:}";
+    public void setName(String name) {
+        this.name = name;
+    }
 
-    String encode() default "${nacos.encode:}";
+    public double getValue() {
+        return value;
+    }
 
+    public void setValue(double value) {
+        this.value = value;
+    }
 }

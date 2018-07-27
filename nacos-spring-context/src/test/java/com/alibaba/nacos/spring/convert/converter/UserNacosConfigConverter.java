@@ -14,49 +14,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.alibaba.nacos.spring.mock;
+package com.alibaba.nacos.spring.convert.converter;
 
-import com.alibaba.nacos.spring.context.properties.NacosConfigurationProperties;
-
-import static com.alibaba.nacos.spring.mock.MockNacosServiceFactory.DATA_ID;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.nacos.spring.test.User;
 
 /**
- * Mock  {@link NacosConfigurationProperties Nacos Config}
+ * {@link User} {@link NacosConfigConverter}
  *
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
- * @see NacosConfigurationProperties
  * @since 0.1.0
  */
-@NacosConfigurationProperties(dataId = DATA_ID, autoRefreshed = true)
-public class MockNacosConfig {
+public class UserNacosConfigConverter implements NacosConfigConverter<User> {
 
-    private int id;
-
-    private String name;
-
-    private double value;
-
-    public int getId() {
-        return id;
+    @Override
+    public boolean canConvert(Class<User> targetType) {
+        return true;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public double getValue() {
-        return value;
-    }
-
-    public void setValue(double value) {
-        this.value = value;
+    @Override
+    public User convert(String source) {
+        return JSON.parseObject(source, User.class);
     }
 }

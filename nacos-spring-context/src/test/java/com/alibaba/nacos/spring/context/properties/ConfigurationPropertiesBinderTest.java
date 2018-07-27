@@ -18,13 +18,13 @@ package com.alibaba.nacos.spring.context.properties;
 
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.exception.NacosException;
-import com.alibaba.nacos.spring.mock.MockNacosConfig;
-import com.alibaba.nacos.spring.mock.MockNacosServiceFactory;
+import com.alibaba.nacos.spring.test.Config;
+import com.alibaba.nacos.spring.test.MockNacosServiceFactory;
 import org.junit.Assert;
 import org.junit.Test;
 
 import static com.alibaba.nacos.client.config.common.Constants.DEFAULT_GROUP;
-import static com.alibaba.nacos.spring.mock.MockNacosServiceFactory.DATA_ID;
+import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.DATA_ID;
 
 /**
  * {@link NacosConfigurationPropertiesBinder} Test
@@ -32,14 +32,14 @@ import static com.alibaba.nacos.spring.mock.MockNacosServiceFactory.DATA_ID;
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
  * @since 0.1.0
  */
-public class NacosConfigurationPropertiesBinderTest {
+public class ConfigurationPropertiesBinderTest {
 
     private MockNacosServiceFactory nacosServiceFactory = new MockNacosServiceFactory();
 
     @Test
     public void testBind() throws NacosException {
 
-        MockNacosConfig config = new MockNacosConfig();
+        Config config = new Config();
 
         ConfigService configService = nacosServiceFactory.createConfigService(null);
 

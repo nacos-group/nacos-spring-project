@@ -20,14 +20,14 @@ import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.api.naming.NamingService;
 import com.alibaba.nacos.spring.context.annotation.NacosService;
-import com.alibaba.nacos.spring.mock.MockConfiguration;
+import com.alibaba.nacos.spring.test.MockConfiguration;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import static com.alibaba.nacos.spring.mock.MockNacosServiceFactory.*;
+import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.*;
 
 /**
  * {@link NamingServiceInjectedBeanPostProcessor}

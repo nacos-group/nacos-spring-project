@@ -25,6 +25,7 @@ import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertyResolver;
 import org.springframework.util.ReflectionUtils;
+import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -117,7 +118,9 @@ public abstract class NacosUtils {
                 String key = entry.getKey();
                 String value = String.valueOf(entry.getValue());
                 String resolvedValue = propertyResolver.resolvePlaceholders(value);
-                properties.setProperty(key, resolvedValue);
+                if (StringUtils.hasText(resolvedValue)) { // set properties if has test
+                    properties.setProperty(key, resolvedValue);
+                }
             }
         }
 
