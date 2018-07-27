@@ -21,19 +21,14 @@ import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.spring.context.annotation.NacosProperties;
 import com.alibaba.nacos.spring.factory.NacosServiceFactory;
 import com.alibaba.nacos.spring.util.NacosBeanUtils;
-import com.alibaba.nacos.spring.util.NacosUtils;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
-import org.springframework.validation.DataBinder;
 
-import java.io.IOException;
-import java.io.StringReader;
 import java.util.Properties;
 
 import static com.alibaba.nacos.spring.util.NacosUtils.resolveProperties;

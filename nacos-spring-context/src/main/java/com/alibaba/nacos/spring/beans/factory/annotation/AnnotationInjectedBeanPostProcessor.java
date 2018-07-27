@@ -41,18 +41,17 @@ import org.springframework.util.StringUtils;
 
 import java.beans.PropertyDescriptor;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.*;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import static com.alibaba.nacos.spring.util.NacosUtils.resolveGenericType;
 import static org.springframework.core.BridgeMethodResolver.findBridgedMethod;
 import static org.springframework.core.BridgeMethodResolver.isVisibilityBridgeMethodPair;
+import static org.springframework.core.GenericTypeResolver.resolveTypeArgument;
 import static org.springframework.core.annotation.AnnotationUtils.findAnnotation;
 import static org.springframework.core.annotation.AnnotationUtils.getAnnotation;
 
@@ -86,7 +85,7 @@ public abstract class AnnotationInjectedBeanPostProcessor<A extends Annotation, 
     private int order = Ordered.LOWEST_PRECEDENCE;
 
     public AnnotationInjectedBeanPostProcessor() {
-        this.annotationType = resolveAnnotationType();
+        this.annotationType = resolveGenericType(getClass());
     }
 
     /**
@@ -100,12 +99,6 @@ public abstract class AnnotationInjectedBeanPostProcessor<A extends Annotation, 
 
     public void setOrder(int order) {
         this.order = order;
-    }
-
-    private final Class<A> resolveAnnotationType() {
-        ParameterizedType parameterizedType = (ParameterizedType) getClass().getGenericSuperclass();
-        Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
-        return (Class<A>) actualTypeArguments[0];
     }
 
 

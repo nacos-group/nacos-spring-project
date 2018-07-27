@@ -16,8 +16,6 @@
  */
 package com.alibaba.nacos.spring.context.constants;
 
-import java.util.Properties;
-
 /**
  * Nacos Constants
  *

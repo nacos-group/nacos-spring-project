@@ -21,8 +21,6 @@ import com.alibaba.nacos.spring.context.properties.NacosConfigPropertiesBindingP
 import com.alibaba.nacos.spring.factory.CacheableNacosServiceFactory;
 import com.alibaba.nacos.spring.factory.NacosServiceFactory;
 import com.alibaba.nacos.spring.util.NacosUtils;
-import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
@@ -32,7 +30,6 @@ import org.springframework.core.type.AnnotationMetadata;
 
 import java.util.Properties;
 
-import static com.alibaba.nacos.spring.beans.factory.annotation.NamingServiceInjectedBeanPostProcessor.BEAN_NAME;
 import static com.alibaba.nacos.spring.util.NacosBeanUtils.*;
 
 /**

@@ -18,7 +18,6 @@ package com.alibaba.nacos.spring.context.properties;
 
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.config.listener.AbstractListener;
-import com.alibaba.nacos.api.config.listener.Listener;
 import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.spring.util.NacosUtils;
 import org.slf4j.Logger;
@@ -31,7 +30,6 @@ import org.springframework.validation.DataBinder;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.Properties;
-import java.util.concurrent.Executor;
 
 import static org.springframework.core.annotation.AnnotationUtils.findAnnotation;
 

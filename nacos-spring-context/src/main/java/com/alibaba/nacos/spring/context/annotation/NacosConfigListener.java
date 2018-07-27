@@ -17,7 +17,8 @@
 package com.alibaba.nacos.spring.context.annotation;
 
 import com.alibaba.nacos.client.config.common.Constants;
-import com.alibaba.nacos.spring.util.NacosUtils;
+import com.alibaba.nacos.spring.convert.converter.DefaultNacosConfigConverter;
+import com.alibaba.nacos.spring.convert.converter.NacosConfigConverter;
 
 import java.lang.annotation.*;
 
@@ -47,6 +48,14 @@ public @interface NacosConfigListener {
      * @return required value.
      */
     String dataId();
+
+    /**
+     * Specify {@link NacosConfigConverter Nacos configuraion convertor} class to convert target type instance.
+     *
+     * @return If not specified , the {@link DefaultNacosConfigConverter build-in NacosConfigConverter} will be used.
+     * @see DefaultNacosConfigConverter
+     */
+    Class<? extends NacosConfigConverter> converter() default NacosConfigConverter.class;
 
     /**
      * The {@link NacosProperties} attribute, If not specified, it will use

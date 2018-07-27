@@ -1,0 +1,183 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.alibaba.nacos.spring.context.annotation;
+
+import com.alibaba.nacos.api.config.ConfigService;
+import com.alibaba.nacos.api.config.listener.AbstractListener;
+import com.alibaba.nacos.api.exception.NacosException;
+import com.alibaba.nacos.spring.context.event.AnnotationListenerMethodProcessor;
+import com.alibaba.nacos.spring.convert.converter.DefaultNacosConfigConverter;
+import com.alibaba.nacos.spring.convert.converter.NacosConfigConverter;
+import com.alibaba.nacos.spring.factory.NacosServiceFactory;
+import com.alibaba.nacos.spring.util.NacosBeanUtils;
+import com.alibaba.spring.util.BeanUtils;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanCreationException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.core.convert.ConversionService;
+import org.springframework.format.support.DefaultFormattingConversionService;
+import org.springframework.util.ReflectionUtils;
+
+import java.lang.reflect.Method;
+import java.util.Properties;
+
+import static com.alibaba.nacos.spring.util.NacosUtils.resolveProperties;
+import static org.springframework.beans.BeanUtils.instantiateClass;
+
+/**
+ * {@link NacosConfigListener @NacosConfigListener} {@link Method method} Processor
+ *
+ * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
+ * @see NacosConfigListener
+ * @see AnnotationListenerMethodProcessor
+ * @see Method
+ * @since 0.1.0
+ */
+public class NacosConfigListenerMethodProcessor extends AnnotationListenerMethodProcessor<NacosConfigListener>
+        implements ApplicationContextAware {
+
+    private Properties globalNacosProperties;
+
+    private NacosServiceFactory nacosServiceFactory;
+
+    private ConversionService conversionService;
+
+    /**
+     * The bean name of {@link ConversionService} for Nacos Configuration
+     */
+    public static final String NACOS_CONFIG_CONVERSION_SERVICE_BEAN_NAME = "nacosConfigConversionService";
+
+    @Override
+    protected void processListenerMethod(final Object bean, Class<?> beanClass, final NacosConfigListener listener,
+                                         final Method method, ApplicationContext applicationContext) {
+
+        String dataId = listener.dataId();
+
+        String groupId = listener.groupId();
+
+        ConfigService configService = resolveConfigService(listener, applicationContext);
+
+        try {
+            configService.addListener(dataId, groupId, new AbstractListener() {
+                @Override
+                public void receiveConfigInfo(String configInfo) {
+
+                    Class<?> targetType = method.getParameterTypes()[0];
+
+                    NacosConfigConverter configConverter = determineNacosConfigConverter(targetType, listener);
+
+                    Object parameterValue = configConverter.convert(configInfo);
+
+                    // Execute target method
+                    ReflectionUtils.invokeMethod(method, bean, parameterValue);
+
+                }
+            });
+        } catch (NacosException e) {
+            if (logger.isErrorEnabled()) {
+                logger.error("ConfigService can't add Listener for dataId : " + dataId + " , groupId : " + groupId, e);
+            }
+        }
+
+    }
+
+    private ConfigService resolveConfigService(NacosConfigListener listener, ApplicationContext applicationContext)
+            throws BeansException {
+
+        NacosProperties nacosProperties = listener.properties();
+
+        Properties properties = resolveProperties(nacosProperties, applicationContext.getEnvironment(), globalNacosProperties);
+
+        ConfigService configService = null;
+
+        try {
+            configService = nacosServiceFactory.createConfigService(properties);
+        } catch (NacosException e) {
+            throw new BeanCreationException(e.getErrMsg(), e);
+        }
+
+        return configService;
+    }
+
+    @Override
+    protected boolean isCandidateMethod(Object bean, Class<?> beanClass, NacosConfigListener listener, Method method,
+                                        ApplicationContext applicationContext) {
+        Class<?>[] parameterTypes = method.getParameterTypes();
+
+        if (parameterTypes.length != 1) { // Only one argument on method
+            if (logger.isWarnEnabled()) {
+                logger.warn("Listener method [" + method + "] parameters' count must be one !");
+            }
+            return false;
+        }
+
+        Class<?> targetType = parameterTypes[0];
+
+        NacosConfigConverter configConverter = determineNacosConfigConverter(targetType, listener);
+
+        if (!configConverter.canConvert(targetType)) {
+            if (logger.isWarnEnabled()) {
+                logger.warn("Listener method [" + method + "] is not a candidate , thus its parameter type ["
+                        + targetType + "] can't be converted , please check NacosConfigConverter implementation : "
+                        + configConverter.getClass().getName());
+            }
+        }
+
+        return true;
+    }
+
+    private NacosConfigConverter determineNacosConfigConverter(Class<?> targetType, NacosConfigListener listener) {
+
+        Class<?> converterClass = listener.converter();
+
+        NacosConfigConverter configConverter = null;
+
+        if (NacosConfigConverter.class.equals(converterClass)) { // Use default implementation
+
+            configConverter = new DefaultNacosConfigConverter(targetType, conversionService);
+
+        } else { // Use customized implementation
+
+            configConverter = (NacosConfigConverter) instantiateClass(converterClass);
+
+        }
+
+        return configConverter;
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        globalNacosProperties = NacosBeanUtils.getGlobalPropertiesBean(applicationContext);
+        nacosServiceFactory = NacosBeanUtils.getNacosServiceFactory(applicationContext);
+        conversionService = determineConversionService(applicationContext);
+    }
+
+    private ConversionService determineConversionService(ApplicationContext applicationContext) {
+
+        String beanName = NACOS_CONFIG_CONVERSION_SERVICE_BEAN_NAME;
+
+        ConversionService conversionService = applicationContext.containsBean(beanName) ?
+                applicationContext.getBean(beanName, ConversionService.class) : null;
+
+        if (conversionService == null) {
+            conversionService = new DefaultFormattingConversionService();
+        }
+
+        return conversionService;
+    }
+}

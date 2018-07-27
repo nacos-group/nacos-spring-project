@@ -14,38 +14,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.alibaba.nacos.spring.context.annotation;
+package com.alibaba.nacos.spring.convert.converter;
 
-import com.alibaba.nacos.api.PropertyKeyConst;
-
-import java.lang.annotation.*;
+import org.springframework.core.convert.converter.Converter;
 
 /**
- * An annotation for Nacos Properties
+ * Nacos Configuration {@link Converter}
  *
+ * @param <T> the target type that wanted
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
- * @see PropertyKeyConst
  * @since 0.1.0
  */
-@Target(ElementType.ANNOTATION_TYPE)
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-public @interface NacosProperties {
+public interface NacosConfigConverter<T> extends Converter<String, T> {
 
-    String endpoint() default "${nacos.endpoint}";
-
-    String namespace() default "${nacos.namespace}";
-
-    String accessKey() default "${nacos.accessKey}";
-
-    String secretKey() default "${nacos.secretKey}";
-
-    String serverAddr() default "${nacos.serverAddr}";
-
-    String contextPath() default "${nacos.contextPath}";
-
-    String clusterName() default "${nacos.clusterName}";
-
-    String encode() default "${nacos.encode}";
+    /**
+     * Can convert to be target type or not
+     *
+     * @param targetType the type of target
+     * @return If can , return <code>true</code>, or <code>false</code>
+     */
+    boolean canConvert(Class<T> targetType);
 
 }
