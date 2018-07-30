@@ -75,7 +75,7 @@ public abstract class NacosUtils {
      * @param properties Nacos Properties
      * @return non-null
      */
-    public static String buildDefaultPropertySourceName(String dataId, String groupId, Map<String, Object> properties) {
+    public static String buildDefaultPropertySourceName(String dataId, String groupId, Map<?, ?> properties) {
         return build(dataId, groupId, identify(properties));
     }
 

@@ -53,6 +53,11 @@ import static org.springframework.util.ObjectUtils.nullSafeEquals;
  */
 public class NacosPropertySourceProcessor implements BeanDefinitionRegistryPostProcessor, EnvironmentAware, Ordered {
 
+    /**
+     * The bean name of {@link NacosPropertySourceProcessor}
+     */
+    public static final String BEAN_NAME = "nacosPropertySourceProcessor";
+
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private ConfigurableEnvironment environment;
@@ -108,15 +113,11 @@ public class NacosPropertySourceProcessor implements BeanDefinitionRegistryPostP
 
         Map<String, Object> properties = (AnnotationAttributes) nacosPropertySourceAttributes.get("properties");
 
+        Properties nacosProperties = resolveProperties(properties, environment);
+
         if (!StringUtils.hasText(name)) {
-            name = buildDefaultPropertySourceName(dataId, groupId, properties);
+            name = buildDefaultPropertySourceName(dataId, groupId, nacosProperties);
         }
-
-        name = environment.resolvePlaceholders(name);
-
-        Properties nacosProperties = new Properties();
-
-        nacosProperties.putAll(properties);
 
         String config = loader.load(dataId, groupId, nacosProperties);
 

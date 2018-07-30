@@ -59,6 +59,8 @@ public class NacosBeanDefinitionRegistrar implements ImportBeanDefinitionRegistr
 
         registerNacosConfigListenerMethodProcessor(registry);
 
+        registerNacosPropertySourceProcessor(registry);
+
     }
 
     private void registerGlobalNacosProperties(AnnotationAttributes attributes, BeanDefinitionRegistry registry) {
@@ -90,6 +92,11 @@ public class NacosBeanDefinitionRegistrar implements ImportBeanDefinitionRegistr
     private void registerNacosConfigListenerMethodProcessor(BeanDefinitionRegistry registry) {
         registerInfrastructureBean(registry, NacosConfigListenerMethodProcessor.BEAN_NAME,
                 NacosConfigListenerMethodProcessor.class);
+    }
+
+    private void registerNacosPropertySourceProcessor(BeanDefinitionRegistry registry) {
+        registerInfrastructureBean(registry, NacosPropertySourceProcessor.BEAN_NAME,
+                NacosPropertySourceProcessor.class);
     }
 
     @Override
