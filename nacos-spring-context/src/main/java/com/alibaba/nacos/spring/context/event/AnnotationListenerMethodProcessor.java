@@ -52,12 +52,38 @@ import static java.lang.reflect.Modifier.*;
  */
 public abstract class AnnotationListenerMethodProcessor<A extends Annotation> implements ApplicationListener<ContextRefreshedEvent> {
 
-    private final Class<A> annotationType;
-
     protected final Log logger = LogFactory.getLog(getClass());
+    private final Class<A> annotationType;
 
     public AnnotationListenerMethodProcessor() {
         this.annotationType = resolveGenericType(getClass());
+    }
+
+    /**
+     * Must be
+     * <ul>
+     * <li><code>public</code></li>
+     * <li>not <code>static</code></li>
+     * <li>not <code>abstract</code></li>
+     * <li>not <code>native</code></li>
+     * <li><code>void</code></li>
+     * </ul>
+     *
+     * @param method {@link Method}
+     * @return if obey above rules , return <code>true</code>
+     */
+    static boolean isListenerMethod(Method method) {
+
+        int modifiers = method.getModifiers();
+
+        Class<?> returnType = method.getReturnType();
+
+        return isPublic(modifiers)
+                && !isStatic(modifiers)
+                && !isNative(modifiers)
+                && !isAbstract(modifiers)
+                && void.class.equals(returnType)
+                ;
     }
 
     @Override
@@ -127,7 +153,6 @@ public abstract class AnnotationListenerMethodProcessor<A extends Annotation> im
     protected abstract void processListenerMethod(Object bean, Class<?> beanClass, A annotation, Method method,
                                                   ApplicationContext applicationContext);
 
-
     /**
      * Subclass could override this method to determine current method is candidate or not
      *
@@ -141,32 +166,5 @@ public abstract class AnnotationListenerMethodProcessor<A extends Annotation> im
     protected boolean isCandidateMethod(Object bean, Class<?> beanClass, A annotation, Method method,
                                         ApplicationContext applicationContext) {
         return true;
-    }
-
-    /**
-     * Must be
-     * <ul>
-     * <li><code>public</code></li>
-     * <li>not <code>static</code></li>
-     * <li>not <code>abstract</code></li>
-     * <li>not <code>native</code></li>
-     * <li><code>void</code></li>
-     * </ul>
-     *
-     * @param method {@link Method}
-     * @return if obey above rules , return <code>true</code>
-     */
-    static boolean isListenerMethod(Method method) {
-
-        int modifiers = method.getModifiers();
-
-        Class<?> returnType = method.getReturnType();
-
-        return isPublic(modifiers)
-                && !isStatic(modifiers)
-                && !isNative(modifiers)
-                && !isAbstract(modifiers)
-                && void.class.equals(returnType)
-                ;
     }
 }

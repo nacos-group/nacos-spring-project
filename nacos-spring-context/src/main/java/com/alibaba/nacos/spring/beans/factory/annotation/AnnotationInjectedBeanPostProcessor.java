@@ -87,6 +87,14 @@ public abstract class AnnotationInjectedBeanPostProcessor<A extends Annotation, 
         this.annotationType = resolveGenericType(getClass());
     }
 
+    private static <T> Collection<T> combine(Collection<? extends T>... elements) {
+        List<T> allElements = new ArrayList<T>();
+        for (Collection<? extends T> e : elements) {
+            allElements.addAll(e);
+        }
+        return allElements;
+    }
+
     /**
      * Annotation type
      *
@@ -95,11 +103,6 @@ public abstract class AnnotationInjectedBeanPostProcessor<A extends Annotation, 
     public final Class<A> getAnnotationType() {
         return annotationType;
     }
-
-    public void setOrder(int order) {
-        this.order = order;
-    }
-
 
     @Override
     public PropertyValues postProcessPropertyValues(
@@ -231,11 +234,6 @@ public abstract class AnnotationInjectedBeanPostProcessor<A extends Annotation, 
     }
 
     @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        this.applicationContext = applicationContext;
-    }
-
-    @Override
     public void postProcessMergedBeanDefinition(RootBeanDefinition beanDefinition, Class<?> beanType, String beanName) {
         if (beanType != null) {
             InjectionMetadata metadata = findInjectionMetadata(beanName, beanType, null);
@@ -246,6 +244,10 @@ public abstract class AnnotationInjectedBeanPostProcessor<A extends Annotation, 
     @Override
     public int getOrder() {
         return order;
+    }
+
+    public void setOrder(int order) {
+        this.order = order;
     }
 
     @Override
@@ -283,101 +285,6 @@ public abstract class AnnotationInjectedBeanPostProcessor<A extends Annotation, 
      */
     public Collection<B> getBeans() {
         return this.beanCaches.values();
-    }
-
-
-    /**
-     * {@link A} {@link InjectionMetadata} implementation
-     */
-    private class AnnotatedInjectionMetadata extends InjectionMetadata {
-
-        private final Collection<AnnotatedFieldElement> fieldElements;
-
-        private final Collection<AnnotatedMethodElement> methodElements;
-
-
-        public AnnotatedInjectionMetadata(Class<?> targetClass, Collection<AnnotatedFieldElement> fieldElements,
-                                          Collection<AnnotatedMethodElement> methodElements) {
-            super(targetClass, combine(fieldElements, methodElements));
-            this.fieldElements = fieldElements;
-            this.methodElements = methodElements;
-        }
-
-        public Collection<AnnotatedFieldElement> getFieldElements() {
-            return fieldElements;
-        }
-
-        public Collection<AnnotatedMethodElement> getMethodElements() {
-            return methodElements;
-        }
-    }
-
-    private static <T> Collection<T> combine(Collection<? extends T>... elements) {
-        List<T> allElements = new ArrayList<T>();
-        for (Collection<? extends T> e : elements) {
-            allElements.addAll(e);
-        }
-        return allElements;
-    }
-
-    /**
-     * {@link A} {@link Method} {@link InjectionMetadata.InjectedElement}
-     */
-    private class AnnotatedMethodElement extends InjectionMetadata.InjectedElement {
-
-        private final Method method;
-
-        private final A annotation;
-
-        private volatile B bean;
-
-        protected AnnotatedMethodElement(Method method, PropertyDescriptor pd, A annotation) {
-            super(method, pd);
-            this.method = method;
-            this.annotation = annotation;
-        }
-
-        @Override
-        protected void inject(Object bean, String beanName, PropertyValues pvs) throws Throwable {
-
-            Class<?> beanClass = pd.getPropertyType();
-
-            ReflectionUtils.makeAccessible(method);
-
-            method.invoke(bean, getInjectedBean(annotation, beanClass));
-
-        }
-
-    }
-
-    /**
-     * {@link A} {@link Field} {@link InjectionMetadata.InjectedElement}
-     */
-    private class AnnotatedFieldElement extends InjectionMetadata.InjectedElement {
-
-        private final Field field;
-
-        private final A annotation;
-
-        private volatile B bean;
-
-        protected AnnotatedFieldElement(Field field, A annotation) {
-            super(field, null);
-            this.field = field;
-            this.annotation = annotation;
-        }
-
-        @Override
-        protected void inject(Object bean, String beanName, PropertyValues pvs) throws Throwable {
-
-            Class<?> beanClass = field.getType();
-
-            ReflectionUtils.makeAccessible(field);
-
-            field.set(bean, getInjectedBean(annotation, beanClass));
-
-        }
-
     }
 
     /**
@@ -484,19 +391,110 @@ public abstract class AnnotationInjectedBeanPostProcessor<A extends Annotation, 
 
     }
 
-    public void setEnvironment(Environment environment) {
-        this.environment = environment;
-    }
-
     public ApplicationContext getApplicationContext() {
         return applicationContext;
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
     }
 
     public Environment getEnvironment() {
         return environment;
     }
 
+    public void setEnvironment(Environment environment) {
+        this.environment = environment;
+    }
+
     public ClassLoader getClassLoader() {
         return classLoader;
+    }
+
+    /**
+     * {@link A} {@link InjectionMetadata} implementation
+     */
+    private class AnnotatedInjectionMetadata extends InjectionMetadata {
+
+        private final Collection<AnnotatedFieldElement> fieldElements;
+
+        private final Collection<AnnotatedMethodElement> methodElements;
+
+
+        public AnnotatedInjectionMetadata(Class<?> targetClass, Collection<AnnotatedFieldElement> fieldElements,
+                                          Collection<AnnotatedMethodElement> methodElements) {
+            super(targetClass, combine(fieldElements, methodElements));
+            this.fieldElements = fieldElements;
+            this.methodElements = methodElements;
+        }
+
+        public Collection<AnnotatedFieldElement> getFieldElements() {
+            return fieldElements;
+        }
+
+        public Collection<AnnotatedMethodElement> getMethodElements() {
+            return methodElements;
+        }
+    }
+
+    /**
+     * {@link A} {@link Method} {@link InjectionMetadata.InjectedElement}
+     */
+    private class AnnotatedMethodElement extends InjectionMetadata.InjectedElement {
+
+        private final Method method;
+
+        private final A annotation;
+
+        private volatile B bean;
+
+        protected AnnotatedMethodElement(Method method, PropertyDescriptor pd, A annotation) {
+            super(method, pd);
+            this.method = method;
+            this.annotation = annotation;
+        }
+
+        @Override
+        protected void inject(Object bean, String beanName, PropertyValues pvs) throws Throwable {
+
+            Class<?> beanClass = pd.getPropertyType();
+
+            ReflectionUtils.makeAccessible(method);
+
+            method.invoke(bean, getInjectedBean(annotation, beanClass));
+
+        }
+
+    }
+
+    /**
+     * {@link A} {@link Field} {@link InjectionMetadata.InjectedElement}
+     */
+    private class AnnotatedFieldElement extends InjectionMetadata.InjectedElement {
+
+        private final Field field;
+
+        private final A annotation;
+
+        private volatile B bean;
+
+        protected AnnotatedFieldElement(Field field, A annotation) {
+            super(field, null);
+            this.field = field;
+            this.annotation = annotation;
+        }
+
+        @Override
+        protected void inject(Object bean, String beanName, PropertyValues pvs) throws Throwable {
+
+            Class<?> beanClass = field.getType();
+
+            ReflectionUtils.makeAccessible(field);
+
+            field.set(bean, getInjectedBean(annotation, beanClass));
+
+        }
+
     }
 }

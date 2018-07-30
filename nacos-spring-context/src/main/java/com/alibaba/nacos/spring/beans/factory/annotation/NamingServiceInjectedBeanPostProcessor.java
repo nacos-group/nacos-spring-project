@@ -84,7 +84,7 @@ public class NamingServiceInjectedBeanPostProcessor extends AnnotationInjectedBe
 
         // Get Beans from ApplicationContext
         this.globalNacosProperties = NacosBeanUtils.getGlobalPropertiesBean(context);
-        this.nacosServiceFactory = NacosBeanUtils.getNacosServiceFactory(context);
+        this.nacosServiceFactory = NacosBeanUtils.getNacosServiceFactoryBean(context);
 
     }
 }

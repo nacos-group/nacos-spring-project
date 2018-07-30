@@ -1,0 +1,107 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.alibaba.nacos.spring.context.annotation;
+
+import com.alibaba.nacos.client.config.common.Constants;
+import com.alibaba.nacos.spring.util.NacosUtils;
+import org.springframework.core.env.PropertySource;
+
+import java.lang.annotation.*;
+import java.util.Map;
+
+import static com.alibaba.nacos.client.config.common.Constants.DEFAULT_GROUP;
+import static com.alibaba.nacos.spring.util.NacosUtils.DEFAULT_STRING_ATTRIBUTE_VALUE;
+
+/**
+ * An annotation for Nacos {@link PropertySource}
+ *
+ * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
+ * @see PropertySource
+ * @see org.springframework.context.annotation.PropertySource
+ * @since 0.1.0
+ */
+@Target({ElementType.TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface NacosPropertySource {
+
+    /**
+     * The name of Nacos {@link PropertySource}
+     * If absent , the default name will be built from
+     * {@link #dataId() dataId}, {@link #groupId() groupid} and {@link #properties() properties} by
+     * {@link NacosUtils#buildDefaultPropertySourceName(String, String, Map)} method
+     *
+     * @return default value is ""
+     */
+    String name() default DEFAULT_STRING_ATTRIBUTE_VALUE;
+
+    /**
+     * Nacos Group ID
+     *
+     * @return default value {@link Constants#DEFAULT_GROUP};
+     */
+    String groupId() default DEFAULT_GROUP;
+
+    /**
+     * Nacos Data ID
+     *
+     * @return required value.
+     */
+    String dataId();
+
+    /**
+     * Indicates current Nacos {@link PropertySource} is first order or not
+     * If specified , {@link #before()} and {@link #after()} will be ignored, or
+     * last order.
+     *
+     * @return default value is <code>false</code>
+     */
+    boolean first() default false;
+
+    /**
+     * The relative order before specified {@link PropertySource}
+     * <p>
+     * If not specified , current Nacos {@link PropertySource} will be added last.
+     * <p>
+     * If {@link #first()} specified , current attribute will be ignored.
+     *
+     * @return the name of {@link PropertySource}
+     */
+    String before() default DEFAULT_STRING_ATTRIBUTE_VALUE;
+
+    /**
+     * The relative order after specified {@link PropertySource}
+     * <p>
+     * If not specified , current Nacos {@link PropertySource} will be added last.
+     * <p>
+     * If {@link #first()} specified , current attribute will be ignored.
+     *
+     * @return the name of {@link PropertySource}
+     */
+    String after() default DEFAULT_STRING_ATTRIBUTE_VALUE;
+
+    /**
+     * The {@link NacosProperties} attribute, If not specified, it will use
+     * {@link EnableNacos#globalProperties() global Nacos Properties}.
+     *
+     * @return the default value is {@link NacosProperties}
+     * @see EnableNacos#globalProperties()
+     */
+    NacosProperties properties() default @NacosProperties;
+
+
+}

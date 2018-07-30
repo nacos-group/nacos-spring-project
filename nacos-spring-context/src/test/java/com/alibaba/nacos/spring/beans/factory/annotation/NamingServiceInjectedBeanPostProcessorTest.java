@@ -20,7 +20,7 @@ import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.api.naming.NamingService;
 import com.alibaba.nacos.spring.context.annotation.NacosService;
-import com.alibaba.nacos.spring.test.MockConfiguration;
+import com.alibaba.nacos.spring.test.TestConfiguration;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,7 +37,7 @@ import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.*;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
-        MockConfiguration.class,
+        TestConfiguration.class,
         NamingServiceInjectedBeanPostProcessor.class,
         NamingServiceInjectedBeanPostProcessorTest.class
 })

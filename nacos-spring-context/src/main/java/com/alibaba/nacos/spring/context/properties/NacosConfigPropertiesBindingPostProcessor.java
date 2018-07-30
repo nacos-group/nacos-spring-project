@@ -104,7 +104,7 @@ public class NacosConfigPropertiesBindingPostProcessor implements BeanPostProces
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         globalNacosProperties = NacosBeanUtils.getGlobalPropertiesBean(applicationContext);
-        nacosServiceFactory = NacosBeanUtils.getNacosServiceFactory(applicationContext);
+        nacosServiceFactory = NacosBeanUtils.getNacosServiceFactoryBean(applicationContext);
     }
 
     @Override

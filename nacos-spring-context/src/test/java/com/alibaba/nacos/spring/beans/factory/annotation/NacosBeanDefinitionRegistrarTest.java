@@ -17,12 +17,12 @@
 package com.alibaba.nacos.spring.beans.factory.annotation;
 
 import com.alibaba.nacos.api.config.ConfigService;
-import com.alibaba.nacos.api.exception.NacosException;
-import com.alibaba.nacos.spring.context.annotation.*;
-import com.alibaba.nacos.spring.convert.converter.UserNacosConfigConverter;
+import com.alibaba.nacos.spring.context.annotation.EnableNacos;
+import com.alibaba.nacos.spring.context.annotation.NacosBeanDefinitionRegistrar;
+import com.alibaba.nacos.spring.context.annotation.NacosProperties;
+import com.alibaba.nacos.spring.context.annotation.NacosService;
 import com.alibaba.nacos.spring.test.Config;
 import com.alibaba.nacos.spring.test.ListenersConfiguration;
-import com.alibaba.nacos.spring.test.MockConfiguration;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;

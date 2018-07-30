@@ -21,7 +21,7 @@ import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.spring.context.annotation.NacosConfigListenerMethodProcessor;
 import com.alibaba.nacos.spring.context.annotation.NacosService;
 import com.alibaba.nacos.spring.test.ListenersConfiguration;
-import com.alibaba.nacos.spring.test.MockConfiguration;
+import com.alibaba.nacos.spring.test.TestConfiguration;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
@@ -38,7 +38,7 @@ import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.DATA_ID;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
-        MockConfiguration.class,
+        TestConfiguration.class,
         ListenersConfiguration.class,
         NamingServiceInjectedBeanPostProcessor.class,
         NacosConfigListenerMethodProcessor.class,

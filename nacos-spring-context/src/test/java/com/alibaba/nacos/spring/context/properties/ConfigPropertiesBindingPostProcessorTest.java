@@ -20,8 +20,8 @@ import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.spring.beans.factory.annotation.NamingServiceInjectedBeanPostProcessor;
 import com.alibaba.nacos.spring.context.annotation.NacosService;
-import com.alibaba.nacos.spring.test.MockConfiguration;
 import com.alibaba.nacos.spring.test.Config;
+import com.alibaba.nacos.spring.test.TestConfiguration;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,23 +41,22 @@ import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.DATA_ID;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
-        MockConfiguration.class,
+        TestConfiguration.class,
         NacosConfigPropertiesBindingPostProcessor.class,
         NamingServiceInjectedBeanPostProcessor.class,
         ConfigPropertiesBindingPostProcessorTest.class
 })
 public class ConfigPropertiesBindingPostProcessorTest {
 
+    @Autowired
+    private Config config;
+    @NacosService
+    private ConfigService configService;
+
     @Bean
     public Config config() {
         return new Config();
     }
-
-    @Autowired
-    private Config config;
-
-    @NacosService
-    private ConfigService configService;
 
     @Test
     public void test() throws NacosException {

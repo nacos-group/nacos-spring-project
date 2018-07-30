@@ -14,35 +14,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.alibaba.nacos.spring.test;
+package com.alibaba.nacos.spring.context.annotation;
 
-import com.alibaba.nacos.spring.factory.NacosServiceFactory;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-
-import java.util.Properties;
-
-import static com.alibaba.nacos.spring.util.NacosBeanUtils.GLOBAL_NACOS_PROPERTIES_BEAN_NAME;
-import static com.alibaba.nacos.spring.util.NacosBeanUtils.NACOS_SERVICE_FACTORY_BEAN_NAME;
+import java.lang.annotation.*;
 
 /**
- * Mock {@link Configuration @Configuration} Class
+ * Multiple {@link NacosPropertySource @NacosPropertySource} annotations.
  *
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
  * @since 0.1.0
  */
-@Configuration
-public class MockConfiguration {
+@Target({ElementType.TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface NacosPropertySources {
 
-    @Bean(name = GLOBAL_NACOS_PROPERTIES_BEAN_NAME)
-    public Properties globalNacosProperties() {
-        Properties properties = new Properties();
-        return properties;
-    }
-
-    @Bean(name = NACOS_SERVICE_FACTORY_BEAN_NAME)
-    public NacosServiceFactory nacosServiceFactory() {
-        return new MockNacosServiceFactory();
-    }
-
+    /**
+     * Multiple {@link NacosPropertySource @NacosPropertySource}
+     *
+     * @return {@link NacosPropertySource @NacosPropertySource} array
+     */
+    NacosPropertySource[] value();
 }

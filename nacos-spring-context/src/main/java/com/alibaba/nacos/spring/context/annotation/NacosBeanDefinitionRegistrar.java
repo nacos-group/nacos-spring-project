@@ -20,7 +20,7 @@ import com.alibaba.nacos.spring.beans.factory.annotation.NamingServiceInjectedBe
 import com.alibaba.nacos.spring.context.properties.NacosConfigPropertiesBindingPostProcessor;
 import com.alibaba.nacos.spring.factory.CacheableNacosServiceFactory;
 import com.alibaba.nacos.spring.factory.NacosServiceFactory;
-import com.alibaba.nacos.spring.util.NacosUtils;
+import com.alibaba.nacos.spring.util.PropertiesPlaceholderResolver;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
@@ -64,7 +64,8 @@ public class NacosBeanDefinitionRegistrar implements ImportBeanDefinitionRegistr
     private void registerGlobalNacosProperties(AnnotationAttributes attributes, BeanDefinitionRegistry registry) {
         AnnotationAttributes globalPropertiesAttributes = attributes.getAnnotation("globalProperties");
         // Resolve Global Nacos Properties from @EnableNacos
-        Properties globalProperties = NacosUtils.resolveProperties(globalPropertiesAttributes, environment);
+        PropertiesPlaceholderResolver resolver = new PropertiesPlaceholderResolver(environment);
+        Properties globalProperties = resolver.resolve(globalPropertiesAttributes);
         registerInfrastructureBean(registry, GLOBAL_NACOS_PROPERTIES_BEAN_NAME, Properties.class, globalProperties);
     }
 

@@ -48,7 +48,7 @@ public class MockNacosServiceFactory implements NacosServiceFactory {
 
     private String content;
 
-    private MockConfigService configService = new MockConfigService();
+    private ConfigService configService = new MockConfigService();
 
     public MockNacosServiceFactory() {
         this(DATA_ID, GROUP_ID, DEFAULT_TIMEOUT, CONTENT);
@@ -83,6 +83,14 @@ public class MockNacosServiceFactory implements NacosServiceFactory {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public ConfigService getConfigService() {
+        return configService;
+    }
+
+    public void setConfigService(ConfigService configService) {
+        this.configService = configService;
     }
 
     @Override

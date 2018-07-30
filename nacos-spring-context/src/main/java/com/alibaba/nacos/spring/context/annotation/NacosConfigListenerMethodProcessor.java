@@ -167,7 +167,7 @@ public class NacosConfigListenerMethodProcessor extends AnnotationListenerMethod
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         globalNacosProperties = NacosBeanUtils.getGlobalPropertiesBean(applicationContext);
-        nacosServiceFactory = NacosBeanUtils.getNacosServiceFactory(applicationContext);
+        nacosServiceFactory = NacosBeanUtils.getNacosServiceFactoryBean(applicationContext);
         conversionService = determineConversionService(applicationContext);
     }
 

@@ -25,6 +25,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import static com.alibaba.nacos.spring.util.NacosUtils.identify;
+
 /**
  * Cacheable {@link NacosServiceFactory}
  *
@@ -37,16 +39,12 @@ public class CacheableNacosServiceFactory implements NacosServiceFactory {
 
     private Map<String, NamingService> namingServicesCache = new HashMap<String, NamingService>(2);
 
-    private static String createCacheKey(Properties properties) {
-        return properties.toString();
-    }
-
     @Override
     public ConfigService createConfigService(Properties properties) throws NacosException {
 
         Properties copy = new Properties(properties);
 
-        String cacheKey = createCacheKey(copy);
+        String cacheKey = identify(copy);
 
         ConfigService configService = configServicesCache.get(cacheKey);
 
@@ -63,7 +61,7 @@ public class CacheableNacosServiceFactory implements NacosServiceFactory {
 
         Properties copy = new Properties(properties);
 
-        String cacheKey = createCacheKey(copy);
+        String cacheKey = identify(copy);
 
         NamingService namingService = namingServicesCache.get(cacheKey);
 
