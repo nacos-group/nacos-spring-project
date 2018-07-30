@@ -18,7 +18,10 @@ package com.alibaba.nacos.spring.util;
 
 import com.alibaba.nacos.spring.context.annotation.NacosPropertiesResolver;
 import com.alibaba.nacos.spring.factory.NacosServiceFactory;
+import com.alibaba.spring.util.BeanUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
@@ -58,23 +61,14 @@ public abstract class NacosBeanUtils {
     /**
      * Is {@link BeanDefinition} present in {@link BeanDefinitionRegistry}
      *
-     * @param registry  {@link BeanDefinitionRegistry}
-     * @param beanName  the name of bean
-     * @param beanClass the type of bean
+     * @param registry        {@link BeanDefinitionRegistry}
+     * @param beanName        the name of bean
+     * @param targetBeanClass the type of bean
      * @return If Present , return <code>true</code>
      */
-    public static boolean isBeanDefinitionPresent(BeanDefinitionRegistry registry, String beanName, Class<?> beanClass) {
-
-        boolean present = false;
-
-        if (registry.containsBeanDefinition(beanName)) {
-            BeanDefinition beanDefinition = registry.getBeanDefinition(beanName);
-            String beanClassName = beanDefinition.getBeanClassName();
-            present = beanClass.getName().equals(beanClassName);
-        }
-
-        return present;
-
+    public static boolean isBeanDefinitionPresent(BeanDefinitionRegistry registry, String beanName, Class<?> targetBeanClass) {
+        String[] beanNames = BeanUtils.getBeanNames((ListableBeanFactory) registry, targetBeanClass);
+        return ArrayUtils.contains(beanNames, beanName);
     }
 
     /**

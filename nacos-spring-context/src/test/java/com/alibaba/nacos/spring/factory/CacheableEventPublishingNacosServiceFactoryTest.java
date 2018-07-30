@@ -23,24 +23,31 @@ import com.alibaba.nacos.api.naming.NamingService;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.Properties;
 
 /**
- * {@link CacheableNacosServiceFactory} Test
+ * {@link CacheableEventPublishingNacosServiceFactory} Test
  *
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
  * @since 0.1.0
  */
-public class CacheableNacosServiceFactoryTest {
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = {CacheableEventPublishingNacosServiceFactory.class})
+public class CacheableEventPublishingNacosServiceFactoryTest {
 
+    @Autowired
     private NacosServiceFactory nacosServiceFactory;
 
     private Properties properties = new Properties();
 
     @Before
     public void init() {
-        nacosServiceFactory = new CacheableNacosServiceFactory();
+        nacosServiceFactory = new CacheableEventPublishingNacosServiceFactory();
         properties.setProperty(PropertyKeyConst.SERVER_ADDR, "127.0.0.1");
     }
 
