@@ -20,10 +20,11 @@ import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.spring.test.MockConfigService;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.context.ApplicationListener;
-import org.springframework.context.event.ApplicationEventMulticaster;
-import org.springframework.context.event.SimpleApplicationEventMulticaster;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.support.GenericApplicationContext;
 
 import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.*;
 
@@ -35,11 +36,19 @@ import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.*;
  */
 public class EventPublishingConfigServiceTest {
 
-    private ConfigService mockConfigService = new MockConfigService();
+    private ConfigService mockConfigService;
 
-    private ApplicationEventMulticaster applicationEventMulticaster = new SimpleApplicationEventMulticaster();
+    private ConfigurableApplicationContext context;
 
-    private ConfigService configService = new EventPublishingConfigService(mockConfigService, applicationEventMulticaster);
+    private ConfigService configService;
+
+    @Before
+    public void init() {
+        this.mockConfigService = new MockConfigService();
+        this.context = new GenericApplicationContext();
+        this.context.refresh();
+        this.configService = new EventPublishingConfigService(mockConfigService, context);
+    }
 
     @Test
     public void testGetConfig() throws NacosException {
@@ -50,7 +59,7 @@ public class EventPublishingConfigServiceTest {
     @Test
     public void testPublishConfigWithEvent() throws NacosException {
 
-        applicationEventMulticaster.addApplicationListener(new ApplicationListener<NacosConfigPublishedEvent>() {
+        context.addApplicationListener(new ApplicationListener<NacosConfigPublishedEvent>() {
             @Override
             public void onApplicationEvent(NacosConfigPublishedEvent event) {
                 Assert.assertEquals(DATA_ID, event.getDataId());
@@ -67,7 +76,7 @@ public class EventPublishingConfigServiceTest {
     @Test
     public void testRemoveConfigWithEvent() throws NacosException {
 
-        applicationEventMulticaster.addApplicationListener(new ApplicationListener<NacosConfigRemovedEvent>() {
+        context.addApplicationListener(new ApplicationListener<NacosConfigRemovedEvent>() {
             @Override
             public void onApplicationEvent(NacosConfigRemovedEvent event) {
                 Assert.assertEquals(DATA_ID, event.getDataId());

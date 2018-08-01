@@ -20,7 +20,9 @@ import com.alibaba.nacos.spring.beans.factory.annotation.NamingServiceInjectedBe
 import com.alibaba.nacos.spring.context.properties.NacosConfigPropertiesBindingPostProcessor;
 import com.alibaba.nacos.spring.factory.CacheableEventPublishingNacosServiceFactory;
 import com.alibaba.nacos.spring.factory.NacosServiceFactory;
+import com.alibaba.nacos.spring.util.NacosConfigLoader;
 import com.alibaba.nacos.spring.util.PropertiesPlaceholderResolver;
+import org.springframework.beans.factory.config.SingletonBeanRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
@@ -53,6 +55,10 @@ public class NacosBeanDefinitionRegistrar implements ImportBeanDefinitionRegistr
 
         registerNacosServiceFactoryIfAbsent(attributes, registry);
 
+        registerNacosPropertiesResolver(registry);
+
+        registerNacosConfigLoader(registry);
+
         registerNamingServiceInjectedBeanPostProcessor(registry);
 
         registerNacosConfigPropertiesBindingPostProcessor(registry);
@@ -68,7 +74,11 @@ public class NacosBeanDefinitionRegistrar implements ImportBeanDefinitionRegistr
         // Resolve Global Nacos Properties from @EnableNacos
         PropertiesPlaceholderResolver resolver = new PropertiesPlaceholderResolver(environment);
         Properties globalProperties = resolver.resolve(globalPropertiesAttributes);
-        registerInfrastructureBean(registry, GLOBAL_NACOS_PROPERTIES_BEAN_NAME, Properties.class, globalProperties);
+        // Register globalProperties Bean
+        if (registry instanceof SingletonBeanRegistry) {
+            SingletonBeanRegistry beanRegistry = (SingletonBeanRegistry) registry;
+            beanRegistry.registerSingleton(GLOBAL_NACOS_PROPERTIES_BEAN_NAME, globalProperties);
+        }
     }
 
     private void registerNacosServiceFactoryIfAbsent(AnnotationAttributes attributes, BeanDefinitionRegistry registry) {
@@ -77,6 +87,14 @@ public class NacosBeanDefinitionRegistrar implements ImportBeanDefinitionRegistr
             return;
         }
         registerInfrastructureBean(registry, beanName, CacheableEventPublishingNacosServiceFactory.class);
+    }
+
+    private void registerNacosPropertiesResolver(BeanDefinitionRegistry registry) {
+        registerInfrastructureBean(registry, NACOS_PROPERTIES_RESOLVER_BEAN_NAME, NacosPropertiesResolver.class);
+    }
+
+    private void registerNacosConfigLoader(BeanDefinitionRegistry registry) {
+        registerInfrastructureBean(registry, NACOS_CONFIG_LOADER_BEAN_NAME, NacosConfigLoader.class);
     }
 
     private void registerNamingServiceInjectedBeanPostProcessor(BeanDefinitionRegistry registry) {

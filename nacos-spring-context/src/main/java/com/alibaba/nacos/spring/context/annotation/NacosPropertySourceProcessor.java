@@ -22,9 +22,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.ConfigurationClassPostProcessor;
 import org.springframework.core.Ordered;
@@ -51,7 +50,7 @@ import static org.springframework.util.ObjectUtils.nullSafeEquals;
  * @see NacosPropertySource
  * @since 0.1.0
  */
-public class NacosPropertySourceProcessor implements BeanDefinitionRegistryPostProcessor, EnvironmentAware, Ordered {
+public class NacosPropertySourceProcessor implements BeanFactoryPostProcessor, EnvironmentAware, Ordered {
 
     /**
      * The bean name of {@link NacosPropertySourceProcessor}
@@ -62,8 +61,6 @@ public class NacosPropertySourceProcessor implements BeanDefinitionRegistryPostP
 
     private ConfigurableEnvironment environment;
 
-    private BeanDefinitionRegistry registry;
-
     private NacosConfigLoader loader;
 
     @Override
@@ -71,21 +68,16 @@ public class NacosPropertySourceProcessor implements BeanDefinitionRegistryPostP
 
         this.loader = getNacosConfigLoaderBean(beanFactory);
 
-        String[] beanNames = registry.getBeanDefinitionNames();
+        String[] beanNames = beanFactory.getBeanDefinitionNames();
 
         for (String beanName : beanNames) {
-            addPropertySource(beanName, registry);
+            addPropertySource(beanName, beanFactory);
         }
 
     }
 
-    @Override
-    public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
-        this.registry = registry;
-    }
-
-    private void addPropertySource(String beanName, BeanDefinitionRegistry registry) {
-        BeanDefinition beanDefinition = registry.getBeanDefinition(beanName);
+    private void addPropertySource(String beanName, ConfigurableListableBeanFactory beanFactory) {
+        BeanDefinition beanDefinition = beanFactory.getBeanDefinition(beanName);
         if (beanDefinition instanceof AnnotatedBeanDefinition) {
             // @NacosPropertySource must be AnnotatedBeanDefinition
             AnnotatedBeanDefinition annotatedBeanDefinition = (AnnotatedBeanDefinition) beanDefinition;

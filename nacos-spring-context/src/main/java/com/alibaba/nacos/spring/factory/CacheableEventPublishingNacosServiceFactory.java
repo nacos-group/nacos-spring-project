@@ -21,9 +21,8 @@ import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.api.naming.NamingService;
 import com.alibaba.nacos.spring.context.event.EventPublishingConfigService;
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.BeanFactoryAware;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.context.event.ApplicationEventMulticaster;
 
 import java.util.HashMap;
@@ -31,7 +30,6 @@ import java.util.Map;
 import java.util.Properties;
 
 import static com.alibaba.nacos.spring.util.NacosUtils.identify;
-import static org.springframework.context.support.AbstractApplicationContext.APPLICATION_EVENT_MULTICASTER_BEAN_NAME;
 
 /**
  * Cacheable Event Publishing {@link NacosServiceFactory}
@@ -39,19 +37,19 @@ import static org.springframework.context.support.AbstractApplicationContext.APP
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
  * @since 0.1.0
  */
-public class CacheableEventPublishingNacosServiceFactory implements NacosServiceFactory, BeanFactoryAware {
+public class CacheableEventPublishingNacosServiceFactory implements NacosServiceFactory, ApplicationEventPublisherAware {
 
     private Map<String, ConfigService> configServicesCache = new HashMap<String, ConfigService>(2);
 
     private Map<String, NamingService> namingServicesCache = new HashMap<String, NamingService>(2);
 
-    private ApplicationEventMulticaster applicationEventMulticaster;
+    private ApplicationEventPublisher applicationEventPublisher;
 
     @Override
     public ConfigService createConfigService(Properties properties) throws NacosException {
 
         Properties copy = new Properties();
-        
+
         copy.putAll(properties);
 
         String cacheKey = identify(copy);
@@ -68,7 +66,7 @@ public class CacheableEventPublishingNacosServiceFactory implements NacosService
 
     private ConfigService doCreateConfigService(Properties properties) throws NacosException {
         ConfigService configService = NacosFactory.createConfigService(properties);
-        return new EventPublishingConfigService(configService, applicationEventMulticaster);
+        return new EventPublishingConfigService(configService, applicationEventPublisher);
     }
 
     @Override
@@ -89,8 +87,7 @@ public class CacheableEventPublishingNacosServiceFactory implements NacosService
     }
 
     @Override
-    public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
-        applicationEventMulticaster = beanFactory.getBean(APPLICATION_EVENT_MULTICASTER_BEAN_NAME,
-                ApplicationEventMulticaster.class);
+    public void setApplicationEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
+        this.applicationEventPublisher = applicationEventPublisher;
     }
 }

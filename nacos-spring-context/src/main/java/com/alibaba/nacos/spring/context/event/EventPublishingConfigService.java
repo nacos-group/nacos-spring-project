@@ -19,7 +19,7 @@ package com.alibaba.nacos.spring.context.event;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.config.listener.Listener;
 import com.alibaba.nacos.api.exception.NacosException;
-import org.springframework.context.event.ApplicationEventMulticaster;
+import org.springframework.context.ApplicationEventPublisher;
 
 /**
  * {@link NacosConfigEvent Event} publishing {@link ConfigService}
@@ -31,12 +31,12 @@ public class EventPublishingConfigService implements ConfigService {
 
     private final ConfigService configService;
 
-    private final ApplicationEventMulticaster applicationEventMulticaster;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     public EventPublishingConfigService(ConfigService configService,
-                                        ApplicationEventMulticaster applicationEventMulticaster) {
+                                        ApplicationEventPublisher applicationEventPublisher) {
         this.configService = configService;
-        this.applicationEventMulticaster = applicationEventMulticaster;
+        this.applicationEventPublisher = applicationEventPublisher;
     }
 
     @Override
@@ -53,7 +53,7 @@ public class EventPublishingConfigService implements ConfigService {
     public boolean publishConfig(String dataId, String group, String content) throws NacosException {
         boolean published = configService.publishConfig(dataId, group, content);
         NacosConfigPublishedEvent event = new NacosConfigPublishedEvent(configService, dataId, group, content, published);
-        applicationEventMulticaster.multicastEvent(event);
+        applicationEventPublisher.publishEvent(event);
         return published;
     }
 
@@ -61,7 +61,7 @@ public class EventPublishingConfigService implements ConfigService {
     public boolean removeConfig(String dataId, String group) throws NacosException {
         boolean removed = configService.removeConfig(dataId, group);
         NacosConfigRemovedEvent event = new NacosConfigRemovedEvent(configService, dataId, group, removed);
-        applicationEventMulticaster.multicastEvent(event);
+        applicationEventPublisher.publishEvent(event);
         return removed;
     }
 

@@ -20,6 +20,8 @@ import com.alibaba.nacos.api.PropertyKeyConst;
 
 import java.lang.annotation.*;
 
+import static com.alibaba.nacos.client.config.common.Constants.ENCODE;
+
 /**
  * An annotation for Nacos Properties
  *
@@ -46,6 +48,7 @@ public @interface NacosProperties {
 
     String clusterName() default "${nacos.clusterName:}";
 
-    String encode() default "${nacos.encode:}";
+    String encode() default "${nacos.encode:" + ENCODE + "}";
+
 
 }
