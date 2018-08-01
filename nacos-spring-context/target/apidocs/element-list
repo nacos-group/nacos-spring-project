@@ -1,0 +1,8 @@
+com.alibaba.nacos.spring.beans.factory.annotation
+com.alibaba.nacos.spring.context.annotation
+com.alibaba.nacos.spring.context.constants
+com.alibaba.nacos.spring.context.event
+com.alibaba.nacos.spring.context.properties
+com.alibaba.nacos.spring.convert.converter
+com.alibaba.nacos.spring.factory
+com.alibaba.nacos.spring.util

@@ -34,7 +34,7 @@ import static org.springframework.core.annotation.AnnotationUtils.getAnnotationA
  * Resolve actual Nacos {@link Properties} including placeholders in values.
  *
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
- * @see @NacosProperties
+ * @see NacosProperties
  * @since 0.1.0
  */
 public class NacosPropertiesResolver implements BeanFactoryAware, EnvironmentAware {

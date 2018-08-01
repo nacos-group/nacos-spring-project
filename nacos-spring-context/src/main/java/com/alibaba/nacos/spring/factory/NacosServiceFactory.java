@@ -36,6 +36,7 @@ public interface NacosServiceFactory {
      * Create {@link ConfigService} instance
      *
      * @param properties init param
+     * @return a {@link ConfigService} instance
      * @throws NacosException If creation is failed.
      * @see NacosFactory#createConfigService(Properties)
      */
@@ -45,6 +46,7 @@ public interface NacosServiceFactory {
      * Create {@link NamingService} instance
      *
      * @param properties init param
+     * @return a {@link NamingService} instance
      * @throws NacosException If creation is failed.
      * @see NacosFactory#createNamingService(Properties)
      */

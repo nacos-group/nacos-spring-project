@@ -316,7 +316,7 @@ public abstract class AnnotationInjectedBeanPostProcessor<A extends Annotation, 
      * @param annotation {@link A annotation}
      * @param beanClass  Bean Class
      * @return The injected bean
-     * @throws Exception
+     * @throws Exception If resolving an injected bean is failed.
      */
     protected abstract B resolveInjectedBean(A annotation, Class<?> beanClass) throws Exception;
 

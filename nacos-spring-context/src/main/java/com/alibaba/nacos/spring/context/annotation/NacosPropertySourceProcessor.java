@@ -162,7 +162,7 @@ public class NacosPropertySourceProcessor implements BeanFactoryPostProcessor, E
      * The order is closed to {@link ConfigurationClassPostProcessor#getOrder() HIGHEST_PRECEDENCE} almost.
      *
      * @return <code>Ordered.HIGHEST_PRECEDENCE + 1</code>
-     * @see {@link ConfigurationClassPostProcessor#getOrder()}
+     * @see ConfigurationClassPostProcessor#getOrder()
      */
     @Override
     public int getOrder() {
