@@ -38,17 +38,16 @@ public @interface NacosProperties {
 
     String namespace() default "${nacos.namespace:}";
 
-    String accessKey() default "${nacos.accessKey:}";
+    String accessKey() default "${nacos.access-key:}";
 
-    String secretKey() default "${nacos.secretKey:}";
+    String secretKey() default "${nacos.secret-key:}";
 
-    String serverAddr() default "${nacos.serverAddr:}";
+    String serverAddr() default "${nacos.server-addr:}";
 
-    String contextPath() default "${nacos.contextPath:}";
+    String contextPath() default "${nacos.context-path:}";
 
-    String clusterName() default "${nacos.clusterName:}";
+    String clusterName() default "${nacos.cluster-name:}";
 
     String encode() default "${nacos.encode:" + ENCODE + "}";
-
 
 }
