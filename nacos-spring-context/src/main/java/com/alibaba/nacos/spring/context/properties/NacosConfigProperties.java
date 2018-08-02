@@ -35,7 +35,7 @@ import static com.alibaba.nacos.client.config.common.Constants.DEFAULT_GROUP;
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface NacosConfigurationProperties {
+public @interface NacosConfigProperties {
 
     /**
      * Nacos Group ID

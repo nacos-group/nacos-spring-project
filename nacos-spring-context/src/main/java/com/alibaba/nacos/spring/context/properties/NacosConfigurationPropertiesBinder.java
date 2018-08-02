@@ -34,7 +34,7 @@ import java.util.Properties;
 import static org.springframework.core.annotation.AnnotationUtils.findAnnotation;
 
 /**
- * {@link NacosConfigurationProperties} Bean Binder
+ * {@link NacosConfigProperties} Bean Binder
  *
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
  * @since 0.1.0
@@ -52,17 +52,17 @@ public class NacosConfigurationPropertiesBinder {
 
     public void bind(Object bean) {
 
-        NacosConfigurationProperties properties = findAnnotation(bean.getClass(), NacosConfigurationProperties.class);
+        NacosConfigProperties properties = findAnnotation(bean.getClass(), NacosConfigProperties.class);
 
         bind(bean, properties);
 
     }
 
-    public void bind(final Object bean, final NacosConfigurationProperties properties) {
+    public void bind(final Object bean, final NacosConfigProperties properties) {
 
         Assert.notNull(bean, "Bean must not be null!");
 
-        Assert.notNull(properties, "NacosConfigurationProperties must not be null!");
+        Assert.notNull(properties, "NacosConfigProperties must not be null!");
 
         String dataId = properties.dataId();
 
@@ -96,7 +96,7 @@ public class NacosConfigurationPropertiesBinder {
 
     }
 
-    protected void doBind(Object bean, NacosConfigurationProperties properties, String content) {
+    protected void doBind(Object bean, NacosConfigProperties properties, String content) {
 
         DataBinder dataBinder = new DataBinder(bean);
 

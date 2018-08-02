@@ -16,18 +16,18 @@
  */
 package com.alibaba.nacos.spring.test;
 
-import com.alibaba.nacos.spring.context.properties.NacosConfigurationProperties;
+import com.alibaba.nacos.spring.context.properties.NacosConfigProperties;
 
 import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.DATA_ID;
 
 /**
- * {@link NacosConfigurationProperties Nacos Config}
+ * {@link NacosConfigProperties Nacos Config}
  *
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
- * @see NacosConfigurationProperties
+ * @see NacosConfigProperties
  * @since 0.1.0
  */
-@NacosConfigurationProperties(dataId = DATA_ID, autoRefreshed = true)
+@NacosConfigProperties(dataId = DATA_ID, autoRefreshed = true)
 public class Config {
 
     private int id;

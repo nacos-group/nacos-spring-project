@@ -19,7 +19,7 @@ package com.alibaba.nacos.spring.util;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.spring.context.annotation.NacosProperties;
-import com.alibaba.nacos.spring.context.properties.NacosConfigurationProperties;
+import com.alibaba.nacos.spring.context.properties.NacosConfigProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
@@ -68,7 +68,7 @@ public abstract class NacosUtils {
     private static final Logger logger = LoggerFactory.getLogger(NacosUtils.class);
 
     /**
-     * Build The default name of {@link NacosConfigurationProperties @NacosPropertySource}
+     * Build The default name of {@link NacosConfigProperties @NacosPropertySource}
      *
      * @param dataId     data Id
      * @param groupId    group Id
