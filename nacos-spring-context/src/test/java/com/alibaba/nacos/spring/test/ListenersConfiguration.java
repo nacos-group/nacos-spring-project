@@ -31,24 +31,53 @@ import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.DATA_ID;
 @Configuration
 public class ListenersConfiguration {
 
+    private String value;
+
+    private Integer integerValue;
+
+    private Double doubleValue;
+
+    private User user;
+
     @NacosConfigListener(dataId = DATA_ID)
     public void onMessage(String value) {
         System.out.println("onMessage : " + value);
+        this.value = value;
     }
 
-    @NacosConfigListener(dataId = DATA_ID)
-    public void onInteger(Integer value) {
+    @NacosConfigListener(dataId = DATA_ID, timeout = 50)
+    public void onInteger(Integer value) throws Exception {
+        Thread.sleep(100);
         System.out.println("onInteger : " + value);
+        this.integerValue = value;
     }
 
-    @NacosConfigListener(dataId = DATA_ID)
-    public void onDouble(Double value) {
+    @NacosConfigListener(dataId = DATA_ID, timeout = 200)
+    public void onDouble(Double value) throws Exception {
+        Thread.sleep(100);
         System.out.println("onDouble : " + value);
+        this.doubleValue = value;
     }
 
     @NacosConfigListener(dataId = "user", converter = UserNacosConfigConverter.class)
     public void onUser(User user) {
         System.out.println("onUser : " + user);
+        this.user = user;
     }
 
+    public String getValue() {
+        return value;
+    }
+
+    public Integer getIntegerValue() {
+        return integerValue;
+    }
+
+    public Double getDoubleValue() {
+        return doubleValue;
+    }
+
+    public User getUser() {
+        return user;
+    }
 }

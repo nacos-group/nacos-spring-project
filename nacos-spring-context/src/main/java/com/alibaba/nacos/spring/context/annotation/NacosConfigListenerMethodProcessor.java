@@ -17,13 +17,12 @@
 package com.alibaba.nacos.spring.context.annotation;
 
 import com.alibaba.nacos.api.config.ConfigService;
-import com.alibaba.nacos.api.config.listener.AbstractListener;
 import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.spring.context.event.AnnotationListenerMethodProcessor;
 import com.alibaba.nacos.spring.convert.converter.DefaultNacosConfigConverter;
 import com.alibaba.nacos.spring.convert.converter.NacosConfigConverter;
 import com.alibaba.nacos.spring.factory.NacosServiceFactory;
-import com.alibaba.nacos.spring.util.NacosBeanUtils;
+import com.alibaba.nacos.spring.util.NonBlockingNacosConfigListener;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.context.ApplicationContext;
@@ -34,7 +33,9 @@ import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Method;
 import java.util.Properties;
+import java.util.concurrent.ExecutorService;
 
+import static com.alibaba.nacos.spring.util.NacosBeanUtils.*;
 import static com.alibaba.nacos.spring.util.NacosUtils.resolveProperties;
 import static org.springframework.beans.BeanUtils.instantiateClass;
 
@@ -66,6 +67,8 @@ public class NacosConfigListenerMethodProcessor extends AnnotationListenerMethod
 
     private ConversionService conversionService;
 
+    private ExecutorService nacosConfigListenerExecutor;
+
     @Override
     protected void processListenerMethod(final Object bean, Class<?> beanClass, final NacosConfigListener listener,
                                          final Method method, ApplicationContext applicationContext) {
@@ -74,24 +77,29 @@ public class NacosConfigListenerMethodProcessor extends AnnotationListenerMethod
 
         String groupId = listener.groupId();
 
+        long timeout = listener.timeout();
+
         ConfigService configService = resolveConfigService(listener, applicationContext);
 
         try {
-            configService.addListener(dataId, groupId, new AbstractListener() {
+
+            configService.addListener(dataId, groupId, new NonBlockingNacosConfigListener(dataId, groupId,
+                    nacosConfigListenerExecutor, timeout) {
                 @Override
-                public void receiveConfigInfo(String configInfo) {
+                protected void onUpdate(String config) {
 
                     Class<?> targetType = method.getParameterTypes()[0];
 
                     NacosConfigConverter configConverter = determineNacosConfigConverter(targetType, listener);
 
-                    Object parameterValue = configConverter.convert(configInfo);
+                    Object parameterValue = configConverter.convert(config);
 
                     // Execute target method
                     ReflectionUtils.invokeMethod(method, bean, parameterValue);
 
                 }
             });
+
         } catch (NacosException e) {
             if (logger.isErrorEnabled()) {
                 logger.error("ConfigService can't add Listener for dataId : " + dataId + " , groupId : " + groupId, e);
@@ -166,9 +174,10 @@ public class NacosConfigListenerMethodProcessor extends AnnotationListenerMethod
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        globalNacosProperties = NacosBeanUtils.getGlobalPropertiesBean(applicationContext);
-        nacosServiceFactory = NacosBeanUtils.getNacosServiceFactoryBean(applicationContext);
+        globalNacosProperties = getGlobalPropertiesBean(applicationContext);
+        nacosServiceFactory = getNacosServiceFactoryBean(applicationContext);
         conversionService = determineConversionService(applicationContext);
+        nacosConfigListenerExecutor = getNacosConfigListenerExecutor(applicationContext);
     }
 
     private ConversionService determineConversionService(ApplicationContext applicationContext) {
@@ -184,4 +193,5 @@ public class NacosConfigListenerMethodProcessor extends AnnotationListenerMethod
 
         return conversionService;
     }
+
 }

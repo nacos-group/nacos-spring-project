@@ -25,8 +25,18 @@ package com.alibaba.nacos.spring.context.constants;
 public interface NacosConstants {
 
     /**
-     * The prefix of property name of Nacos server address
+     * The prefix of property name of Nacos
      */
-    String SERVER_ADDRESS_PROPERTY_NAME_PREFIX = "nacos";
+    String PROPERTY_NAME_PREFIX = "nacos.";
+
+    /**
+     * The parallelism of Nacos Config Listener
+     */
+    String NACOS_CONFIG_LISTENER_PARALLELISM = PROPERTY_NAME_PREFIX + "config.listener.parallelism";
+
+    /**
+     * The default parallelism of Nacos Config Listener (available processors)
+     */
+    int DEFAULT_NACOS_CONFIG_LISTENER_PARALLELISM = Runtime.getRuntime().availableProcessors();
 
 }

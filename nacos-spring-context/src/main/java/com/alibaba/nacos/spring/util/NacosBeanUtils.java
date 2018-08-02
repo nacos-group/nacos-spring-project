@@ -29,6 +29,8 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 
 import java.lang.reflect.Constructor;
 import java.util.Properties;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 
 /**
  * Nacos Bean Utilities class
@@ -57,6 +59,11 @@ public abstract class NacosBeanUtils {
      * The bean name of {@link NacosConfigLoader}
      */
     public static final String NACOS_CONFIG_LOADER_BEAN_NAME = "nacosConfigLoader";
+
+    /**
+     * The bean name of {@link Executor} for Nacos Config Listener
+     */
+    public static final String NACOS_CONFIG_LISTENER_EXECUTOR_BEAN_NAME = "nacosConfigListenerExecutor";
 
     /**
      * Is {@link BeanDefinition} present in {@link BeanDefinitionRegistry}
@@ -134,5 +141,16 @@ public abstract class NacosBeanUtils {
      */
     public static NacosConfigLoader getNacosConfigLoaderBean(BeanFactory beanFactory) throws NoSuchBeanDefinitionException {
         return beanFactory.getBean(NACOS_CONFIG_LOADER_BEAN_NAME, NacosConfigLoader.class);
+    }
+
+    /**
+     * Get {@link Executor} Bean for Nacos Config Listener
+     *
+     * @param beanFactory {@link BeanFactory}
+     * @return {@link Executor} Bean
+     * @throws NoSuchBeanDefinitionException if there is no such bean definition
+     */
+    public static ExecutorService getNacosConfigListenerExecutor(BeanFactory beanFactory) throws NoSuchBeanDefinitionException {
+        return beanFactory.getBean(NACOS_CONFIG_LISTENER_EXECUTOR_BEAN_NAME, ExecutorService.class);
     }
 }

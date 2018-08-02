@@ -66,4 +66,12 @@ public @interface NacosConfigListener {
      */
     NacosProperties properties() default @NacosProperties;
 
+    /**
+     * Maximum timeout value of execution in milliseconds, which is used to prevent long-time blocking execution
+     * impacting others.
+     *
+     * @return default value is 1000
+     */
+    long timeout() default 1000L;
+
 }

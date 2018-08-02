@@ -26,6 +26,8 @@ import org.springframework.context.annotation.Configuration;
 
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static com.alibaba.nacos.spring.util.NacosBeanUtils.*;
 
@@ -72,6 +74,11 @@ public class TestConfiguration {
     @Bean(name = NACOS_CONFIG_LOADER_BEAN_NAME)
     public NacosConfigLoader nacosConfigLoader() {
         return new NacosConfigLoader();
+    }
+
+    @Bean(name = NACOS_CONFIG_LISTENER_EXECUTOR_BEAN_NAME)
+    public ExecutorService executorService() {
+        return Executors.newSingleThreadExecutor();
     }
 
 }

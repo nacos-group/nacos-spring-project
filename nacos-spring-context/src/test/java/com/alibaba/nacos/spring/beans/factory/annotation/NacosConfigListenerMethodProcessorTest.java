@@ -17,7 +17,6 @@
 package com.alibaba.nacos.spring.beans.factory.annotation;
 
 import com.alibaba.nacos.api.config.ConfigService;
-import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.spring.context.annotation.NacosConfigListenerMethodProcessor;
 import com.alibaba.nacos.spring.context.annotation.NacosService;
 import com.alibaba.nacos.spring.test.ListenersConfiguration;
@@ -52,11 +51,13 @@ public class NacosConfigListenerMethodProcessorTest {
 
 
     @Test
-    public void testOn() throws NacosException {
+    public void testOn() throws Exception {
 
         configService.publishConfig(DATA_ID, DEFAULT_GROUP, "9527");
         // Publish User
         configService.publishConfig("user", DEFAULT_GROUP, "{\"id\":1,\"name\":\"mercyblitz\"}");
+
+        Thread.sleep(1000);
 
     }
 

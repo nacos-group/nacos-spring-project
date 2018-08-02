@@ -31,7 +31,13 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotationMetadata;
 
 import java.util.Properties;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicInteger;
 
+import static com.alibaba.nacos.spring.context.constants.NacosConstants.DEFAULT_NACOS_CONFIG_LISTENER_PARALLELISM;
+import static com.alibaba.nacos.spring.context.constants.NacosConstants.NACOS_CONFIG_LISTENER_PARALLELISM;
 import static com.alibaba.nacos.spring.util.NacosBeanUtils.*;
 
 /**
@@ -66,6 +72,8 @@ public class NacosBeanDefinitionRegistrar implements ImportBeanDefinitionRegistr
         registerNacosConfigListenerMethodProcessor(registry);
 
         registerNacosPropertySourceProcessor(registry);
+
+        registerNacosConfigListenerExecutor(registry);
 
     }
 
@@ -116,6 +124,37 @@ public class NacosBeanDefinitionRegistrar implements ImportBeanDefinitionRegistr
         registerInfrastructureBean(registry, NacosPropertySourceProcessor.BEAN_NAME,
                 NacosPropertySourceProcessor.class);
     }
+
+    private void registerNacosConfigListenerExecutor(BeanDefinitionRegistry registry) {
+        // Register globalProperties Bean
+        if (registry instanceof SingletonBeanRegistry) {
+            SingletonBeanRegistry beanRegistry = (SingletonBeanRegistry) registry;
+            ExecutorService nacosConfigListenerExecutor = buildNacosConfigListenerExecutor();
+            beanRegistry.registerSingleton(NACOS_CONFIG_LISTENER_EXECUTOR_BEAN_NAME, nacosConfigListenerExecutor);
+        }
+    }
+
+    private ExecutorService buildNacosConfigListenerExecutor() {
+        int parallelism = getParallelism();
+        ExecutorService executorService = Executors.newFixedThreadPool(parallelism, new ThreadFactory() {
+            private final AtomicInteger threadNumber = new AtomicInteger(1);
+
+            @Override
+            public Thread newThread(Runnable r) {
+                Thread thread = new Thread(r);
+                thread.setName("NacosConfigListener-ThreadPool-" + threadNumber.getAndIncrement());
+                return thread;
+            }
+        });
+        return executorService;
+    }
+
+    private int getParallelism() {
+        int parallelism = environment.getProperty(NACOS_CONFIG_LISTENER_PARALLELISM, int.class,
+                DEFAULT_NACOS_CONFIG_LISTENER_PARALLELISM);
+        return parallelism < 1 ? DEFAULT_NACOS_CONFIG_LISTENER_PARALLELISM : parallelism;
+    }
+
 
     @Override
     public void setEnvironment(Environment environment) {
