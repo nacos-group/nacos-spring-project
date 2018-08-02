@@ -14,10 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.alibaba.nacos.spring.beans.factory.annotation;
+package com.alibaba.nacos.spring.context.annotation;
 
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.exception.NacosException;
+import com.alibaba.nacos.spring.beans.factory.annotation.NamingServiceInjectedBeanPostProcessor;
 import com.alibaba.nacos.spring.context.annotation.NacosPropertySource;
 import com.alibaba.nacos.spring.context.annotation.NacosPropertySourceProcessor;
 import com.alibaba.nacos.spring.test.MockConfigService;

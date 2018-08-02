@@ -26,6 +26,7 @@ import org.springframework.beans.factory.config.SingletonBeanRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
+import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotationMetadata;
@@ -53,13 +54,22 @@ public class NacosBeanDefinitionRegistrar implements ImportBeanDefinitionRegistr
 
     @Override
     public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
-
         AnnotationAttributes attributes = AnnotationAttributes.fromMap(
                 importingClassMetadata.getAnnotationAttributes(EnableNacos.class.getName()));
-
+        // Register Global Nacos Properties Bean
         registerGlobalNacosProperties(attributes, registry);
+        // Register Nacos Beans
+        registerNacosAnnotationBeans(registry);
+    }
 
-        registerNacosServiceFactoryIfAbsent(attributes, registry);
+    /**
+     * Register Nacos Annotation Beans
+     *
+     * @param registry {@link BeanDefinitionRegistry}
+     */
+    protected void registerNacosAnnotationBeans(BeanDefinitionRegistry registry) {
+
+        registerNacosServiceFactoryIfAbsent(registry);
 
         registerNacosPropertiesResolver(registry);
 
@@ -74,7 +84,6 @@ public class NacosBeanDefinitionRegistrar implements ImportBeanDefinitionRegistr
         registerNacosPropertySourceProcessor(registry);
 
         registerNacosConfigListenerExecutor(registry);
-
     }
 
     private void registerGlobalNacosProperties(AnnotationAttributes attributes, BeanDefinitionRegistry registry) {
@@ -82,14 +91,10 @@ public class NacosBeanDefinitionRegistrar implements ImportBeanDefinitionRegistr
         // Resolve Global Nacos Properties from @EnableNacos
         PropertiesPlaceholderResolver resolver = new PropertiesPlaceholderResolver(environment);
         Properties globalProperties = resolver.resolve(globalPropertiesAttributes);
-        // Register globalProperties Bean
-        if (registry instanceof SingletonBeanRegistry) {
-            SingletonBeanRegistry beanRegistry = (SingletonBeanRegistry) registry;
-            beanRegistry.registerSingleton(GLOBAL_NACOS_PROPERTIES_BEAN_NAME, globalProperties);
-        }
+        registerSingleton(registry, GLOBAL_NACOS_PROPERTIES_BEAN_NAME, globalProperties);
     }
 
-    private void registerNacosServiceFactoryIfAbsent(AnnotationAttributes attributes, BeanDefinitionRegistry registry) {
+    private void registerNacosServiceFactoryIfAbsent(BeanDefinitionRegistry registry) {
         String beanName = NACOS_SERVICE_FACTORY_BEAN_NAME;
         if (isBeanDefinitionPresent(registry, beanName, NacosServiceFactory.class)) {
             return;
@@ -126,11 +131,21 @@ public class NacosBeanDefinitionRegistrar implements ImportBeanDefinitionRegistr
     }
 
     private void registerNacosConfigListenerExecutor(BeanDefinitionRegistry registry) {
-        // Register globalProperties Bean
+        ExecutorService nacosConfigListenerExecutor = buildNacosConfigListenerExecutor();
+        registerSingleton(registry, NACOS_CONFIG_LISTENER_EXECUTOR_BEAN_NAME, nacosConfigListenerExecutor);
+    }
+
+    private void registerSingleton(BeanDefinitionRegistry registry, String beanName, Object singletonObject) {
+        SingletonBeanRegistry beanRegistry = null;
         if (registry instanceof SingletonBeanRegistry) {
-            SingletonBeanRegistry beanRegistry = (SingletonBeanRegistry) registry;
-            ExecutorService nacosConfigListenerExecutor = buildNacosConfigListenerExecutor();
-            beanRegistry.registerSingleton(NACOS_CONFIG_LISTENER_EXECUTOR_BEAN_NAME, nacosConfigListenerExecutor);
+            beanRegistry = (SingletonBeanRegistry) registry;
+        } else if (registry instanceof AbstractApplicationContext) {
+            // Maybe AbstractApplicationContext or its sub-classes
+            beanRegistry = ((AbstractApplicationContext) registry).getBeanFactory();
+        }
+        // Register Singleton Object if possible
+        if (beanRegistry != null) {
+            beanRegistry.registerSingleton(beanName, singletonObject);
         }
     }
 

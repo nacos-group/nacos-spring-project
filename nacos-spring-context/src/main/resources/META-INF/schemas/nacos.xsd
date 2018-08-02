@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns="http://nacos.io/schema/nacos"
+            targetNamespace="http://nacos.io/schema/nacos">
+
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace"/>
+
+    <xsd:annotation>
+        <xsd:documentation>
+            <![CDATA[ Nacos Framework Schema ]]>
+        </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:element name="annotation-driven">
+        <xsd:annotation>
+            <xsd:documentation>
+                <![CDATA[
+	            Activates various Nacos Spring's annotations :
+	            @EnableNacos
+	            @NacosConfigListener
+	            @NacosPropertySource
+	            @NacosService
+			]]></xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+
+</xsd:schema>
