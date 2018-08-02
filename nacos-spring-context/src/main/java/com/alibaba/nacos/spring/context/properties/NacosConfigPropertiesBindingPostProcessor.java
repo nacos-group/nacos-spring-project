@@ -72,7 +72,7 @@ public class NacosConfigPropertiesBindingPostProcessor implements BeanPostProces
 
         ConfigService configService = resolveConfigService(nacosConfigProperties);
 
-        NacosConfigurationPropertiesBinder binder = new NacosConfigurationPropertiesBinder(configService);
+        NacosConfigPropertiesBinder binder = new NacosConfigPropertiesBinder(configService);
 
         binder.bind(bean, nacosConfigProperties);
 

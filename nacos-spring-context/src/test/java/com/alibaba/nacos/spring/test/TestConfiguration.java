@@ -45,6 +45,16 @@ public class TestConfiguration {
      */
     public static final String CONFIG_SERVICE_BEAN_NAME = "configService";
 
+    public static final String TEST_CONFIG = "id = 1\n" +
+            "name = mercyblitz\n" +
+            "value = 0.95\n" +
+            "intData  = 1234\n" +
+            "float-data = 1234.5";
+
+    public static final String MODIFIED_TEST_CONTEXT = "id = 1\n" +
+            "name = mercyblitz@gmail.com\n" +
+            "value = 9527\n";
+
     @Bean(name = GLOBAL_NACOS_PROPERTIES_BEAN_NAME)
     public Properties globalNacosProperties() {
         Properties properties = new Properties();

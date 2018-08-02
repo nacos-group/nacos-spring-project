@@ -30,8 +30,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import static com.alibaba.nacos.client.config.common.Constants.DEFAULT_GROUP;
 import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.DATA_ID;
+import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.GROUP_ID;
+import static com.alibaba.nacos.spring.test.TestConfiguration.MODIFIED_TEST_CONTEXT;
+import static com.alibaba.nacos.spring.test.TestConfiguration.TEST_CONFIG;
 
 /**
  * {@link NacosConfigPropertiesBindingPostProcessor} Test
@@ -44,12 +46,13 @@ import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.DATA_ID;
         TestConfiguration.class,
         NacosConfigPropertiesBindingPostProcessor.class,
         NamingServiceInjectedBeanPostProcessor.class,
-        ConfigPropertiesBindingPostProcessorTest.class
+        NacosConfigPropertiesBindingPostProcessorTest.class
 })
-public class ConfigPropertiesBindingPostProcessorTest {
+public class NacosConfigPropertiesBindingPostProcessorTest {
 
     @Autowired
     private Config config;
+
     @NacosService
     private ConfigService configService;
 
@@ -61,19 +64,22 @@ public class ConfigPropertiesBindingPostProcessorTest {
     @Test
     public void test() throws NacosException {
 
-        configService.publishConfig(DATA_ID, DEFAULT_GROUP, "id=1\n name=mercyblitz\nvalue = 0.95");
+        configService.publishConfig(DATA_ID, GROUP_ID, TEST_CONFIG);
 
         Assert.assertEquals(1, config.getId());
         Assert.assertEquals("mercyblitz", config.getName());
         Assert.assertTrue(0.95 == config.getValue());
+        Assert.assertEquals(Float.valueOf(1234.5f), config.getFloatData());
+        Assert.assertNull(config.getIntData());
 
         // Publishing config emits change
-        configService.publishConfig(DATA_ID, DEFAULT_GROUP, "id=1\n name=mercyblitz@gmail.com\nvalue = 9527");
+        configService.publishConfig(DATA_ID, GROUP_ID, MODIFIED_TEST_CONTEXT);
 
         Assert.assertEquals(1, config.getId());
         Assert.assertEquals("mercyblitz@gmail.com", config.getName());
         Assert.assertTrue(9527 == config.getValue());
-
+        Assert.assertEquals(Float.valueOf(1234.5f), config.getFloatData());
+        Assert.assertNull(config.getIntData());
 
     }
 

@@ -17,8 +17,11 @@
 package com.alibaba.nacos.spring.test;
 
 import com.alibaba.nacos.spring.context.properties.NacosConfigProperties;
+import com.alibaba.nacos.spring.context.properties.NacosIgnore;
+import com.alibaba.nacos.spring.context.properties.NacosProperty;
 
 import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.DATA_ID;
+import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.GROUP_ID;
 
 /**
  * {@link NacosConfigProperties Nacos Config}
@@ -27,7 +30,8 @@ import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.DATA_ID;
  * @see NacosConfigProperties
  * @since 0.1.0
  */
-@NacosConfigProperties(dataId = DATA_ID, autoRefreshed = true)
+@NacosConfigProperties(dataId = DATA_ID, groupId = GROUP_ID,
+        autoRefreshed = true)
 public class Config {
 
     private int id;
@@ -35,6 +39,12 @@ public class Config {
     private String name;
 
     private double value;
+
+    @NacosIgnore
+    private Integer intData;
+
+    @NacosProperty("float-data")
+    private Float floatData;
 
     public int getId() {
         return id;
@@ -58,5 +68,21 @@ public class Config {
 
     public void setValue(double value) {
         this.value = value;
+    }
+
+    public Integer getIntData() {
+        return intData;
+    }
+
+    public void setIntData(Integer intData) {
+        this.intData = intData;
+    }
+
+    public Float getFloatData() {
+        return floatData;
+    }
+
+    public void setFloatData(Float floatData) {
+        this.floatData = floatData;
     }
 }

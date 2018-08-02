@@ -23,16 +23,18 @@ import com.alibaba.nacos.spring.test.MockNacosServiceFactory;
 import org.junit.Assert;
 import org.junit.Test;
 
-import static com.alibaba.nacos.client.config.common.Constants.DEFAULT_GROUP;
 import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.DATA_ID;
+import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.GROUP_ID;
+import static com.alibaba.nacos.spring.test.TestConfiguration.MODIFIED_TEST_CONTEXT;
+import static com.alibaba.nacos.spring.test.TestConfiguration.TEST_CONFIG;
 
 /**
- * {@link NacosConfigurationPropertiesBinder} Test
+ * {@link NacosConfigPropertiesBinder} Test
  *
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
  * @since 0.1.0
  */
-public class ConfigurationPropertiesBinderTest {
+public class NacosConfigurationPropertiesBinderTest {
 
     private MockNacosServiceFactory nacosServiceFactory = new MockNacosServiceFactory();
 
@@ -43,23 +45,26 @@ public class ConfigurationPropertiesBinderTest {
 
         ConfigService configService = nacosServiceFactory.createConfigService(null);
 
-        configService.publishConfig(DATA_ID, DEFAULT_GROUP, "id=1\n name=mercyblitz\nvalue = 0.95");
+        configService.publishConfig(DATA_ID, GROUP_ID, TEST_CONFIG);
 
-        NacosConfigurationPropertiesBinder binder = new NacosConfigurationPropertiesBinder(configService);
+        NacosConfigPropertiesBinder binder = new NacosConfigPropertiesBinder(configService);
 
         binder.bind(config);
 
         Assert.assertEquals(1, config.getId());
         Assert.assertEquals("mercyblitz", config.getName());
         Assert.assertTrue(0.95 == config.getValue());
+        Assert.assertEquals(Float.valueOf(1234.5f), config.getFloatData());
+        Assert.assertNull(config.getIntData());
 
         // Publishing config emits change
-        configService.publishConfig(DATA_ID, DEFAULT_GROUP, "id=1\n name=mercyblitz@gmail.com\nvalue = 9527");
+        configService.publishConfig(DATA_ID, GROUP_ID, MODIFIED_TEST_CONTEXT);
 
         Assert.assertEquals(1, config.getId());
         Assert.assertEquals("mercyblitz@gmail.com", config.getName());
         Assert.assertTrue(9527 == config.getValue());
-
+        Assert.assertEquals(Float.valueOf(1234.5f), config.getFloatData());
+        Assert.assertNull(config.getIntData());
     }
 
 }

@@ -23,7 +23,6 @@ import com.alibaba.nacos.api.naming.NamingService;
 import com.alibaba.nacos.spring.context.event.EventPublishingConfigService;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
-import org.springframework.context.event.ApplicationEventMulticaster;
 
 import java.util.HashMap;
 import java.util.Map;
