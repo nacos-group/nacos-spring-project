@@ -16,25 +16,25 @@
  */
 package com.alibaba.nacos.spring.context.annotation;
 
+import com.alibaba.nacos.api.config.ConfigService;
+import com.alibaba.nacos.spring.beans.factory.annotation.NamingServiceInjectedBeanPostProcessor;
 import com.alibaba.nacos.spring.config.NacosNamespaceHandler;
-import com.alibaba.nacos.spring.test.EmbeddedNacosHttpServer;
-import com.alibaba.nacos.spring.test.ListenersConfiguration;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import com.alibaba.nacos.spring.context.properties.NacosConfigPropertiesBindingPostProcessor;
+import com.alibaba.nacos.spring.factory.NacosServiceFactory;
+import com.alibaba.nacos.spring.util.NacosBeanUtils;
+import com.alibaba.nacos.spring.util.NacosConfigLoader;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.context.annotation.Bean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import javax.swing.*;
-import java.io.IOException;
 import java.util.Properties;
 
-import static com.alibaba.nacos.spring.util.NacosBeanUtils.GLOBAL_NACOS_PROPERTIES_BEAN_NAME;
-
 /**
- * {@link NacosNamespaceHandler} Test
+ * {@link NacosAnnotationDrivenBeanDefinitionParser} Test
  *
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
  * @see NacosNamespaceHandler
@@ -42,36 +42,59 @@ import static com.alibaba.nacos.spring.util.NacosBeanUtils.GLOBAL_NACOS_PROPERTI
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
-        "classpath:/META-INF/nacos-anntation-driven.xml"
+        "classpath:/META-INF/nacos-context.xml"
 })
 public class NacosAnnotationDrivenBeanDefinitionParserTest {
 
-    private static EmbeddedNacosHttpServer httpServer;
-
     static {
-        System.setProperty("nacos.standalone", "true");
-        try {
-            httpServer = new EmbeddedNacosHttpServer();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        System.setProperty("nacos.server-addr", "127.0.0.1:" + httpServer.getPort());
+        System.setProperty("nacos.server-addr", "127.0.0.1:8080");
     }
 
-    @BeforeClass
-    public static void startServer() throws Exception {
-        httpServer.start(true);
-    }
+    @Autowired
+    @Qualifier(NacosBeanUtils.GLOBAL_NACOS_PROPERTIES_BEAN_NAME)
+    private Properties globalProperties;
 
-    @AfterClass
-    public static void stopServer() {
-        httpServer.stop();
-    }
+    @Autowired
+    @Qualifier(NacosBeanUtils.NACOS_SERVICE_FACTORY_BEAN_NAME)
+    private NacosServiceFactory nacosServiceFactory;
+
+    @Autowired
+    @Qualifier(NacosBeanUtils.NACOS_PROPERTIES_RESOLVER_BEAN_NAME)
+    private NacosPropertiesResolver nacosPropertiesResolver;
+
+    @Autowired
+    @Qualifier(NacosBeanUtils.NACOS_CONFIG_LOADER_BEAN_NAME)
+    private NacosConfigLoader nacosConfigLoader;
+
+    @Autowired
+    @Qualifier(NamingServiceInjectedBeanPostProcessor.BEAN_NAME)
+    private NamingServiceInjectedBeanPostProcessor namingServiceInjectedBeanPostProcessor;
+
+    @Autowired
+    @Qualifier(NacosConfigPropertiesBindingPostProcessor.BEAN_NAME)
+    private NacosConfigPropertiesBindingPostProcessor nacosConfigPropertiesBindingPostProcessor;
+
+    @Autowired
+    @Qualifier(NacosConfigListenerMethodProcessor.BEAN_NAME)
+    private NacosConfigListenerMethodProcessor nacosConfigListenerMethodProcessor;
+
+    @Autowired
+    @Qualifier(NacosPropertySourceProcessor.BEAN_NAME)
+    private NacosPropertySourceProcessor nacosPropertySourceProcessor;
+
+    @NacosService
+    private ConfigService configService;
 
     @Test
     public void test() {
-
+        Assert.assertNotNull(globalProperties);
+        Assert.assertNotNull(nacosServiceFactory);
+        Assert.assertNotNull(nacosPropertiesResolver);
+        Assert.assertNotNull(nacosConfigLoader);
+        Assert.assertNotNull(namingServiceInjectedBeanPostProcessor);
+        Assert.assertNotNull(nacosConfigPropertiesBindingPostProcessor);
+        Assert.assertNotNull(nacosConfigListenerMethodProcessor);
+        Assert.assertNotNull(nacosPropertySourceProcessor);
     }
 
 }

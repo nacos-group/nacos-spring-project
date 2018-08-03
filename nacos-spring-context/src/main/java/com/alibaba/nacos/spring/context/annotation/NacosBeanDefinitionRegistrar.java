@@ -135,20 +135,6 @@ public class NacosBeanDefinitionRegistrar implements ImportBeanDefinitionRegistr
         registerSingleton(registry, NACOS_CONFIG_LISTENER_EXECUTOR_BEAN_NAME, nacosConfigListenerExecutor);
     }
 
-    private void registerSingleton(BeanDefinitionRegistry registry, String beanName, Object singletonObject) {
-        SingletonBeanRegistry beanRegistry = null;
-        if (registry instanceof SingletonBeanRegistry) {
-            beanRegistry = (SingletonBeanRegistry) registry;
-        } else if (registry instanceof AbstractApplicationContext) {
-            // Maybe AbstractApplicationContext or its sub-classes
-            beanRegistry = ((AbstractApplicationContext) registry).getBeanFactory();
-        }
-        // Register Singleton Object if possible
-        if (beanRegistry != null) {
-            beanRegistry.registerSingleton(beanName, singletonObject);
-        }
-    }
-
     private ExecutorService buildNacosConfigListenerExecutor() {
         int parallelism = getParallelism();
         ExecutorService executorService = Executors.newFixedThreadPool(parallelism, new ThreadFactory() {

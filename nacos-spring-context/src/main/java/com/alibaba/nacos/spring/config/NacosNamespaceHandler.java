@@ -16,8 +16,8 @@
  */
 package com.alibaba.nacos.spring.config;
 
+import com.alibaba.nacos.spring.context.annotation.GlobalNacosPropertiesBeanDefinitionParser;
 import com.alibaba.nacos.spring.context.annotation.NacosAnnotationDrivenBeanDefinitionParser;
-import com.alibaba.nacos.spring.context.annotation.NacosBeanDefinitionRegistrar;
 import org.springframework.beans.factory.xml.NamespaceHandler;
 import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 
@@ -32,7 +32,7 @@ public class NacosNamespaceHandler extends NamespaceHandlerSupport {
 
     @Override
     public void init() {
-        registerBeanDefinitionParser("annotation-driven",
-                new NacosAnnotationDrivenBeanDefinitionParser());
+        registerBeanDefinitionParser("annotation-driven", new NacosAnnotationDrivenBeanDefinitionParser());
+        registerBeanDefinitionParser("global-properties", new GlobalNacosPropertiesBeanDefinitionParser());
     }
 }

@@ -17,17 +17,14 @@
 package com.alibaba.nacos.spring.context.annotation;
 
 import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.xml.BeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.core.env.Environment;
 import org.w3c.dom.Element;
 
-import static org.springframework.beans.factory.support.BeanDefinitionBuilder.rootBeanDefinition;
-
 /**
- * Nacos Annotation Driven {@link BeanDefinitionParser}
+ * Nacos Annotation Driven {@link BeanDefinitionParser} for XML element &lt;nacos:annotation-driven/&gt;
  *
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
  * @see BeanDefinitionParser

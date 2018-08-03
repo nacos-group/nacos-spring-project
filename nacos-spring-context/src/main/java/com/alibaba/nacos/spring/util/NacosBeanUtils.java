@@ -24,8 +24,10 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.SingletonBeanRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.context.support.AbstractApplicationContext;
 
 import java.lang.reflect.Constructor;
 import java.util.Properties;
@@ -64,6 +66,27 @@ public abstract class NacosBeanUtils {
      * The bean name of {@link Executor} for Nacos Config Listener
      */
     public static final String NACOS_CONFIG_LISTENER_EXECUTOR_BEAN_NAME = "nacosConfigListenerExecutor";
+
+    /**
+     * Register an object to be Singleton Bean
+     *
+     * @param registry        {@link BeanDefinitionRegistry}
+     * @param beanName        bean name
+     * @param singletonObject singleton object
+     */
+    public static void registerSingleton(BeanDefinitionRegistry registry, String beanName, Object singletonObject) {
+        SingletonBeanRegistry beanRegistry = null;
+        if (registry instanceof SingletonBeanRegistry) {
+            beanRegistry = (SingletonBeanRegistry) registry;
+        } else if (registry instanceof AbstractApplicationContext) {
+            // Maybe AbstractApplicationContext or its sub-classes
+            beanRegistry = ((AbstractApplicationContext) registry).getBeanFactory();
+        }
+        // Register Singleton Object if possible
+        if (beanRegistry != null) {
+            beanRegistry.registerSingleton(beanName, singletonObject);
+        }
+    }
 
     /**
      * Is {@link BeanDefinition} present in {@link BeanDefinitionRegistry}

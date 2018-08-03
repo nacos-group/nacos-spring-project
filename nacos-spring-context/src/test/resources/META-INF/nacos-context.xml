@@ -11,10 +11,8 @@
         http://nacos.io/schema/nacos
         http://nacos.io/schema/nacos.xsd">
 
-    <util:properties id="globalNacosProperties">
-        <prop key="serverAddr">${nacos.server-addr}</prop>
-    </util:properties>
-
     <nacos:annotation-driven/>
+
+    <nacos:global-properties server-addr="${nacos.server-addr}" />
 
 </beans>

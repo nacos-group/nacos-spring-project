@@ -20,8 +20,6 @@ import com.alibaba.nacos.api.PropertyKeyConst;
 
 import java.lang.annotation.*;
 
-import static com.alibaba.nacos.client.config.common.Constants.ENCODE;
-
 /**
  * An annotation for Nacos Properties
  *
@@ -34,20 +32,105 @@ import static com.alibaba.nacos.client.config.common.Constants.ENCODE;
 @Documented
 public @interface NacosProperties {
 
-    String endpoint() default "${nacos.endpoint:}";
+    /**
+     * The prefix of property name of Nacos
+     */
+    String PREFIX = "nacos.";
 
-    String namespace() default "${nacos.namespace:}";
+    /**
+     * The property name of "endpoint"
+     */
+    String ENDPOINT = "endpoint";
 
-    String accessKey() default "${nacos.access-key:}";
+    /**
+     * The property name of "namespace"
+     */
+    String NAMESPACE = "namespace";
 
-    String secretKey() default "${nacos.secret-key:}";
+    /**
+     * The property name of "access-key"
+     */
+    String ACCESS_KEY = "access-key";
 
-    String serverAddr() default "${nacos.server-addr:}";
+    /**
+     * The property name of "secret-key"
+     */
+    String SECRET_KEY = "secret-key";
 
-    String contextPath() default "${nacos.context-path:}";
+    /**
+     * The property name of "server-addr"
+     */
+    String SERVER_ADDR = "server-addr";
 
-    String clusterName() default "${nacos.cluster-name:}";
+    /**
+     * The property name of "context-path"
+     */
+    String CONTEXT_PATH = "context-path";
 
-    String encode() default "${nacos.encode:" + ENCODE + "}";
+    /**
+     * The property name of "cluster-name"
+     */
+    String CLUSTER_NAME = "cluster-name";
+
+    /**
+     * The property name of "encode"
+     */
+    String ENCODE = "encode";
+
+    /**
+     * The property of "endpoint"
+     *
+     * @return empty as default value
+     */
+    String endpoint() default "${" + PREFIX + ENDPOINT + ":}";
+
+    /**
+     * The property of "namespace"
+     *
+     * @return empty as default value
+     */
+    String namespace() default "${" + PREFIX + NAMESPACE + ":}";
+
+    /**
+     * The property of "access-key"
+     *
+     * @return empty as default value
+     */
+    String accessKey() default "${" + PREFIX + ACCESS_KEY + ":}";
+
+    /**
+     * The property of "secret-key"
+     *
+     * @return empty as default value
+     */
+    String secretKey() default "${" + PREFIX + SECRET_KEY + ":}";
+
+    /**
+     * The property of "server-addr"
+     *
+     * @return empty as default value
+     */
+    String serverAddr() default "${" + PREFIX + SERVER_ADDR + ":}";
+
+    /**
+     * The property of "context-path"
+     *
+     * @return empty as default value
+     */
+    String contextPath() default "${" + PREFIX + CONTEXT_PATH + ":}";
+
+    /**
+     * The property of "cluster-name"
+     *
+     * @return empty as default value
+     */
+    String clusterName() default "${" + PREFIX + CLUSTER_NAME + ":}";
+
+    /**
+     * The property of "encode"
+     *
+     * @return "UTF-8" as default value
+     */
+    String encode() default "${" + PREFIX + ENCODE + ":UTF-8}";
 
 }

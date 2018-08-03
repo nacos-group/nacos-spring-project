@@ -16,12 +16,33 @@
             <xsd:documentation>
                 <![CDATA[
 	            Activates various Nacos Spring's annotations :
-	            @EnableNacos
+	            @NacosService
 	            @NacosConfigListener
 	            @NacosPropertySource
-	            @NacosService
+	            @NacosPropertySources
+	            @NacosConfigProperties / @NacosProperty / @NacosIgnore
 			]]></xsd:documentation>
         </xsd:annotation>
+    </xsd:element>
+
+    <xsd:element name="global-properties">
+        <xsd:annotation>
+            <xsd:documentation>
+                <![CDATA[
+                Register Nacos global Properties whose values are configured from attributes.
+                ]]>
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexType>
+            <xsd:attribute name="endpoint" default="${nacos.endpoint:}" />
+            <xsd:attribute name="namespace" default="${nacos.endpoint:}"/>
+            <xsd:attribute name="access-key" default="${nacos.access-key:}"/>
+            <xsd:attribute name="secret-key" default="${nacos.secret-key:}"/>
+            <xsd:attribute name="server-addr" default="${nacos.server-addr:}"/>
+            <xsd:attribute name="context-path" default="${nacos.context-path:}"/>
+            <xsd:attribute name="cluster-name" default="${nacos.cluster-name:}"/>
+            <xsd:attribute name="encode" default="${nacos.encode:UTF-8}"/>
+        </xsd:complexType>
     </xsd:element>
 
 </xsd:schema>
