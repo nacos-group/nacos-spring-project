@@ -103,8 +103,10 @@ public abstract class NacosUtils {
         String contextPath = (String) properties.get(CONTEXT_PATH);
         String clusterName = (String) properties.get(CLUSTER_NAME);
         String endpoint = (String) properties.get(ENDPOINT);
+        String accessKey = (String) properties.get(ACCESS_KEY);
+        String secretKey = (String) properties.get(SECRET_KEY);
 
-        return build(namespace, clusterName, serverAddress, contextPath, endpoint);
+        return build(namespace, clusterName, serverAddress, contextPath, endpoint, accessKey, secretKey);
 
     }
 
