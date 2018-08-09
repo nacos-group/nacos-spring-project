@@ -24,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertyResolver;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 
@@ -159,48 +160,66 @@ public abstract class NacosUtils {
     public static Properties resolveProperties(NacosProperties nacosProperties, PropertyResolver propertyResolver,
                                                Properties defaultProperties) {
 
-        Properties Properties = defaultProperties;
+        Map<String, Object> attributes = getAnnotationAttributes(nacosProperties);
 
-        if (isDefault(nacosProperties)) {
+        return resolveProperties(attributes, propertyResolver, defaultProperties);
 
-            return Properties;
+    }
 
-        } else {
+    /**
+     * {@link #resolveProperties(Map, PropertyResolver) Resolve} placeholders of {@link NacosProperties @NacosProperties}'s attributes via specified
+     * {@link PropertyResolver} if present, or try to {@link #merge(Properties, Properties) merge} from
+     * default properties
+     *
+     * @param attributes        {@link NacosProperties @NacosProperties}'s attributes
+     * @param propertyResolver  the resolver of properties' placeholder
+     * @param defaultProperties default properties
+     * @return a new resolved {@link Properties} properties
+     * @see #resolveProperties(Map, PropertyResolver)
+     */
+    public static Properties resolveProperties(Map<String, Object> attributes, PropertyResolver propertyResolver,
+                                               Properties defaultProperties) {
 
-            Map<String, Object> attributes = getAnnotationAttributes(nacosProperties);
+        Properties resolveProperties = resolveProperties(attributes, propertyResolver);
 
-            Properties = resolveProperties(attributes, propertyResolver);
+        merge(resolveProperties, defaultProperties);
 
-        }
-
-        return Properties;
-
+        return resolveProperties;
     }
 
 
     /**
-     * Resolve {@link Properties} to be a new one
+     * Resolve placeholders of properties via specified {@link PropertyResolver} if present
      *
-     * @param Properties       THe properties
+     * @param properties       The properties
      * @param propertyResolver {@link PropertyResolver} instance, for instance, {@link Environment}
      * @return a new instance of {@link Properties} after resolving.
      */
-    public static Properties resolveProperties(Map<String, Object> Properties, PropertyResolver propertyResolver) {
+    public static Properties resolveProperties(Map<?, ?> properties, PropertyResolver propertyResolver) {
+        PropertiesPlaceholderResolver propertiesPlaceholderResolver = new PropertiesPlaceholderResolver(propertyResolver);
+        return propertiesPlaceholderResolver.resolve(properties);
+    }
 
-        Properties properties = new Properties();
+    /**
+     * Merge Nacos Properties If any property from target properties is absent
+     *
+     * @param targetProperties {@link Properties target Properties}
+     * @param sourceProperties {@link Properties source Properties}
+     */
+    protected static void merge(Properties targetProperties, Properties sourceProperties) {
 
-        for (Map.Entry<String, Object> entry : Properties.entrySet()) {
-            if (entry.getValue() instanceof CharSequence) {
-                String key = entry.getKey();
-                String value = String.valueOf(entry.getValue());
-                String resolvedValue = propertyResolver.resolvePlaceholders(value);
-                if (StringUtils.hasText(resolvedValue)) { // set properties if has test
-                    properties.setProperty(key, resolvedValue);
-                }
+        if (CollectionUtils.isEmpty(sourceProperties)) {
+            return;
+        }
+
+        for (Map.Entry entry : sourceProperties.entrySet()) {
+            String propertyName = (String) entry.getKey();
+            if (!targetProperties.containsKey(propertyName)) {
+                String propertyValue = (String) entry.getValue();
+                targetProperties.setProperty(propertyName, propertyValue);
             }
         }
 
-        return properties;
     }
 
     /**
