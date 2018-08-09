@@ -41,17 +41,17 @@ import static org.springframework.util.StringUtils.trimAllWhitespace;
  * </ul>
  *
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
- * @since
+ * @since 0.1.0
  */
-class NacosConfigHttpHandler implements HttpHandler {
+public class NacosConfigHttpHandler implements HttpHandler {
 
     private Map<String, String> contentCache = new HashMap<String, String>();
 
-    private static final String DATA_ID_PARAM_NAME = "dataId";
+    public static final String DATA_ID_PARAM_NAME = "dataId";
 
-    private static final String GROUP_ID_PARAM_NAME = "group";
+    public static final String GROUP_ID_PARAM_NAME = "group";
 
-    private static final String CONTENT_PARAM_NAME = "content";
+    public static final String CONTENT_PARAM_NAME = "content";
 
     @Override
     public void handle(HttpExchange httpExchange) throws IOException {
@@ -71,20 +71,24 @@ class NacosConfigHttpHandler implements HttpHandler {
      * @param httpExchange {@link HttpExchange}
      * @throws IOException IO error
      */
-    protected void handlePublishConfig(HttpExchange httpExchange) throws IOException {
+    private void handlePublishConfig(HttpExchange httpExchange) throws IOException {
 
         String queryString = copyToString(httpExchange.getRequestBody(), forName("UTF-8"));
 
         Map<String, String> params = parseParams(queryString);
 
+        cacheConfig(params);
+
+        write(httpExchange, "true");
+
+    }
+
+    public void cacheConfig(Map<String, String> params) {
         String content = params.get(CONTENT_PARAM_NAME);
 
         String key = createContentKey(params);
 
         contentCache.put(key, content);
-
-        write(httpExchange, "true");
-
     }
 
     /**
@@ -93,7 +97,7 @@ class NacosConfigHttpHandler implements HttpHandler {
      * @param httpExchange {@link HttpExchange}
      * @throws IOException IO error
      */
-    protected void handleGetConfig(HttpExchange httpExchange) throws IOException {
+    private void handleGetConfig(HttpExchange httpExchange) throws IOException {
 
         URI requestURI = httpExchange.getRequestURI();
 

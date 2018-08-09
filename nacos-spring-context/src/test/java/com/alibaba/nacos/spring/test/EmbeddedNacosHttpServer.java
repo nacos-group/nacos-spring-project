@@ -23,7 +23,7 @@ import com.sun.net.httpserver.HttpServer;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.util.concurrent.ExecutionException;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -48,9 +48,12 @@ public class EmbeddedNacosHttpServer {
 
     private Future future;
 
+    private NacosConfigHttpHandler nacosConfigHttpHandler;
+
     public EmbeddedNacosHttpServer() throws IOException {
         this.httpServer = HttpServer.create(new InetSocketAddress(0), 0);
         this.port = httpServer.getAddress().getPort();
+        this.nacosConfigHttpHandler = new NacosConfigHttpHandler();
     }
 
     public EmbeddedNacosHttpServer(int port) throws IOException {
@@ -62,9 +65,13 @@ public class EmbeddedNacosHttpServer {
         return port;
     }
 
-    public EmbeddedNacosHttpServer start(boolean blocking) throws IOException, ExecutionException, InterruptedException {
+    public void initConfig(Map<String, String> map) {
+        nacosConfigHttpHandler.cacheConfig(map);
+    }
 
-        httpServer.createContext(path, new NacosConfigHttpHandler());
+    public EmbeddedNacosHttpServer start(boolean blocking) {
+
+        httpServer.createContext(path, nacosConfigHttpHandler);
 
         if (blocking) {
             startServer();

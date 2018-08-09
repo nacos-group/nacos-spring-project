@@ -45,4 +45,23 @@
         </xsd:complexType>
     </xsd:element>
 
+    <xsd:element name="property-source">
+        <xsd:annotation>
+            <xsd:documentation>
+                <![CDATA[
+                Add Nacos property source
+                ]]>
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexType>
+            <xsd:attribute name="name" default=""/>
+            <xsd:attribute name="group-id" default="DEFAULT_GROUP"/>
+            <xsd:attribute name="data-id"/>
+            <xsd:attribute name="data-ids"/>
+            <xsd:attribute name="first" default="false"/>
+            <xsd:attribute name="before" default=""/>
+            <xsd:attribute name="after" default=""/>
+        </xsd:complexType>
+    </xsd:element>
+
 </xsd:schema>

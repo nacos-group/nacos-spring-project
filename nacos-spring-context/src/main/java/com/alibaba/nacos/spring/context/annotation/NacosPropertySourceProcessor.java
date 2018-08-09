@@ -24,10 +24,13 @@ import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.support.BeanDefinitionBuilder;
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.ConfigurationClassPostProcessor;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.Ordered;
-import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MutablePropertySources;
@@ -36,9 +39,14 @@ import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
+import static com.alibaba.nacos.spring.util.NacosBeanUtils.getGlobalPropertiesBean;
 import static com.alibaba.nacos.spring.util.NacosBeanUtils.getNacosConfigLoaderBean;
 import static com.alibaba.nacos.spring.util.NacosUtils.*;
 import static org.springframework.util.ObjectUtils.nullSafeEquals;
@@ -50,12 +58,14 @@ import static org.springframework.util.ObjectUtils.nullSafeEquals;
  * @see NacosPropertySource
  * @since 0.1.0
  */
-public class NacosPropertySourceProcessor implements BeanFactoryPostProcessor, EnvironmentAware, Ordered {
+public class NacosPropertySourceProcessor implements BeanDefinitionRegistryPostProcessor, BeanFactoryPostProcessor, EnvironmentAware, Ordered {
 
     /**
      * The bean name of {@link NacosPropertySourceProcessor}
      */
     public static final String BEAN_NAME = "nacosPropertySourceProcessor";
+
+    private static final List<Map<String, Object>> PROPERTY_SOURCE_ATTRIBUTES_LIST = new ArrayList<Map<String, Object>>();
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -64,9 +74,18 @@ public class NacosPropertySourceProcessor implements BeanFactoryPostProcessor, E
     private NacosConfigLoader loader;
 
     @Override
+    public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
+        BeanDefinition annotationProcessor = BeanDefinitionBuilder.genericBeanDefinition(
+            PropertySourcesPlaceholderConfigurer.class).getBeanDefinition();
+        registry.registerBeanDefinition(PropertySourcesPlaceholderConfigurer.class.getName(), annotationProcessor);
+    }
+
+    @Override
     public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
 
         this.loader = getNacosConfigLoaderBean(beanFactory);
+
+        addPropertySourceList(beanFactory);
 
         String[] beanNames = beanFactory.getBeanDefinitionNames();
 
@@ -74,6 +93,27 @@ public class NacosPropertySourceProcessor implements BeanFactoryPostProcessor, E
             addPropertySource(beanName, beanFactory);
         }
 
+    }
+
+    public static void addPropertySourceAttributes(Map<String, Object> map) {
+        PROPERTY_SOURCE_ATTRIBUTES_LIST.add(map);
+    }
+
+    private void addPropertySourceList(ConfigurableListableBeanFactory beanFactory) {
+        Properties globalProperties = getGlobalPropertiesBean(beanFactory);
+        for (Map<String, Object> attributes : PROPERTY_SOURCE_ATTRIBUTES_LIST) {
+            Object properties = attributes.get("properties");
+            if (properties == null) {
+                Set<String> nameSet = globalProperties.stringPropertyNames();
+                Map<String, Object> propertiesMap = new HashMap<String, Object>(nameSet.size());
+                for (String name : nameSet) {
+                    propertiesMap.put(name, globalProperties.getProperty(name));
+                }
+                attributes.put("properties", propertiesMap);
+            }
+            addPropertySource(attributes);
+        }
+        PROPERTY_SOURCE_ATTRIBUTES_LIST.clear();
     }
 
     private void addPropertySource(String beanName, ConfigurableListableBeanFactory beanFactory) {
@@ -103,7 +143,7 @@ public class NacosPropertySourceProcessor implements BeanFactoryPostProcessor, E
         String dataId = (String) nacosPropertySourceAttributes.get("dataId");
         String groupId = (String) nacosPropertySourceAttributes.get("groupId");
 
-        Map<String, Object> properties = (AnnotationAttributes) nacosPropertySourceAttributes.get("properties");
+        Map<String, Object> properties = (Map<String, Object>) nacosPropertySourceAttributes.get("properties");
 
         Properties nacosProperties = resolveProperties(properties, environment);
 
