@@ -71,7 +71,9 @@ public class CacheableEventPublishingNacosServiceFactory implements NacosService
     @Override
     public NamingService createNamingService(Properties properties) throws NacosException {
 
-        Properties copy = new Properties(properties);
+        Properties copy = new Properties();
+
+        copy.putAll(properties);
 
         String cacheKey = identify(copy);
 
