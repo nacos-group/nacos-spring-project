@@ -21,12 +21,9 @@ import com.alibaba.nacos.spring.context.properties.NacosConfigPropertiesBindingP
 import com.alibaba.nacos.spring.factory.CacheableEventPublishingNacosServiceFactory;
 import com.alibaba.nacos.spring.factory.NacosServiceFactory;
 import com.alibaba.nacos.spring.util.NacosConfigLoader;
-import com.alibaba.nacos.spring.util.PropertiesPlaceholderResolver;
-import org.springframework.beans.factory.config.SingletonBeanRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
-import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotationMetadata;
@@ -40,6 +37,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static com.alibaba.nacos.spring.context.constants.NacosConstants.DEFAULT_NACOS_CONFIG_LISTENER_PARALLELISM;
 import static com.alibaba.nacos.spring.context.constants.NacosConstants.NACOS_CONFIG_LISTENER_PARALLELISM;
 import static com.alibaba.nacos.spring.util.NacosBeanUtils.*;
+import static com.alibaba.nacos.spring.util.NacosUtils.resolveProperties;
 
 /**
  * Nacos Properties {@link ImportBeanDefinitionRegistrar BeanDefinition Registrar}
@@ -89,8 +87,7 @@ public class NacosBeanDefinitionRegistrar implements ImportBeanDefinitionRegistr
     private void registerGlobalNacosProperties(AnnotationAttributes attributes, BeanDefinitionRegistry registry) {
         AnnotationAttributes globalPropertiesAttributes = attributes.getAnnotation("globalProperties");
         // Resolve Global Nacos Properties from @EnableNacos
-        PropertiesPlaceholderResolver resolver = new PropertiesPlaceholderResolver(environment);
-        Properties globalProperties = resolver.resolve(globalPropertiesAttributes);
+        Properties globalProperties = resolveProperties(globalPropertiesAttributes, environment);
         registerSingleton(registry, GLOBAL_NACOS_PROPERTIES_BEAN_NAME, globalProperties);
     }
 
