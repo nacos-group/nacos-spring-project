@@ -162,7 +162,7 @@ public class NacosPropertySourceProcessor implements BeanDefinitionRegistryPostP
         String after = (String) nacosPropertySourceAttributes.get("after");
 
         boolean hasBefore = !nullSafeEquals(DEFAULT_STRING_ATTRIBUTE_VALUE, before);
-        boolean hasAfter = !nullSafeEquals(DEFAULT_STRING_ATTRIBUTE_VALUE, before);
+        boolean hasAfter = !nullSafeEquals(DEFAULT_STRING_ATTRIBUTE_VALUE, after);
 
         boolean isRelative = hasBefore || hasAfter;
 
