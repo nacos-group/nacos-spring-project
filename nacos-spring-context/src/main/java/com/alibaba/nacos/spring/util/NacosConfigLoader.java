@@ -16,23 +16,15 @@
  */
 package com.alibaba.nacos.spring.util;
 
+import com.alibaba.nacos.api.NacosFactory;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.spring.context.annotation.NacosProperties;
-import com.alibaba.nacos.spring.context.annotation.NacosPropertiesResolver;
 import com.alibaba.nacos.spring.factory.NacosServiceFactory;
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.BeanFactoryAware;
-import org.springframework.context.EnvironmentAware;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.core.env.Environment;
 
 import java.util.Properties;
-
-import static com.alibaba.nacos.spring.util.NacosBeanUtils.getNacosPropertiesResolverBean;
-import static com.alibaba.nacos.spring.util.NacosBeanUtils.getNacosServiceFactoryBean;
 
 /**
  * Nacos Configuration Loader
@@ -40,13 +32,21 @@ import static com.alibaba.nacos.spring.util.NacosBeanUtils.getNacosServiceFactor
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
  * @since 0.1.0
  */
-public class NacosConfigLoader implements BeanFactoryAware, EnvironmentAware {
+public class NacosConfigLoader {
 
-    private ConversionService conversionService;
+    private final ConfigurableEnvironment environment;
 
-    private NacosPropertiesResolver nacosPropertiesResolver;
+    private final ConversionService conversionService;
+
+    private final PropertiesPlaceholderResolver resolver;
 
     private NacosServiceFactory nacosServiceFactory;
+
+    public NacosConfigLoader(ConfigurableEnvironment environment) {
+        this.environment = environment;
+        this.conversionService = environment.getConversionService();
+        this.resolver = new PropertiesPlaceholderResolver(environment);
+    }
 
     /**
      * Load Nacos config vid dataId, groupId and {@link NacosProperties}
@@ -58,7 +58,7 @@ public class NacosConfigLoader implements BeanFactoryAware, EnvironmentAware {
      * @throws RuntimeException If {@link ConfigService} creating is failed.
      */
     public String load(String dataId, String groupId, NacosProperties nacosProperties) throws RuntimeException {
-        Properties properties = nacosPropertiesResolver.resolve(nacosProperties);
+        Properties properties = resolver.resolve(nacosProperties);
         return load(dataId, groupId, properties);
     }
 
@@ -74,7 +74,9 @@ public class NacosConfigLoader implements BeanFactoryAware, EnvironmentAware {
     public String load(String dataId, String groupId, Properties nacosProperties) throws RuntimeException {
         ConfigService configService = null;
         try {
-            configService = nacosServiceFactory.createConfigService(nacosProperties);
+            configService = nacosServiceFactory != null ?
+                    nacosServiceFactory.createConfigService(nacosProperties) :
+                    NacosFactory.createConfigService(nacosProperties);
         } catch (NacosException e) {
             throw new RuntimeException("ConfigService can't be created with dataId :"
                     + dataId + " , groupId : " + groupId + " , properties : " + nacosProperties
@@ -100,16 +102,7 @@ public class NacosConfigLoader implements BeanFactoryAware, EnvironmentAware {
         return conversionService.convert(config, targetClass);
     }
 
-    @Override
-    public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
-        this.nacosServiceFactory = getNacosServiceFactoryBean(beanFactory);
-        this.nacosPropertiesResolver = getNacosPropertiesResolverBean(beanFactory);
-    }
-
-    @Override
-    public void setEnvironment(Environment environment) {
-        if (environment instanceof ConfigurableEnvironment) {
-            this.conversionService = ((ConfigurableEnvironment) environment).getConversionService();
-        }
+    public void setNacosServiceFactory(NacosServiceFactory nacosServiceFactory) {
+        this.nacosServiceFactory = nacosServiceFactory;
     }
 }

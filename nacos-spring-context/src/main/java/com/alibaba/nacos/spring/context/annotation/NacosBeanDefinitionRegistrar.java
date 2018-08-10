@@ -20,7 +20,6 @@ import com.alibaba.nacos.spring.beans.factory.annotation.NamingServiceInjectedBe
 import com.alibaba.nacos.spring.context.properties.NacosConfigPropertiesBindingPostProcessor;
 import com.alibaba.nacos.spring.factory.CacheableEventPublishingNacosServiceFactory;
 import com.alibaba.nacos.spring.factory.NacosServiceFactory;
-import com.alibaba.nacos.spring.util.NacosConfigLoader;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
@@ -69,10 +68,6 @@ public class NacosBeanDefinitionRegistrar implements ImportBeanDefinitionRegistr
 
         registerNacosServiceFactoryIfAbsent(registry);
 
-        registerNacosPropertiesResolver(registry);
-
-        registerNacosConfigLoader(registry);
-
         registerNamingServiceInjectedBeanPostProcessor(registry);
 
         registerNacosConfigPropertiesBindingPostProcessor(registry);
@@ -99,14 +94,6 @@ public class NacosBeanDefinitionRegistrar implements ImportBeanDefinitionRegistr
         registerInfrastructureBean(registry, beanName, CacheableEventPublishingNacosServiceFactory.class);
     }
 
-    private void registerNacosPropertiesResolver(BeanDefinitionRegistry registry) {
-        registerInfrastructureBean(registry, NACOS_PROPERTIES_RESOLVER_BEAN_NAME, NacosPropertiesResolver.class);
-    }
-
-    private void registerNacosConfigLoader(BeanDefinitionRegistry registry) {
-        registerInfrastructureBean(registry, NACOS_CONFIG_LOADER_BEAN_NAME, NacosConfigLoader.class);
-    }
-
     private void registerNamingServiceInjectedBeanPostProcessor(BeanDefinitionRegistry registry) {
         registerInfrastructureBean(registry, NamingServiceInjectedBeanPostProcessor.BEAN_NAME,
                 NamingServiceInjectedBeanPostProcessor.class);
@@ -123,8 +110,8 @@ public class NacosBeanDefinitionRegistrar implements ImportBeanDefinitionRegistr
     }
 
     private void registerNacosPropertySourceProcessor(BeanDefinitionRegistry registry) {
-        registerInfrastructureBean(registry, NacosPropertySourceProcessor.BEAN_NAME,
-                NacosPropertySourceProcessor.class);
+        registerInfrastructureBean(registry, NacosPropertySourcePostProcessor.BEAN_NAME,
+                NacosPropertySourcePostProcessor.class);
     }
 
     private void registerNacosConfigListenerExecutor(BeanDefinitionRegistry registry) {

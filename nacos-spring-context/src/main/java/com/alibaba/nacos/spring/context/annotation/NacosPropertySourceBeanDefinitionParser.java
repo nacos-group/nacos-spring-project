@@ -16,10 +16,12 @@
  */
 package com.alibaba.nacos.spring.context.annotation;
 
+import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.xml.BeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
-import org.springframework.core.env.Environment;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.util.StringUtils;
 import org.w3c.dom.Element;
 
@@ -29,6 +31,8 @@ import java.util.Map;
 import java.util.Set;
 
 import static com.alibaba.nacos.client.config.common.Constants.DEFAULT_GROUP;
+import static com.alibaba.nacos.spring.context.annotation.NacosPropertySource.*;
+import static com.alibaba.nacos.spring.util.NacosBeanUtils.resolveBeanFactory;
 import static com.alibaba.nacos.spring.util.NacosUtils.DEFAULT_STRING_ATTRIBUTE_VALUE;
 
 /**
@@ -40,11 +44,16 @@ import static com.alibaba.nacos.spring.util.NacosUtils.DEFAULT_STRING_ATTRIBUTE_
  */
 public class NacosPropertySourceBeanDefinitionParser implements BeanDefinitionParser {
 
-    private Environment environment;
+    private ConfigurableEnvironment environment;
+
+    private BeanFactory beanFactory;
 
     @Override
     public BeanDefinition parse(Element element, ParserContext parserContext) {
-        this.environment = parserContext.getDelegate().getEnvironment();
+
+        this.environment = (ConfigurableEnvironment) parserContext.getDelegate().getEnvironment();
+
+        this.beanFactory = resolveBeanFactory(parserContext.getRegistry());
 
         Set<String> dataIdSet = new LinkedHashSet<String>(1);
 
@@ -72,15 +81,17 @@ public class NacosPropertySourceBeanDefinitionParser implements BeanDefinitionPa
 
     private void addPropertySourceAttribute(Element element, String dataId) {
         Map<String, Object> attributes = new HashMap<String, Object>();
-        attributes.put("dataId", dataId);
+        attributes.put(DATA_ID_ATTRIBUTE_NAME, dataId);
 
-        setPropertyIfPresent(attributes, "name", element.getAttribute("name"), DEFAULT_STRING_ATTRIBUTE_VALUE);
-        setPropertyIfPresent(attributes, "groupId", element.getAttribute("group-id"), DEFAULT_GROUP);
-        setPropertyIfPresent(attributes, "first", element.getAttribute("first"), false);
-        setPropertyIfPresent(attributes, "before", element.getAttribute("before"), DEFAULT_STRING_ATTRIBUTE_VALUE);
-        setPropertyIfPresent(attributes, "after", element.getAttribute("after"), DEFAULT_STRING_ATTRIBUTE_VALUE);
+        setPropertyIfPresent(attributes, NAME_ATTRIBUTE_NAME, element.getAttribute("name"), DEFAULT_STRING_ATTRIBUTE_VALUE);
+        setPropertyIfPresent(attributes, GROUP_ID_ATTRIBUTE_NAME, element.getAttribute("group-id"), DEFAULT_GROUP);
+        setPropertyIfPresent(attributes, FIRST_ATTRIBUTE_NAME, element.getAttribute("first"), false);
+        setPropertyIfPresent(attributes, BEFORE_ATTRIBUTE_NAME, element.getAttribute("before"), DEFAULT_STRING_ATTRIBUTE_VALUE);
+        setPropertyIfPresent(attributes, AFTER_ATTRIBUTE_NAME, element.getAttribute("after"), DEFAULT_STRING_ATTRIBUTE_VALUE);
 
-        NacosPropertySourceProcessor.addPropertySourceAttributes(attributes);
+        NacosPropertySourceProcessor propertySourceProcessor = new NacosPropertySourceProcessor(beanFactory, environment);
+
+        propertySourceProcessor.process(attributes);
     }
 
     private void setPropertyIfPresent(Map<String, Object> attributes, String name, String value, Object defaultValue) {

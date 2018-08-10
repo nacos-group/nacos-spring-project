@@ -17,9 +17,7 @@
 package com.alibaba.nacos.spring.test;
 
 import com.alibaba.nacos.api.config.ConfigService;
-import com.alibaba.nacos.spring.context.annotation.NacosPropertiesResolver;
 import com.alibaba.nacos.spring.factory.NacosServiceFactory;
-import com.alibaba.nacos.spring.util.NacosConfigLoader;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -74,16 +72,6 @@ public class TestConfiguration {
         }
 
         return nacosServiceFactory;
-    }
-
-    @Bean(name = NACOS_PROPERTIES_RESOLVER_BEAN_NAME)
-    public NacosPropertiesResolver nacosPropertiesResolver() {
-        return new NacosPropertiesResolver();
-    }
-
-    @Bean(name = NACOS_CONFIG_LOADER_BEAN_NAME)
-    public NacosConfigLoader nacosConfigLoader() {
-        return new NacosConfigLoader();
     }
 
     @Bean(name = NACOS_CONFIG_LISTENER_EXECUTOR_BEAN_NAME)

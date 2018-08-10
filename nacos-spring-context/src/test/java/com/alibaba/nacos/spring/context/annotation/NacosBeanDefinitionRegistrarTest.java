@@ -24,7 +24,6 @@ import com.alibaba.nacos.spring.test.Config;
 import com.alibaba.nacos.spring.test.EmbeddedNacosHttpServer;
 import com.alibaba.nacos.spring.test.ListenersConfiguration;
 import com.alibaba.nacos.spring.util.NacosBeanUtils;
-import com.alibaba.nacos.spring.util.NacosConfigLoader;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -93,14 +92,6 @@ public class NacosBeanDefinitionRegistrarTest {
     private NacosServiceFactory nacosServiceFactory;
 
     @Autowired
-    @Qualifier(NacosBeanUtils.NACOS_PROPERTIES_RESOLVER_BEAN_NAME)
-    private NacosPropertiesResolver nacosPropertiesResolver;
-
-    @Autowired
-    @Qualifier(NacosBeanUtils.NACOS_CONFIG_LOADER_BEAN_NAME)
-    private NacosConfigLoader nacosConfigLoader;
-
-    @Autowired
     @Qualifier(NamingServiceInjectedBeanPostProcessor.BEAN_NAME)
     private NamingServiceInjectedBeanPostProcessor namingServiceInjectedBeanPostProcessor;
 
@@ -113,8 +104,8 @@ public class NacosBeanDefinitionRegistrarTest {
     private NacosConfigListenerMethodProcessor nacosConfigListenerMethodProcessor;
 
     @Autowired
-    @Qualifier(NacosPropertySourceProcessor.BEAN_NAME)
-    private NacosPropertySourceProcessor nacosPropertySourceProcessor;
+    @Qualifier(NacosPropertySourcePostProcessor.BEAN_NAME)
+    private NacosPropertySourcePostProcessor nacosPropertySourcePostProcessor;
 
     @NacosService
     private ConfigService configService;
