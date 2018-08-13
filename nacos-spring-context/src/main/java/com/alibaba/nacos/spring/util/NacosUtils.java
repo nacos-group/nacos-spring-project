@@ -180,6 +180,10 @@ public abstract class NacosUtils {
     public static Properties resolveProperties(Map<String, Object> attributes, PropertyResolver propertyResolver,
                                                Properties defaultProperties) {
 
+        if (CollectionUtils.isEmpty(attributes)) {
+            return defaultProperties;
+        }
+
         Properties resolveProperties = resolveProperties(attributes, propertyResolver);
 
         merge(resolveProperties, defaultProperties);

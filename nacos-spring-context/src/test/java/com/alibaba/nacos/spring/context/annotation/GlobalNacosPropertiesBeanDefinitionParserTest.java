@@ -39,7 +39,7 @@ import static com.alibaba.nacos.spring.util.NacosBeanUtils.GLOBAL_NACOS_PROPERTI
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
-        "classpath:/META-INF/nacos-context.xml"
+        "classpath:/META-INF/nacos-global-properties.xml"
 })
 public class GlobalNacosPropertiesBeanDefinitionParserTest {
 

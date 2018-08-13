@@ -16,7 +16,6 @@
  */
 package com.alibaba.nacos.spring.util;
 
-import com.alibaba.nacos.spring.context.annotation.NacosPropertiesResolver;
 import com.alibaba.nacos.spring.factory.NacosServiceFactory;
 import com.alibaba.nacos.spring.test.TestConfiguration;
 import org.junit.Assert;
@@ -54,21 +53,11 @@ public class NacosBeanUtilsTest {
     @Qualifier(NACOS_SERVICE_FACTORY_BEAN_NAME)
     private NacosServiceFactory nacosServiceFactory;
 
-    @Autowired
-    @Qualifier(NACOS_PROPERTIES_RESOLVER_BEAN_NAME)
-    private NacosPropertiesResolver resolver;
-
-    @Autowired
-    @Qualifier(NACOS_CONFIG_LOADER_BEAN_NAME)
-    private NacosConfigLoader loader;
-
     @Test
     public void testBeans() {
 
         Assert.assertEquals(globalProperties, NacosBeanUtils.getGlobalPropertiesBean(beanFactory));
         Assert.assertEquals(nacosServiceFactory, NacosBeanUtils.getNacosServiceFactoryBean(beanFactory));
-        Assert.assertEquals(resolver, NacosBeanUtils.getNacosPropertiesResolverBean(beanFactory));
-        Assert.assertEquals(loader, NacosBeanUtils.getNacosConfigLoaderBean(beanFactory));
 
     }
 
@@ -80,7 +69,6 @@ public class NacosBeanUtilsTest {
         Assert.assertTrue(isBeanDefinitionPresent(registry, GLOBAL_NACOS_PROPERTIES_BEAN_NAME, Properties.class));
         Assert.assertTrue(isBeanDefinitionPresent(registry, NACOS_SERVICE_FACTORY_BEAN_NAME, NacosServiceFactory.class));
         Assert.assertTrue(isBeanDefinitionPresent(registry, NACOS_SERVICE_FACTORY_BEAN_NAME, NacosServiceFactory.class));
-        Assert.assertTrue(isBeanDefinitionPresent(registry, NACOS_CONFIG_LOADER_BEAN_NAME, NacosConfigLoader.class));
 
     }
 

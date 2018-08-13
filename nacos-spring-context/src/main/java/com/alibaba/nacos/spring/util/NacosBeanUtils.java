@@ -16,7 +16,6 @@
  */
 package com.alibaba.nacos.spring.util;
 
-import com.alibaba.nacos.spring.context.annotation.NacosPropertiesResolver;
 import com.alibaba.nacos.spring.factory.NacosServiceFactory;
 import com.alibaba.spring.util.BeanUtils;
 import org.apache.commons.lang3.ArrayUtils;
@@ -53,16 +52,6 @@ public abstract class NacosBeanUtils {
     public static final String NACOS_SERVICE_FACTORY_BEAN_NAME = "nacosServiceFactory";
 
     /**
-     * The bean name of {@link NacosPropertiesResolver}
-     */
-    public static final String NACOS_PROPERTIES_RESOLVER_BEAN_NAME = "nacosPropertiesResolver";
-
-    /**
-     * The bean name of {@link NacosConfigLoader}
-     */
-    public static final String NACOS_CONFIG_LOADER_BEAN_NAME = "nacosConfigLoader";
-
-    /**
      * The bean name of {@link Executor} for Nacos Config Listener
      */
     public static final String NACOS_CONFIG_LISTENER_EXECUTOR_BEAN_NAME = "nacosConfigListenerExecutor";
@@ -86,6 +75,23 @@ public abstract class NacosBeanUtils {
         if (beanRegistry != null) {
             beanRegistry.registerSingleton(beanName, singletonObject);
         }
+    }
+
+    /**
+     * Resolve {@link BeanFactory} from {@link BeanDefinitionRegistry}
+     *
+     * @param registry {@link BeanDefinitionRegistry}
+     * @return {@link BeanFactory} if resolved
+     */
+    public static BeanFactory resolveBeanFactory(BeanDefinitionRegistry registry) {
+        if (registry instanceof BeanFactory) {
+            return (BeanFactory) registry;
+        }
+
+        if (registry instanceof AbstractApplicationContext) {
+            return ((AbstractApplicationContext) registry).getBeanFactory();
+        }
+        return null;
     }
 
     /**
@@ -142,28 +148,6 @@ public abstract class NacosBeanUtils {
      */
     public static NacosServiceFactory getNacosServiceFactoryBean(BeanFactory beanFactory) throws NoSuchBeanDefinitionException {
         return beanFactory.getBean(NACOS_SERVICE_FACTORY_BEAN_NAME, NacosServiceFactory.class);
-    }
-
-    /**
-     * Get {@link NacosPropertiesResolver} Bean
-     *
-     * @param beanFactory {@link BeanFactory}
-     * @return {@link NacosPropertiesResolver} Bean
-     * @throws NoSuchBeanDefinitionException if there is no such bean definition
-     */
-    public static NacosPropertiesResolver getNacosPropertiesResolverBean(BeanFactory beanFactory) throws NoSuchBeanDefinitionException {
-        return beanFactory.getBean(NACOS_PROPERTIES_RESOLVER_BEAN_NAME, NacosPropertiesResolver.class);
-    }
-
-    /**
-     * Get {@link NacosConfigLoader} Bean
-     *
-     * @param beanFactory {@link BeanFactory}
-     * @return {@link NacosConfigLoader} Bean
-     * @throws NoSuchBeanDefinitionException if there is no such bean definition
-     */
-    public static NacosConfigLoader getNacosConfigLoaderBean(BeanFactory beanFactory) throws NoSuchBeanDefinitionException {
-        return beanFactory.getBean(NACOS_CONFIG_LOADER_BEAN_NAME, NacosConfigLoader.class);
     }
 
     /**

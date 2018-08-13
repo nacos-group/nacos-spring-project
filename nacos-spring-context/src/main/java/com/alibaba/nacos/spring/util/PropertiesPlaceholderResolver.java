@@ -16,9 +16,11 @@
  */
 package com.alibaba.nacos.spring.util;
 
+import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.env.PropertyResolver;
 import org.springframework.util.StringUtils;
 
+import java.lang.annotation.Annotation;
 import java.util.Map;
 import java.util.Properties;
 
@@ -34,6 +36,17 @@ public class PropertiesPlaceholderResolver {
 
     public PropertiesPlaceholderResolver(PropertyResolver propertyResolver) {
         this.propertyResolver = propertyResolver;
+    }
+
+    /**
+     * Resolve placeholders in specified {@link Annotation annotation}
+     *
+     * @param annotation {@link Annotation annotation}
+     * @return Resolved {@link Properties source properties}
+     */
+    public Properties resolve(Annotation annotation) {
+        Map<String, Object> attributes = AnnotationUtils.getAnnotationAttributes(annotation);
+        return resolve(attributes);
     }
 
     /**

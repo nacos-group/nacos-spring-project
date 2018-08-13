@@ -40,6 +40,41 @@ import static com.alibaba.nacos.spring.util.NacosUtils.DEFAULT_STRING_ATTRIBUTE_
 public @interface NacosPropertySource {
 
     /**
+     * The attribute name of {@link NacosPropertySource#name()}
+     */
+    String NAME_ATTRIBUTE_NAME = "name";
+
+    /**
+     * The attribute name of {@link NacosPropertySource#groupId()}
+     */
+    String GROUP_ID_ATTRIBUTE_NAME = "groupId";
+
+    /**
+     * The attribute name of {@link NacosPropertySource#dataId()}
+     */
+    String DATA_ID_ATTRIBUTE_NAME = "dataId";
+
+    /**
+     * The attribute name of {@link NacosPropertySource#first()}
+     */
+    String FIRST_ATTRIBUTE_NAME = "first";
+
+    /**
+     * The attribute name of {@link NacosPropertySource#before()}
+     */
+    String BEFORE_ATTRIBUTE_NAME = "before";
+
+    /**
+     * The attribute name of {@link NacosPropertySource#after()}
+     */
+    String AFTER_ATTRIBUTE_NAME = "after";
+
+    /**
+     * The attribute name of {@link NacosPropertySource#properties()}
+     */
+    String PROPERTIES_ATTRIBUTE_NAME = "properties";
+
+    /**
      * The name of Nacos {@link PropertySource}
      * If absent , the default name will be built from
      * {@link #dataId() dataId}, {@link #groupId() groupid} and {@link #properties() properties} by

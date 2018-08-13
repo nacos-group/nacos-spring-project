@@ -22,7 +22,6 @@ import com.alibaba.nacos.spring.config.NacosNamespaceHandler;
 import com.alibaba.nacos.spring.context.properties.NacosConfigPropertiesBindingPostProcessor;
 import com.alibaba.nacos.spring.factory.NacosServiceFactory;
 import com.alibaba.nacos.spring.util.NacosBeanUtils;
-import com.alibaba.nacos.spring.util.NacosConfigLoader;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -59,14 +58,6 @@ public class NacosAnnotationDrivenBeanDefinitionParserTest {
     private NacosServiceFactory nacosServiceFactory;
 
     @Autowired
-    @Qualifier(NacosBeanUtils.NACOS_PROPERTIES_RESOLVER_BEAN_NAME)
-    private NacosPropertiesResolver nacosPropertiesResolver;
-
-    @Autowired
-    @Qualifier(NacosBeanUtils.NACOS_CONFIG_LOADER_BEAN_NAME)
-    private NacosConfigLoader nacosConfigLoader;
-
-    @Autowired
     @Qualifier(NamingServiceInjectedBeanPostProcessor.BEAN_NAME)
     private NamingServiceInjectedBeanPostProcessor namingServiceInjectedBeanPostProcessor;
 
@@ -79,8 +70,8 @@ public class NacosAnnotationDrivenBeanDefinitionParserTest {
     private NacosConfigListenerMethodProcessor nacosConfigListenerMethodProcessor;
 
     @Autowired
-    @Qualifier(NacosPropertySourceProcessor.BEAN_NAME)
-    private NacosPropertySourceProcessor nacosPropertySourceProcessor;
+    @Qualifier(NacosPropertySourcePostProcessor.BEAN_NAME)
+    private NacosPropertySourcePostProcessor nacosPropertySourcePostProcessor;
 
     @NacosService
     private ConfigService configService;
@@ -89,12 +80,10 @@ public class NacosAnnotationDrivenBeanDefinitionParserTest {
     public void test() {
         Assert.assertNotNull(globalProperties);
         Assert.assertNotNull(nacosServiceFactory);
-        Assert.assertNotNull(nacosPropertiesResolver);
-        Assert.assertNotNull(nacosConfigLoader);
         Assert.assertNotNull(namingServiceInjectedBeanPostProcessor);
         Assert.assertNotNull(nacosConfigPropertiesBindingPostProcessor);
         Assert.assertNotNull(nacosConfigListenerMethodProcessor);
-        Assert.assertNotNull(nacosPropertySourceProcessor);
+        Assert.assertNotNull(nacosPropertySourcePostProcessor);
     }
 
 }

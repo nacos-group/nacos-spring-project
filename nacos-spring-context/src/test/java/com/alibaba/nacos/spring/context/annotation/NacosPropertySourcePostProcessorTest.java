@@ -19,8 +19,6 @@ package com.alibaba.nacos.spring.context.annotation;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.spring.beans.factory.annotation.NamingServiceInjectedBeanPostProcessor;
-import com.alibaba.nacos.spring.context.annotation.NacosPropertySource;
-import com.alibaba.nacos.spring.context.annotation.NacosPropertySourceProcessor;
 import com.alibaba.nacos.spring.test.MockConfigService;
 import com.alibaba.nacos.spring.test.TestConfiguration;
 import org.junit.Assert;
@@ -37,13 +35,13 @@ import static org.springframework.core.env.StandardEnvironment.SYSTEM_ENVIRONMEN
 import static org.springframework.core.env.StandardEnvironment.SYSTEM_PROPERTIES_PROPERTY_SOURCE_NAME;
 
 /**
- * {@link NacosPropertySourceProcessor} Test
+ * {@link NacosPropertySourcePostProcessor} Test
  *
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
- * @ee NacosPropertySourceProcessor
+ * @ee NacosPropertySourcePostProcessor
  * @since 0.1.0
  */
-public class NacosPropertySourceProcessorTest {
+public class NacosPropertySourcePostProcessorTest {
 
     private static final String TEST_PROPERTY_NAME = "user.name";
 
@@ -143,7 +141,7 @@ public class NacosPropertySourceProcessorTest {
         beanFactory.registerSingleton(CONFIG_SERVICE_BEAN_NAME, configService);
 
         context.register(TestConfiguration.class, NamingServiceInjectedBeanPostProcessor.class,
-                NacosPropertySourceProcessor.class);
+                NacosPropertySourcePostProcessor.class);
         return context;
     }
 }

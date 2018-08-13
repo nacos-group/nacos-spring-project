@@ -65,7 +65,8 @@ public class CacheableEventPublishingNacosServiceFactory implements NacosService
 
     private ConfigService doCreateConfigService(Properties properties) throws NacosException {
         ConfigService configService = NacosFactory.createConfigService(properties);
-        return new EventPublishingConfigService(configService, applicationEventPublisher);
+        return applicationEventPublisher == null ? configService :
+                new EventPublishingConfigService(configService, applicationEventPublisher);
     }
 
     @Override
