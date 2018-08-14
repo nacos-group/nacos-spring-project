@@ -25,6 +25,7 @@ import org.springframework.util.StringUtils;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URI;
+import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -143,7 +144,7 @@ public class NacosConfigHttpHandler implements HttpHandler {
         if (StringUtils.hasText(content)) {
             OutputStream outputStream = httpExchange.getResponseBody();
             httpExchange.sendResponseHeaders(200, content.length());
-            StreamUtils.copy(content, forName("UTF-8"), outputStream);
+            StreamUtils.copy(URLDecoder.decode(content, "UTF-8"), forName("UTF-8"), outputStream);
         }
         httpExchange.close();
     }
