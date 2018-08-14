@@ -20,9 +20,12 @@ import com.alibaba.nacos.spring.beans.factory.annotation.NamingServiceInjectedBe
 import com.alibaba.nacos.spring.context.properties.NacosConfigPropertiesBindingPostProcessor;
 import com.alibaba.nacos.spring.factory.CacheableEventPublishingNacosServiceFactory;
 import com.alibaba.nacos.spring.factory.NacosServiceFactory;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotationMetadata;
@@ -51,6 +54,10 @@ public class NacosBeanDefinitionRegistrar implements ImportBeanDefinitionRegistr
 
     @Override
     public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
+        BeanDefinition annotationProcessor = BeanDefinitionBuilder.genericBeanDefinition(
+            PropertySourcesPlaceholderConfigurer.class).getBeanDefinition();
+        registry.registerBeanDefinition(PropertySourcesPlaceholderConfigurer.class.getName(), annotationProcessor);
+
         AnnotationAttributes attributes = AnnotationAttributes.fromMap(
                 importingClassMetadata.getAnnotationAttributes(EnableNacos.class.getName()));
         // Register Global Nacos Properties Bean
@@ -121,7 +128,7 @@ public class NacosBeanDefinitionRegistrar implements ImportBeanDefinitionRegistr
 
     private ExecutorService buildNacosConfigListenerExecutor() {
         int parallelism = getParallelism();
-        ExecutorService executorService = Executors.newFixedThreadPool(parallelism, new ThreadFactory() {
+        return Executors.newFixedThreadPool(parallelism, new ThreadFactory() {
             private final AtomicInteger threadNumber = new AtomicInteger(1);
 
             @Override
@@ -131,7 +138,6 @@ public class NacosBeanDefinitionRegistrar implements ImportBeanDefinitionRegistr
                 return thread;
             }
         });
-        return executorService;
     }
 
     private int getParallelism() {
