@@ -38,7 +38,7 @@ import static com.alibaba.nacos.spring.util.NacosUtils.DEFAULT_STRING_ATTRIBUTE_
 /**
  * Nacos Property Source {@link BeanDefinitionParser} for &lt;nacos:property-source ...&gt;
  *
- * @author <a href="mailto:huangxiaoyu1018@gmail.com">hxy1018</a>
+ * @author <a href="mailto:huangxiaoyu1018@gmail.com">hxy1991</a>
  * @see NacosPropertySource
  * @since 0.1.0
  */
@@ -83,21 +83,35 @@ public class NacosPropertySourceBeanDefinitionParser implements BeanDefinitionPa
         Map<String, Object> attributes = new HashMap<String, Object>();
         attributes.put(DATA_ID_ATTRIBUTE_NAME, dataId);
 
-        setPropertyIfPresent(attributes, NAME_ATTRIBUTE_NAME, element.getAttribute("name"), DEFAULT_STRING_ATTRIBUTE_VALUE);
-        setPropertyIfPresent(attributes, GROUP_ID_ATTRIBUTE_NAME, element.getAttribute("group-id"), DEFAULT_GROUP);
-        setPropertyIfPresent(attributes, FIRST_ATTRIBUTE_NAME, element.getAttribute("first"), false);
-        setPropertyIfPresent(attributes, BEFORE_ATTRIBUTE_NAME, element.getAttribute("before"), DEFAULT_STRING_ATTRIBUTE_VALUE);
-        setPropertyIfPresent(attributes, AFTER_ATTRIBUTE_NAME, element.getAttribute("after"), DEFAULT_STRING_ATTRIBUTE_VALUE);
+        setProperty(attributes, NAME_ATTRIBUTE_NAME, element.getAttribute("name"), DEFAULT_STRING_ATTRIBUTE_VALUE);
+        setProperty(attributes, GROUP_ID_ATTRIBUTE_NAME, element.getAttribute("group-id"), DEFAULT_GROUP);
+        setProperty(attributes, BEFORE_ATTRIBUTE_NAME, element.getAttribute("before"), DEFAULT_STRING_ATTRIBUTE_VALUE);
+        setProperty(attributes, AFTER_ATTRIBUTE_NAME, element.getAttribute("after"), DEFAULT_STRING_ATTRIBUTE_VALUE);
 
-        NacosPropertySourceProcessor propertySourceProcessor = new NacosPropertySourceProcessor(beanFactory, environment);
+        setBooleanProperty(attributes, FIRST_ATTRIBUTE_NAME, element.getAttribute("first"), false);
+        setBooleanProperty(attributes, AUTO_REFRESHED, element.getAttribute("auto-refreshed"), false);
+
+        NacosPropertySourceProcessor propertySourceProcessor = new NacosPropertySourceProcessor(beanFactory,
+            environment, (ApplicationEventPublisher)beanFactory);
 
         propertySourceProcessor.process(attributes);
     }
 
-    private void setPropertyIfPresent(Map<String, Object> attributes, String name, String value, Object defaultValue) {
+    private void setProperty(Map<String, Object> attributes, String name, String value, Object defaultValue) {
         String resolvedValue = environment.resolvePlaceholders(value);
         if (StringUtils.hasText(resolvedValue)) {
             attributes.put(name, resolvedValue);
+        } else {
+            if (resolvedValue != null) {
+                attributes.put(name, defaultValue);
+            }
+        }
+    }
+
+    private void setBooleanProperty(Map<String, Object> attributes, String name, String value, boolean defaultValue) {
+        String resolvedValue = environment.resolvePlaceholders(value);
+        if (StringUtils.hasText(resolvedValue)) {
+            attributes.put(name, "true".equals(resolvedValue));
         } else {
             if (resolvedValue != null) {
                 attributes.put(name, defaultValue);

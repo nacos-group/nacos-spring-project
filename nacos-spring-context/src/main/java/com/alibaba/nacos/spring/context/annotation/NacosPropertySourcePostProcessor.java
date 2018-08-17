@@ -24,6 +24,8 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.ConfigurationClassPostProcessor;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
@@ -35,8 +37,6 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.*;
 
-import static com.alibaba.nacos.spring.util.NacosBeanUtils.getGlobalPropertiesBean;
-
 /**
  * {@link NacosPropertySource @NacosPropertySource} Post Processor
  *
@@ -45,7 +45,7 @@ import static com.alibaba.nacos.spring.util.NacosBeanUtils.getGlobalPropertiesBe
  * @since 0.1.0
  */
 public class NacosPropertySourcePostProcessor implements BeanDefinitionRegistryPostProcessor, BeanFactoryPostProcessor,
-        EnvironmentAware, Ordered {
+        EnvironmentAware, Ordered, ApplicationEventPublisherAware {
 
     /**
      * The bean name of {@link NacosPropertySourcePostProcessor}
@@ -55,6 +55,8 @@ public class NacosPropertySourcePostProcessor implements BeanDefinitionRegistryP
     private ConfigurableEnvironment environment;
 
     private NacosPropertySourceProcessor processor;
+
+    private ApplicationEventPublisher applicationEventPublisher;
 
     @Override
     public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
@@ -66,7 +68,7 @@ public class NacosPropertySourcePostProcessor implements BeanDefinitionRegistryP
     @Override
     public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
 
-        this.processor = new NacosPropertySourceProcessor(beanFactory, environment);
+        this.processor = new NacosPropertySourceProcessor(beanFactory, environment, applicationEventPublisher);
 
         String[] beanNames = beanFactory.getBeanDefinitionNames();
 
@@ -81,11 +83,11 @@ public class NacosPropertySourcePostProcessor implements BeanDefinitionRegistryP
         if (beanDefinition instanceof AnnotatedBeanDefinition) {
             // @NacosPropertySource must be AnnotatedBeanDefinition
             AnnotatedBeanDefinition annotatedBeanDefinition = (AnnotatedBeanDefinition) beanDefinition;
-            addPropertySource(beanName, annotatedBeanDefinition);
+            addPropertySource(annotatedBeanDefinition);
         }
     }
 
-    private void addPropertySource(String beanName, AnnotatedBeanDefinition annotatedBeanDefinition) {
+    private void addPropertySource(AnnotatedBeanDefinition annotatedBeanDefinition) {
 
         AnnotationMetadata metadata = annotatedBeanDefinition.getMetadata();
 
@@ -118,5 +120,10 @@ public class NacosPropertySourcePostProcessor implements BeanDefinitionRegistryP
     @Override
     public void setEnvironment(Environment environment) {
         this.environment = (ConfigurableEnvironment) environment;
+    }
+
+    @Override
+    public void setApplicationEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
+        this.applicationEventPublisher = applicationEventPublisher;
     }
 }

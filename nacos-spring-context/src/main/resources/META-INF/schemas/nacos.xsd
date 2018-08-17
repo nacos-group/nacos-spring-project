@@ -58,6 +58,7 @@
             <xsd:attribute name="group-id" default="DEFAULT_GROUP"/>
             <xsd:attribute name="data-id"/>
             <xsd:attribute name="data-ids"/>
+            <xsd:attribute name="auto-refreshed" default="false"/>
             <xsd:attribute name="first" default="false"/>
             <xsd:attribute name="before" default=""/>
             <xsd:attribute name="after" default=""/>

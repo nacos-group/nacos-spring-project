@@ -12,7 +12,7 @@
 
     <nacos:global-properties server-addr="${nacos.server-addr}" />
 
-    <nacos:property-source data-id="user"/>
+    <nacos:property-source data-id="user" auto-refreshed="true" />
 
     <bean name="user" class="com.alibaba.nacos.spring.test.User">
         <property name="id" value="${id}"/>

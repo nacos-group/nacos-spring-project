@@ -42,6 +42,8 @@ public class NacosConfigLoader {
 
     private NacosServiceFactory nacosServiceFactory;
 
+    private ConfigService configService;
+
     public NacosConfigLoader(ConfigurableEnvironment environment) {
         this.environment = environment;
         this.conversionService = environment.getConversionService();
@@ -72,7 +74,6 @@ public class NacosConfigLoader {
      * @throws RuntimeException If {@link ConfigService} creating is failed.
      */
     public String load(String dataId, String groupId, Properties nacosProperties) throws RuntimeException {
-        ConfigService configService = null;
         try {
             configService = nacosServiceFactory != null ?
                     nacosServiceFactory.createConfigService(nacosProperties) :
@@ -104,5 +105,9 @@ public class NacosConfigLoader {
 
     public void setNacosServiceFactory(NacosServiceFactory nacosServiceFactory) {
         this.nacosServiceFactory = nacosServiceFactory;
+    }
+
+    public ConfigService getConfigService() {
+        return configService;
     }
 }

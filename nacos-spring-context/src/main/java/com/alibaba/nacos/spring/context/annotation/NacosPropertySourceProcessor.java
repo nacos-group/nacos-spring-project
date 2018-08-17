@@ -17,6 +17,7 @@
 package com.alibaba.nacos.spring.context.annotation;
 
 import org.springframework.beans.factory.BeanFactory;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
@@ -47,10 +48,14 @@ class NacosPropertySourceProcessor {
 
     private final BeanFactory beanFactory;
 
-    public NacosPropertySourceProcessor(BeanFactory beanFactory, ConfigurableEnvironment environment) {
+    private ApplicationEventPublisher applicationEventPublisher;
+
+    NacosPropertySourceProcessor(BeanFactory beanFactory, ConfigurableEnvironment environment,
+                                 ApplicationEventPublisher applicationEventPublisher) {
         this.beanFactory = beanFactory;
         this.environment = environment;
         this.globalNacosProperties = getGlobalPropertiesBean(beanFactory);
+        this.applicationEventPublisher = applicationEventPublisher;
     }
 
     public void process(Map<String, Object> attributes) {
@@ -58,6 +63,7 @@ class NacosPropertySourceProcessor {
         String name = (String) attributes.get(NAME_ATTRIBUTE_NAME);
         String dataId = (String) attributes.get(DATA_ID_ATTRIBUTE_NAME);
         String groupId = (String) attributes.get(GROUP_ID_ATTRIBUTE_NAME);
+        boolean autoRefreshed = Boolean.TRUE.equals(attributes.get(AUTO_REFRESHED));
 
         Map<String, Object> properties = (Map<String, Object>) attributes.get(PROPERTIES_ATTRIBUTE_NAME);
 
@@ -68,9 +74,11 @@ class NacosPropertySourceProcessor {
         builder.name(name)
                 .dataId(dataId)
                 .groupId(groupId)
+                .autoRefreshed(autoRefreshed)
                 .properties(nacosProperties)
                 .environment(environment)
-                .beanFactory(beanFactory);
+                .beanFactory(beanFactory)
+                .applicationEventPublisher(applicationEventPublisher);
 
         addPropertySource(builder.build(), attributes);
     }
