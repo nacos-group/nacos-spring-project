@@ -1,11 +1,12 @@
 /*
- * Copyright 2002-2013 the original author or authors.
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,23 +14,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.alibaba.nacos.spring.context.annotation;
 
+import com.alibaba.nacos.api.annotation.NacosValue;
+import com.alibaba.nacos.spring.beans.factory.annotation.AnnotationInjectedBeanPostProcessor;
 import com.alibaba.nacos.spring.context.event.NacosConfigReceiveEvent;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.MutablePropertyValues;
-import org.springframework.beans.PropertyValue;
 import org.springframework.beans.PropertyValues;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
-import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.beans.factory.config.TypedStringValue;
 import org.springframework.context.ApplicationListener;
-import org.springframework.core.Ordered;
-import org.springframework.core.PriorityOrdered;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.validation.DataBinder;
 
@@ -46,26 +42,23 @@ import static org.springframework.core.annotation.AnnotationUtils.getAnnotation;
 import static org.springframework.util.StringUtils.hasText;
 
 /**
- * {@link NacosPropertySource @NacosPropertySource} Listener
+ * {@link org.springframework.beans.factory.config.BeanPostProcessor} implementation
  *
  * @author <a href="mailto:huangxiaoyu1018@gmail.com">hxy1991</a>
- * @see NacosPropertySource
+ * @see NacosValue
  * @since 0.1.0
  */
-public class NacosPropertySourceListener implements BeanFactoryPostProcessor, BeanPostProcessor, PriorityOrdered,
-    ApplicationListener<NacosConfigReceiveEvent> {
+public class NacosValueAnnotationBeanPostProcessor extends AnnotationInjectedBeanPostProcessor<NacosValue, Object>
+    implements BeanFactoryAware, ApplicationListener<NacosConfigReceiveEvent> {
 
     /**
-     * The bean name of {@link NacosPropertySourceListener}
+     * The name of {@link NacosValueAnnotationBeanPostProcessor} bean
      */
-    public static final String BEAN_NAME = "nacosPropertySourceListener";
+    public static final String BEAN_NAME = "nacosValueAnnotationBeanPostProcessor";
 
     private static final String PLACEHOLDER_PREFIX = "${";
 
     private static final String PLACEHOLDER_SUFFIX = "}";
-
-    // beanName, beanProperty
-    private Map<String, List<BeanProperty>> beanNamePropertyListMap = new HashMap<String, List<BeanProperty>>();
 
     // placeholder, beanProperty
     private Map<String, List<BeanProperty>> placeholderPropertyListMap = new HashMap<String, List<BeanProperty>>();
@@ -73,54 +66,38 @@ public class NacosPropertySourceListener implements BeanFactoryPostProcessor, Be
     // beanProperty, bean
     private Map<BeanProperty, List<Object>> propertyBeanListMap = new HashMap<BeanProperty, List<Object>>();
 
-    @Override
-    public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
-        String[] beanNames = beanFactory.getBeanDefinitionNames();
-        for (final String curName : beanNames) {
-            BeanDefinition beanDefinition = beanFactory.getBeanDefinition(curName);
-            PropertyValue[] propertyValues = beanDefinition.getPropertyValues().getPropertyValues();
-            for (PropertyValue propertyValue : propertyValues) {
-                Object value = propertyValue.getValue();
-                if (value instanceof TypedStringValue) {
-                    TypedStringValue typedStringValue = (TypedStringValue)value;
-                    String placeHolder = typedStringValue.getValue();
-                    BeanProperty beanProperty = new BeanProperty(propertyValue.getName(), placeHolder);
-                    put2ListMap(beanNamePropertyListMap, curName, beanProperty);
-                    put2ListMap(placeholderPropertyListMap, placeHolder, beanProperty);
-                }
-            }
-        }
-    }
+    private ConfigurableListableBeanFactory beanFactory;
 
-    private <K, V> void put2ListMap(Map<K, List<V>> map, K key, V value) {
-        List<V> valueList = map.get(key);
-        if (valueList == null) {
-            valueList = new ArrayList<V>();
-        }
-        valueList.add(value);
-        map.put(key, valueList);
+    @Override
+    protected Object resolveInjectedBean(NacosValue annotation, Class<?> beanClass) {
+        String value = annotation.value();
+        return beanFactory.resolveEmbeddedValue(value);
     }
 
     @Override
-    public Object postProcessBeforeInitialization(Object bean, String beanName)
+    protected String generateInjectedBeanCacheKey(NacosValue annotation, Class<?> beanClass) {
+        return beanClass.getName() + annotation;
+    }
+
+    @Override
+    public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+        if (!(beanFactory instanceof ConfigurableListableBeanFactory)) {
+            throw new IllegalArgumentException(
+                "NacosValueAnnotationBeanPostProcessor requires a ConfigurableListableBeanFactory");
+        }
+        this.beanFactory = (ConfigurableListableBeanFactory)beanFactory;
+    }
+
+    @Override
+    public Object postProcessBeforeInitialization(Object bean, final String beanName)
         throws BeansException {
 
-        doValueAnnotation(bean.getClass(), beanName);
+        final Map<String, List<BeanProperty>> beanNamePropertyListMap = new HashMap<String, List<BeanProperty>>();
 
-        List<BeanProperty> beanPropertyList = beanNamePropertyListMap.get(beanName);
-        if (beanPropertyList != null) {
-            for (BeanProperty beanProperty : beanPropertyList) {
-                put2ListMap(propertyBeanListMap, beanProperty, bean);
-            }
-        }
-        return bean;
-    }
-
-    private void doValueAnnotation(Class beanClass, final String beanName) {
-        ReflectionUtils.doWithFields(beanClass, new ReflectionUtils.FieldCallback() {
+        ReflectionUtils.doWithFields(bean.getClass(), new ReflectionUtils.FieldCallback() {
             @Override
             public void doWith(Field field) throws IllegalArgumentException {
-                Value annotation = getAnnotation(field, Value.class);
+                NacosValue annotation = getAnnotation(field, NacosValue.class);
                 if (annotation != null) {
                     if (Modifier.isStatic(field.getModifiers())) {
                         return;
@@ -132,16 +109,24 @@ public class NacosPropertySourceListener implements BeanFactoryPostProcessor, Be
                 }
             }
         });
+
+        List<BeanProperty> beanPropertyList = beanNamePropertyListMap.get(beanName);
+        if (beanPropertyList != null) {
+            for (BeanProperty beanProperty : beanPropertyList) {
+                put2ListMap(propertyBeanListMap, beanProperty, bean);
+            }
+        }
+
+        return super.postProcessBeforeInitialization(bean, beanName);
     }
 
-    @Override
-    public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-        return bean;
-    }
-
-    @Override
-    public int getOrder() {
-        return Ordered.LOWEST_PRECEDENCE;
+    private <K, V> void put2ListMap(Map<K, List<V>> map, K key, V value) {
+        List<V> valueList = map.get(key);
+        if (valueList == null) {
+            valueList = new ArrayList<V>();
+        }
+        valueList.add(value);
+        map.put(key, valueList);
     }
 
     @Override
@@ -235,4 +220,5 @@ public class NacosPropertySourceListener implements BeanFactoryPostProcessor, Be
                 '}';
         }
     }
+
 }

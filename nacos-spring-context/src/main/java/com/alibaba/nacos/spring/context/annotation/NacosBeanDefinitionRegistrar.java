@@ -83,9 +83,9 @@ public class NacosBeanDefinitionRegistrar implements ImportBeanDefinitionRegistr
 
         registerNacosPropertySourceProcessor(registry);
 
-        registerNacosPropertySourceListener(registry);
-
         registerNacosConfigListenerExecutor(registry);
+
+        registerNacosValueAnnotationBeanPostProcessor(registry);
     }
 
     private void registerGlobalNacosProperties(AnnotationAttributes attributes, BeanDefinitionRegistry registry) {
@@ -123,14 +123,13 @@ public class NacosBeanDefinitionRegistrar implements ImportBeanDefinitionRegistr
                 NacosPropertySourcePostProcessor.class);
     }
 
-    private void registerNacosPropertySourceListener(BeanDefinitionRegistry registry) {
-        registerInfrastructureBean(registry, NacosPropertySourceListener.BEAN_NAME,
-            NacosPropertySourceListener.class);
-    }
-
     private void registerNacosConfigListenerExecutor(BeanDefinitionRegistry registry) {
         ExecutorService nacosConfigListenerExecutor = buildNacosConfigListenerExecutor();
         registerSingleton(registry, NACOS_CONFIG_LISTENER_EXECUTOR_BEAN_NAME, nacosConfigListenerExecutor);
+    }
+
+    private void registerNacosValueAnnotationBeanPostProcessor(BeanDefinitionRegistry registry) {
+        registerInfrastructureBean(registry, NacosValueAnnotationBeanPostProcessor.BEAN_NAME, NacosValueAnnotationBeanPostProcessor.class);
     }
 
     private ExecutorService buildNacosConfigListenerExecutor() {
