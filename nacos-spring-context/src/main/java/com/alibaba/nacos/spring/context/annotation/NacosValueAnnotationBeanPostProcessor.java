@@ -17,13 +17,14 @@
 package com.alibaba.nacos.spring.context.annotation;
 
 import com.alibaba.nacos.api.annotation.NacosValue;
-import com.alibaba.nacos.spring.beans.factory.annotation.AnnotationInjectedBeanPostProcessor;
 import com.alibaba.nacos.spring.context.event.NacosConfigReceiveEvent;
+import com.alibaba.spring.beans.factory.annotation.AnnotationInjectedBeanPostProcessor;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.PropertyValues;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
+import org.springframework.beans.factory.annotation.InjectionMetadata;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.ApplicationListener;
 import org.springframework.util.ReflectionUtils;
@@ -48,7 +49,7 @@ import static org.springframework.util.StringUtils.hasText;
  * @see NacosValue
  * @since 0.1.0
  */
-public class NacosValueAnnotationBeanPostProcessor extends AnnotationInjectedBeanPostProcessor<NacosValue, Object>
+public class NacosValueAnnotationBeanPostProcessor extends AnnotationInjectedBeanPostProcessor<NacosValue>
     implements BeanFactoryAware, ApplicationListener<NacosConfigReceiveEvent> {
 
     /**
@@ -69,14 +70,18 @@ public class NacosValueAnnotationBeanPostProcessor extends AnnotationInjectedBea
     private ConfigurableListableBeanFactory beanFactory;
 
     @Override
-    protected Object resolveInjectedBean(NacosValue annotation, Class<?> beanClass) {
+    protected Object doGetInjectedBean(NacosValue annotation, Object bean, String beanName, Class<?> injectedType,
+                                       InjectionMetadata.InjectedElement injectedElement) throws Exception {
+
         String value = annotation.value();
         return beanFactory.resolveEmbeddedValue(value);
     }
 
     @Override
-    protected String generateInjectedBeanCacheKey(NacosValue annotation, Class<?> beanClass) {
-        return beanClass.getName() + annotation;
+    protected String buildInjectedObjectCacheKey(NacosValue annotation, Object bean, String beanName,
+                                                 Class<?> injectedType,
+                                                 InjectionMetadata.InjectedElement injectedElement) {
+        return bean.getClass().getName() + annotation;
     }
 
     @Override
