@@ -36,7 +36,7 @@ import static com.alibaba.nacos.spring.test.TestConfiguration.MODIFIED_TEST_CONT
 import static com.alibaba.nacos.spring.test.TestConfiguration.TEST_CONFIG;
 
 /**
- * {@link NacosConfigPropertiesBindingPostProcessor} Test
+ * {@link NacosConfigurationPropertiesBindingPostProcessor} Test
  *
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
  * @since 0.1.0
@@ -44,11 +44,11 @@ import static com.alibaba.nacos.spring.test.TestConfiguration.TEST_CONFIG;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
         TestConfiguration.class,
-        NacosConfigPropertiesBindingPostProcessor.class,
+        NacosConfigurationPropertiesBindingPostProcessor.class,
         NamingServiceInjectedBeanPostProcessor.class,
-        NacosConfigPropertiesBindingPostProcessorTest.class
+        NacosConfigurationPropertiesBindingPostProcessorTest.class
 })
-public class NacosConfigPropertiesBindingPostProcessorTest {
+public class NacosConfigurationPropertiesBindingPostProcessorTest {
 
     @Autowired
     private Config config;

@@ -20,10 +20,10 @@ import java.lang.annotation.*;
 
 /**
  * An annotation for ignore field from annotated
- * {@link NacosConfigProperties} Properties Object.
+ * {@link NacosConfigurationProperties} Properties Object.
  *
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
- * @see NacosConfigProperties
+ * @see NacosConfigurationProperties
  * @see NacosProperty
  * @since 0.1.0
  */

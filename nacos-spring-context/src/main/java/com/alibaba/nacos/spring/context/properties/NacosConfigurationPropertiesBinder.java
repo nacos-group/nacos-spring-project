@@ -37,35 +37,35 @@ import static org.springframework.core.annotation.AnnotationUtils.getAnnotation;
 import static org.springframework.util.StringUtils.hasText;
 
 /**
- * {@link NacosConfigProperties} Bean Binder
+ * {@link NacosConfigurationProperties} Bean Binder
  *
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
  * @since 0.1.0
  */
-public class NacosConfigPropertiesBinder {
+public class NacosConfigurationPropertiesBinder {
 
-    private static final Logger logger = LoggerFactory.getLogger(NacosConfigPropertiesBinder.class);
+    private static final Logger logger = LoggerFactory.getLogger(NacosConfigurationPropertiesBinder.class);
 
     private final ConfigService configService;
 
-    public NacosConfigPropertiesBinder(ConfigService configService) {
+    public NacosConfigurationPropertiesBinder(ConfigService configService) {
         Assert.notNull(configService, "ConfigService must not be null!");
         this.configService = configService;
     }
 
     public void bind(Object bean) {
 
-        NacosConfigProperties properties = findAnnotation(bean.getClass(), NacosConfigProperties.class);
+        NacosConfigurationProperties properties = findAnnotation(bean.getClass(), NacosConfigurationProperties.class);
 
         bind(bean, properties);
 
     }
 
-    public void bind(final Object bean, final NacosConfigProperties properties) {
+    public void bind(final Object bean, final NacosConfigurationProperties properties) {
 
         Assert.notNull(bean, "Bean must not be null!");
 
-        Assert.notNull(properties, "NacosConfigProperties must not be null!");
+        Assert.notNull(properties, "NacosConfigurationProperties must not be null!");
 
         String dataId = properties.dataId();
 
@@ -94,13 +94,13 @@ public class NacosConfigPropertiesBinder {
         }
     }
 
-    protected void doBind(Object bean, final NacosConfigProperties properties, String content) {
+    protected void doBind(Object bean, final NacosConfigurationProperties properties, String content) {
         Properties configProperties = toProperties(content);
         PropertyValues propertyValues = resolvePropertyValues(bean, content);
         doBind(bean, properties, propertyValues);
     }
 
-    private void doBind(Object bean, NacosConfigProperties properties,
+    private void doBind(Object bean, NacosConfigurationProperties properties,
                         PropertyValues propertyValues) {
         DataBinder dataBinder = new DataBinder(bean);
         dataBinder.setAutoGrowNestedPaths(properties.ignoreNestedProperties());
