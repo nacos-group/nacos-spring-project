@@ -118,8 +118,9 @@ public abstract class NacosUtils {
 
             String stringValue = value == null ? null : String.valueOf(value);
             if (StringUtils.hasText(stringValue)) {
-                stringBuilder.append(stringValue).append(SEPARATOR);
+                stringBuilder.append(stringValue);
             }
+            stringBuilder.append(SEPARATOR);
         }
 
         return stringBuilder.toString();
