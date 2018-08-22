@@ -16,11 +16,18 @@
  */
 package com.alibaba.nacos.spring.context.annotation;
 
+import com.alibaba.nacos.api.config.ConfigService;
+import com.alibaba.nacos.api.config.listener.AbstractListener;
+import com.alibaba.nacos.api.exception.NacosException;
+import com.alibaba.nacos.spring.context.event.NacosConfigReceiveEvent;
+import com.alibaba.nacos.spring.util.NacosConfigLoader;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MutablePropertySources;
+import org.springframework.core.env.PropertiesPropertySource;
 import org.springframework.core.env.PropertySource;
+import org.springframework.util.StringUtils;
 
 import java.util.Map;
 import java.util.Properties;
@@ -28,7 +35,9 @@ import java.util.Properties;
 import static com.alibaba.nacos.spring.context.annotation.NacosPropertySource.*;
 import static com.alibaba.nacos.spring.util.NacosBeanUtils.getGlobalPropertiesBean;
 import static com.alibaba.nacos.spring.util.NacosUtils.DEFAULT_STRING_ATTRIBUTE_VALUE;
+import static com.alibaba.nacos.spring.util.NacosUtils.buildDefaultPropertySourceName;
 import static com.alibaba.nacos.spring.util.NacosUtils.resolveProperties;
+import static com.alibaba.nacos.spring.util.NacosUtils.toProperties;
 import static org.springframework.util.ObjectUtils.nullSafeEquals;
 
 /**
@@ -72,15 +81,17 @@ class NacosPropertySourceProcessor {
         NacosPropertySourceBuilder builder = new NacosPropertySourceBuilder();
 
         builder.name(name)
-                .dataId(dataId)
-                .groupId(groupId)
-                .autoRefreshed(autoRefreshed)
-                .properties(nacosProperties)
-                .environment(environment)
-                .beanFactory(beanFactory)
-                .applicationEventPublisher(applicationEventPublisher);
+            .dataId(dataId)
+            .groupId(groupId)
+            .properties(nacosProperties)
+            .environment(environment)
+            .beanFactory(beanFactory);
 
         addPropertySource(builder.build(), attributes);
+
+        if (autoRefreshed) {
+            addListener(builder.getNacosConfigLoader(), attributes);
+        }
     }
 
     private void addPropertySource(PropertySource propertySource, Map<String, Object> nacosPropertySourceAttributes) {
@@ -107,6 +118,33 @@ class NacosPropertySourceProcessor {
             }
         } else {
             propertySources.addLast(propertySource); // default add last
+        }
+    }
+
+    private void addListener(NacosConfigLoader loader, final Map<String, Object> attributes) {
+        final String name = (String)attributes.get(NAME_ATTRIBUTE_NAME);
+        final String dataId = (String)attributes.get(DATA_ID_ATTRIBUTE_NAME);
+        final String groupId = (String)attributes.get(GROUP_ID_ATTRIBUTE_NAME);
+        try {
+            final ConfigService configService = loader.getConfigService();
+            configService.addListener(dataId, groupId, new AbstractListener() {
+                @Override
+                public void receiveConfigInfo(String configInfo) {
+                    Properties properties = toProperties(configInfo);
+                    String currentName = name;
+                    if (!StringUtils.hasText(currentName)) {
+                        currentName = buildDefaultPropertySourceName(dataId, groupId, properties);
+                    }
+                    addPropertySource(new PropertiesPropertySource(currentName, properties), attributes);
+
+                    if (applicationEventPublisher != null) {
+                        applicationEventPublisher.publishEvent(
+                            new NacosConfigReceiveEvent(configService, dataId, groupId, configInfo));
+                    }
+                }
+            });
+        } catch (NacosException e) {
+            throw new RuntimeException("ConfigService can't add Listener with attributes : " + attributes, e);
         }
     }
 
