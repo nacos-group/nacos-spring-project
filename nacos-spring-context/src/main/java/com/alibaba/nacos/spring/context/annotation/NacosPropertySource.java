@@ -37,6 +37,7 @@ import static com.alibaba.nacos.spring.util.NacosUtils.DEFAULT_STRING_ATTRIBUTE_
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
+@Repeatable(NacosPropertySources.class)
 public @interface NacosPropertySource {
 
     /**
