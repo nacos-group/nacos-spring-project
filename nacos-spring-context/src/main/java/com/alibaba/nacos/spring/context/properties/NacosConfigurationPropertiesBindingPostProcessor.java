@@ -35,20 +35,20 @@ import static com.alibaba.nacos.spring.util.NacosUtils.resolveProperties;
 import static org.springframework.core.annotation.AnnotationUtils.findAnnotation;
 
 /**
- * {@link NacosConfigProperties} Binding {@link BeanPostProcessor}
+ * {@link NacosConfigurationProperties} Binding {@link BeanPostProcessor}
  *
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
- * @see NacosConfigProperties
+ * @see NacosConfigurationProperties
  * @see BeanPostProcessor
  * @since 0.1.0
  */
-public class NacosConfigPropertiesBindingPostProcessor implements BeanPostProcessor, ApplicationContextAware,
+public class NacosConfigurationPropertiesBindingPostProcessor implements BeanPostProcessor, ApplicationContextAware,
         EnvironmentAware {
 
     /**
-     * The name of {@link NacosConfigPropertiesBindingPostProcessor} Bean
+     * The name of {@link NacosConfigurationPropertiesBindingPostProcessor} Bean
      */
-    public static final String BEAN_NAME = "nacosConfigPropertiesBindingPostProcessor";
+    public static final String BEAN_NAME = "nacosConfigurationPropertiesBindingPostProcessor";
 
     private Properties globalNacosProperties;
 
@@ -59,29 +59,29 @@ public class NacosConfigPropertiesBindingPostProcessor implements BeanPostProces
     @Override
     public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
 
-        NacosConfigProperties nacosConfigProperties = findAnnotation(bean.getClass(), NacosConfigProperties.class);
+        NacosConfigurationProperties nacosConfigurationProperties = findAnnotation(bean.getClass(), NacosConfigurationProperties.class);
 
-        if (nacosConfigProperties != null) {
-            bind(bean, beanName, nacosConfigProperties);
+        if (nacosConfigurationProperties != null) {
+            bind(bean, beanName, nacosConfigurationProperties);
         }
 
         return bean;
     }
 
-    private void bind(Object bean, String beanName, NacosConfigProperties nacosConfigProperties) {
+    private void bind(Object bean, String beanName, NacosConfigurationProperties nacosConfigurationProperties) {
 
-        ConfigService configService = resolveConfigService(nacosConfigProperties);
+        ConfigService configService = resolveConfigService(nacosConfigurationProperties);
 
-        NacosConfigPropertiesBinder binder = new NacosConfigPropertiesBinder(configService);
+        NacosConfigurationPropertiesBinder binder = new NacosConfigurationPropertiesBinder(configService);
 
-        binder.bind(bean, nacosConfigProperties);
+        binder.bind(bean, nacosConfigurationProperties);
 
     }
 
-    private ConfigService resolveConfigService(NacosConfigProperties nacosConfigProperties)
+    private ConfigService resolveConfigService(NacosConfigurationProperties nacosConfigurationProperties)
             throws BeansException {
 
-        NacosProperties nacosProperties = nacosConfigProperties.properties();
+        NacosProperties nacosProperties = nacosConfigurationProperties.properties();
 
         Properties properties = resolveProperties(nacosProperties, environment, globalNacosProperties);
 

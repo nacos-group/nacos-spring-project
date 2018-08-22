@@ -28,20 +28,27 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.ConfigurationClassPostProcessor;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
+import org.springframework.core.env.PropertySources;
 import org.springframework.core.type.AnnotationMetadata;
-import org.springframework.util.CollectionUtils;
 
-import java.util.*;
+import java.util.Map;
+
+import static org.springframework.util.ObjectUtils.isEmpty;
 
 /**
- * {@link NacosPropertySource @NacosPropertySource} Post Processor
+ * {@link BeanFactoryPostProcessor Post Processor} resolves {@link NacosPropertySource @NacosPropertySource} or
+ * {@link NacosPropertySources @NacosPropertySources} to be {@link PropertySource}, and append into Spring
+ * {@link PropertySources}
  *
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
  * @see NacosPropertySource
+ * @see NacosPropertySources
+ * @see PropertySource
  * @since 0.1.0
  */
 public class NacosPropertySourcePostProcessor implements BeanDefinitionRegistryPostProcessor, BeanFactoryPostProcessor,
@@ -91,13 +98,35 @@ public class NacosPropertySourcePostProcessor implements BeanDefinitionRegistryP
 
         AnnotationMetadata metadata = annotatedBeanDefinition.getMetadata();
 
-        Map<String, Object> annotationAttributes = metadata.getAnnotationAttributes(NacosPropertySource.class.getName());
+        Map<String, Object>[] annotationAttributesArray = resolveAnnotationAttributesArray(metadata);
 
-        if (!CollectionUtils.isEmpty(annotationAttributes)) {
-            addPropertySource(annotationAttributes);
+        if (!isEmpty(annotationAttributesArray)) {
+            for (Map<String, Object> annotationAttributes : annotationAttributesArray) {
+                addPropertySource(annotationAttributes);
+            }
+        }
+    }
+
+    private Map<String, Object>[] resolveAnnotationAttributesArray(AnnotationMetadata metadata) {
+
+        // Try to get @NacosPropertySources
+        Map<String, Object> annotationAttributes = metadata.getAnnotationAttributes(NacosPropertySources.class.getName());
+
+        final Map<String, Object>[] annotationAttributesArray;
+
+        // If @NacosPropertySources annotated , get the attributes of @NacosPropertySource array from value() attribute
+        if (annotationAttributes != null) {
+            annotationAttributesArray = (Map<String, Object>[]) annotationAttributes.get("value");
+
+        } else { // try to get @NacosPropertySource
+            annotationAttributesArray = new Map[]{
+                    metadata.getAnnotationAttributes(NacosPropertySource.class.getName())
+            };
         }
 
+        return annotationAttributesArray;
     }
+
 
     private void addPropertySource(Map<String, Object> nacosPropertySourceAttributes) {
 

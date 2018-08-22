@@ -16,7 +16,7 @@
  */
 package com.alibaba.nacos.spring.context.annotation;
 
-import com.alibaba.nacos.spring.context.properties.NacosConfigProperties;
+import com.alibaba.nacos.spring.context.properties.NacosConfigurationProperties;
 import org.springframework.context.annotation.Import;
 
 import java.lang.annotation.*;
@@ -40,7 +40,7 @@ public @interface EnableNacos {
      * @return required
      * @see NacosService#properties()
      * @see NacosConfigListener#properties()
-     * @see NacosConfigProperties#properties()
+     * @see NacosConfigurationProperties#properties()
      */
     NacosProperties globalProperties();
 }

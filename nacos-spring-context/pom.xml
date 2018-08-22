@@ -34,7 +34,7 @@
         <dependency>
             <groupId>com.alibaba.spring</groupId>
             <artifactId>spring-context-support</artifactId>
-            <version>1.0.0.RELEASE</version>
+            <version>1.0.1</version>
         </dependency>
 
         <dependency>

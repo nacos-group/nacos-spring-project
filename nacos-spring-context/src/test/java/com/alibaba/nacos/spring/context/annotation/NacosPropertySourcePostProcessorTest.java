@@ -52,6 +52,12 @@ public class NacosPropertySourcePostProcessorTest {
             + "PATH = /My/Path";
 
     @NacosPropertySource(
+            name = "second",
+            dataId = DATA_ID,
+            first = true,
+            before = SYSTEM_PROPERTIES_PROPERTY_SOURCE_NAME,
+            after = SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME)
+    @NacosPropertySource(
             name = "first",
             dataId = DATA_ID,
             first = true,

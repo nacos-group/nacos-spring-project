@@ -20,11 +20,11 @@ import java.lang.annotation.*;
 
 /**
  * An annotation for Nacos Property name of  Nacos Configuration to
- * bind a field from annotated {@link NacosConfigProperties}
+ * bind a field from annotated {@link NacosConfigurationProperties}
  * Properties Object.
  *
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
- * @see NacosConfigProperties
+ * @see NacosConfigurationProperties
  * @see NacosIgnore
  * @since 0.1.0
  */

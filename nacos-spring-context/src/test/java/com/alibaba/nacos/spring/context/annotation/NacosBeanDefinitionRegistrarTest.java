@@ -18,7 +18,7 @@ package com.alibaba.nacos.spring.context.annotation;
 
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.spring.beans.factory.annotation.NamingServiceInjectedBeanPostProcessor;
-import com.alibaba.nacos.spring.context.properties.NacosConfigPropertiesBindingPostProcessor;
+import com.alibaba.nacos.spring.context.properties.NacosConfigurationPropertiesBindingPostProcessor;
 import com.alibaba.nacos.spring.factory.NacosServiceFactory;
 import com.alibaba.nacos.spring.test.Config;
 import com.alibaba.nacos.spring.test.EmbeddedNacosHttpServer;
@@ -96,8 +96,8 @@ public class NacosBeanDefinitionRegistrarTest {
     private NamingServiceInjectedBeanPostProcessor namingServiceInjectedBeanPostProcessor;
 
     @Autowired
-    @Qualifier(NacosConfigPropertiesBindingPostProcessor.BEAN_NAME)
-    private NacosConfigPropertiesBindingPostProcessor nacosConfigPropertiesBindingPostProcessor;
+    @Qualifier(NacosConfigurationPropertiesBindingPostProcessor.BEAN_NAME)
+    private NacosConfigurationPropertiesBindingPostProcessor nacosConfigurationPropertiesBindingPostProcessor;
 
     @Autowired
     @Qualifier(NacosConfigListenerMethodProcessor.BEAN_NAME)
