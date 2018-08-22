@@ -31,10 +31,10 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import java.util.Properties;
 
 /**
- * TODO
+ * CacheableEventPublishingNacosServiceFactory Test
  *
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
- * @since
+ * @since 0.1.0
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {CacheableEventPublishingNacosServiceFactory.class})
