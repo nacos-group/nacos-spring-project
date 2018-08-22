@@ -17,7 +17,7 @@
 package com.alibaba.nacos.spring.context.annotation;
 
 import com.alibaba.nacos.spring.beans.factory.annotation.NamingServiceInjectedBeanPostProcessor;
-import com.alibaba.nacos.spring.context.properties.NacosConfigPropertiesBindingPostProcessor;
+import com.alibaba.nacos.spring.context.properties.NacosConfigurationPropertiesBindingPostProcessor;
 import com.alibaba.nacos.spring.factory.CacheableEventPublishingNacosServiceFactory;
 import com.alibaba.nacos.spring.factory.NacosServiceFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -109,8 +109,8 @@ public class NacosBeanDefinitionRegistrar implements ImportBeanDefinitionRegistr
     }
 
     private void registerNacosConfigPropertiesBindingPostProcessor(BeanDefinitionRegistry registry) {
-        registerInfrastructureBean(registry, NacosConfigPropertiesBindingPostProcessor.BEAN_NAME,
-                NacosConfigPropertiesBindingPostProcessor.class);
+        registerInfrastructureBean(registry, NacosConfigurationPropertiesBindingPostProcessor.BEAN_NAME,
+                NacosConfigurationPropertiesBindingPostProcessor.class);
     }
 
     private void registerNacosConfigListenerMethodProcessor(BeanDefinitionRegistry registry) {

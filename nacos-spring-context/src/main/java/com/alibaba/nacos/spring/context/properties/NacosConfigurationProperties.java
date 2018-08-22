@@ -26,7 +26,7 @@ import java.lang.annotation.*;
 import static com.alibaba.nacos.client.config.common.Constants.DEFAULT_GROUP;
 
 /**
- * An annotation for Nacos configuration Properties
+ * An annotation for Nacos configuration Properties for binding POJO as Properties Object.
  *
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
  * @see PropertyKeyConst
@@ -35,7 +35,7 @@ import static com.alibaba.nacos.client.config.common.Constants.DEFAULT_GROUP;
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface NacosConfigProperties {
+public @interface NacosConfigurationProperties {
 
     /**
      * Nacos Group ID

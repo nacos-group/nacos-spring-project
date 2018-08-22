@@ -29,7 +29,7 @@ import static com.alibaba.nacos.spring.test.TestConfiguration.MODIFIED_TEST_CONT
 import static com.alibaba.nacos.spring.test.TestConfiguration.TEST_CONFIG;
 
 /**
- * {@link NacosConfigPropertiesBinder} Test
+ * {@link NacosConfigurationPropertiesBinder} Test
  *
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
  * @since 0.1.0
@@ -47,7 +47,7 @@ public class NacosConfigurationPropertiesBinderTest {
 
         configService.publishConfig(DATA_ID, GROUP_ID, TEST_CONFIG);
 
-        NacosConfigPropertiesBinder binder = new NacosConfigPropertiesBinder(configService);
+        NacosConfigurationPropertiesBinder binder = new NacosConfigurationPropertiesBinder(configService);
 
         binder.bind(config);
 

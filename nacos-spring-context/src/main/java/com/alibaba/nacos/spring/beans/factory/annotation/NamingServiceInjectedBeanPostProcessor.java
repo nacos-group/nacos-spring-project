@@ -21,8 +21,10 @@ import com.alibaba.nacos.api.naming.NamingService;
 import com.alibaba.nacos.spring.context.annotation.NacosService;
 import com.alibaba.nacos.spring.factory.NacosServiceFactory;
 import com.alibaba.nacos.spring.util.NacosBeanUtils;
+import com.alibaba.spring.beans.factory.annotation.AnnotationInjectedBeanPostProcessor;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.context.ApplicationContext;
+import org.springframework.beans.factory.annotation.InjectionMetadata;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.core.annotation.AnnotationUtils;
 
 import java.util.Map;
@@ -38,7 +40,7 @@ import static com.alibaba.nacos.spring.util.NacosUtils.resolveProperties;
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
  * @since 0.1.0
  */
-public class NamingServiceInjectedBeanPostProcessor extends AnnotationInjectedBeanPostProcessor<NacosService, Object>
+public class NamingServiceInjectedBeanPostProcessor extends AnnotationInjectedBeanPostProcessor<NacosService>
         implements InitializingBean {
 
     /**
@@ -50,41 +52,44 @@ public class NamingServiceInjectedBeanPostProcessor extends AnnotationInjectedBe
 
     private NacosServiceFactory nacosServiceFactory;
 
-    @Override
-    protected Object resolveInjectedBean(NacosService annotation, Class<?> beanClass) throws Exception {
 
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        // Get beanFactory from super
+        ConfigurableListableBeanFactory beanFactory = getBeanFactory();
+
+        // Get Beans from ApplicationContext
+        this.globalNacosProperties = NacosBeanUtils.getGlobalPropertiesBean(beanFactory);
+        this.nacosServiceFactory = NacosBeanUtils.getNacosServiceFactoryBean(beanFactory);
+
+    }
+
+    @Override
+    protected Object doGetInjectedBean(NacosService annotation, Object bean, String beanName, Class<?> injectedType,
+                                       InjectionMetadata.InjectedElement injectedElement) throws Exception {
         Properties properties = resolveProperties(annotation.properties(), getEnvironment(), globalNacosProperties);
 
-        if (ConfigService.class.equals(beanClass)) {
+        if (ConfigService.class.equals(injectedType)) {
             return nacosServiceFactory.createConfigService(properties);
-        } else if (NamingService.class.equals(beanClass)) {
+        } else if (NamingService.class.equals(injectedType)) {
             return nacosServiceFactory.createNamingService(properties);
         }
 
         throw new UnsupportedOperationException("Only support to inject ConfigService or NamingService instance, " +
-                "actual class : " + beanClass.getName());
+                "actual class : " + injectedType.getName());
     }
 
     @Override
-    protected String generateInjectedBeanCacheKey(NacosService annotation, Class<?> beanClass) {
+    protected String buildInjectedObjectCacheKey(NacosService annotation, Object bean, String beanName,
+                                                 Class<?> injectedType, InjectionMetadata.InjectedElement injectedElement) {
 
-        StringBuilder keyBuilder = new StringBuilder(beanClass.getName());
+        StringBuilder keyBuilder = new StringBuilder(injectedType.getName());
 
         Map<String, Object> attributes = AnnotationUtils.getAnnotationAttributes(annotation);
 
         keyBuilder.append(annotation);
 
         return keyBuilder.toString();
-    }
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        // Get ApplicationContext from super
-        ApplicationContext context = getApplicationContext();
-
-        // Get Beans from ApplicationContext
-        this.globalNacosProperties = NacosBeanUtils.getGlobalPropertiesBean(context);
-        this.nacosServiceFactory = NacosBeanUtils.getNacosServiceFactoryBean(context);
 
     }
 }

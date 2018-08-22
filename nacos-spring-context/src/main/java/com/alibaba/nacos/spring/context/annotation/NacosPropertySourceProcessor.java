@@ -21,6 +21,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
+import org.springframework.util.CollectionUtils;
 
 import java.util.Map;
 import java.util.Properties;
@@ -59,6 +60,10 @@ class NacosPropertySourceProcessor {
     }
 
     public void process(Map<String, Object> attributes) {
+
+        if (CollectionUtils.isEmpty(attributes)) {
+            return;
+        }
 
         String name = (String) attributes.get(NAME_ATTRIBUTE_NAME);
         String dataId = (String) attributes.get(DATA_ID_ATTRIBUTE_NAME);
