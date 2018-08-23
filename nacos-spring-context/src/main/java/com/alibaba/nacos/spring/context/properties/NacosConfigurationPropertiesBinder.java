@@ -16,6 +16,9 @@
  */
 package com.alibaba.nacos.spring.context.properties;
 
+import com.alibaba.nacos.api.annotation.NacosConfigurationProperties;
+import com.alibaba.nacos.api.annotation.NacosIgnore;
+import com.alibaba.nacos.api.annotation.NacosProperty;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.config.listener.AbstractListener;
 import com.alibaba.nacos.api.exception.NacosException;

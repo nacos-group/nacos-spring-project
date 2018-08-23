@@ -16,6 +16,7 @@
  */
 package com.alibaba.nacos.spring.convert.converter;
 
+import com.alibaba.nacos.api.convert.NacosConfigConverter;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.format.support.DefaultFormattingConversionService;
 

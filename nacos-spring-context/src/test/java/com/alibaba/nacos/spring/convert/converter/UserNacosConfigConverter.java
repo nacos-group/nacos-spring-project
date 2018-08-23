@@ -17,6 +17,7 @@
 package com.alibaba.nacos.spring.convert.converter;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.nacos.api.convert.NacosConfigConverter;
 import com.alibaba.nacos.spring.test.User;
 
 /**

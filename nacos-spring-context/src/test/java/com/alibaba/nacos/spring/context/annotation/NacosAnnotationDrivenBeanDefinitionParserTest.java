@@ -16,13 +16,16 @@
  */
 package com.alibaba.nacos.spring.context.annotation;
 
+import com.alibaba.nacos.api.annotation.NacosService;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.spring.beans.factory.annotation.NamingServiceInjectedBeanPostProcessor;
 import com.alibaba.nacos.spring.config.NacosNamespaceHandler;
 import com.alibaba.nacos.spring.context.properties.NacosConfigurationPropertiesBindingPostProcessor;
 import com.alibaba.nacos.spring.factory.NacosServiceFactory;
 import com.alibaba.nacos.spring.util.NacosBeanUtils;
+import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,8 +48,14 @@ import java.util.Properties;
 })
 public class NacosAnnotationDrivenBeanDefinitionParserTest {
 
-    static {
+    @BeforeClass
+    public static void init() {
         System.setProperty("nacos.server-addr", "127.0.0.1:8080");
+    }
+
+    @AfterClass
+    public static void afterClass() {
+        System.getProperties().remove("nacos.server-addr");
     }
 
     @Autowired

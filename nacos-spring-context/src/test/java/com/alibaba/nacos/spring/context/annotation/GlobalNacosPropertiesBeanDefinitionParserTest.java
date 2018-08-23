@@ -17,7 +17,9 @@
 package com.alibaba.nacos.spring.context.annotation;
 
 import com.alibaba.nacos.spring.config.NacosNamespaceHandler;
+import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,8 +45,14 @@ import static com.alibaba.nacos.spring.util.NacosBeanUtils.GLOBAL_NACOS_PROPERTI
 })
 public class GlobalNacosPropertiesBeanDefinitionParserTest {
 
-    static {
+    @BeforeClass
+    public static void init() {
         System.setProperty("nacos.server-addr", "127.0.0.1:8080");
+    }
+
+    @AfterClass
+    public static void afterClass() {
+        System.getProperties().remove("nacos.server-addr");
     }
 
     @Autowired
@@ -62,4 +70,6 @@ public class GlobalNacosPropertiesBeanDefinitionParserTest {
         Assert.assertNull(globalNacosProperties.get(CLUSTER_NAME));
         Assert.assertEquals("UTF-8", globalNacosProperties.get(ENCODE));
     }
+
+
 }

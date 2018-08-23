@@ -16,6 +16,7 @@
  */
 package com.alibaba.nacos.spring.context.annotation;
 
+import com.alibaba.nacos.api.annotation.NacosService;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.spring.beans.factory.annotation.NamingServiceInjectedBeanPostProcessor;
 import com.alibaba.nacos.spring.test.ListenersConfiguration;
@@ -47,7 +48,6 @@ public class NacosConfigListenerMethodProcessorTest {
 
     @NacosService
     private ConfigService configService;
-
 
     @Test
     public void testOn() throws Exception {

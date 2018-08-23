@@ -16,7 +16,10 @@
  */
 package com.alibaba.nacos.spring.context.annotation;
 
-import com.alibaba.nacos.spring.context.properties.NacosConfigurationProperties;
+import com.alibaba.nacos.api.annotation.NacosConfigListener;
+import com.alibaba.nacos.api.annotation.NacosConfigurationProperties;
+import com.alibaba.nacos.api.annotation.NacosProperties;
+import com.alibaba.nacos.api.annotation.NacosService;
 import org.springframework.context.annotation.Import;
 
 import java.lang.annotation.*;

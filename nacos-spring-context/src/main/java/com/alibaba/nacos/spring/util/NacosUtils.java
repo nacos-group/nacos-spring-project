@@ -16,10 +16,10 @@
  */
 package com.alibaba.nacos.spring.util;
 
+import com.alibaba.nacos.api.annotation.NacosConfigurationProperties;
+import com.alibaba.nacos.api.annotation.NacosProperties;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.exception.NacosException;
-import com.alibaba.nacos.spring.context.annotation.NacosProperties;
-import com.alibaba.nacos.spring.context.properties.NacosConfigurationProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;

@@ -14,30 +14,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.alibaba.nacos.spring.context.properties;
+package com.alibaba.nacos.api.convert;
 
-import java.lang.annotation.*;
+import org.springframework.core.convert.converter.Converter;
 
 /**
- * An annotation for Nacos Property name of  Nacos Configuration to
- * bind a field from annotated {@link NacosConfigurationProperties}
- * Properties Object.
+ * Nacos Configuration content {@link Converter}
  *
+ * @param <T> the target type that wanted
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
- * @see NacosConfigurationProperties
- * @see NacosIgnore
  * @since 0.1.0
  */
-@Target({ElementType.FIELD})
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-public @interface NacosProperty {
+public interface NacosConfigConverter<T> {
 
     /**
-     * The property name of Nacos Configuration to bind a field
+     * Can convert to be target type or not
      *
-     * @return property name
+     * @param targetType the type of target
+     * @return If can , return <code>true</code>, or <code>false</code>
      */
-    String value();
+    boolean canConvert(Class<T> targetType);
+
+    /**
+     * Convert the Naocs's configuration of type S to target type T.
+     *
+     * @param config the Naocs's configuration to convert, which must be an instance of S (never {@code null})
+     * @return the converted object, which must be an instance of T (potentially {@code null})
+     */
+    T convert(String config);
+
 
 }

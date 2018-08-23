@@ -16,26 +16,28 @@
  */
 package com.alibaba.nacos.spring.context.annotation;
 
+import com.alibaba.nacos.api.annotation.NacosProperties;
+import com.alibaba.nacos.api.annotation.NacosService;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.spring.beans.factory.annotation.NamingServiceInjectedBeanPostProcessor;
 import com.alibaba.nacos.spring.context.properties.NacosConfigurationPropertiesBindingPostProcessor;
 import com.alibaba.nacos.spring.factory.NacosServiceFactory;
+import com.alibaba.nacos.spring.test.AbstractNacosHttpServerTestExecutionListener;
 import com.alibaba.nacos.spring.test.Config;
-import com.alibaba.nacos.spring.test.EmbeddedNacosHttpServer;
 import com.alibaba.nacos.spring.test.ListenersConfiguration;
 import com.alibaba.nacos.spring.util.NacosBeanUtils;
-import org.junit.AfterClass;
 import org.junit.Assert;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 
-import java.io.IOException;
 import java.util.Properties;
 
 import static com.alibaba.nacos.client.config.common.Constants.DEFAULT_GROUP;
@@ -52,30 +54,14 @@ import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.DATA_ID;
         ListenersConfiguration.class,
         NacosBeanDefinitionRegistrarTest.class,
 })
+@TestExecutionListeners({DependencyInjectionTestExecutionListener.class,
+        DirtiesContextTestExecutionListener.class, NacosBeanDefinitionRegistrarTest.class})
 @EnableNacos(globalProperties = @NacosProperties(serverAddr = "${serverAddr}"))
-public class NacosBeanDefinitionRegistrarTest {
+public class NacosBeanDefinitionRegistrarTest extends AbstractNacosHttpServerTestExecutionListener {
 
-    private static EmbeddedNacosHttpServer httpServer;
-
-    static {
-        System.setProperty("nacos.standalone", "true");
-        try {
-            httpServer = new EmbeddedNacosHttpServer();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        System.setProperty("serverAddr", "127.0.0.1:" + httpServer.getPort());
-    }
-
-    @BeforeClass
-    public static void startServer() throws Exception {
-        httpServer.start(true);
-    }
-
-    @AfterClass
-    public static void stopServer() {
-        httpServer.stop();
+    @Override
+    protected String getServerAddressPropertyName() {
+        return "serverAddr";
     }
 
     @Bean
@@ -118,5 +104,6 @@ public class NacosBeanDefinitionRegistrarTest {
         configService.publishConfig(DATA_ID, DEFAULT_GROUP, "9527");
         Assert.assertEquals("9527", configService.getConfig(DATA_ID, DEFAULT_GROUP, 5000));
     }
+
 
 }

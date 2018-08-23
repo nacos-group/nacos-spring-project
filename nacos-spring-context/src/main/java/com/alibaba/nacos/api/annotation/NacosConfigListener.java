@@ -14,11 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.alibaba.nacos.spring.context.annotation;
+package com.alibaba.nacos.api.annotation;
 
+import com.alibaba.nacos.api.convert.NacosConfigConverter;
 import com.alibaba.nacos.client.config.common.Constants;
+import com.alibaba.nacos.spring.context.annotation.EnableNacos;
 import com.alibaba.nacos.spring.convert.converter.DefaultNacosConfigConverter;
-import com.alibaba.nacos.spring.convert.converter.NacosConfigConverter;
 
 import java.lang.annotation.*;
 

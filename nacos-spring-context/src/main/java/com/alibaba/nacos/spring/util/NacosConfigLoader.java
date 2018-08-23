@@ -17,9 +17,9 @@
 package com.alibaba.nacos.spring.util;
 
 import com.alibaba.nacos.api.NacosFactory;
+import com.alibaba.nacos.api.annotation.NacosProperties;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.exception.NacosException;
-import com.alibaba.nacos.spring.context.annotation.NacosProperties;
 import com.alibaba.nacos.spring.factory.NacosServiceFactory;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.env.ConfigurableEnvironment;

@@ -16,8 +16,8 @@
  */
 package com.alibaba.nacos.spring.util;
 
-import com.alibaba.nacos.spring.context.annotation.NacosProperties;
-import com.alibaba.nacos.spring.context.annotation.NacosService;
+import com.alibaba.nacos.api.annotation.NacosProperties;
+import com.alibaba.nacos.api.annotation.NacosService;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.util.ReflectionUtils;

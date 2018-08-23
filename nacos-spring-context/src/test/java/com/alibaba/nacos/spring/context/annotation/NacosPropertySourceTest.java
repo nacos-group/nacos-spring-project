@@ -16,24 +16,25 @@
  */
 package com.alibaba.nacos.spring.context.annotation;
 
+import com.alibaba.nacos.api.annotation.NacosProperties;
+import com.alibaba.nacos.spring.test.AbstractNacosHttpServerTestExecutionListener;
 import com.alibaba.nacos.spring.test.EmbeddedNacosHttpServer;
 import org.junit.Assert;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 import static com.alibaba.nacos.client.config.common.Constants.DEFAULT_GROUP;
-import static com.alibaba.nacos.spring.test.NacosConfigHttpHandler.CONTENT_PARAM_NAME;
-import static com.alibaba.nacos.spring.test.NacosConfigHttpHandler.DATA_ID_PARAM_NAME;
-import static com.alibaba.nacos.spring.test.NacosConfigHttpHandler.GROUP_ID_PARAM_NAME;
+import static com.alibaba.nacos.spring.test.NacosConfigHttpHandler.*;
 
 /**
  * {@link NacosPropertySource} {@link Value} Test
@@ -45,51 +46,38 @@ import static com.alibaba.nacos.spring.test.NacosConfigHttpHandler.GROUP_ID_PARA
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
-    NacosPropertySourceTest.class, NacosPropertySourceTest.AppNacosPropertySource.class
+        NacosPropertySourceTest.class
 })
-@EnableNacos(globalProperties = @NacosProperties(serverAddr = "${serverAddr}"))
-@Component
-public class NacosPropertySourceTest {
+@TestExecutionListeners({DependencyInjectionTestExecutionListener.class,
+        DirtiesContextTestExecutionListener.class, NacosPropertySourceTest.class})
 
-    private static final String DATA_ID = "app";
+@NacosPropertySource(dataId = NacosPropertySourceTest.DATA_ID)
+@EnableNacos(globalProperties = @NacosProperties(serverAddr = "${server.addr}"))
+@Component
+public class NacosPropertySourceTest extends AbstractNacosHttpServerTestExecutionListener {
+
+    public static final String DATA_ID = "app";
 
     private static final String APP_NAME = "Nacos-Spring";
 
-    private static EmbeddedNacosHttpServer httpServer;
 
-    static {
-        System.setProperty("nacos.standalone", "true");
-        try {
-            httpServer = new EmbeddedNacosHttpServer();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        System.setProperty("serverAddr", "127.0.0.1:" + httpServer.getPort());
-    }
-
-    @BeforeClass
-    public static void startServer() {
-        initConfig();
-        httpServer.start(true);
-    }
-
-    private static void initConfig() {
+    @Override
+    public void init(EmbeddedNacosHttpServer httpServer) {
         Map<String, String> config = new HashMap<String, String>(1);
         config.put(DATA_ID_PARAM_NAME, DATA_ID);
         config.put(GROUP_ID_PARAM_NAME, DEFAULT_GROUP);
         config.put(CONTENT_PARAM_NAME, "app.name=" + APP_NAME);
-
         httpServer.initConfig(config);
     }
 
-    @NacosPropertySource(dataId = DATA_ID)
-    static class AppNacosPropertySource {
-
+    @Override
+    protected String getServerAddressPropertyName() {
+        return "server.addr";
     }
 
     @Value("${app.name}")
     private String appName;
+
 
     @Test
     public void testValue() {

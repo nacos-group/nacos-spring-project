@@ -16,6 +16,7 @@
  */
 package com.alibaba.nacos.spring.context.annotation;
 
+import com.alibaba.nacos.api.annotation.NacosProperties;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.mock.env.MockEnvironment;

@@ -17,6 +17,7 @@
 package com.alibaba.nacos.spring.context.annotation;
 
 import com.alibaba.nacos.api.PropertyKeyConst;
+import com.alibaba.nacos.api.annotation.NacosProperties;
 import com.alibaba.nacos.spring.util.NacosBeanUtils;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
@@ -28,7 +29,7 @@ import org.w3c.dom.Element;
 
 import java.util.Properties;
 
-import static com.alibaba.nacos.spring.context.annotation.NacosProperties.*;
+import static com.alibaba.nacos.api.annotation.NacosProperties.*;
 import static com.alibaba.nacos.spring.util.NacosBeanUtils.GLOBAL_NACOS_PROPERTIES_BEAN_NAME;
 import static com.alibaba.nacos.spring.util.NacosBeanUtils.registerSingleton;
 

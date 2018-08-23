@@ -16,7 +16,7 @@
  */
 package com.alibaba.nacos.spring.test;
 
-import com.alibaba.nacos.spring.context.annotation.NacosConfigListener;
+import com.alibaba.nacos.api.annotation.NacosConfigListener;
 import com.alibaba.nacos.spring.convert.converter.UserNacosConfigConverter;
 import org.springframework.context.annotation.Configuration;
 

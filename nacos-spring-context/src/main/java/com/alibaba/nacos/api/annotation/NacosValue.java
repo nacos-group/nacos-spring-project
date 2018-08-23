@@ -18,11 +18,7 @@ package com.alibaba.nacos.api.annotation;
 
 import org.springframework.beans.factory.annotation.Value;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
 /**
  * Annotation which extends @Value to support auto-refresh
