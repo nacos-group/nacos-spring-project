@@ -56,6 +56,11 @@ public @interface NacosPropertySource {
     String DATA_ID_ATTRIBUTE_NAME = "dataId";
 
     /**
+     * The attribute name of {@link NacosPropertySource#autoRefreshed()}
+     */
+    String AUTO_REFRESHED = "autoRefreshed";
+
+    /**
      * The attribute name of {@link NacosPropertySource#first()}
      */
     String FIRST_ATTRIBUTE_NAME = "first";
@@ -98,6 +103,13 @@ public @interface NacosPropertySource {
      * @return required value.
      */
     String dataId();
+
+    /**
+     * It indicates the property source is auto-refreshed when Nacos configuration is changed.
+     *
+     * @return default value is <code>false</code>
+     */
+    boolean autoRefreshed() default false;
 
     /**
      * Indicates current Nacos {@link PropertySource} is first order or not

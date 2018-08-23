@@ -55,6 +55,8 @@ class NacosPropertySourceBuilder {
 
     private BeanFactory beanFactory;
 
+    private NacosConfigLoader nacosConfigLoader;
+
     public NacosPropertySourceBuilder name(String name) {
         this.name = name;
         return this;
@@ -92,13 +94,13 @@ class NacosPropertySourceBuilder {
      */
     public PropertySource build() {
 
-        NacosConfigLoader loader = new NacosConfigLoader(environment);
+        nacosConfigLoader = new NacosConfigLoader(environment);
 
         NacosServiceFactory nacosServiceFactory = getNacosServiceFactoryBean(beanFactory);
 
-        loader.setNacosServiceFactory(nacosServiceFactory);
+        nacosConfigLoader.setNacosServiceFactory(nacosServiceFactory);
 
-        String config = loader.load(dataId, groupId, properties);
+        String config = nacosConfigLoader.load(dataId, groupId, properties);
 
         if (!StringUtils.hasText(config)) {
             if (logger.isWarnEnabled()) {
@@ -114,9 +116,11 @@ class NacosPropertySourceBuilder {
             name = buildDefaultPropertySourceName(dataId, groupId, properties);
         }
 
-        PropertiesPropertySource propertySource = new PropertiesPropertySource(name, properties);
+        return new PropertiesPropertySource(name, properties);
+    }
 
-        return propertySource;
+    public NacosConfigLoader getNacosConfigLoader() {
+        return nacosConfigLoader;
     }
 
 }
