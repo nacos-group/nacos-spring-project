@@ -43,7 +43,8 @@ import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.DATA_ID;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
-    "classpath:/META-INF/nacos-context.xml"
+    "classpath:/META-INF/nacos-context.xml",
+    "classpath:/META-INF/nacos-property-source.xml"
 })
 @TestExecutionListeners({DependencyInjectionTestExecutionListener.class,
     DirtiesContextTestExecutionListener.class, NacosNamespaceHandlerTest.class})
