@@ -73,6 +73,8 @@ public class EmbeddedNacosHttpServer {
 
         httpServer.createContext(path, nacosConfigHttpHandler);
 
+        nacosConfigHttpHandler.init();
+
         if (blocking) {
             startServer();
         } else {
@@ -90,13 +92,13 @@ public class EmbeddedNacosHttpServer {
     private void startServer() {
         httpServer.start();
         String threadName = Thread.currentThread().getName();
-        System.out.printf("[%s] Embedded Nacos HTTP Server(port : %d) is starting...\n", threadName, port);
-        System.out.printf("[%s] Embedded Nacos HTTP Server mapped request URI : %s...\n", threadName, path);
+        System.out.printf("[%s] Embedded Nacos HTTP Server(port : %d) is starting...%n", threadName, port);
+        System.out.printf("[%s] Embedded Nacos HTTP Server mapped request URI : %s...%n", threadName, path);
     }
 
     public EmbeddedNacosHttpServer stop() {
         String threadName = Thread.currentThread().getName();
-        System.out.printf("[%s] Embedded Nacos HTTP Server(port : %d) is stopping...\n", threadName, port);
+        System.out.printf("[%s] Embedded Nacos HTTP Server(port : %d) is stopping...%n", threadName, port);
 
         if (future != null) {
             if (!future.isDone()) {
@@ -107,7 +109,9 @@ public class EmbeddedNacosHttpServer {
 
         httpServer.stop(0);
 
-        System.out.printf("[%s] Embedded Nacos HTTP Server(port : %d) is stopped.\n", threadName, port);
+        nacosConfigHttpHandler.destroy();
+
+        System.out.printf("[%s] Embedded Nacos HTTP Server(port : %d) is stopped.%n", threadName, port);
 
         return this;
     }

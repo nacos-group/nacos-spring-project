@@ -17,12 +17,19 @@
 package com.alibaba.nacos.spring.context.annotation;
 
 import com.alibaba.nacos.api.annotation.NacosProperties;
+import com.alibaba.nacos.api.annotation.NacosService;
+import com.alibaba.nacos.api.annotation.NacosValue;
+import com.alibaba.nacos.api.config.ConfigService;
+import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.spring.test.AbstractNacosHttpServerTestExecutionListener;
 import com.alibaba.nacos.spring.test.EmbeddedNacosHttpServer;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
@@ -51,7 +58,7 @@ import static com.alibaba.nacos.spring.test.NacosConfigHttpHandler.*;
 @TestExecutionListeners({DependencyInjectionTestExecutionListener.class,
         DirtiesContextTestExecutionListener.class, NacosPropertySourceTest.class})
 
-@NacosPropertySource(dataId = NacosPropertySourceTest.DATA_ID)
+@NacosPropertySource(dataId = NacosPropertySourceTest.DATA_ID, autoRefreshed = true)
 @EnableNacos(globalProperties = @NacosProperties(serverAddr = "${server.addr}"))
 @Component
 public class NacosPropertySourceTest extends AbstractNacosHttpServerTestExecutionListener {
@@ -59,6 +66,8 @@ public class NacosPropertySourceTest extends AbstractNacosHttpServerTestExecutio
     public static final String DATA_ID = "app";
 
     private static final String APP_NAME = "Nacos-Spring";
+
+    private static final String ANOTHER_APP_NAME = "Nacos-Spring-1";
 
 
     @Override
@@ -75,13 +84,54 @@ public class NacosPropertySourceTest extends AbstractNacosHttpServerTestExecutio
         return "server.addr";
     }
 
-    @Value("${app.name}")
-    private String appName;
 
+    public static class App {
+        @Value("${app.name}")
+        private String name;
+
+        @NacosValue("${app.name}")
+        private String nacosName;
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public void setNacosName(String nacosName) {
+            this.nacosName = nacosName;
+        }
+    }
+
+    @Bean
+    public App app() {
+        return new App();
+    }
+
+    @NacosService
+    private ConfigService configService;
+
+    @Autowired
+    private App app;
+
+    @Autowired
+    private Environment environment;
 
     @Test
-    public void testValue() {
-        Assert.assertEquals(APP_NAME, appName);
+    public void testValue() throws NacosException, InterruptedException {
+        Assert.assertEquals(APP_NAME, app.name);
+
+        Assert.assertEquals(APP_NAME, app.nacosName);
+
+        Assert.assertEquals(APP_NAME, environment.getProperty("app.name"));
+
+        configService.publishConfig(DATA_ID, DEFAULT_GROUP, "app.name=" + ANOTHER_APP_NAME);
+
+        Thread.sleep(1000);
+
+        Assert.assertEquals(APP_NAME, app.name);
+
+        Assert.assertEquals(ANOTHER_APP_NAME, environment.getProperty("app.name"));
+
+        Assert.assertEquals(ANOTHER_APP_NAME, app.nacosName);
     }
 
 }
