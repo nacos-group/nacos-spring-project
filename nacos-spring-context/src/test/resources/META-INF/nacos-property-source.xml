@@ -8,8 +8,11 @@
         http://nacos.io/schema/nacos
         http://nacos.io/schema/nacos.xsd">
 
-    <nacos:annotation-driven/>
+    <nacos:property-source data-id="user" auto-refreshed="true" />
 
-    <nacos:global-properties server-addr="${nacos.server-addr}" />
+    <bean name="user" class="com.alibaba.nacos.spring.test.User">
+        <property name="id" value="${id}"/>
+        <property name="name" value="${name}"/>
+    </bean>
 
 </beans>
