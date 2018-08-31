@@ -16,12 +16,15 @@
  */
 package com.alibaba.nacos.spring.context.annotation;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.xml.BeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.StringUtils;
 import org.w3c.dom.Element;
 
@@ -44,9 +47,13 @@ import static com.alibaba.nacos.spring.util.NacosUtils.DEFAULT_STRING_ATTRIBUTE_
  */
 public class NacosPropertySourceBeanDefinitionParser implements BeanDefinitionParser {
 
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+
     private ConfigurableEnvironment environment;
 
     private BeanFactory beanFactory;
+
+    private ApplicationEventPublisher applicationEventPublisher;
 
     @Override
     public BeanDefinition parse(Element element, ParserContext parserContext) {
@@ -54,6 +61,8 @@ public class NacosPropertySourceBeanDefinitionParser implements BeanDefinitionPa
         this.environment = (ConfigurableEnvironment) parserContext.getDelegate().getEnvironment();
 
         this.beanFactory = resolveBeanFactory(parserContext.getRegistry());
+
+        this.applicationEventPublisher = resolveApplicationEventPublisher(parserContext);
 
         Set<String> dataIdSet = new LinkedHashSet<String>(1);
 
@@ -79,6 +88,17 @@ public class NacosPropertySourceBeanDefinitionParser implements BeanDefinitionPa
         return null;
     }
 
+    private ApplicationEventPublisher resolveApplicationEventPublisher(ParserContext parserContext) {
+        ResourceLoader resourceLoader = parserContext.getReaderContext().getReader().getResourceLoader();
+        try {
+            return (ApplicationEventPublisher)resourceLoader;
+        } catch (ClassCastException e) {
+            logger.warn("The auto-refreshed of the <nacos:property-source> element will be invalidated due to {}",
+                e.getMessage());
+        }
+        return null;
+    }
+
     private void addPropertySourceAttribute(Element element, String dataId) {
         Map<String, Object> attributes = new HashMap<String, Object>();
         attributes.put(DATA_ID_ATTRIBUTE_NAME, dataId);
@@ -92,7 +112,7 @@ public class NacosPropertySourceBeanDefinitionParser implements BeanDefinitionPa
         setBooleanProperty(attributes, AUTO_REFRESHED, element.getAttribute("auto-refreshed"), false);
 
         NacosPropertySourceProcessor propertySourceProcessor = new NacosPropertySourceProcessor(beanFactory,
-            environment, (ApplicationEventPublisher)beanFactory);
+            environment, applicationEventPublisher);
 
         propertySourceProcessor.process(attributes);
     }
