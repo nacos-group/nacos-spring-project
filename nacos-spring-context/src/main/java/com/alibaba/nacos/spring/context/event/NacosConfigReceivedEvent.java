@@ -24,11 +24,11 @@ import com.alibaba.nacos.api.config.ConfigService;
  * @author <a href="mailto:huangxiaoyu1018@gmail.com">hxy1991</a>
  * @since 0.1.0
  */
-public class NacosConfigReceiveEvent extends NacosConfigEvent {
+public class NacosConfigReceivedEvent extends NacosConfigEvent {
 
     private final String content;
 
-    public NacosConfigReceiveEvent(ConfigService configService, String dataId, String groupId, String content) {
+    public NacosConfigReceivedEvent(ConfigService configService, String dataId, String groupId, String content) {
         super(configService, dataId, groupId);
         this.content = content;
     }
