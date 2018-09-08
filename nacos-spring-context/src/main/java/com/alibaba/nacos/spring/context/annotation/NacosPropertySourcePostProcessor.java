@@ -36,19 +36,24 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertySources;
 import org.springframework.core.type.AnnotationMetadata;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import static org.springframework.util.ObjectUtils.isEmpty;
 
 /**
  * {@link BeanFactoryPostProcessor Post Processor} resolves {@link NacosPropertySource @NacosPropertySource} or
- * {@link NacosPropertySources @NacosPropertySources} to be {@link PropertySource}, and append into Spring
+ * {@link NacosPropertySources @NacosPropertySources} or {@link NacosPropertySourceBeanDefinition}
+ * to be {@link PropertySource}, and append into Spring
  * {@link PropertySources}
+ * {@link }
  *
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
  * @see NacosPropertySource
  * @see NacosPropertySources
+ * @see NacosPropertySourceBeanDefinition
  * @see PropertySource
+ * @see BeanDefinitionRegistryPostProcessor
  * @since 0.1.0
  */
 public class NacosPropertySourcePostProcessor implements BeanDefinitionRegistryPostProcessor, BeanFactoryPostProcessor,
@@ -91,7 +96,19 @@ public class NacosPropertySourcePostProcessor implements BeanDefinitionRegistryP
             // @NacosPropertySource must be AnnotatedBeanDefinition
             AnnotatedBeanDefinition annotatedBeanDefinition = (AnnotatedBeanDefinition) beanDefinition;
             addPropertySource(annotatedBeanDefinition);
+        } else if (beanDefinition instanceof NacosPropertySourceBeanDefinition) {
+            addPropertySource((NacosPropertySourceBeanDefinition) beanDefinition);
         }
+    }
+
+    private void addPropertySource(NacosPropertySourceBeanDefinition beanDefinition) {
+        Map<String, Object> nacosPropertySourceAttributes = new HashMap<String, Object>();
+        String[] attributeNames = beanDefinition.attributeNames();
+        for (String attributeName : attributeNames) {
+            Object attributeValue = beanDefinition.getAttribute(attributeName);
+            nacosPropertySourceAttributes.put(attributeName, attributeValue);
+        }
+        addPropertySource(nacosPropertySourceAttributes);
     }
 
     private void addPropertySource(AnnotatedBeanDefinition annotatedBeanDefinition) {

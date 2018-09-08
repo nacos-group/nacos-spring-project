@@ -17,7 +17,7 @@
 package com.alibaba.nacos.spring.context.annotation;
 
 import com.alibaba.nacos.api.annotation.NacosProperties;
-import com.alibaba.nacos.api.annotation.NacosService;
+import com.alibaba.nacos.api.annotation.NacosInjected;
 import com.alibaba.nacos.api.annotation.NacosValue;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.exception.NacosException;
@@ -106,7 +106,7 @@ public class NacosPropertySourceTest extends AbstractNacosHttpServerTestExecutio
         return new App();
     }
 
-    @NacosService
+    @NacosInjected
     private ConfigService configService;
 
     @Autowired

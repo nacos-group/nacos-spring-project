@@ -16,8 +16,8 @@
  */
 package com.alibaba.nacos.spring.util;
 
+import com.alibaba.nacos.api.annotation.NacosInjected;
 import com.alibaba.nacos.api.annotation.NacosProperties;
-import com.alibaba.nacos.api.annotation.NacosService;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.util.ReflectionUtils;
@@ -32,10 +32,10 @@ import java.lang.reflect.Field;
  */
 public class NacosUtilsTest {
 
-    @NacosService
+    @NacosInjected
     private Object object = new Object();
 
-    @NacosService(properties = @NacosProperties(serverAddr = "test"))
+    @NacosInjected(properties = @NacosProperties(serverAddr = "test"))
     private Object object2 = new Object();
 
     @Test
@@ -49,9 +49,9 @@ public class NacosUtilsTest {
 
         Field objectField = ReflectionUtils.findField(getClass(), fieldName);
 
-        NacosService nacosService = objectField.getAnnotation(NacosService.class);
+        NacosInjected nacosInjected = objectField.getAnnotation(NacosInjected.class);
 
-        NacosProperties nacosProperties = nacosService.properties();
+        NacosProperties nacosProperties = nacosInjected.properties();
 
         Assert.assertEquals(expectedValue, NacosUtils.isDefault(nacosProperties));
 

@@ -56,6 +56,12 @@ public abstract class NacosUtils {
      */
     public static final String DEFAULT_STRING_ATTRIBUTE_VALUE = "";
 
+
+    /**
+     * Default value of boolean attribute for {@link Annotation}
+     */
+    public static final boolean DEFAULT_BOOLEAN_ATTRIBUTE_VALUE = false;
+
     /**
      * The separator
      */
@@ -106,8 +112,9 @@ public abstract class NacosUtils {
         String endpoint = (String) properties.get(ENDPOINT);
         String accessKey = (String) properties.get(ACCESS_KEY);
         String secretKey = (String) properties.get(SECRET_KEY);
+        String encode = (String) properties.get(ENCODE);
 
-        return build(namespace, clusterName, serverAddress, contextPath, endpoint, accessKey, secretKey);
+        return build(namespace, clusterName, serverAddress, contextPath, endpoint, accessKey, secretKey, encode);
 
     }
 

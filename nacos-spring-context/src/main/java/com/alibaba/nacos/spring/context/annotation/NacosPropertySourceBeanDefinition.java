@@ -14,29 +14,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.alibaba.nacos.api.annotation;
+package com.alibaba.nacos.spring.context.annotation;
 
-import org.springframework.beans.factory.annotation.Value;
-
-import java.lang.annotation.*;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.support.GenericBeanDefinition;
+import org.springframework.context.annotation.PropertySource;
 
 /**
- * Annotation which extends value to support auto-refresh
+ * Nacos {@link PropertySource} {@link BeanDefinition}
  *
- * @author <a href="mailto:huangxiaoyu1018@gmail.com">hxy1991</a>
- * @see Value
+ * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
  * @since 0.1.0
  */
-@Target({ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.ANNOTATION_TYPE})
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-public @interface NacosValue {
+public class NacosPropertySourceBeanDefinition extends GenericBeanDefinition {
 
-    /**
-     * The actual value expression: e.g. "#{systemProperties.myProp}".
-     *
-     * @return value expression
-     */
-    String value();
+    public NacosPropertySourceBeanDefinition() {
+        // Object type as Bean Class
+        setBeanClass(Object.class);
+    }
 
 }

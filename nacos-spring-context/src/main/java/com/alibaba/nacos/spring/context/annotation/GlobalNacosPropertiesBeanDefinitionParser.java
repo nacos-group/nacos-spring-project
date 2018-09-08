@@ -24,14 +24,13 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.xml.BeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.core.env.Environment;
-import org.springframework.util.StringUtils;
 import org.w3c.dom.Element;
 
 import java.util.Properties;
 
 import static com.alibaba.nacos.api.annotation.NacosProperties.*;
 import static com.alibaba.nacos.spring.util.NacosBeanUtils.GLOBAL_NACOS_PROPERTIES_BEAN_NAME;
-import static com.alibaba.nacos.spring.util.NacosBeanUtils.registerSingleton;
+import static com.alibaba.nacos.spring.util.NacosBeanUtils.registerGlobalNacosProperties;
 
 /**
  * Nacos Global {@link Properties} {@link BeanDefinitionParser} for &lt;nacos:global-properties ...&gt;
@@ -44,36 +43,27 @@ import static com.alibaba.nacos.spring.util.NacosBeanUtils.registerSingleton;
  */
 public class GlobalNacosPropertiesBeanDefinitionParser implements BeanDefinitionParser {
 
-    private Environment environment;
-
     @Override
     public BeanDefinition parse(Element element, ParserContext parserContext) {
 
         Properties properties = new Properties();
 
-        environment = parserContext.getDelegate().getEnvironment();
+        Environment environment = parserContext.getDelegate().getEnvironment();
 
-        setPropertyIfPresent(properties, PropertyKeyConst.ENDPOINT, element.getAttribute(ENDPOINT));
-        setPropertyIfPresent(properties, PropertyKeyConst.NAMESPACE, element.getAttribute(NAMESPACE));
-        setPropertyIfPresent(properties, PropertyKeyConst.ACCESS_KEY, element.getAttribute(ACCESS_KEY));
-        setPropertyIfPresent(properties, PropertyKeyConst.SECRET_KEY, element.getAttribute(SECRET_KEY));
-        setPropertyIfPresent(properties, PropertyKeyConst.SERVER_ADDR, element.getAttribute(SERVER_ADDR));
-        setPropertyIfPresent(properties, PropertyKeyConst.SERVER_ADDR, element.getAttribute(CONTEXT_PATH));
-        setPropertyIfPresent(properties, PropertyKeyConst.CLUSTER_NAME, element.getAttribute(CLUSTER_NAME));
-        setPropertyIfPresent(properties, PropertyKeyConst.ENCODE, element.getAttribute(ENCODE));
+        properties.setProperty(PropertyKeyConst.ENDPOINT, element.getAttribute(ENDPOINT));
+        properties.setProperty(PropertyKeyConst.NAMESPACE, element.getAttribute(NAMESPACE));
+        properties.setProperty(PropertyKeyConst.ACCESS_KEY, element.getAttribute(ACCESS_KEY));
+        properties.setProperty(PropertyKeyConst.SECRET_KEY, element.getAttribute(SECRET_KEY));
+        properties.setProperty(PropertyKeyConst.SERVER_ADDR, element.getAttribute(SERVER_ADDR));
+        properties.setProperty(PropertyKeyConst.CLUSTER_NAME, element.getAttribute(CLUSTER_NAME));
+        properties.setProperty(PropertyKeyConst.ENCODE, element.getAttribute(ENCODE));
 
         BeanDefinitionRegistry registry = parserContext.getRegistry();
 
         // Register Global Nacos Properties as Spring singleton bean
-        registerSingleton(registry, GLOBAL_NACOS_PROPERTIES_BEAN_NAME, properties);
+        registerGlobalNacosProperties(properties, registry, environment, GLOBAL_NACOS_PROPERTIES_BEAN_NAME);
 
         return null;
     }
 
-    private void setPropertyIfPresent(Properties properties, String name, String value) {
-        String resolvedValue = environment.resolvePlaceholders(value);
-        if (StringUtils.hasText(resolvedValue)) {
-            properties.put(name, resolvedValue);
-        }
-    }
 }

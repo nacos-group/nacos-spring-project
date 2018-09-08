@@ -18,30 +18,29 @@ package com.alibaba.nacos.spring.context.annotation;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.xml.BeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
-import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.core.convert.support.ConfigurableConversionService;
 import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.StringUtils;
 import org.w3c.dom.Element;
 
-import java.util.HashMap;
 import java.util.LinkedHashSet;
-import java.util.Map;
 import java.util.Set;
 
 import static com.alibaba.nacos.client.config.common.Constants.DEFAULT_GROUP;
 import static com.alibaba.nacos.spring.context.annotation.NacosPropertySource.*;
-import static com.alibaba.nacos.spring.util.NacosBeanUtils.resolveBeanFactory;
+import static com.alibaba.nacos.spring.util.NacosBeanUtils.registerNacosPropertySourceProcessor;
+import static com.alibaba.nacos.spring.util.NacosUtils.DEFAULT_BOOLEAN_ATTRIBUTE_VALUE;
 import static com.alibaba.nacos.spring.util.NacosUtils.DEFAULT_STRING_ATTRIBUTE_VALUE;
 
 /**
  * Nacos Property Source {@link BeanDefinitionParser} for &lt;nacos:property-source ...&gt;
  *
  * @author <a href="mailto:huangxiaoyu1018@gmail.com">hxy1991</a>
+ * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
  * @see NacosPropertySource
  * @since 0.1.0
  */
@@ -51,18 +50,17 @@ public class NacosPropertySourceBeanDefinitionParser implements BeanDefinitionPa
 
     private ConfigurableEnvironment environment;
 
-    private BeanFactory beanFactory;
-
-    private ApplicationEventPublisher applicationEventPublisher;
+    private ConfigurableConversionService conversionService;
 
     @Override
     public BeanDefinition parse(Element element, ParserContext parserContext) {
 
         this.environment = (ConfigurableEnvironment) parserContext.getDelegate().getEnvironment();
+        this.conversionService = environment.getConversionService();
 
-        this.beanFactory = resolveBeanFactory(parserContext.getRegistry());
+        BeanDefinitionRegistry registry = parserContext.getRegistry();
 
-        this.applicationEventPublisher = resolveApplicationEventPublisher(parserContext);
+        registerNacosPropertySourceProcessor(registry);
 
         Set<String> dataIdSet = new LinkedHashSet<String>(1);
 
@@ -82,60 +80,42 @@ public class NacosPropertySourceBeanDefinitionParser implements BeanDefinitionPa
         }
 
         for (String currentDataId : dataIdSet) {
-            addPropertySourceAttribute(element, currentDataId);
+            registerNacosPropertySourceBeanDefinition(element, currentDataId, registry);
         }
 
         return null;
     }
 
-    private ApplicationEventPublisher resolveApplicationEventPublisher(ParserContext parserContext) {
-        ResourceLoader resourceLoader = parserContext.getReaderContext().getReader().getResourceLoader();
-        try {
-            return (ApplicationEventPublisher)resourceLoader;
-        } catch (ClassCastException e) {
-            logger.warn("The auto-refreshed of the <nacos:property-source> element will be invalidated due to {}",
-                e.getMessage());
-        }
-        return null;
+    private void registerNacosPropertySourceBeanDefinition(Element element, String currentDataId,
+                                                           BeanDefinitionRegistry beanDefinitionRegistry) {
+
+        NacosPropertySourceBeanDefinition beanDefinition = new NacosPropertySourceBeanDefinition();
+
+        // Nacos Metadata
+        String groupId = getAttribute(element, "group-id", DEFAULT_GROUP);
+        beanDefinition.setAttribute(DATA_ID_ATTRIBUTE_NAME, currentDataId);
+        beanDefinition.setAttribute(GROUP_ID_ATTRIBUTE_NAME, groupId);
+        // PropertySource Name
+        beanDefinition.setAttribute(NAME_ATTRIBUTE_NAME, getAttribute(element, NAME_ATTRIBUTE_NAME, DEFAULT_STRING_ATTRIBUTE_VALUE));
+        // PropertySource Order
+        beanDefinition.setAttribute(BEFORE_ATTRIBUTE_NAME, getAttribute(element, BEFORE_ATTRIBUTE_NAME, DEFAULT_STRING_ATTRIBUTE_VALUE));
+        beanDefinition.setAttribute(AFTER_ATTRIBUTE_NAME, getAttribute(element, AFTER_ATTRIBUTE_NAME, DEFAULT_STRING_ATTRIBUTE_VALUE));
+        beanDefinition.setAttribute(FIRST_ATTRIBUTE_NAME, getAttribute(element, FIRST_ATTRIBUTE_NAME, DEFAULT_BOOLEAN_ATTRIBUTE_VALUE));
+        // Auto-refreshed
+        beanDefinition.setAttribute(AUTO_REFRESHED, getAttribute(element, "auto-refreshed", DEFAULT_BOOLEAN_ATTRIBUTE_VALUE));
+
+        String beanName = beanDefinition.getClass().getSimpleName() + "#" + currentDataId + "#" + groupId;
+
+        beanDefinitionRegistry.registerBeanDefinition(beanName, beanDefinition);
     }
 
-    private void addPropertySourceAttribute(Element element, String dataId) {
-        Map<String, Object> attributes = new HashMap<String, Object>();
-        attributes.put(DATA_ID_ATTRIBUTE_NAME, dataId);
-
-        setProperty(attributes, NAME_ATTRIBUTE_NAME, element.getAttribute("name"), DEFAULT_STRING_ATTRIBUTE_VALUE);
-        setProperty(attributes, GROUP_ID_ATTRIBUTE_NAME, element.getAttribute("group-id"), DEFAULT_GROUP);
-        setProperty(attributes, BEFORE_ATTRIBUTE_NAME, element.getAttribute("before"), DEFAULT_STRING_ATTRIBUTE_VALUE);
-        setProperty(attributes, AFTER_ATTRIBUTE_NAME, element.getAttribute("after"), DEFAULT_STRING_ATTRIBUTE_VALUE);
-
-        setBooleanProperty(attributes, FIRST_ATTRIBUTE_NAME, element.getAttribute("first"), false);
-        setBooleanProperty(attributes, AUTO_REFRESHED, element.getAttribute("auto-refreshed"), false);
-
-        NacosPropertySourceProcessor propertySourceProcessor = new NacosPropertySourceProcessor(beanFactory,
-            environment, applicationEventPublisher);
-
-        propertySourceProcessor.process(attributes);
-    }
-
-    private void setProperty(Map<String, Object> attributes, String name, String value, Object defaultValue) {
+    private <T> T getAttribute(Element element, String name, T defaultValue) {
+        String value = element.getAttribute(name);
         String resolvedValue = environment.resolvePlaceholders(value);
-        if (StringUtils.hasText(resolvedValue)) {
-            attributes.put(name, resolvedValue);
-        } else {
-            if (resolvedValue != null) {
-                attributes.put(name, defaultValue);
-            }
-        }
+        T attributeValue = StringUtils.hasText(resolvedValue) ?
+                (T) conversionService.convert(resolvedValue, defaultValue.getClass()) :
+                defaultValue;
+        return attributeValue;
     }
 
-    private void setBooleanProperty(Map<String, Object> attributes, String name, String value, boolean defaultValue) {
-        String resolvedValue = environment.resolvePlaceholders(value);
-        if (StringUtils.hasText(resolvedValue)) {
-            attributes.put(name, "true".equals(resolvedValue));
-        } else {
-            if (resolvedValue != null) {
-                attributes.put(name, defaultValue);
-            }
-        }
-    }
 }

@@ -25,6 +25,7 @@ import java.lang.annotation.*;
 import java.util.Map;
 
 import static com.alibaba.nacos.client.config.common.Constants.DEFAULT_GROUP;
+import static com.alibaba.nacos.spring.util.NacosUtils.DEFAULT_BOOLEAN_ATTRIBUTE_VALUE;
 import static com.alibaba.nacos.spring.util.NacosUtils.DEFAULT_STRING_ATTRIBUTE_VALUE;
 
 /**
@@ -110,7 +111,7 @@ public @interface NacosPropertySource {
      *
      * @return default value is <code>false</code>
      */
-    boolean autoRefreshed() default false;
+    boolean autoRefreshed() default DEFAULT_BOOLEAN_ATTRIBUTE_VALUE;
 
     /**
      * Indicates current Nacos {@link PropertySource} is first order or not
@@ -119,7 +120,7 @@ public @interface NacosPropertySource {
      *
      * @return default value is <code>false</code>
      */
-    boolean first() default false;
+    boolean first() default DEFAULT_BOOLEAN_ATTRIBUTE_VALUE;
 
     /**
      * The relative order before specified {@link PropertySource}

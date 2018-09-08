@@ -34,7 +34,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import static com.alibaba.nacos.spring.context.annotation.NacosPropertySource.*;
-import static com.alibaba.nacos.spring.util.NacosBeanUtils.getGlobalPropertiesBean;
+import static com.alibaba.nacos.spring.util.GlobalNacosPropertiesSource.CONFIG;
 import static com.alibaba.nacos.spring.util.NacosUtils.*;
 import static org.springframework.util.ObjectUtils.nullSafeEquals;
 
@@ -61,7 +61,7 @@ class NacosPropertySourceProcessor {
                                  ApplicationEventPublisher applicationEventPublisher) {
         this.beanFactory = beanFactory;
         this.environment = environment;
-        this.globalNacosProperties = getGlobalPropertiesBean(beanFactory);
+        this.globalNacosProperties = CONFIG.getMergedGlobalProperties(beanFactory);
         this.applicationEventPublisher = applicationEventPublisher;
     }
 

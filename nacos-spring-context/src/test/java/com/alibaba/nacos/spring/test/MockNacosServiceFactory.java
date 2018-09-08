@@ -22,9 +22,12 @@ import com.alibaba.nacos.api.naming.NamingService;
 import com.alibaba.nacos.spring.factory.NacosServiceFactory;
 import org.mockito.Mockito;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 import static com.alibaba.nacos.spring.util.NacosUtils.DEFAULT_TIMEOUT;
+import static com.alibaba.nacos.spring.util.NacosUtils.identify;
 
 /**
  * Mock {@link NacosServiceFactory}
@@ -48,7 +51,9 @@ public class MockNacosServiceFactory implements NacosServiceFactory {
 
     private String content;
 
-    private ConfigService configService = new MockConfigService();
+    private ConfigService configService;
+
+    private Map<String, ConfigService> configServiceCache = new HashMap<String, ConfigService>();
 
     public MockNacosServiceFactory() {
         this(DATA_ID, GROUP_ID, DEFAULT_TIMEOUT, CONTENT);
@@ -95,6 +100,15 @@ public class MockNacosServiceFactory implements NacosServiceFactory {
 
     @Override
     public ConfigService createConfigService(Properties properties) throws NacosException {
+        if (configService != null) {
+            return configService;
+        }
+        String key = identify(properties);
+        ConfigService configService = configServiceCache.get(key);
+        if (configService == null) {
+            configService = new MockConfigService();
+            configServiceCache.put(key, configService);
+        }
         return configService;
     }
 

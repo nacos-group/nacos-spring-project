@@ -16,9 +16,9 @@
  */
 package com.alibaba.nacos.spring.context.annotation;
 
-import com.alibaba.nacos.api.annotation.NacosService;
+import com.alibaba.nacos.api.annotation.NacosInjected;
 import com.alibaba.nacos.api.config.ConfigService;
-import com.alibaba.nacos.spring.beans.factory.annotation.NamingServiceInjectedBeanPostProcessor;
+import com.alibaba.nacos.spring.beans.factory.annotation.AnnotationNacosInjectedBeanPostProcessor;
 import com.alibaba.nacos.spring.config.NacosNamespaceHandler;
 import com.alibaba.nacos.spring.context.properties.NacosConfigurationPropertiesBindingPostProcessor;
 import com.alibaba.nacos.spring.factory.NacosServiceFactory;
@@ -67,8 +67,8 @@ public class NacosAnnotationDrivenBeanDefinitionParserTest {
     private NacosServiceFactory nacosServiceFactory;
 
     @Autowired
-    @Qualifier(NamingServiceInjectedBeanPostProcessor.BEAN_NAME)
-    private NamingServiceInjectedBeanPostProcessor namingServiceInjectedBeanPostProcessor;
+    @Qualifier(AnnotationNacosInjectedBeanPostProcessor.BEAN_NAME)
+    private AnnotationNacosInjectedBeanPostProcessor annotationNacosInjectedBeanPostProcessor;
 
     @Autowired
     @Qualifier(NacosConfigurationPropertiesBindingPostProcessor.BEAN_NAME)
@@ -82,14 +82,14 @@ public class NacosAnnotationDrivenBeanDefinitionParserTest {
     @Qualifier(NacosPropertySourcePostProcessor.BEAN_NAME)
     private NacosPropertySourcePostProcessor nacosPropertySourcePostProcessor;
 
-    @NacosService
+    @NacosInjected
     private ConfigService configService;
 
     @Test
     public void test() {
         Assert.assertNotNull(globalProperties);
         Assert.assertNotNull(nacosServiceFactory);
-        Assert.assertNotNull(namingServiceInjectedBeanPostProcessor);
+        Assert.assertNotNull(annotationNacosInjectedBeanPostProcessor);
         Assert.assertNotNull(nacosConfigurationPropertiesBindingPostProcessor);
         Assert.assertNotNull(nacosConfigListenerMethodProcessor);
         Assert.assertNotNull(nacosPropertySourcePostProcessor);
