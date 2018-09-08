@@ -20,7 +20,7 @@ import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.config.listener.AbstractListener;
 import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.spring.context.config.NacosPropertySourceBeanDefinitionParser;
-import com.alibaba.nacos.spring.context.event.NacosConfigReceiveEvent;
+import com.alibaba.nacos.spring.context.event.NacosConfigReceivedEvent;
 import com.alibaba.nacos.spring.util.NacosConfigLoader;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.context.ApplicationEventPublisher;
@@ -146,7 +146,7 @@ class NacosPropertySourceProcessor {
 
                     if (applicationEventPublisher != null) {
                         applicationEventPublisher.publishEvent(
-                                new NacosConfigReceiveEvent(configService, dataId, groupId, configInfo));
+                                new NacosConfigReceivedEvent(configService, dataId, groupId, configInfo));
                     }
                 }
             });

@@ -17,7 +17,7 @@
 package com.alibaba.nacos.spring.context.annotation;
 
 import com.alibaba.nacos.api.annotation.NacosValue;
-import com.alibaba.nacos.spring.context.event.NacosConfigReceiveEvent;
+import com.alibaba.nacos.spring.context.event.NacosConfigReceivedEvent;
 import com.alibaba.spring.beans.factory.annotation.AnnotationInjectedBeanPostProcessor;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.MutablePropertyValues;
@@ -46,7 +46,7 @@ import static org.springframework.util.StringUtils.hasText;
  * @since 0.1.0
  */
 public class NacosValueAnnotationBeanPostProcessor extends AnnotationInjectedBeanPostProcessor<NacosValue>
-    implements BeanFactoryAware, ApplicationListener<NacosConfigReceiveEvent> {
+    implements BeanFactoryAware, ApplicationListener<NacosConfigReceivedEvent> {
 
     /**
      * The name of {@link NacosValueAnnotationBeanPostProcessor} bean
@@ -131,7 +131,7 @@ public class NacosValueAnnotationBeanPostProcessor extends AnnotationInjectedBea
     }
 
     @Override
-    public void onApplicationEvent(NacosConfigReceiveEvent event) {
+    public void onApplicationEvent(NacosConfigReceivedEvent event) {
         String content = event.getContent();
         if (content != null) {
             Map<Object, List<BeanProperty>> map = new HashMap<Object, List<BeanProperty>>();
