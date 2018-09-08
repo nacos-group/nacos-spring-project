@@ -19,6 +19,7 @@ package com.alibaba.nacos.spring.context.annotation;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.config.listener.AbstractListener;
 import com.alibaba.nacos.api.exception.NacosException;
+import com.alibaba.nacos.spring.context.config.NacosPropertySourceBeanDefinitionParser;
 import com.alibaba.nacos.spring.context.event.NacosConfigReceiveEvent;
 import com.alibaba.nacos.spring.util.NacosConfigLoader;
 import org.springframework.beans.factory.BeanFactory;
