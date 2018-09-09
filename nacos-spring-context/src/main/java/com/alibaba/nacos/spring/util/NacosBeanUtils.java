@@ -20,9 +20,11 @@ import com.alibaba.nacos.spring.beans.factory.annotation.AnnotationNacosInjected
 import com.alibaba.nacos.spring.beans.factory.annotation.ConfigServiceBeanBuilder;
 import com.alibaba.nacos.spring.beans.factory.annotation.NamingServiceBeanBuilder;
 import com.alibaba.nacos.spring.context.annotation.NacosConfigListenerMethodProcessor;
-import com.alibaba.nacos.spring.context.annotation.NacosPropertySourcePostProcessor;
+import com.alibaba.nacos.spring.core.env.NacosPropertySourcePostProcessor;
 import com.alibaba.nacos.spring.context.annotation.NacosValueAnnotationBeanPostProcessor;
 import com.alibaba.nacos.spring.context.properties.NacosConfigurationPropertiesBindingPostProcessor;
+import com.alibaba.nacos.spring.core.env.AnnotationNacosPropertySourceBuilder;
+import com.alibaba.nacos.spring.core.env.XmlNacosPropertySourceBuilder;
 import com.alibaba.nacos.spring.factory.CacheableEventPublishingNacosServiceFactory;
 import com.alibaba.nacos.spring.factory.NacosServiceFactory;
 import com.alibaba.spring.util.BeanUtils;
@@ -247,9 +249,19 @@ public abstract class NacosBeanUtils {
                 NacosConfigListenerMethodProcessor.class);
     }
 
-    public static void registerNacosPropertySourceProcessor(BeanDefinitionRegistry registry) {
+    public static void registerNacosPropertySourcePostProcessor(BeanDefinitionRegistry registry) {
         registerInfrastructureBeanIfAbsent(registry, NacosPropertySourcePostProcessor.BEAN_NAME,
                 NacosPropertySourcePostProcessor.class);
+    }
+
+    public static void registerAnnotationNacosPropertySourceBuilder(BeanDefinitionRegistry registry) {
+        registerInfrastructureBeanIfAbsent(registry, AnnotationNacosPropertySourceBuilder.BEAN_NAME,
+                AnnotationNacosPropertySourceBuilder.class);
+    }
+
+    public static void registerXmlNacosPropertySourceBuilder(BeanDefinitionRegistry registry) {
+        registerInfrastructureBeanIfAbsent(registry, XmlNacosPropertySourceBuilder.BEAN_NAME,
+                XmlNacosPropertySourceBuilder.class);
     }
 
     public static void registerNacosConfigListenerExecutor(BeanDefinitionRegistry registry, Environment environment) {
@@ -308,7 +320,9 @@ public abstract class NacosBeanUtils {
 
         registerNacosConfigListenerMethodProcessor(registry);
 
-        registerNacosPropertySourceProcessor(registry);
+        registerNacosPropertySourcePostProcessor(registry);
+
+        registerAnnotationNacosPropertySourceBuilder(registry);
 
         registerNacosConfigListenerExecutor(registry, environment);
 

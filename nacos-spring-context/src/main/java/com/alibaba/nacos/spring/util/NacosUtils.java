@@ -263,7 +263,9 @@ public abstract class NacosUtils {
     public static Properties toProperties(String text) {
         Properties properties = new Properties();
         try {
-            properties.load(new StringReader(text));
+            if (StringUtils.hasText(text)) {
+                properties.load(new StringReader(text));
+            }
         } catch (IOException e) {
             if (logger.isErrorEnabled()) {
                 logger.error(e.getMessage(), e);

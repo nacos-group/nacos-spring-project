@@ -16,8 +16,8 @@
  */
 package com.alibaba.nacos.spring.context.annotation;
 
-import com.alibaba.nacos.api.annotation.NacosProperties;
 import com.alibaba.nacos.api.annotation.NacosInjected;
+import com.alibaba.nacos.api.annotation.NacosProperties;
 import com.alibaba.nacos.api.annotation.NacosValue;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.exception.NacosException;
@@ -57,7 +57,6 @@ import static com.alibaba.nacos.spring.test.NacosConfigHttpHandler.*;
 })
 @TestExecutionListeners({DependencyInjectionTestExecutionListener.class,
         DirtiesContextTestExecutionListener.class, NacosPropertySourceTest.class})
-
 @NacosPropertySource(dataId = NacosPropertySourceTest.DATA_ID, autoRefreshed = true)
 @EnableNacos(globalProperties = @NacosProperties(serverAddr = "${server.addr}"))
 @Component
@@ -68,7 +67,6 @@ public class NacosPropertySourceTest extends AbstractNacosHttpServerTestExecutio
     private static final String APP_NAME = "Nacos-Spring";
 
     private static final String ANOTHER_APP_NAME = "Nacos-Spring-1";
-
 
     @Override
     public void init(EmbeddedNacosHttpServer httpServer) {
@@ -83,7 +81,6 @@ public class NacosPropertySourceTest extends AbstractNacosHttpServerTestExecutio
     protected String getServerAddressPropertyName() {
         return "server.addr";
     }
-
 
     public static class App {
         @Value("${app.name}")
@@ -100,6 +97,7 @@ public class NacosPropertySourceTest extends AbstractNacosHttpServerTestExecutio
             this.nacosName = nacosName;
         }
     }
+
 
     @Bean
     public App app() {

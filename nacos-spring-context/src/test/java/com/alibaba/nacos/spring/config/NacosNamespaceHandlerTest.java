@@ -18,9 +18,9 @@ package com.alibaba.nacos.spring.config;
 
 import com.alibaba.nacos.api.annotation.NacosInjected;
 import com.alibaba.nacos.api.config.ConfigService;
-import com.alibaba.nacos.spring.context.config.GlobalNacosPropertiesBeanDefinitionParser;
-import com.alibaba.nacos.spring.context.config.NacosAnnotationDrivenBeanDefinitionParser;
-import com.alibaba.nacos.spring.context.config.NacosNamespaceHandler;
+import com.alibaba.nacos.spring.context.config.xml.GlobalNacosPropertiesBeanDefinitionParser;
+import com.alibaba.nacos.spring.context.config.xml.NacosAnnotationDrivenBeanDefinitionParser;
+import com.alibaba.nacos.spring.context.config.xml.NacosNamespaceHandler;
 import com.alibaba.nacos.spring.test.AbstractNacosHttpServerTestExecutionListener;
 import com.alibaba.nacos.spring.test.EmbeddedNacosHttpServer;
 import com.alibaba.nacos.spring.test.User;

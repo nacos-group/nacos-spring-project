@@ -14,23 +14,45 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.alibaba.nacos.spring.context.annotation;
+package com.alibaba.nacos.spring.context.config.xml;
 
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
+import org.springframework.beans.factory.xml.XmlReaderContext;
 import org.springframework.context.annotation.PropertySource;
+import org.w3c.dom.Element;
 
 /**
- * Nacos {@link PropertySource} {@link BeanDefinition}
+ * Nacos {@link PropertySource} XML {@link BeanDefinition}
  *
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
  * @since 0.1.0
  */
-public class NacosPropertySourceBeanDefinition extends GenericBeanDefinition {
+public class NacosPropertySourceXmlBeanDefinition extends GenericBeanDefinition {
 
-    public NacosPropertySourceBeanDefinition() {
-        // Object type as Bean Class
-        setBeanClass(Object.class);
+    private Element element;
+
+    private XmlReaderContext xmlReaderContext;
+
+    public NacosPropertySourceXmlBeanDefinition() {
+        // Self type as Bean Class
+        setBeanClass(getClass());
+    }
+
+    void setXmlReaderContext(XmlReaderContext xmlReaderContext) {
+        this.xmlReaderContext = xmlReaderContext;
+    }
+
+    void setElement(Element element) {
+        this.element = element;
+    }
+
+    public Element getElement() {
+        return element;
+    }
+
+    public XmlReaderContext getXmlReaderContext() {
+        return xmlReaderContext;
     }
 
 }

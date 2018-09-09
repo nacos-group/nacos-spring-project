@@ -60,7 +60,7 @@ public @interface NacosPropertySource {
     /**
      * The attribute name of {@link NacosPropertySource#autoRefreshed()}
      */
-    String AUTO_REFRESHED = "autoRefreshed";
+    String AUTO_REFRESHED_ATTRIBUTE_NAME = "autoRefreshed";
 
     /**
      * The attribute name of {@link NacosPropertySource#first()}
