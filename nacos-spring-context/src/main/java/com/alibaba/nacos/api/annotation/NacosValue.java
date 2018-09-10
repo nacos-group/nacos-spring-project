@@ -39,4 +39,11 @@ public @interface NacosValue {
      */
     String value();
 
+    /**
+     * It indicates that the currently bound property is auto-refreshed when Nacos configuration is changed.
+     *
+     * @return default value is <code>false</code>
+     */
+    boolean autoRefreshed() default false;
+
 }

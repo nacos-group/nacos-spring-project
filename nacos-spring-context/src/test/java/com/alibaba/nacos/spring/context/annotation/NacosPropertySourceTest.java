@@ -86,18 +86,24 @@ public class NacosPropertySourceTest extends AbstractNacosHttpServerTestExecutio
         @Value("${app.name}")
         private String name;
 
+        @NacosValue(value = "${app.name}", autoRefreshed = true)
+        private String nacosNameAutoRefreshed;
+
         @NacosValue("${app.name}")
-        private String nacosName;
+        private String nacosNameNotAutoRefreshed;
 
         public void setName(String name) {
             this.name = name;
         }
 
-        public void setNacosName(String nacosName) {
-            this.nacosName = nacosName;
+        public void setNacosNameAutoRefreshed(String nacosNameAutoRefreshed) {
+            this.nacosNameAutoRefreshed = nacosNameAutoRefreshed;
+        }
+
+        public void setNacosNameNotAutoRefreshed(String nacosNameNotAutoRefreshed) {
+            this.nacosNameNotAutoRefreshed = nacosNameNotAutoRefreshed;
         }
     }
-
 
     @Bean
     public App app() {
@@ -117,7 +123,9 @@ public class NacosPropertySourceTest extends AbstractNacosHttpServerTestExecutio
     public void testValue() throws NacosException, InterruptedException {
         Assert.assertEquals(APP_NAME, app.name);
 
-        Assert.assertEquals(APP_NAME, app.nacosName);
+        Assert.assertEquals(APP_NAME, app.nacosNameAutoRefreshed);
+
+        Assert.assertEquals(APP_NAME, app.nacosNameNotAutoRefreshed);
 
         Assert.assertEquals(APP_NAME, environment.getProperty("app.name"));
 
@@ -127,9 +135,11 @@ public class NacosPropertySourceTest extends AbstractNacosHttpServerTestExecutio
 
         Assert.assertEquals(APP_NAME, app.name);
 
-        Assert.assertEquals(ANOTHER_APP_NAME, environment.getProperty("app.name"));
+        Assert.assertEquals(ANOTHER_APP_NAME, app.nacosNameAutoRefreshed);
 
-        Assert.assertEquals(ANOTHER_APP_NAME, app.nacosName);
+        Assert.assertEquals(APP_NAME, app.nacosNameNotAutoRefreshed);
+
+        Assert.assertEquals(ANOTHER_APP_NAME, environment.getProperty("app.name"));
     }
 
 }
