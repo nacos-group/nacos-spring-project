@@ -28,6 +28,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -54,6 +55,7 @@ import static com.alibaba.nacos.spring.test.NacosConfigHttpHandler.*;
         "classpath:/META-INF/nacos-context.xml",
         "classpath:/META-INF/nacos-property-source.xml"
 })
+@DirtiesContext
 @TestExecutionListeners({DependencyInjectionTestExecutionListener.class,
         DirtiesContextTestExecutionListener.class, NacosNamespaceHandlerTest.class})
 public class NacosNamespaceHandlerTest extends AbstractNacosHttpServerTestExecutionListener {
