@@ -103,10 +103,12 @@ public class NacosValueAnnotationBeanPostProcessor extends AnnotationInjectedBea
                     if (Modifier.isStatic(field.getModifiers())) {
                         return;
                     }
-                    String placeHolder = annotation.value();
-                    BeanProperty beanProperty = new BeanProperty(field.getName(), placeHolder);
-                    put2ListMap(beanNamePropertyListMap, beanName, beanProperty);
-                    put2ListMap(placeholderPropertyListMap, placeHolder, beanProperty);
+                    if (annotation.autoRefreshed()) {
+                        String placeHolder = annotation.value();
+                        BeanProperty beanProperty = new BeanProperty(field.getName(), placeHolder);
+                        put2ListMap(beanNamePropertyListMap, beanName, beanProperty);
+                        put2ListMap(placeholderPropertyListMap, placeHolder, beanProperty);
+                    }
                 }
             }
         });
