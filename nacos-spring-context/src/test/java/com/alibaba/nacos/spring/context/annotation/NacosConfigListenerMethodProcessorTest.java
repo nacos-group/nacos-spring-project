@@ -16,9 +16,10 @@
  */
 package com.alibaba.nacos.spring.context.annotation;
 
-import com.alibaba.nacos.api.annotation.NacosService;
+import com.alibaba.nacos.api.annotation.NacosInjected;
 import com.alibaba.nacos.api.config.ConfigService;
-import com.alibaba.nacos.spring.beans.factory.annotation.NamingServiceInjectedBeanPostProcessor;
+import com.alibaba.nacos.spring.beans.factory.annotation.AnnotationNacosInjectedBeanPostProcessor;
+import com.alibaba.nacos.spring.beans.factory.annotation.ConfigServiceBeanBuilder;
 import com.alibaba.nacos.spring.test.ListenersConfiguration;
 import com.alibaba.nacos.spring.test.TestConfiguration;
 import org.junit.Test;
@@ -39,14 +40,15 @@ import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.DATA_ID;
 @ContextConfiguration(classes = {
         TestConfiguration.class,
         ListenersConfiguration.class,
-        NamingServiceInjectedBeanPostProcessor.class,
+        ConfigServiceBeanBuilder.class,
+        AnnotationNacosInjectedBeanPostProcessor.class,
         NacosConfigListenerMethodProcessor.class,
         NacosConfigListenerMethodProcessorTest.class,
 
 })
 public class NacosConfigListenerMethodProcessorTest {
 
-    @NacosService
+    @NacosInjected
     private ConfigService configService;
 
     @Test

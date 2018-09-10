@@ -31,6 +31,7 @@ import java.util.Properties;
 import static com.alibaba.nacos.spring.util.NacosBeanUtils.getNacosServiceFactoryBean;
 import static com.alibaba.nacos.spring.util.NacosUtils.buildDefaultPropertySourceName;
 import static com.alibaba.nacos.spring.util.NacosUtils.toProperties;
+import static java.lang.String.format;
 
 /**
  * Nacos {@link PropertySource} Builder
@@ -104,8 +105,10 @@ class NacosPropertySourceBuilder {
 
         if (!StringUtils.hasText(config)) {
             if (logger.isWarnEnabled()) {
-                logger.warn("There is no content for Nacos PropertySource from dataId : " + dataId + " , groupId : "
-                        + groupId);
+                logger.warn(format("There is no content for Nacos PropertySource from dataId[%s] , groupId[%s] , properties[%s].",
+                        dataId,
+                        groupId,
+                        properties));
             }
             return null;
         }

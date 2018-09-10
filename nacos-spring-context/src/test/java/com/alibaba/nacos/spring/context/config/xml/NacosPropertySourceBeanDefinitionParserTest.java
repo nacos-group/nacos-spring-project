@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.alibaba.nacos.spring.context.annotation;
+package com.alibaba.nacos.spring.context.config.xml;
 
 import com.alibaba.nacos.spring.test.AbstractNacosHttpServerTestExecutionListener;
 import com.alibaba.nacos.spring.test.EmbeddedNacosHttpServer;
@@ -33,9 +33,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.alibaba.nacos.client.config.common.Constants.DEFAULT_GROUP;
-import static com.alibaba.nacos.spring.test.NacosConfigHttpHandler.CONTENT_PARAM_NAME;
-import static com.alibaba.nacos.spring.test.NacosConfigHttpHandler.DATA_ID_PARAM_NAME;
-import static com.alibaba.nacos.spring.test.NacosConfigHttpHandler.GROUP_ID_PARAM_NAME;
+import static com.alibaba.nacos.spring.test.NacosConfigHttpHandler.*;
 
 /**
  * {@link NacosPropertySourceBeanDefinitionParser} Test

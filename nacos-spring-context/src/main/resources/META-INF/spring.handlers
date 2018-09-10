@@ -1,1 +1,1 @@
-http\://nacos.io/schema/nacos=com.alibaba.nacos.spring.config.NacosNamespaceHandler
+http\://nacos.io/schema/nacos=com.alibaba.nacos.spring.context.config.xml.NacosNamespaceHandler

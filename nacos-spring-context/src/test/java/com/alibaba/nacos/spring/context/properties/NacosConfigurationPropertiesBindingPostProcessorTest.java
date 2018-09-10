@@ -16,10 +16,11 @@
  */
 package com.alibaba.nacos.spring.context.properties;
 
-import com.alibaba.nacos.api.annotation.NacosService;
+import com.alibaba.nacos.api.annotation.NacosInjected;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.exception.NacosException;
-import com.alibaba.nacos.spring.beans.factory.annotation.NamingServiceInjectedBeanPostProcessor;
+import com.alibaba.nacos.spring.beans.factory.annotation.AnnotationNacosInjectedBeanPostProcessor;
+import com.alibaba.nacos.spring.beans.factory.annotation.ConfigServiceBeanBuilder;
 import com.alibaba.nacos.spring.test.Config;
 import com.alibaba.nacos.spring.test.TestConfiguration;
 import org.junit.Assert;
@@ -44,8 +45,9 @@ import static com.alibaba.nacos.spring.test.TestConfiguration.TEST_CONFIG;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
         TestConfiguration.class,
+        ConfigServiceBeanBuilder.class,
         NacosConfigurationPropertiesBindingPostProcessor.class,
-        NamingServiceInjectedBeanPostProcessor.class,
+        AnnotationNacosInjectedBeanPostProcessor.class,
         NacosConfigurationPropertiesBindingPostProcessorTest.class
 })
 public class NacosConfigurationPropertiesBindingPostProcessorTest {
@@ -53,7 +55,7 @@ public class NacosConfigurationPropertiesBindingPostProcessorTest {
     @Autowired
     private Config config;
 
-    @NacosService
+    @NacosInjected
     private ConfigService configService;
 
     @Bean

@@ -23,6 +23,8 @@ import com.alibaba.nacos.spring.test.MockNacosServiceFactory;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.Properties;
+
 import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.DATA_ID;
 import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.GROUP_ID;
 import static com.alibaba.nacos.spring.test.TestConfiguration.MODIFIED_TEST_CONTEXT;
@@ -43,7 +45,7 @@ public class NacosConfigurationPropertiesBinderTest {
 
         Config config = new Config();
 
-        ConfigService configService = nacosServiceFactory.createConfigService(null);
+        ConfigService configService = nacosServiceFactory.createConfigService(new Properties());
 
         configService.publishConfig(DATA_ID, GROUP_ID, TEST_CONFIG);
 

@@ -14,29 +14,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.alibaba.nacos.api.annotation;
+package com.alibaba.nacos.spring.context.annotation;
 
-import org.springframework.beans.factory.annotation.Value;
+import com.alibaba.nacos.api.annotation.NacosConfigListener;
+import com.alibaba.nacos.api.annotation.NacosConfigurationProperties;
+import com.alibaba.nacos.api.annotation.NacosInjected;
+import com.alibaba.nacos.api.annotation.NacosProperties;
+import org.springframework.context.annotation.Import;
 
 import java.lang.annotation.*;
 
 /**
- * Annotation which extends value to support auto-refresh
+ * Annotation for enabling Nacos discovery features.
  *
- * @author <a href="mailto:huangxiaoyu1018@gmail.com">hxy1991</a>
- * @see Value
+ * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
+ * @see NacosBeanDefinitionRegistrar
  * @since 0.1.0
  */
-@Target({ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.ANNOTATION_TYPE})
+@Target({ElementType.TYPE, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface NacosValue {
+@Import(NacosDiscoveryBeanDefinitionRegistrar.class)
+public @interface EnableNacosDiscovery {
 
     /**
-     * The actual value expression: e.g. "#{systemProperties.myProp}".
+     * Global {@link NacosProperties Nacos Properties}
      *
-     * @return value expression
+     * @return required
+     * @see NacosInjected#properties()
+     * @see NacosConfigListener#properties()
+     * @see NacosConfigurationProperties#properties()
      */
-    String value();
-
+    NacosProperties globalProperties();
 }

@@ -16,7 +16,8 @@
  */
 package com.alibaba.nacos.spring.beans.factory.annotation;
 
-import com.alibaba.nacos.api.annotation.NacosService;
+import com.alibaba.nacos.api.annotation.NacosInjected;
+import com.alibaba.nacos.api.annotation.NacosProperties;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.api.naming.NamingService;
@@ -30,7 +31,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.*;
 
 /**
- * {@link NamingServiceInjectedBeanPostProcessor}
+ * {@link AnnotationNacosInjectedBeanPostProcessor} Test
  *
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
  * @since 0.1.0
@@ -38,28 +39,39 @@ import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.*;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
         TestConfiguration.class,
-        NamingServiceInjectedBeanPostProcessor.class,
-        NamingServiceInjectedBeanPostProcessorTest.class
+        ConfigServiceBeanBuilder.class,
+        NamingServiceBeanBuilder.class,
+        AnnotationNacosInjectedBeanPostProcessor.class,
+        AnnotationNacosInjectedBeanPostProcessorTest.class
 })
-public class NamingServiceInjectedBeanPostProcessorTest {
+public class AnnotationNacosInjectedBeanPostProcessorTest {
 
-    @NacosService
+    @NacosInjected
     private ConfigService configService;
 
-    @NacosService
+    @NacosInjected(properties = @NacosProperties(encode = "UTF-8"))
     private ConfigService configService2;
 
-    @NacosService
+    @NacosInjected(properties = @NacosProperties(encode = "GBK"))
+    private ConfigService configService3;
+
+    @NacosInjected
     private NamingService namingService;
 
-    @NacosService
+    @NacosInjected(properties = @NacosProperties(encode = "UTF-8"))
     private NamingService namingService2;
 
+    @NacosInjected(properties = @NacosProperties(encode = "GBK"))
+    private NamingService namingService3;
 
     @Test
     public void testInjection() {
+
         Assert.assertEquals(configService, configService2);
+        Assert.assertNotEquals(configService2, configService3);
+
         Assert.assertEquals(namingService, namingService2);
+        Assert.assertNotEquals(namingService2, namingService3);
     }
 
     @Test

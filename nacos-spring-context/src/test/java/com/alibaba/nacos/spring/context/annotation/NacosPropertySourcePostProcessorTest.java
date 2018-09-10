@@ -18,7 +18,10 @@ package com.alibaba.nacos.spring.context.annotation;
 
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.exception.NacosException;
-import com.alibaba.nacos.spring.beans.factory.annotation.NamingServiceInjectedBeanPostProcessor;
+import com.alibaba.nacos.spring.beans.factory.annotation.AnnotationNacosInjectedBeanPostProcessor;
+import com.alibaba.nacos.spring.beans.factory.annotation.ConfigServiceBeanBuilder;
+import com.alibaba.nacos.spring.core.env.AnnotationNacosPropertySourceBuilder;
+import com.alibaba.nacos.spring.core.env.NacosPropertySourcePostProcessor;
 import com.alibaba.nacos.spring.test.MockConfigService;
 import com.alibaba.nacos.spring.test.TestConfiguration;
 import org.junit.Assert;
@@ -146,8 +149,9 @@ public class NacosPropertySourcePostProcessorTest {
 
         beanFactory.registerSingleton(CONFIG_SERVICE_BEAN_NAME, configService);
 
-        context.register(TestConfiguration.class, NamingServiceInjectedBeanPostProcessor.class,
-                NacosPropertySourcePostProcessor.class);
+        context.register(TestConfiguration.class, AnnotationNacosInjectedBeanPostProcessor.class,
+                NacosPropertySourcePostProcessor.class, ConfigServiceBeanBuilder.class,
+                AnnotationNacosPropertySourceBuilder.class);
         return context;
     }
 }

@@ -32,6 +32,7 @@ import org.springframework.core.env.Environment;
 
 import java.util.Properties;
 
+import static com.alibaba.nacos.spring.util.GlobalNacosPropertiesSource.CONFIG;
 import static com.alibaba.nacos.spring.util.NacosUtils.resolveProperties;
 import static org.springframework.core.annotation.AnnotationUtils.findAnnotation;
 
@@ -104,7 +105,7 @@ public class NacosConfigurationPropertiesBindingPostProcessor implements BeanPos
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        globalNacosProperties = NacosBeanUtils.getGlobalPropertiesBean(applicationContext);
+        globalNacosProperties = CONFIG.getMergedGlobalProperties(applicationContext);
         nacosServiceFactory = NacosBeanUtils.getNacosServiceFactoryBean(applicationContext);
     }
 

@@ -38,7 +38,7 @@ import java.util.Properties;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {CacheableEventPublishingNacosServiceFactory.class})
-public class CacheableNacosServiceFactoryTest {
+public class CacheableNacosInjectedFactoryTest {
 
     @Autowired
     private NacosServiceFactory nacosServiceFactory;

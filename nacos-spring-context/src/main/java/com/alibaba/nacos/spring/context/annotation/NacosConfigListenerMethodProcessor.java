@@ -37,7 +37,9 @@ import java.lang.reflect.Method;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 
-import static com.alibaba.nacos.spring.util.NacosBeanUtils.*;
+import static com.alibaba.nacos.spring.util.GlobalNacosPropertiesSource.CONFIG;
+import static com.alibaba.nacos.spring.util.NacosBeanUtils.getNacosConfigListenerExecutor;
+import static com.alibaba.nacos.spring.util.NacosBeanUtils.getNacosServiceFactoryBean;
 import static com.alibaba.nacos.spring.util.NacosUtils.resolveProperties;
 import static org.springframework.beans.BeanUtils.instantiateClass;
 
@@ -176,7 +178,7 @@ public class NacosConfigListenerMethodProcessor extends AnnotationListenerMethod
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        globalNacosProperties = getGlobalPropertiesBean(applicationContext);
+        globalNacosProperties = CONFIG.getMergedGlobalProperties(applicationContext);
         nacosServiceFactory = getNacosServiceFactoryBean(applicationContext);
         conversionService = determineConversionService(applicationContext);
         nacosConfigListenerExecutor = getNacosConfigListenerExecutor(applicationContext);

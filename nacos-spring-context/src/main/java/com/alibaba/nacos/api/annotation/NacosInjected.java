@@ -16,27 +16,34 @@
  */
 package com.alibaba.nacos.api.annotation;
 
-import org.springframework.beans.factory.annotation.Value;
+import com.alibaba.nacos.api.PropertyKeyConst;
+import com.alibaba.nacos.api.config.ConfigService;
+import com.alibaba.nacos.api.naming.NamingService;
+import com.alibaba.nacos.spring.context.annotation.EnableNacos;
 
 import java.lang.annotation.*;
 
 /**
- * Annotation which extends value to support auto-refresh
+ * An annotation to inject {@link ConfigService} or {@link NamingService} instance into the target Bean.
  *
- * @author <a href="mailto:huangxiaoyu1018@gmail.com">hxy1991</a>
- * @see Value
+ * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
+ * @see ConfigService
+ * @see NamingService
+ * @see PropertyKeyConst
  * @since 0.1.0
  */
-@Target({ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.ANNOTATION_TYPE})
+@Target({ElementType.CONSTRUCTOR, ElementType.FIELD, ElementType.METHOD, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface NacosValue {
+public @interface NacosInjected {
 
     /**
-     * The actual value expression: e.g. "#{systemProperties.myProp}".
+     * The {@link NacosProperties} attribute, If not specified, it will use
+     * {@link EnableNacos#globalProperties() global Nacos Properties}.
      *
-     * @return value expression
+     * @return the default value is {@link NacosProperties}
+     * @see EnableNacos#globalProperties()
      */
-    String value();
+    NacosProperties properties() default @NacosProperties;
 
 }

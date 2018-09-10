@@ -14,11 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.alibaba.nacos.spring.config;
+package com.alibaba.nacos.spring.context.config.xml;
 
-import com.alibaba.nacos.spring.context.annotation.GlobalNacosPropertiesBeanDefinitionParser;
-import com.alibaba.nacos.spring.context.annotation.NacosAnnotationDrivenBeanDefinitionParser;
-import com.alibaba.nacos.spring.context.annotation.NacosPropertySourceBeanDefinitionParser;
 import org.springframework.beans.factory.xml.NamespaceHandler;
 import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 
