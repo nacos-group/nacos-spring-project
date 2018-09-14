@@ -40,7 +40,7 @@ import static com.alibaba.nacos.spring.test.TestConfiguration.TEST_CONFIG;
  * {@link NacosConfigurationPropertiesBindingPostProcessor} Test
  *
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
- * @since 0.1.0
+ * @since 0.2.0
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {

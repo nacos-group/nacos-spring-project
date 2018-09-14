@@ -50,7 +50,7 @@ import static com.alibaba.nacos.spring.test.NacosConfigHttpHandler.*;
  * @author <a href="mailto:huangxiaoyu1018@gmail.com">hxy1018</a>
  * @see NacosPropertySource
  * @see Value
- * @since 0.1.0
+ * @since 0.2.0
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {

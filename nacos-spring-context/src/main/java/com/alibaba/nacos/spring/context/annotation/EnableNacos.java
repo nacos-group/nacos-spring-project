@@ -29,7 +29,7 @@ import java.lang.annotation.*;
  *
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
  * @see NacosBeanDefinitionRegistrar
- * @since 0.1.0
+ * @since 0.2.0
  */
 @Target({ElementType.TYPE, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)

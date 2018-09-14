@@ -30,7 +30,7 @@ import static java.util.Collections.emptyMap;
  * The source enumeration of Global {@link NacosProperties}
  *
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
- * @since 0.1.0
+ * @since 0.2.0
  */
 public enum GlobalNacosPropertiesSource {
 

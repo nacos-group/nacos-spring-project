@@ -42,7 +42,7 @@ import static org.springframework.core.annotation.AnnotationUtils.findAnnotation
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
  * @see NacosConfigurationProperties
  * @see BeanPostProcessor
- * @since 0.1.0
+ * @since 0.2.0
  */
 public class NacosConfigurationPropertiesBindingPostProcessor implements BeanPostProcessor, ApplicationContextAware,
         EnvironmentAware {

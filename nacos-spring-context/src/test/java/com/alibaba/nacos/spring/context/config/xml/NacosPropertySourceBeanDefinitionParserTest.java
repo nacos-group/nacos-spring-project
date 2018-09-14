@@ -42,7 +42,7 @@ import static com.alibaba.nacos.spring.test.NacosConfigHttpHandler.*;
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
  * @see GlobalNacosPropertiesBeanDefinitionParser
  * @see NacosAnnotationDrivenBeanDefinitionParser
- * @since 0.1.0
+ * @since 0.2.0
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {

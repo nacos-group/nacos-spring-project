@@ -36,7 +36,7 @@ import static com.alibaba.nacos.spring.util.NacosBeanUtils.*;
  * @see NacosBeanUtils#registerGlobalNacosProperties(AnnotationAttributes, BeanDefinitionRegistry, PropertyResolver, String)
  * @see NacosBeanUtils#registerNacosCommonBeans(BeanDefinitionRegistry)
  * @see NacosBeanUtils#registerNacosConfigBeans(BeanDefinitionRegistry, Environment)
- * @since 0.1.0
+ * @since 0.2.0
  */
 public class NacosDiscoveryBeanDefinitionRegistrar implements ImportBeanDefinitionRegistrar, EnvironmentAware {
 

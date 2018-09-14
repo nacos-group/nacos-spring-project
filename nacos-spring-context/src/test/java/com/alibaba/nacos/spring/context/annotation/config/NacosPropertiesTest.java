@@ -27,7 +27,7 @@ import org.springframework.mock.env.MockEnvironment;
  *
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
  * @see NacosProperties
- * @since 0.1.0
+ * @since 0.2.0
  */
 public class NacosPropertiesTest {
 

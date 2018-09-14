@@ -39,7 +39,7 @@ import static com.alibaba.nacos.spring.util.NacosBeanUtils.registerGlobalNacosPr
  * @see NacosBeanUtils#GLOBAL_NACOS_PROPERTIES_BEAN_NAME
  * @see NacosProperties
  * @see PropertyKeyConst
- * @since 0.1.0
+ * @since 0.2.0
  */
 public class GlobalNacosPropertiesBeanDefinitionParser implements BeanDefinitionParser {
 

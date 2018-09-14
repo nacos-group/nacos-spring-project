@@ -22,7 +22,7 @@ import java.lang.annotation.*;
  * Multiple {@link NacosPropertySource @NacosPropertySource} annotations.
  *
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
- * @since 0.1.0
+ * @since 0.2.0
  */
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)

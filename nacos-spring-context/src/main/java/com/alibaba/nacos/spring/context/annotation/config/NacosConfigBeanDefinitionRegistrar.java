@@ -36,7 +36,7 @@ import static org.springframework.core.annotation.AnnotationAttributes.fromMap;
  * @see NacosBeanUtils#registerGlobalNacosProperties(AnnotationAttributes, BeanDefinitionRegistry, PropertyResolver, String)
  * @see NacosBeanUtils#registerNacosCommonBeans(BeanDefinitionRegistry)
  * @see NacosBeanUtils#registerNacosConfigBeans(BeanDefinitionRegistry, Environment)
- * @since 0.1.0
+ * @since 0.2.0
  */
 public class NacosConfigBeanDefinitionRegistrar implements ImportBeanDefinitionRegistrar, EnvironmentAware {
 

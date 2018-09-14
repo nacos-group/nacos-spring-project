@@ -38,7 +38,7 @@ import static java.lang.String.format;
  *
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
  * @see NacosPropertySource
- * @since 0.1.0
+ * @since 0.2.0
  */
 class NacosPropertySourceBuilder {
 

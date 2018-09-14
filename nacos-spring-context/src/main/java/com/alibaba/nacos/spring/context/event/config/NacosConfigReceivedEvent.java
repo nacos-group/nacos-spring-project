@@ -22,7 +22,7 @@ import com.alibaba.nacos.api.config.ConfigService;
  * The {@link NacosConfigEvent event} of Nacos Configuration that has been changed.
  *
  * @author <a href="mailto:huangxiaoyu1018@gmail.com">hxy1991</a>
- * @since 0.1.0
+ * @since 0.2.0
  */
 public class NacosConfigReceivedEvent extends NacosConfigEvent {
 

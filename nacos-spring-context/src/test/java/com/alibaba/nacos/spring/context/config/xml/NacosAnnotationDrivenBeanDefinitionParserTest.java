@@ -41,7 +41,7 @@ import java.util.Properties;
  *
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
  * @see NacosNamespaceHandler
- * @since 0.1.0
+ * @since 0.2.0
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {

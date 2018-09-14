@@ -28,7 +28,7 @@ import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.GROUP_ID;
  *
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
  * @see NacosConfigurationProperties
- * @since 0.1.0
+ * @since 0.2.0
  */
 @NacosConfigurationProperties(dataId = DATA_ID, groupId = GROUP_ID,
         autoRefreshed = true)
