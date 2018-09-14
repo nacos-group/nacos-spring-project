@@ -16,9 +16,9 @@
  */
 package com.alibaba.nacos.spring.test;
 
-import com.alibaba.nacos.api.annotation.NacosConfigurationProperties;
-import com.alibaba.nacos.api.annotation.NacosIgnore;
-import com.alibaba.nacos.api.annotation.NacosProperty;
+import com.alibaba.nacos.api.config.annotation.NacosConfigurationProperties;
+import com.alibaba.nacos.api.config.annotation.NacosIgnore;
+import com.alibaba.nacos.api.config.annotation.NacosProperty;
 
 import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.DATA_ID;
 import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.GROUP_ID;

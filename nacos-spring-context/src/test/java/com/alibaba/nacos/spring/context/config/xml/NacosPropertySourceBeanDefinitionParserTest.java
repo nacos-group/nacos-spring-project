@@ -33,7 +33,7 @@ import org.springframework.test.context.support.DirtiesContextTestExecutionListe
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.alibaba.nacos.client.config.common.Constants.DEFAULT_GROUP;
+import static com.alibaba.nacos.api.common.Constants.DEFAULT_GROUP;
 import static com.alibaba.nacos.spring.test.NacosConfigHttpHandler.*;
 
 /**

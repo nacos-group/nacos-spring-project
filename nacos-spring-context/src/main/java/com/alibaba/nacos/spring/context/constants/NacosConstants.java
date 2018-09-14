@@ -16,7 +16,7 @@
  */
 package com.alibaba.nacos.spring.context.constants;
 
-import com.alibaba.nacos.api.annotation.NacosProperties;
+import com.alibaba.nacos.api.config.annotation.NacosProperties;
 
 /**
  * Nacos Constants

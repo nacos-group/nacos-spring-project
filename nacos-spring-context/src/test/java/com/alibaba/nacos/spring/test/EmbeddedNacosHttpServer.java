@@ -28,7 +28,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import static com.alibaba.nacos.client.config.common.Constants.CONFIG_CONTROLLER_PATH;
+import static com.alibaba.nacos.api.common.Constants.CONFIG_CONTROLLER_PATH;
 
 /**
  * Embedded Nacos HTTP Server

@@ -16,8 +16,8 @@
  */
 package com.alibaba.nacos.spring.test;
 
-import com.alibaba.nacos.api.annotation.NacosConfigListener;
-import com.alibaba.nacos.spring.convert.converter.UserNacosConfigConverter;
+import com.alibaba.nacos.api.config.annotation.NacosConfigListener;
+import com.alibaba.nacos.spring.convert.converter.config.UserNacosConfigConverter;
 import org.springframework.context.annotation.Configuration;
 
 import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.DATA_ID;

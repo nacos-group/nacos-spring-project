@@ -20,7 +20,7 @@ import com.alibaba.nacos.api.NacosFactory;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.api.naming.NamingService;
-import com.alibaba.nacos.spring.context.event.EventPublishingConfigService;
+import com.alibaba.nacos.spring.context.event.config.EventPublishingConfigService;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
 

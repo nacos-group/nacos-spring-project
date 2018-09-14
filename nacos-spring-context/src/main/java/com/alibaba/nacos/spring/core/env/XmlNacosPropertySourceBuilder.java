@@ -28,8 +28,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import static com.alibaba.nacos.client.config.common.Constants.DEFAULT_GROUP;
-import static com.alibaba.nacos.spring.context.annotation.NacosPropertySource.*;
+import static com.alibaba.nacos.api.common.Constants.DEFAULT_GROUP;
+import static com.alibaba.nacos.spring.context.annotation.config.NacosPropertySource.*;
 import static com.alibaba.nacos.spring.util.NacosUtils.DEFAULT_BOOLEAN_ATTRIBUTE_VALUE;
 import static com.alibaba.nacos.spring.util.NacosUtils.DEFAULT_STRING_ATTRIBUTE_VALUE;
 

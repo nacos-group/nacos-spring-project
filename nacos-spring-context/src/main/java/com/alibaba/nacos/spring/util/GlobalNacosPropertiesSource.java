@@ -16,7 +16,7 @@
  */
 package com.alibaba.nacos.spring.util;
 
-import com.alibaba.nacos.api.annotation.NacosProperties;
+import com.alibaba.nacos.api.config.annotation.NacosProperties;
 import org.springframework.beans.factory.BeanFactory;
 
 import java.util.Map;

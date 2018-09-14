@@ -93,6 +93,11 @@ public class MockConfigService implements ConfigService {
         listenersCache.remove(key);
     }
 
+    @Override
+    public String getServerStatus() {
+        return "UP";
+    }
+
     private String createKey(String dataId, String groupId) {
         return dataId + "&" + groupId;
     }

@@ -16,9 +16,9 @@
  */
 package com.alibaba.nacos.spring.beans.factory.annotation;
 
-import com.alibaba.nacos.api.annotation.NacosInjected;
-import com.alibaba.nacos.api.annotation.NacosProperties;
 import com.alibaba.nacos.api.config.ConfigService;
+import com.alibaba.nacos.api.config.annotation.NacosInjected;
+import com.alibaba.nacos.api.config.annotation.NacosProperties;
 import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.api.naming.NamingService;
 import com.alibaba.nacos.spring.test.TestConfiguration;

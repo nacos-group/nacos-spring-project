@@ -19,9 +19,9 @@ package com.alibaba.nacos.spring.core.env;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.config.listener.AbstractListener;
 import com.alibaba.nacos.api.exception.NacosException;
-import com.alibaba.nacos.spring.context.annotation.NacosPropertySources;
+import com.alibaba.nacos.spring.context.annotation.config.NacosPropertySources;
 import com.alibaba.nacos.spring.context.config.xml.NacosPropertySourceXmlBeanDefinition;
-import com.alibaba.nacos.spring.context.event.NacosConfigReceivedEvent;
+import com.alibaba.nacos.spring.context.event.config.NacosConfigReceivedEvent;
 import com.alibaba.nacos.spring.factory.NacosServiceFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -50,14 +50,14 @@ import static com.alibaba.nacos.spring.util.NacosUtils.resolveProperties;
 import static org.springframework.util.ObjectUtils.nullSafeEquals;
 
 /**
- * {@link BeanFactoryPostProcessor Post Processor} resolves {@link com.alibaba.nacos.spring.context.annotation.NacosPropertySource @NacosPropertySource} or
+ * {@link BeanFactoryPostProcessor Post Processor} resolves {@link com.alibaba.nacos.spring.context.annotation.config.NacosPropertySource @NacosPropertySource} or
  * {@link NacosPropertySources @NacosPropertySources} or {@link NacosPropertySourceXmlBeanDefinition}
  * to be {@link PropertySource}, and append into Spring
  * {@link PropertySources}
  * {@link }
  *
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
- * @see com.alibaba.nacos.spring.context.annotation.NacosPropertySource
+ * @see com.alibaba.nacos.spring.context.annotation.config.NacosPropertySource
  * @see NacosPropertySources
  * @see NacosPropertySourceXmlBeanDefinition
  * @see PropertySource

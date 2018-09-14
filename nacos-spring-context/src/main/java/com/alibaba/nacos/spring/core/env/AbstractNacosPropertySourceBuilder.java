@@ -16,7 +16,7 @@
  */
 package com.alibaba.nacos.spring.core.env;
 
-import com.alibaba.nacos.spring.util.NacosConfigLoader;
+import com.alibaba.nacos.spring.util.config.NacosConfigLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -32,7 +32,7 @@ import org.springframework.util.StringUtils;
 
 import java.util.*;
 
-import static com.alibaba.nacos.spring.context.annotation.NacosPropertySource.*;
+import static com.alibaba.nacos.spring.context.annotation.config.NacosPropertySource.*;
 import static com.alibaba.nacos.spring.util.GlobalNacosPropertiesSource.CONFIG;
 import static com.alibaba.nacos.spring.util.NacosBeanUtils.getNacosServiceFactoryBean;
 import static com.alibaba.nacos.spring.util.NacosUtils.buildDefaultPropertySourceName;
@@ -136,10 +136,10 @@ public abstract class AbstractNacosPropertySourceBuilder<T extends BeanDefinitio
     /**
      * Runtime attributes must contain those:
      * <ul>
-     * <li>{@link com.alibaba.nacos.spring.context.annotation.NacosPropertySource#NAME_ATTRIBUTE_NAME}</li>
-     * <li>{@link com.alibaba.nacos.spring.context.annotation.NacosPropertySource#DATA_ID_ATTRIBUTE_NAME}</li>
-     * <li>{@link com.alibaba.nacos.spring.context.annotation.NacosPropertySource#GROUP_ID_ATTRIBUTE_NAME}</li>
-     * <li>{@link com.alibaba.nacos.spring.context.annotation.NacosPropertySource#PROPERTIES_ATTRIBUTE_NAME}</li>
+     * <li>{@link com.alibaba.nacos.spring.context.annotation.config.NacosPropertySource#NAME_ATTRIBUTE_NAME}</li>
+     * <li>{@link com.alibaba.nacos.spring.context.annotation.config.NacosPropertySource#DATA_ID_ATTRIBUTE_NAME}</li>
+     * <li>{@link com.alibaba.nacos.spring.context.annotation.config.NacosPropertySource#GROUP_ID_ATTRIBUTE_NAME}</li>
+     * <li>{@link com.alibaba.nacos.spring.context.annotation.config.NacosPropertySource#PROPERTIES_ATTRIBUTE_NAME}</li>
      * </ul>
      *
      * @param beanDefinition        Bean Definition

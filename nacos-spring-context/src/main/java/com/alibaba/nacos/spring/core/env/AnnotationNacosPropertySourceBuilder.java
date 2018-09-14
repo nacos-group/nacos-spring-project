@@ -16,14 +16,14 @@
  */
 package com.alibaba.nacos.spring.core.env;
 
-import com.alibaba.nacos.spring.context.annotation.NacosPropertySources;
+import com.alibaba.nacos.spring.context.annotation.config.NacosPropertySources;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.core.type.AnnotationMetadata;
 
 import java.util.Map;
 import java.util.Properties;
 
-import static com.alibaba.nacos.spring.context.annotation.NacosPropertySource.*;
+import static com.alibaba.nacos.spring.context.annotation.config.NacosPropertySource.*;
 
 /**
  * Annotation {@link NacosPropertySource @NacosPropertySource} {@link AbstractNacosPropertySourceBuilder Builder}
@@ -56,7 +56,7 @@ public class AnnotationNacosPropertySourceBuilder extends
             annotationAttributesArray = (Map<String, Object>[]) annotationAttributes.get("value");
         } else {
             // try to get @NacosPropertySource
-            Map<String, Object> attributes = metadata.getAnnotationAttributes(com.alibaba.nacos.spring.context.annotation.NacosPropertySource.class.getName());
+            Map<String, Object> attributes = metadata.getAnnotationAttributes(com.alibaba.nacos.spring.context.annotation.config.NacosPropertySource.class.getName());
             if (attributes != null) {
                 annotationAttributesArray = new Map[]{attributes};
             }

@@ -16,11 +16,12 @@
  */
 package com.alibaba.nacos.spring.context.annotation;
 
-import com.alibaba.nacos.api.annotation.NacosProperties;
-import com.alibaba.nacos.api.annotation.NacosInjected;
 import com.alibaba.nacos.api.config.ConfigService;
+import com.alibaba.nacos.api.config.annotation.NacosInjected;
+import com.alibaba.nacos.api.config.annotation.NacosProperties;
 import com.alibaba.nacos.spring.beans.factory.annotation.AnnotationNacosInjectedBeanPostProcessor;
-import com.alibaba.nacos.spring.context.properties.NacosConfigurationPropertiesBindingPostProcessor;
+import com.alibaba.nacos.spring.context.annotation.config.NacosConfigListenerMethodProcessor;
+import com.alibaba.nacos.spring.context.properties.config.NacosConfigurationPropertiesBindingPostProcessor;
 import com.alibaba.nacos.spring.core.env.NacosPropertySourcePostProcessor;
 import com.alibaba.nacos.spring.factory.NacosServiceFactory;
 import com.alibaba.nacos.spring.test.AbstractNacosHttpServerTestExecutionListener;
@@ -41,7 +42,7 @@ import org.springframework.test.context.support.DirtiesContextTestExecutionListe
 
 import java.util.Properties;
 
-import static com.alibaba.nacos.client.config.common.Constants.DEFAULT_GROUP;
+import static com.alibaba.nacos.api.common.Constants.DEFAULT_GROUP;
 import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.DATA_ID;
 
 /**

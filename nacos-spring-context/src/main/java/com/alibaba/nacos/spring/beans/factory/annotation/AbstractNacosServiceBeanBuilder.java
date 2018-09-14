@@ -16,11 +16,11 @@
  */
 package com.alibaba.nacos.spring.beans.factory.annotation;
 
-import com.alibaba.nacos.api.annotation.NacosInjected;
-import com.alibaba.nacos.api.annotation.NacosProperties;
+import com.alibaba.nacos.api.config.annotation.NacosInjected;
+import com.alibaba.nacos.api.config.annotation.NacosProperties;
 import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.spring.context.annotation.EnableNacos;
-import com.alibaba.nacos.spring.context.annotation.EnableNacosConfig;
+import com.alibaba.nacos.spring.context.annotation.config.EnableNacosConfig;
 import com.alibaba.nacos.spring.factory.NacosServiceFactory;
 import com.alibaba.nacos.spring.util.GlobalNacosPropertiesSource;
 import com.alibaba.nacos.spring.util.NacosUtils;

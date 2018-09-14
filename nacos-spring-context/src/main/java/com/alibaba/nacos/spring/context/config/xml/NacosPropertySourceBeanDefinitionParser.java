@@ -16,7 +16,7 @@
  */
 package com.alibaba.nacos.spring.context.config.xml;
 
-import com.alibaba.nacos.spring.context.annotation.NacosPropertySource;
+import com.alibaba.nacos.spring.context.annotation.config.NacosPropertySource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;

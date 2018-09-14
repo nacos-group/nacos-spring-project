@@ -28,7 +28,7 @@ import static com.alibaba.nacos.spring.util.NacosUtils.toProperties;
  * Nacos {@link PropertySource}, all read methods are immutable.
  *
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
- * @see com.alibaba.nacos.spring.context.annotation.NacosPropertySource
+ * @see com.alibaba.nacos.spring.context.annotation.config.NacosPropertySource
  * @since 0.1.0
  */
 public class NacosPropertySource extends PropertiesPropertySource {
@@ -117,7 +117,7 @@ public class NacosPropertySource extends PropertiesPropertySource {
 
     /**
      * @param attributesMetadata the attributesMetadata of attributes from
-     *                           {@link com.alibaba.nacos.spring.context.annotation.NacosPropertySource @NacosPropertySource}
+     *                           {@link com.alibaba.nacos.spring.context.annotation.config.NacosPropertySource @NacosPropertySource}
      *                           or &lt;nacos:property-source ... &gt;
      */
     public void setAttributesMetadata(Map<String, Object> attributesMetadata) {
@@ -133,7 +133,7 @@ public class NacosPropertySource extends PropertiesPropertySource {
 
     /**
      * @return the attributesMetadata of attributes from
-     * {@link com.alibaba.nacos.spring.context.annotation.NacosPropertySource @NacosPropertySource}
+     * {@link com.alibaba.nacos.spring.context.annotation.config.NacosPropertySource @NacosPropertySource}
      * or &lt;nacos:property-source ... &gt;
      */
     public Map<String, Object> getAttributesMetadata() {
