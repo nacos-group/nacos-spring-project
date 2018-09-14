@@ -51,8 +51,6 @@ public class NacosConfigBeanDefinitionRegistrar implements ImportBeanDefinitionR
         registerNacosCommonBeans(registry);
         // Register Nacos Config Beans
         registerNacosConfigBeans(registry, environment);
-        // Register Nacos Discovery Beans
-        registerNacosDiscoveryBeans(registry);
     }
 
     @Override
