@@ -71,7 +71,8 @@ public class AnnotationNacosInjectedBeanPostProcessor extends AnnotationInjected
                     format("Please check the BeanDefinition of %s in Spring BeanFactory", builderClass));
         }
 
-        Map<Class<?>, AbstractNacosServiceBeanBuilder> builderMap = new HashMap<>(serviceBeanBuilders.size());
+        Map<Class<?>, AbstractNacosServiceBeanBuilder> builderMap =
+                new HashMap<Class<?>, AbstractNacosServiceBeanBuilder>(serviceBeanBuilders.size());
 
         for (AbstractNacosServiceBeanBuilder serviceBeanBuilder : serviceBeanBuilders) {
             Class<?> type = serviceBeanBuilder.getType();
