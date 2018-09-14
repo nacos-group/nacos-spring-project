@@ -265,8 +265,12 @@ public abstract class NacosBeanUtils {
     }
 
     public static void registerNacosConfigListenerExecutor(BeanDefinitionRegistry registry, Environment environment) {
+        final String beanName = NACOS_CONFIG_LISTENER_EXECUTOR_BEAN_NAME;
+        if (registry instanceof BeanFactory && ((BeanFactory) registry).containsBean(beanName)) {
+            return;
+        }
         ExecutorService nacosConfigListenerExecutor = buildNacosConfigListenerExecutor(environment);
-        registerSingleton(registry, NACOS_CONFIG_LISTENER_EXECUTOR_BEAN_NAME, nacosConfigListenerExecutor);
+        registerSingleton(registry, beanName, nacosConfigListenerExecutor);
     }
 
     private static ExecutorService buildNacosConfigListenerExecutor(Environment environment) {
