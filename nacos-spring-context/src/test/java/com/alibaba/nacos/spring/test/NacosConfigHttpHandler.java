@@ -74,7 +74,7 @@ public class NacosConfigHttpHandler implements HttpHandler {
 
     public void init() {
         isRunning = true;
-        int maxWaitInSecond = 3;
+        final int maxWaitInSecond = 3;
         scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
         scheduledExecutorService.scheduleWithFixedDelay(new Runnable() {
             @Override

@@ -80,8 +80,8 @@ public class TestConfiguration {
     public ExecutorService executorService() {
         return Executors.newSingleThreadExecutor(new ThreadFactory() {
             @Override
-            public Thread newThread(Runnable r) {
-                CountDownLatch latch = new CountDownLatch(1);
+            public Thread newThread(final Runnable r) {
+                final CountDownLatch latch = new CountDownLatch(1);
                 return new Thread(new Runnable() {
 
                     @Override
