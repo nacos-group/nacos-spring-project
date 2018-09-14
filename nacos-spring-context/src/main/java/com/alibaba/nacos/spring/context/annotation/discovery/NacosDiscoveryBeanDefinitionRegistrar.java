@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.alibaba.nacos.spring.context.annotation.disconvery;
+package com.alibaba.nacos.spring.context.annotation.discovery;
 
 import com.alibaba.nacos.spring.context.annotation.config.EnableNacosConfig;
 import com.alibaba.nacos.spring.util.NacosBeanUtils;

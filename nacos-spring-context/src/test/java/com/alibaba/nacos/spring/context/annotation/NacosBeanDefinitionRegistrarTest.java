@@ -20,7 +20,9 @@ import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.config.annotation.NacosInjected;
 import com.alibaba.nacos.api.config.annotation.NacosProperties;
 import com.alibaba.nacos.spring.beans.factory.annotation.AnnotationNacosInjectedBeanPostProcessor;
+import com.alibaba.nacos.spring.context.annotation.config.EnableNacosConfig;
 import com.alibaba.nacos.spring.context.annotation.config.NacosConfigListenerMethodProcessor;
+import com.alibaba.nacos.spring.context.annotation.discovery.EnableNacosDiscovery;
 import com.alibaba.nacos.spring.context.properties.config.NacosConfigurationPropertiesBindingPostProcessor;
 import com.alibaba.nacos.spring.core.env.NacosPropertySourcePostProcessor;
 import com.alibaba.nacos.spring.factory.NacosServiceFactory;
@@ -33,6 +35,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
@@ -59,6 +62,8 @@ import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.DATA_ID;
 @TestExecutionListeners({DependencyInjectionTestExecutionListener.class,
         DirtiesContextTestExecutionListener.class, NacosBeanDefinitionRegistrarTest.class})
 @EnableNacos(globalProperties = @NacosProperties(serverAddr = "${serverAddr}"))
+@EnableNacosConfig
+@EnableNacosDiscovery
 public class NacosBeanDefinitionRegistrarTest extends AbstractNacosHttpServerTestExecutionListener {
 
     @Override
@@ -100,6 +105,9 @@ public class NacosBeanDefinitionRegistrarTest extends AbstractNacosHttpServerTes
 
     @Autowired
     private Config config;
+
+    @Value("${user.home:${user.dir}}")
+    private String dir;
 
     @Test
     public void testGetConfig() throws Exception {
