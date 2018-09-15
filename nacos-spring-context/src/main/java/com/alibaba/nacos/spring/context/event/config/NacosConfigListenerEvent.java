@@ -17,50 +17,39 @@
 package com.alibaba.nacos.spring.context.event.config;
 
 import com.alibaba.nacos.api.config.ConfigService;
-import org.springframework.context.ApplicationEvent;
+import com.alibaba.nacos.api.config.listener.Listener;
 
 /**
- * The Event of Nacos Configuration is used on Spring Event
+ * {@link Listener Nacos Config Listener} {@link NacosConfigEvent event}
  *
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
+ * @see Listener
  * @since 0.1.0
  */
-public abstract class NacosConfigEvent extends ApplicationEvent {
+public class NacosConfigListenerEvent extends NacosConfigEvent {
 
-    private final String dataId;
+    private final Listener listener;
 
-    private final String groupId;
+    private final boolean registered;
 
     /**
      * @param configService Nacos {@link ConfigService}
      * @param dataId        data ID
      * @param groupId       group ID
+     * @param listener      {@link Listener} instance
+     * @param registered    registered or not unregistered
      */
-    public NacosConfigEvent(ConfigService configService, String dataId, String groupId) {
-        super(configService);
-        this.dataId = dataId;
-        this.groupId = groupId;
+    public NacosConfigListenerEvent(ConfigService configService, String dataId, String groupId, Listener listener, boolean registered) {
+        super(configService, dataId, groupId);
+        this.listener = listener;
+        this.registered = registered;
     }
 
-    @Override
-    public final ConfigService getSource() {
-        return (ConfigService) super.getSource();
+    public Listener getListener() {
+        return listener;
     }
 
-    /**
-     * Get {@link ConfigService}
-     *
-     * @return {@link ConfigService}
-     */
-    public final ConfigService getConfigService() {
-        return getSource();
-    }
-
-    public final String getDataId() {
-        return dataId;
-    }
-
-    public final String getGroupId() {
-        return groupId;
+    public boolean isRegistered() {
+        return registered;
     }
 }

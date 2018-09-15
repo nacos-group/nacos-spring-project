@@ -17,8 +17,11 @@
 package com.alibaba.nacos.spring.context.event.config;
 
 import com.alibaba.nacos.api.config.ConfigService;
+import com.alibaba.nacos.api.config.listener.AbstractListener;
+import com.alibaba.nacos.api.config.listener.Listener;
 import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.spring.test.MockConfigService;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,6 +29,7 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 
+import static com.alibaba.nacos.spring.test.MockConfigService.TIMEOUT_ERROR_MESSAGE;
 import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.*;
 
 /**
@@ -50,10 +54,30 @@ public class EventPublishingConfigServiceTest {
         this.configService = new EventPublishingConfigService(mockConfigService, context);
     }
 
+    @After
+    public void destroy() {
+        this.context.close();
+    }
+
     @Test
     public void testGetConfig() throws NacosException {
-        mockConfigService.publishConfig(DATA_ID, GROUP_ID, CONTENT);
-        Assert.assertEquals(CONTENT, mockConfigService.getConfig(DATA_ID, GROUP_ID, 5000));
+        configService.publishConfig(DATA_ID, GROUP_ID, CONTENT);
+        Assert.assertEquals(CONTENT, configService.getConfig(DATA_ID, GROUP_ID, 5000));
+    }
+
+    @Test(expected = NacosException.class)
+    public void testGetConfigOnTimeout() throws NacosException {
+        final long timeout = -1L;
+        context.addApplicationListener(new ApplicationListener<NacosConfigTimeoutEvent>() {
+            @Override
+            public void onApplicationEvent(NacosConfigTimeoutEvent event) {
+                assertNacosConfigEvent(event);
+                Assert.assertEquals(timeout, event.getTimeout());
+                Assert.assertEquals(TIMEOUT_ERROR_MESSAGE, event.getErrorMessage());
+            }
+        });
+
+        configService.getConfig(DATA_ID, GROUP_ID, timeout); // trigger timeout error
     }
 
     @Test
@@ -62,15 +86,13 @@ public class EventPublishingConfigServiceTest {
         context.addApplicationListener(new ApplicationListener<NacosConfigPublishedEvent>() {
             @Override
             public void onApplicationEvent(NacosConfigPublishedEvent event) {
-                Assert.assertEquals(DATA_ID, event.getDataId());
-                Assert.assertEquals(GROUP_ID, event.getGroupId());
+                assertNacosConfigEvent(event);
                 Assert.assertEquals(CONTENT, event.getContent());
-                Assert.assertEquals(mockConfigService, event.getSource());
                 Assert.assertTrue(event.isPublished());
             }
         });
 
-        mockConfigService.publishConfig(DATA_ID, GROUP_ID, CONTENT);
+        configService.publishConfig(DATA_ID, GROUP_ID, CONTENT);
     }
 
     @Test
@@ -79,17 +101,80 @@ public class EventPublishingConfigServiceTest {
         context.addApplicationListener(new ApplicationListener<NacosConfigRemovedEvent>() {
             @Override
             public void onApplicationEvent(NacosConfigRemovedEvent event) {
-                Assert.assertEquals(DATA_ID, event.getDataId());
-                Assert.assertEquals(GROUP_ID, event.getGroupId());
-                Assert.assertEquals(mockConfigService, event.getSource());
+                assertNacosConfigEvent(event);
                 Assert.assertTrue(event.isRemoved());
             }
         });
 
-        mockConfigService.publishConfig(DATA_ID, GROUP_ID, CONTENT);
-        mockConfigService.removeConfig(DATA_ID, GROUP_ID);
+        configService.publishConfig(DATA_ID, GROUP_ID, CONTENT);
+        configService.removeConfig(DATA_ID, GROUP_ID);
 
     }
+
+    @Test
+    public void testAddListener() throws NacosException {
+
+        final Listener listener = new AbstractListener() {
+            @Override
+            public void receiveConfigInfo(String configInfo) {
+                Assert.assertEquals(CONTENT, configInfo);
+            }
+        };
+
+        // assert NacosConfigReceivedEvent
+        context.addApplicationListener(new ApplicationListener<NacosConfigReceivedEvent>() {
+            @Override
+            public void onApplicationEvent(NacosConfigReceivedEvent event) {
+                assertNacosConfigEvent(event);
+                Assert.assertEquals(CONTENT, event.getContent());
+            }
+        });
+
+        // assert NacosConfigListenerEvent
+        context.addApplicationListener(new ApplicationListener<NacosConfigListenerEvent>() {
+            @Override
+            public void onApplicationEvent(NacosConfigListenerEvent event) {
+                assertNacosConfigEvent(event);
+                Assert.assertTrue(event.isRegistered());
+                Assert.assertEquals(listener, event.getListener());
+            }
+        });
+
+        // Add Listener
+        configService.addListener(DATA_ID, GROUP_ID, listener);
+        // Publish Config
+        configService.publishConfig(DATA_ID, GROUP_ID, CONTENT);
+
+    }
+
+    @Test
+    public void testRemoveListener() throws NacosException {
+        final Listener listener = new AbstractListener() {
+            @Override
+            public void receiveConfigInfo(String configInfo) {
+            }
+        };
+
+        // assert NacosConfigListenerEvent
+        context.addApplicationListener(new ApplicationListener<NacosConfigListenerEvent>() {
+            @Override
+            public void onApplicationEvent(NacosConfigListenerEvent event) {
+                assertNacosConfigEvent(event);
+                Assert.assertFalse(event.isRegistered());
+                Assert.assertEquals(listener, event.getListener());
+            }
+        });
+
+        configService.removeListener(DATA_ID, GROUP_ID, listener);
+
+    }
+
+    private void assertNacosConfigEvent(NacosConfigEvent event) {
+        Assert.assertEquals(mockConfigService, event.getSource());
+        Assert.assertEquals(DATA_ID, event.getDataId());
+        Assert.assertEquals(GROUP_ID, event.getGroupId());
+    }
+
 }
 
 

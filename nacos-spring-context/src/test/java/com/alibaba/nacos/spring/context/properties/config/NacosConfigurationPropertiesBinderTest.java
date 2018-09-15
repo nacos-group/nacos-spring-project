@@ -17,13 +17,21 @@
 package com.alibaba.nacos.spring.context.properties.config;
 
 import com.alibaba.nacos.api.config.ConfigService;
+import com.alibaba.nacos.api.config.annotation.NacosConfigurationProperties;
 import com.alibaba.nacos.api.exception.NacosException;
+import com.alibaba.nacos.spring.context.event.config.NacosConfigurationPropertiesBeanBoundEvent;
 import com.alibaba.nacos.spring.test.Config;
 import com.alibaba.nacos.spring.test.MockNacosServiceFactory;
 import org.junit.Assert;
 import org.junit.Test;
+import org.springframework.context.ApplicationEvent;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ApplicationEventMulticaster;
+import org.springframework.context.event.SimpleApplicationEventMulticaster;
 
 import java.util.Properties;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.DATA_ID;
 import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.GROUP_ID;
@@ -43,15 +51,43 @@ public class NacosConfigurationPropertiesBinderTest {
     @Test
     public void testBind() throws NacosException {
 
-        Config config = new Config();
+        final Config config = new Config();
+
+        final String beanName = "configBean";
 
         ConfigService configService = nacosServiceFactory.createConfigService(new Properties());
 
-        configService.publishConfig(DATA_ID, GROUP_ID, TEST_CONFIG);
+        final AtomicReference<String> content = new AtomicReference<String>();
 
-        NacosConfigurationPropertiesBinder binder = new NacosConfigurationPropertiesBinder(configService);
+        content.set(TEST_CONFIG);
 
-        binder.bind(config);
+        configService.publishConfig(DATA_ID, GROUP_ID, content.get());
+
+        final ApplicationEventMulticaster multicaster = new SimpleApplicationEventMulticaster();
+
+        multicaster.addApplicationListener(new ApplicationListener<NacosConfigurationPropertiesBeanBoundEvent>() {
+            @Override
+            public void onApplicationEvent(NacosConfigurationPropertiesBeanBoundEvent event) {
+                Assert.assertEquals(DATA_ID, event.getDataId());
+                Assert.assertEquals(GROUP_ID, event.getGroupId());
+                Assert.assertEquals(content.get(), event.getContent());
+                Assert.assertEquals(config, event.getBean());
+                Assert.assertEquals(beanName, event.getBeanName());
+                Assert.assertEquals(config.getClass().getAnnotation(NacosConfigurationProperties.class), event.getProperties());
+            }
+        });
+
+        ApplicationEventPublisher applicationEventPublisher = new ApplicationEventPublisher() {
+
+            @Override
+            public void publishEvent(ApplicationEvent event) {
+                multicaster.multicastEvent(event);
+            }
+        };
+
+        NacosConfigurationPropertiesBinder binder = new NacosConfigurationPropertiesBinder(configService, applicationEventPublisher);
+
+        binder.bind(config, beanName);
 
         Assert.assertEquals(1, config.getId());
         Assert.assertEquals("mercyblitz", config.getName());
@@ -60,7 +96,8 @@ public class NacosConfigurationPropertiesBinderTest {
         Assert.assertNull(config.getIntData());
 
         // Publishing config emits change
-        configService.publishConfig(DATA_ID, GROUP_ID, MODIFIED_TEST_CONTEXT);
+        content.set(MODIFIED_TEST_CONTEXT);
+        configService.publishConfig(DATA_ID, GROUP_ID, content.get());
 
         Assert.assertEquals(1, config.getId());
         Assert.assertEquals("mercyblitz@gmail.com", config.getName());

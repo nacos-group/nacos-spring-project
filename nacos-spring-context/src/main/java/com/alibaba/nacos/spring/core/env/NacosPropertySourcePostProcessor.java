@@ -21,7 +21,6 @@ import com.alibaba.nacos.api.config.listener.AbstractListener;
 import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.spring.context.annotation.config.NacosPropertySources;
 import com.alibaba.nacos.spring.context.config.xml.NacosPropertySourceXmlBeanDefinition;
-import com.alibaba.nacos.spring.context.event.config.NacosConfigReceivedEvent;
 import com.alibaba.nacos.spring.factory.NacosServiceFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -29,13 +28,10 @@ import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.ConfigurationClassPostProcessor;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.Ordered;
-import org.springframework.core.convert.support.ConfigurableConversionService;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MutablePropertySources;
@@ -65,7 +61,7 @@ import static org.springframework.util.ObjectUtils.nullSafeEquals;
  * @since 0.1.0
  */
 public class NacosPropertySourcePostProcessor implements BeanDefinitionRegistryPostProcessor, BeanFactoryPostProcessor,
-        EnvironmentAware, Ordered, ApplicationEventPublisherAware {
+        EnvironmentAware, Ordered {
 
     /**
      * The bean name of {@link NacosPropertySourcePostProcessor}
@@ -73,10 +69,6 @@ public class NacosPropertySourcePostProcessor implements BeanDefinitionRegistryP
     public static final String BEAN_NAME = "nacosPropertySourcePostProcessor";
 
     private ConfigurableEnvironment environment;
-
-    private ApplicationEventPublisher applicationEventPublisher;
-
-    private ConfigurableConversionService conversionService;
 
     private Properties globalNacosProperties;
 
@@ -166,19 +158,15 @@ public class NacosPropertySourcePostProcessor implements BeanDefinitionRegistryP
         try {
             final ConfigService configService = nacosServiceFactory.createConfigService(nacosProperties);
             configService.addListener(dataId, groupId, new AbstractListener() {
+
                 @Override
-                public void receiveConfigInfo(String nacosConfig) {
+                public void receiveConfigInfo(String config) {
                     String name = nacosPropertySource.getName();
-                    NacosPropertySource newNacosPropertySource = new NacosPropertySource(name, nacosConfig);
+                    NacosPropertySource newNacosPropertySource = new NacosPropertySource(name, config);
                     newNacosPropertySource.copy(nacosPropertySource);
                     MutablePropertySources propertySources = environment.getPropertySources();
                     // replace NacosPropertySource
                     propertySources.replace(name, newNacosPropertySource);
-
-                    if (applicationEventPublisher != null) {
-                        applicationEventPublisher.publishEvent(
-                                new NacosConfigReceivedEvent(configService, dataId, groupId, nacosConfig));
-                    }
                 }
             });
         } catch (NacosException e) {
@@ -201,13 +189,7 @@ public class NacosPropertySourcePostProcessor implements BeanDefinitionRegistryP
 
     @Override
     public void setEnvironment(Environment environment) {
-
         this.environment = (ConfigurableEnvironment) environment;
-        this.conversionService = this.environment.getConversionService();
     }
 
-    @Override
-    public void setApplicationEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
-        this.applicationEventPublisher = applicationEventPublisher;
-    }
 }

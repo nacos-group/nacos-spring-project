@@ -47,7 +47,6 @@ public class CacheableEventPublishingNacosInjectedFactoryTest {
 
     @Before
     public void init() {
-        nacosServiceFactory = new CacheableEventPublishingNacosServiceFactory();
         properties.setProperty(PropertyKeyConst.SERVER_ADDR, "127.0.0.1");
     }
 

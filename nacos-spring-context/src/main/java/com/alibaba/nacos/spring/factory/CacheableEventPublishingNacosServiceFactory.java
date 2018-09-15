@@ -21,10 +21,12 @@ import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.api.naming.NamingService;
 import com.alibaba.nacos.spring.context.event.config.EventPublishingConfigService;
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.context.ApplicationEventPublisherAware;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.ConfigurableApplicationContext;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
 
@@ -36,13 +38,13 @@ import static com.alibaba.nacos.spring.util.NacosUtils.identify;
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
  * @since 0.1.0
  */
-public class CacheableEventPublishingNacosServiceFactory implements NacosServiceFactory, ApplicationEventPublisherAware {
+public class CacheableEventPublishingNacosServiceFactory implements NacosServiceFactory, ApplicationContextAware {
 
-    private Map<String, ConfigService> configServicesCache = new HashMap<String, ConfigService>(2);
+    private Map<String, ConfigService> configServicesCache = new LinkedHashMap<String, ConfigService>(2);
 
-    private Map<String, NamingService> namingServicesCache = new HashMap<String, NamingService>(2);
+    private Map<String, NamingService> namingServicesCache = new LinkedHashMap<String, NamingService>(2);
 
-    private ApplicationEventPublisher applicationEventPublisher;
+    private ConfigurableApplicationContext context;
 
     @Override
     public ConfigService createConfigService(Properties properties) throws NacosException {
@@ -65,8 +67,7 @@ public class CacheableEventPublishingNacosServiceFactory implements NacosService
 
     private ConfigService doCreateConfigService(Properties properties) throws NacosException {
         ConfigService configService = NacosFactory.createConfigService(properties);
-        return applicationEventPublisher == null ? configService :
-                new EventPublishingConfigService(configService, applicationEventPublisher);
+        return new EventPublishingConfigService(configService, context);
     }
 
     @Override
@@ -89,7 +90,7 @@ public class CacheableEventPublishingNacosServiceFactory implements NacosService
     }
 
     @Override
-    public void setApplicationEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
-        this.applicationEventPublisher = applicationEventPublisher;
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.context = (ConfigurableApplicationContext) applicationContext;
     }
 }

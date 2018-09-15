@@ -25,6 +25,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -41,7 +42,7 @@ import java.util.Properties;
 public class CacheableNacosInjectedFactoryTest {
 
     @Autowired
-    private NacosServiceFactory nacosServiceFactory;
+    private CacheableEventPublishingNacosServiceFactory nacosServiceFactory;
 
     private Properties properties = new Properties();
 
@@ -50,6 +51,7 @@ public class CacheableNacosInjectedFactoryTest {
     @Before
     public void init() {
         nacosServiceFactory = new CacheableEventPublishingNacosServiceFactory();
+        nacosServiceFactory.setApplicationContext(new GenericApplicationContext());
 
         properties.setProperty(PropertyKeyConst.NAMESPACE, "nc");
         properties.setProperty(PropertyKeyConst.SERVER_ADDR, "127.0.0.1");

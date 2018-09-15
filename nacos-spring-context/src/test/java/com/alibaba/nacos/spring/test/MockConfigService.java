@@ -39,9 +39,14 @@ public class MockConfigService implements ConfigService {
 
     private Map<String, String> contentCache = new LinkedHashMap<String, String>();
 
+    public static final String TIMEOUT_ERROR_MESSAGE = "Timeout must not be less then zero.";
+
     @Override
     public String getConfig(String dataId, String group, long timeoutMs) throws NacosException {
         String key = createKey(dataId, group);
+        if (timeoutMs < 0) {
+            throw new NacosException(NacosException.SERVER_ERROR, TIMEOUT_ERROR_MESSAGE);
+        }
         return contentCache.get(key);
     }
 

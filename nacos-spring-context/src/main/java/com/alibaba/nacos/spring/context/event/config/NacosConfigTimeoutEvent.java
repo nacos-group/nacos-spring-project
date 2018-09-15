@@ -17,50 +17,47 @@
 package com.alibaba.nacos.spring.context.event.config;
 
 import com.alibaba.nacos.api.config.ConfigService;
-import org.springframework.context.ApplicationEvent;
 
 /**
- * The Event of Nacos Configuration is used on Spring Event
+ * {@link NacosConfigEvent Nacos config event} for {@link ConfigService#getConfig(String, String, long) getting} timeout.
  *
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
  * @since 0.1.0
  */
-public abstract class NacosConfigEvent extends ApplicationEvent {
+public class NacosConfigTimeoutEvent extends NacosConfigEvent {
 
-    private final String dataId;
+    private final long timeout;
 
-    private final String groupId;
+    private final String errorMessage;
 
     /**
      * @param configService Nacos {@link ConfigService}
      * @param dataId        data ID
      * @param groupId       group ID
+     * @param timeout       timeout in Millis.
+     * @param errorMessage  error message
      */
-    public NacosConfigEvent(ConfigService configService, String dataId, String groupId) {
-        super(configService);
-        this.dataId = dataId;
-        this.groupId = groupId;
-    }
-
-    @Override
-    public final ConfigService getSource() {
-        return (ConfigService) super.getSource();
+    public NacosConfigTimeoutEvent(ConfigService configService, String dataId, String groupId, long timeout, String errorMessage) {
+        super(configService, dataId, groupId);
+        this.timeout = timeout;
+        this.errorMessage = errorMessage;
     }
 
     /**
-     * Get {@link ConfigService}
+     * Get timeout in Millis.
      *
-     * @return {@link ConfigService}
+     * @return timeout in Millis
      */
-    public final ConfigService getConfigService() {
-        return getSource();
+    public long getTimeout() {
+        return timeout;
     }
 
-    public final String getDataId() {
-        return dataId;
-    }
-
-    public final String getGroupId() {
-        return groupId;
+    /**
+     * get error message
+     *
+     * @return error message
+     */
+    public String getErrorMessage() {
+        return errorMessage;
     }
 }

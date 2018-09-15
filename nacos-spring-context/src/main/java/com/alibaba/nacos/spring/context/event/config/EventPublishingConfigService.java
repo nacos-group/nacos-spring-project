@@ -20,6 +20,7 @@ import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.config.listener.Listener;
 import com.alibaba.nacos.api.exception.NacosException;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.ConfigurableApplicationContext;
 
 /**
  * {@link NacosConfigEvent Event} publishing {@link ConfigService}
@@ -33,45 +34,56 @@ public class EventPublishingConfigService implements ConfigService {
 
     private final ApplicationEventPublisher applicationEventPublisher;
 
-    public EventPublishingConfigService(ConfigService configService,
-                                        ApplicationEventPublisher applicationEventPublisher) {
+    public EventPublishingConfigService(ConfigService configService, ConfigurableApplicationContext context) {
         this.configService = configService;
-        this.applicationEventPublisher = applicationEventPublisher;
+        this.applicationEventPublisher = new DeferredApplicationEventPublisher(context);
     }
 
     @Override
     public String getConfig(String dataId, String group, long timeoutMs) throws NacosException {
-        return configService.getConfig(dataId, group, timeoutMs);
+        try {
+            return configService.getConfig(dataId, group, timeoutMs);
+        } catch (NacosException e) {
+            if (NacosException.SERVER_ERROR == e.getErrCode()) { // timeout error
+                publishEvent(new NacosConfigTimeoutEvent(configService, dataId, group, timeoutMs, e.getErrMsg()));
+            }
+            throw e; // re-throw NacosException
+        }
     }
 
     @Override
     public void addListener(String dataId, String group, Listener listener) throws NacosException {
-        configService.addListener(dataId, group, listener);
+        Listener listenerAdapter = new EventPublishingListenerAdapter(configService, dataId, group, applicationEventPublisher, listener);
+        configService.addListener(dataId, group, listenerAdapter);
+        publishEvent(new NacosConfigListenerEvent(configService, dataId, group, listener, true));
     }
 
     @Override
     public boolean publishConfig(String dataId, String group, String content) throws NacosException {
         boolean published = configService.publishConfig(dataId, group, content);
-        NacosConfigPublishedEvent event = new NacosConfigPublishedEvent(configService, dataId, group, content, published);
-        applicationEventPublisher.publishEvent(event);
+        publishEvent(new NacosConfigPublishedEvent(configService, dataId, group, content, published));
         return published;
     }
 
     @Override
     public boolean removeConfig(String dataId, String group) throws NacosException {
         boolean removed = configService.removeConfig(dataId, group);
-        NacosConfigRemovedEvent event = new NacosConfigRemovedEvent(configService, dataId, group, removed);
-        applicationEventPublisher.publishEvent(event);
+        publishEvent(new NacosConfigRemovedEvent(configService, dataId, group, removed));
         return removed;
     }
 
     @Override
     public void removeListener(String dataId, String group, Listener listener) {
         configService.removeListener(dataId, group, listener);
+        publishEvent(new NacosConfigListenerEvent(configService, dataId, group, listener, false));
     }
 
     @Override
     public String getServerStatus() {
         return configService.getServerStatus();
+    }
+
+    private void publishEvent(NacosConfigEvent nacosConfigEvent) {
+        applicationEventPublisher.publishEvent(nacosConfigEvent);
     }
 }

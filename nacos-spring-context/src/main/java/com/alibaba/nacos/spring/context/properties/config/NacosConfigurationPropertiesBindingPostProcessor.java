@@ -25,9 +25,7 @@ import com.alibaba.nacos.spring.util.NacosBeanUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.EnvironmentAware;
+import org.springframework.context.*;
 import org.springframework.core.env.Environment;
 
 import java.util.Properties;
@@ -45,7 +43,7 @@ import static org.springframework.core.annotation.AnnotationUtils.findAnnotation
  * @since 0.1.0
  */
 public class NacosConfigurationPropertiesBindingPostProcessor implements BeanPostProcessor, ApplicationContextAware,
-        EnvironmentAware {
+        EnvironmentAware, ApplicationEventPublisherAware {
 
     /**
      * The name of {@link NacosConfigurationPropertiesBindingPostProcessor} Bean
@@ -57,6 +55,8 @@ public class NacosConfigurationPropertiesBindingPostProcessor implements BeanPos
     private NacosServiceFactory nacosServiceFactory;
 
     private Environment environment;
+
+    private ApplicationEventPublisher applicationEventPublisher;
 
     @Override
     public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
@@ -74,9 +74,10 @@ public class NacosConfigurationPropertiesBindingPostProcessor implements BeanPos
 
         ConfigService configService = resolveConfigService(nacosConfigurationProperties);
 
-        NacosConfigurationPropertiesBinder binder = new NacosConfigurationPropertiesBinder(configService);
+        NacosConfigurationPropertiesBinder binder =
+                new NacosConfigurationPropertiesBinder(configService, applicationEventPublisher);
 
-        binder.bind(bean, nacosConfigurationProperties);
+        binder.bind(bean, beanName, nacosConfigurationProperties);
 
     }
 
@@ -112,5 +113,10 @@ public class NacosConfigurationPropertiesBindingPostProcessor implements BeanPos
     @Override
     public void setEnvironment(Environment environment) {
         this.environment = environment;
+    }
+
+    @Override
+    public void setApplicationEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
+        this.applicationEventPublisher = applicationEventPublisher;
     }
 }
