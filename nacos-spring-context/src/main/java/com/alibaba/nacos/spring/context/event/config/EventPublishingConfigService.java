@@ -55,7 +55,7 @@ public class EventPublishingConfigService implements ConfigService {
     public void addListener(String dataId, String group, Listener listener) throws NacosException {
         Listener listenerAdapter = new EventPublishingListenerAdapter(configService, dataId, group, applicationEventPublisher, listener);
         configService.addListener(dataId, group, listenerAdapter);
-        publishEvent(new NacosConfigListenerEvent(configService, dataId, group, listener, true));
+        publishEvent(new NacosConfigListenerRegisteredEvent(configService, dataId, group, listener, true));
     }
 
     @Override
@@ -75,7 +75,7 @@ public class EventPublishingConfigService implements ConfigService {
     @Override
     public void removeListener(String dataId, String group, Listener listener) {
         configService.removeListener(dataId, group, listener);
-        publishEvent(new NacosConfigListenerEvent(configService, dataId, group, listener, false));
+        publishEvent(new NacosConfigListenerRegisteredEvent(configService, dataId, group, listener, false));
     }
 
     @Override

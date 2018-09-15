@@ -107,11 +107,11 @@ class NacosConfigurationPropertiesBinder {
                         NacosConfigurationProperties properties, String content) {
         PropertyValues propertyValues = resolvePropertyValues(bean, content);
         doBind(bean, properties, propertyValues);
-        fireBoundEvent(bean, beanName, dataId, groupId, properties, content);
+        publishBoundEvent(bean, beanName, dataId, groupId, properties, content);
     }
 
-    private void fireBoundEvent(Object bean, String beanName, String dataId, String groupId,
-                                NacosConfigurationProperties properties, String content) {
+    private void publishBoundEvent(Object bean, String beanName, String dataId, String groupId,
+                                   NacosConfigurationProperties properties, String content) {
         NacosConfigEvent event = new NacosConfigurationPropertiesBeanBoundEvent(configService, dataId, groupId, bean,
                 beanName, properties, content);
         applicationEventPublisher.publishEvent(event);

@@ -20,13 +20,13 @@ import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.config.listener.Listener;
 
 /**
- * {@link Listener Nacos Config Listener} {@link NacosConfigEvent event}
+ * {@link Listener Nacos Config Listener} registered {@link NacosConfigEvent event}
  *
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
  * @see Listener
  * @since 0.1.0
  */
-public class NacosConfigListenerEvent extends NacosConfigEvent {
+public class NacosConfigListenerRegisteredEvent extends NacosConfigEvent {
 
     private final Listener listener;
 
@@ -39,7 +39,8 @@ public class NacosConfigListenerEvent extends NacosConfigEvent {
      * @param listener      {@link Listener} instance
      * @param registered    registered or not unregistered
      */
-    public NacosConfigListenerEvent(ConfigService configService, String dataId, String groupId, Listener listener, boolean registered) {
+    public NacosConfigListenerRegisteredEvent(ConfigService configService, String dataId, String groupId,
+                                              Listener listener, boolean registered) {
         super(configService, dataId, groupId);
         this.listener = listener;
         this.registered = registered;

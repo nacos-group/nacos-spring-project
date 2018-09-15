@@ -130,10 +130,10 @@ public class EventPublishingConfigServiceTest {
             }
         });
 
-        // assert NacosConfigListenerEvent
-        context.addApplicationListener(new ApplicationListener<NacosConfigListenerEvent>() {
+        // assert NacosConfigListenerRegisteredEvent
+        context.addApplicationListener(new ApplicationListener<NacosConfigListenerRegisteredEvent>() {
             @Override
-            public void onApplicationEvent(NacosConfigListenerEvent event) {
+            public void onApplicationEvent(NacosConfigListenerRegisteredEvent event) {
                 assertNacosConfigEvent(event);
                 Assert.assertTrue(event.isRegistered());
                 Assert.assertEquals(listener, event.getListener());
@@ -155,10 +155,10 @@ public class EventPublishingConfigServiceTest {
             }
         };
 
-        // assert NacosConfigListenerEvent
-        context.addApplicationListener(new ApplicationListener<NacosConfigListenerEvent>() {
+        // assert NacosConfigListenerRegisteredEvent
+        context.addApplicationListener(new ApplicationListener<NacosConfigListenerRegisteredEvent>() {
             @Override
-            public void onApplicationEvent(NacosConfigListenerEvent event) {
+            public void onApplicationEvent(NacosConfigListenerRegisteredEvent event) {
                 assertNacosConfigEvent(event);
                 Assert.assertFalse(event.isRegistered());
                 Assert.assertEquals(listener, event.getListener());
