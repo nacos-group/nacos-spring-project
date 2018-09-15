@@ -24,10 +24,8 @@ import org.springframework.context.annotation.Configuration;
 
 import java.util.Map;
 import java.util.Properties;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
 
 import static com.alibaba.nacos.spring.util.NacosBeanUtils.*;
 
@@ -78,20 +76,7 @@ public class TestConfiguration {
 
     @Bean(name = NACOS_CONFIG_LISTENER_EXECUTOR_BEAN_NAME)
     public ExecutorService executorService() {
-        return Executors.newSingleThreadExecutor(new ThreadFactory() {
-            @Override
-            public Thread newThread(final Runnable r) {
-                final CountDownLatch latch = new CountDownLatch(1);
-                return new Thread(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        latch.countDown();
-                        r.run();
-                    }
-                });
-            }
-        });
+        return Executors.newSingleThreadExecutor();
     }
 
 }

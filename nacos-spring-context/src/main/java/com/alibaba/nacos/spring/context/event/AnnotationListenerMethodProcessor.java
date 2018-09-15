@@ -108,8 +108,10 @@ public abstract class AnnotationListenerMethodProcessor<A extends Annotation> im
 
         for (Object bean : beans) {
             // Bean type
-            Class<?> beanClass = AopUtils.getTargetClass(bean);
-            processBean(bean, beanClass, applicationContext);
+            if (bean != null) {
+                Class<?> beanClass = AopUtils.getTargetClass(bean);
+                processBean(bean, beanClass, applicationContext);
+            }
         }
 
     }

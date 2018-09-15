@@ -29,6 +29,8 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 
+import java.util.concurrent.Executor;
+
 import static com.alibaba.nacos.spring.test.MockConfigService.TIMEOUT_ERROR_MESSAGE;
 import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.*;
 
@@ -51,7 +53,12 @@ public class EventPublishingConfigServiceTest {
         this.mockConfigService = new MockConfigService();
         this.context = new GenericApplicationContext();
         this.context.refresh();
-        this.configService = new EventPublishingConfigService(mockConfigService, context);
+        this.configService = new EventPublishingConfigService(mockConfigService, context, new Executor() {
+            @Override
+            public void execute(Runnable command) {
+                command.run();
+            }
+        });
     }
 
     @After

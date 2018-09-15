@@ -24,11 +24,16 @@ import com.alibaba.nacos.spring.test.ListenersConfiguration;
 import com.alibaba.nacos.spring.test.TestConfiguration;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.util.concurrent.ExecutorService;
+
 import static com.alibaba.nacos.api.common.Constants.DEFAULT_GROUP;
 import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.DATA_ID;
+import static com.alibaba.nacos.spring.util.NacosBeanUtils.NACOS_CONFIG_LISTENER_EXECUTOR_BEAN_NAME;
 
 /**
  * {@link NacosConfigListenerMethodProcessor} Test
@@ -51,14 +56,19 @@ public class NacosConfigListenerMethodProcessorTest {
     @NacosInjected
     private ConfigService configService;
 
+    @Autowired
+    private ListenersConfiguration listenersConfiguration;
+
+    @Autowired
+    @Qualifier(NACOS_CONFIG_LISTENER_EXECUTOR_BEAN_NAME)
+    private ExecutorService executorService;
+
     @Test
     public void testOn() throws Exception {
 
         configService.publishConfig(DATA_ID, DEFAULT_GROUP, "9527");
         // Publish User
         configService.publishConfig("user", DEFAULT_GROUP, "{\"id\":1,\"name\":\"mercyblitz\"}");
-
-        Thread.sleep(1000);
 
     }
 

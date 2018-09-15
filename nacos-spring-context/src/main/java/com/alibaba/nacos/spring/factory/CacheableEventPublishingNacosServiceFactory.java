@@ -29,7 +29,9 @@ import org.springframework.context.ConfigurableApplicationContext;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.ExecutorService;
 
+import static com.alibaba.nacos.spring.util.NacosBeanUtils.getNacosConfigListenerExecutor;
 import static com.alibaba.nacos.spring.util.NacosUtils.identify;
 
 /**
@@ -45,6 +47,8 @@ public class CacheableEventPublishingNacosServiceFactory implements NacosService
     private Map<String, NamingService> namingServicesCache = new LinkedHashMap<String, NamingService>(2);
 
     private ConfigurableApplicationContext context;
+
+    private ExecutorService nacosConfigListenerExecutor;
 
     @Override
     public ConfigService createConfigService(Properties properties) throws NacosException {
@@ -67,7 +71,7 @@ public class CacheableEventPublishingNacosServiceFactory implements NacosService
 
     private ConfigService doCreateConfigService(Properties properties) throws NacosException {
         ConfigService configService = NacosFactory.createConfigService(properties);
-        return new EventPublishingConfigService(configService, context);
+        return new EventPublishingConfigService(configService, context, nacosConfigListenerExecutor);
     }
 
     @Override
@@ -92,5 +96,6 @@ public class CacheableEventPublishingNacosServiceFactory implements NacosService
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.context = (ConfigurableApplicationContext) applicationContext;
+        this.nacosConfigListenerExecutor = getNacosConfigListenerExecutor(applicationContext);
     }
 }

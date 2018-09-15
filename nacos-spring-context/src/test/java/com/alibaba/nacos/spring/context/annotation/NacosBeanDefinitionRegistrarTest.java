@@ -19,16 +19,20 @@ package com.alibaba.nacos.spring.context.annotation;
 import com.alibaba.nacos.api.annotation.NacosInjected;
 import com.alibaba.nacos.api.annotation.NacosProperties;
 import com.alibaba.nacos.api.config.ConfigService;
+import com.alibaba.nacos.api.naming.NamingService;
 import com.alibaba.nacos.spring.beans.factory.annotation.AnnotationNacosInjectedBeanPostProcessor;
+import com.alibaba.nacos.spring.beans.factory.annotation.ConfigServiceBeanBuilder;
+import com.alibaba.nacos.spring.beans.factory.annotation.NamingServiceBeanBuilder;
 import com.alibaba.nacos.spring.context.annotation.config.EnableNacosConfig;
 import com.alibaba.nacos.spring.context.annotation.config.NacosConfigListenerMethodProcessor;
+import com.alibaba.nacos.spring.context.annotation.config.NacosValueAnnotationBeanPostProcessor;
 import com.alibaba.nacos.spring.context.annotation.discovery.EnableNacosDiscovery;
 import com.alibaba.nacos.spring.context.properties.config.NacosConfigurationPropertiesBindingPostProcessor;
+import com.alibaba.nacos.spring.core.env.AnnotationNacosPropertySourceBuilder;
 import com.alibaba.nacos.spring.core.env.NacosPropertySourcePostProcessor;
 import com.alibaba.nacos.spring.factory.NacosServiceFactory;
 import com.alibaba.nacos.spring.test.AbstractNacosHttpServerTestExecutionListener;
 import com.alibaba.nacos.spring.test.Config;
-import com.alibaba.nacos.spring.test.ListenersConfiguration;
 import com.alibaba.nacos.spring.util.NacosBeanUtils;
 import org.junit.Assert;
 import org.junit.Test;
@@ -37,6 +41,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -44,9 +49,12 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 
 import java.util.Properties;
+import java.util.concurrent.ExecutorService;
 
 import static com.alibaba.nacos.api.common.Constants.DEFAULT_GROUP;
 import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.DATA_ID;
+import static com.alibaba.nacos.spring.util.NacosBeanUtils.NACOS_CONFIG_LISTENER_EXECUTOR_BEAN_NAME;
+import static com.alibaba.nacos.spring.util.NacosBeanUtils.PLACEHOLDER_CONFIGURER_BEAN_NAME;
 
 /**
  * {@link NacosBeanDefinitionRegistrar} Test
@@ -56,7 +64,6 @@ import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.DATA_ID;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
-        ListenersConfiguration.class,
         NacosBeanDefinitionRegistrarTest.class,
 })
 @TestExecutionListeners({DependencyInjectionTestExecutionListener.class,
@@ -81,12 +88,23 @@ public class NacosBeanDefinitionRegistrarTest extends AbstractNacosHttpServerTes
     private Properties globalProperties;
 
     @Autowired
+    @Qualifier(NacosBeanUtils.CONFIG_GLOBAL_NACOS_PROPERTIES_BEAN_NAME)
+    private Properties configGlobalProperties;
+    @Autowired
+    @Qualifier(NacosBeanUtils.DISCOVERY_GLOBAL_NACOS_PROPERTIES_BEAN_NAME)
+    private Properties discoveryGlobalProperties;
+
+    @Autowired
     @Qualifier(NacosBeanUtils.NACOS_SERVICE_FACTORY_BEAN_NAME)
     private NacosServiceFactory nacosServiceFactory;
 
     @Autowired
     @Qualifier(AnnotationNacosInjectedBeanPostProcessor.BEAN_NAME)
     private AnnotationNacosInjectedBeanPostProcessor annotationNacosInjectedBeanPostProcessor;
+
+    @Autowired
+    @Qualifier(PLACEHOLDER_CONFIGURER_BEAN_NAME)
+    private PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer;
 
     @Autowired
     @Qualifier(NacosConfigurationPropertiesBindingPostProcessor.BEAN_NAME)
@@ -100,8 +118,34 @@ public class NacosBeanDefinitionRegistrarTest extends AbstractNacosHttpServerTes
     @Qualifier(NacosPropertySourcePostProcessor.BEAN_NAME)
     private NacosPropertySourcePostProcessor nacosPropertySourcePostProcessor;
 
+    @Autowired
+    @Qualifier(AnnotationNacosPropertySourceBuilder.BEAN_NAME)
+    private AnnotationNacosPropertySourceBuilder annotationNacosPropertySourceBuilder;
+
+    @Autowired
+    @Qualifier(NacosValueAnnotationBeanPostProcessor.BEAN_NAME)
+    private NacosValueAnnotationBeanPostProcessor nacosValueAnnotationBeanPostProcessor;
+
+    @Autowired
+    @Qualifier(ConfigServiceBeanBuilder.BEAN_NAME)
+    private ConfigServiceBeanBuilder configServiceBeanBuilder;
+
+    @Autowired
+    @Qualifier(NACOS_CONFIG_LISTENER_EXECUTOR_BEAN_NAME)
+    private ExecutorService nacosConfigListenerExecutor;
+
+    @Autowired
+    @Qualifier(NamingServiceBeanBuilder.BEAN_NAME)
+    private NamingServiceBeanBuilder namingServiceBeanBuilder;
+
     @NacosInjected
+    private ConfigService globalConfigService;
+
+    @NacosInjected(properties = @NacosProperties(serverAddr = "${serverAddr}"))
     private ConfigService configService;
+
+    @NacosInjected
+    private NamingService namingService;
 
     @Autowired
     private Config config;

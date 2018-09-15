@@ -22,23 +22,23 @@ import com.alibaba.nacos.api.config.annotation.NacosConfigListener;
 import com.alibaba.nacos.api.config.convert.NacosConfigConverter;
 import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.spring.context.event.AnnotationListenerMethodProcessor;
+import com.alibaba.nacos.spring.context.event.config.TimeoutNacosConfigListener;
 import com.alibaba.nacos.spring.convert.converter.config.DefaultNacosConfigConverter;
 import com.alibaba.nacos.spring.factory.NacosServiceFactory;
-import com.alibaba.nacos.spring.util.config.NonBlockingNacosConfigListener;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.format.support.DefaultFormattingConversionService;
+import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
+import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Method;
 import java.util.Properties;
-import java.util.concurrent.ExecutorService;
 
 import static com.alibaba.nacos.spring.util.GlobalNacosPropertiesSource.CONFIG;
-import static com.alibaba.nacos.spring.util.NacosBeanUtils.getNacosConfigListenerExecutor;
 import static com.alibaba.nacos.spring.util.NacosBeanUtils.getNacosServiceFactoryBean;
 import static com.alibaba.nacos.spring.util.NacosUtils.resolveProperties;
 import static org.springframework.beans.BeanUtils.instantiateClass;
@@ -71,39 +71,32 @@ public class NacosConfigListenerMethodProcessor extends AnnotationListenerMethod
 
     private ConversionService conversionService;
 
-    private ExecutorService nacosConfigListenerExecutor;
-
     @Override
     protected void processListenerMethod(final Object bean, Class<?> beanClass, final NacosConfigListener listener,
                                          final Method method, ApplicationContext applicationContext) {
 
         String dataId = listener.dataId();
-
         String groupId = listener.groupId();
-
         long timeout = listener.timeout();
+
+        Assert.isTrue(StringUtils.hasText(dataId), "dataId must have content");
+        Assert.isTrue(StringUtils.hasText(groupId), "groupId must have content");
+        Assert.isTrue(timeout > 0, "timeout must be greater than zero");
 
         ConfigService configService = resolveConfigService(listener, applicationContext);
 
         try {
+            configService.addListener(dataId, groupId, new TimeoutNacosConfigListener(dataId, groupId, timeout) {
 
-            configService.addListener(dataId, groupId, new NonBlockingNacosConfigListener(dataId, groupId,
-                    nacosConfigListenerExecutor, timeout) {
                 @Override
-                protected void onUpdate(String config) {
-
+                protected void onReceived(String config) {
                     Class<?> targetType = method.getParameterTypes()[0];
-
                     NacosConfigConverter configConverter = determineNacosConfigConverter(targetType, listener);
-
                     Object parameterValue = configConverter.convert(config);
-
                     // Execute target method
                     ReflectionUtils.invokeMethod(method, bean, parameterValue);
-
                 }
             });
-
         } catch (NacosException e) {
             if (logger.isErrorEnabled()) {
                 logger.error("ConfigService can't add Listener for dataId : " + dataId + " , groupId : " + groupId, e);
@@ -181,7 +174,6 @@ public class NacosConfigListenerMethodProcessor extends AnnotationListenerMethod
         globalNacosProperties = CONFIG.getMergedGlobalProperties(applicationContext);
         nacosServiceFactory = getNacosServiceFactoryBean(applicationContext);
         conversionService = determineConversionService(applicationContext);
-        nacosConfigListenerExecutor = getNacosConfigListenerExecutor(applicationContext);
     }
 
     private ConversionService determineConversionService(ApplicationContext applicationContext) {

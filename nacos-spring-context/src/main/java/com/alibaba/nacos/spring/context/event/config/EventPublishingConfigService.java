@@ -22,6 +22,8 @@ import com.alibaba.nacos.api.exception.NacosException;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ConfigurableApplicationContext;
 
+import java.util.concurrent.Executor;
+
 /**
  * {@link NacosConfigEvent Event} publishing {@link ConfigService}
  *
@@ -34,9 +36,13 @@ public class EventPublishingConfigService implements ConfigService {
 
     private final ApplicationEventPublisher applicationEventPublisher;
 
-    public EventPublishingConfigService(ConfigService configService, ConfigurableApplicationContext context) {
+    private final Executor executor;
+
+    public EventPublishingConfigService(ConfigService configService, ConfigurableApplicationContext context,
+                                        Executor executor) {
         this.configService = configService;
         this.applicationEventPublisher = new DeferredApplicationEventPublisher(context);
+        this.executor = executor;
     }
 
     @Override
@@ -53,7 +59,7 @@ public class EventPublishingConfigService implements ConfigService {
 
     @Override
     public void addListener(String dataId, String group, Listener listener) throws NacosException {
-        Listener listenerAdapter = new EventPublishingListenerAdapter(configService, dataId, group, applicationEventPublisher, listener);
+        Listener listenerAdapter = new DelegatingEventPublishingListener(configService, dataId, group, applicationEventPublisher, executor, listener);
         configService.addListener(dataId, group, listenerAdapter);
         publishEvent(new NacosConfigListenerRegisteredEvent(configService, dataId, group, listener, true));
     }

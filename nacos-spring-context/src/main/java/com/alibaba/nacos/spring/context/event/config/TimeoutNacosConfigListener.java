@@ -14,8 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.alibaba.nacos.spring.util.config;
+package com.alibaba.nacos.spring.context.event.config;
 
+import com.alibaba.nacos.api.config.listener.AbstractListener;
 import com.alibaba.nacos.api.config.listener.Listener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,68 +24,69 @@ import org.slf4j.LoggerFactory;
 import java.util.concurrent.*;
 
 /**
- * Non Blocking {@link Listener Nacos Config Listener}
+ * Timeout {@link Listener Nacos Config Listener}
  *
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
  * @since 0.1.0
  */
-public abstract class NonBlockingNacosConfigListener implements Listener {
+public abstract class TimeoutNacosConfigListener extends AbstractListener {
+
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final String dataId;
 
     private final String groupId;
 
-    private final ExecutorService nacosConfigListenerExecutor;
-
     private final long timeout;
 
-    /**
-     * Executor used for timeout
-     */
-    private final ExecutorService executor;
-
-    private final Logger logger = LoggerFactory.getLogger(getClass());
-
-    public NonBlockingNacosConfigListener(String dataId, String groupId, ExecutorService nacosConfigListenerExecutor,
-                                          long timeout) {
+    public TimeoutNacosConfigListener(String dataId, String groupId, long timeout) {
         this.dataId = dataId;
         this.groupId = groupId;
-        this.nacosConfigListenerExecutor = nacosConfigListenerExecutor;
         this.timeout = timeout;
-        this.executor = Executors.newSingleThreadExecutor();
     }
 
-    @Override
-    public Executor getExecutor() {
-        return nacosConfigListenerExecutor;
-    }
+    public final void receiveConfigInfo(final String content) {
 
-    @Override
-    public void receiveConfigInfo(final String configInfo) {
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
 
-        Future future = executor.submit(new Runnable() {
+        Future future = executorService.submit(new Runnable() {
             @Override
             public void run() {
-                onUpdate(configInfo);
+                onReceived(content);
             }
         });
 
         try {
             future.get(timeout, TimeUnit.MILLISECONDS);
-        } catch (Exception e) {
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException(e);
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        } catch (TimeoutException e) {
             future.cancel(true);
             if (logger.isWarnEnabled()) {
-                logger.warn(String.format("Listening on Nacos Config exceeds timeout %d ms [dataId : %s, groupId : %s, data : %s]"
-                        , timeout, dataId, groupId, configInfo));
+                logger.warn("Listening on Nacos Config exceeds timeout {} ms " +
+                        "[dataId : {}, groupId : {}, data : {}]", timeout, dataId, groupId, content);
             }
+        } finally {
+            executorService.shutdown();
         }
-
     }
 
     /**
-     * On config update
+     * process Nacos Config when received.
      *
-     * @param config config
+     * @param content Nacos Config
      */
-    protected abstract void onUpdate(String config);
+    protected abstract void onReceived(String content);
+
+    /**
+     * Get timeout in milliseconds
+     *
+     * @return timeout in milliseconds
+     */
+    public long getTimeout() {
+        return timeout;
+    }
 }

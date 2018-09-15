@@ -23,9 +23,9 @@ import org.springframework.context.ApplicationEventPublisher;
 import java.util.concurrent.Executor;
 
 /**
- * A {@link NacosConfigReceivedEvent Event} Publishing {@link Listener} adapter Nacos Config {@link Listener} with dataId, groupId and
- * {@link ConfigService} instance. A {@link NacosConfigReceivedEvent Nacos config received event} will be published when
- * a new Nacos config received.
+ * A Delegating {@link NacosConfigReceivedEvent Event} Publishing {@link Listener} of Nacos Config {@link Listener} with
+ * dataId, groupId and {@link ConfigService} instance. A {@link NacosConfigReceivedEvent Nacos config received event}
+ * will be published when a new Nacos config received.
  *
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
  * @see NacosConfigReceivedEvent
@@ -33,7 +33,7 @@ import java.util.concurrent.Executor;
  * @see Listener
  * @since 0.1.0
  */
-final class EventPublishingListenerAdapter implements Listener {
+final class DelegatingEventPublishingListener implements Listener {
 
     private final ConfigService configService;
 
@@ -43,20 +43,28 @@ final class EventPublishingListenerAdapter implements Listener {
 
     private final ApplicationEventPublisher applicationEventPublisher;
 
+    private final Executor executor;
+
     private final Listener delegate;
 
-    EventPublishingListenerAdapter(ConfigService configService, String dataId, String groupId,
-                                   ApplicationEventPublisher applicationEventPublisher, Listener delegate) {
+    DelegatingEventPublishingListener(ConfigService configService, String dataId, String groupId,
+                                      ApplicationEventPublisher applicationEventPublisher,
+                                      Executor executor, Listener delegate) {
         this.configService = configService;
         this.dataId = dataId;
         this.groupId = groupId;
         this.applicationEventPublisher = applicationEventPublisher;
+        this.executor = executor;
         this.delegate = delegate;
     }
 
     @Override
     public Executor getExecutor() {
-        return delegate.getExecutor();
+        Executor executor = delegate.getExecutor();
+        if (executor == null) {
+            executor = this.executor;
+        }
+        return executor;
     }
 
     /**
@@ -66,8 +74,16 @@ final class EventPublishingListenerAdapter implements Listener {
      */
     @Override
     public void receiveConfigInfo(String content) {
+        publishEvent(content);
+        onReceived(content);
+    }
+
+    private void publishEvent(String content) {
         NacosConfigReceivedEvent event = new NacosConfigReceivedEvent(configService, dataId, groupId, content);
         applicationEventPublisher.publishEvent(event);
+    }
+
+    private void onReceived(String content) {
         delegate.receiveConfigInfo(content);
     }
 }

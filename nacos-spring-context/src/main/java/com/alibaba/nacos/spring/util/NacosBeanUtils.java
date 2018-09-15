@@ -30,6 +30,7 @@ import com.alibaba.nacos.spring.factory.NacosServiceFactory;
 import com.alibaba.spring.util.BeanUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -41,15 +42,13 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertyResolver;
+import org.springframework.scheduling.concurrent.ThreadPoolExecutorFactoryBean;
 
 import java.lang.reflect.Constructor;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.alibaba.nacos.spring.context.constants.NacosConstants.DEFAULT_NACOS_CONFIG_LISTENER_PARALLELISM;
 import static com.alibaba.nacos.spring.context.constants.NacosConstants.NACOS_CONFIG_LISTENER_PARALLELISM;
@@ -269,22 +268,16 @@ public abstract class NacosBeanUtils {
         if (registry instanceof BeanFactory && ((BeanFactory) registry).containsBean(beanName)) {
             return;
         }
-        ExecutorService nacosConfigListenerExecutor = buildNacosConfigListenerExecutor(environment);
+        FactoryBean<ExecutorService> nacosConfigListenerExecutor = buildNacosConfigListenerExecutor(environment);
         registerSingleton(registry, beanName, nacosConfigListenerExecutor);
     }
 
-    private static ExecutorService buildNacosConfigListenerExecutor(Environment environment) {
+    private static FactoryBean<ExecutorService> buildNacosConfigListenerExecutor(Environment environment) {
         int parallelism = getParallelism(environment);
-        return Executors.newFixedThreadPool(parallelism, new ThreadFactory() {
-            private final AtomicInteger threadNumber = new AtomicInteger(1);
-
-            @Override
-            public Thread newThread(Runnable r) {
-                Thread thread = new Thread(r);
-                thread.setName("NacosConfigListener-ThreadPool-" + threadNumber.getAndIncrement());
-                return thread;
-            }
-        });
+        ThreadPoolExecutorFactoryBean factoryBean = new ThreadPoolExecutorFactoryBean();
+        factoryBean.setMaxPoolSize(parallelism);
+        factoryBean.setThreadNamePrefix("NacosConfigListener-ThreadPool-");
+        return factoryBean;
     }
 
     private static int getParallelism(Environment environment) {

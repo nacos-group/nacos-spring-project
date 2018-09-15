@@ -25,11 +25,15 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.Properties;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import static com.alibaba.nacos.spring.util.NacosBeanUtils.NACOS_CONFIG_LISTENER_EXECUTOR_BEAN_NAME;
 
 /**
  * CacheableEventPublishingNacosServiceFactory Test
@@ -38,11 +42,20 @@ import java.util.Properties;
  * @since 0.1.0
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {CacheableEventPublishingNacosServiceFactory.class})
+@ContextConfiguration(classes = {
+        CacheableEventPublishingNacosServiceFactory.class,
+        CacheableNacosInjectedFactoryTest.class
+})
 public class CacheableNacosInjectedFactoryTest {
+
+    @Bean(name = NACOS_CONFIG_LISTENER_EXECUTOR_BEAN_NAME)
+    public static ExecutorService executorService() {
+        return Executors.newSingleThreadExecutor();
+    }
 
     @Autowired
     private CacheableEventPublishingNacosServiceFactory nacosServiceFactory;
+
 
     private Properties properties = new Properties();
 
@@ -50,9 +63,6 @@ public class CacheableNacosInjectedFactoryTest {
 
     @Before
     public void init() {
-        nacosServiceFactory = new CacheableEventPublishingNacosServiceFactory();
-        nacosServiceFactory.setApplicationContext(new GenericApplicationContext());
-
         properties.setProperty(PropertyKeyConst.NAMESPACE, "nc");
         properties.setProperty(PropertyKeyConst.SERVER_ADDR, "127.0.0.1");
         properties.setProperty(PropertyKeyConst.ACCESS_KEY, "a");
