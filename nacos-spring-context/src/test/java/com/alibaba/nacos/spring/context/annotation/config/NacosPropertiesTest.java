@@ -16,7 +16,7 @@
  */
 package com.alibaba.nacos.spring.context.annotation.config;
 
-import com.alibaba.nacos.api.config.annotation.NacosProperties;
+import com.alibaba.nacos.api.annotation.NacosProperties;
 import com.alibaba.nacos.spring.context.annotation.EnableNacos;
 import org.junit.Assert;
 import org.junit.Test;
@@ -27,7 +27,7 @@ import org.springframework.mock.env.MockEnvironment;
  *
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
  * @see NacosProperties
- * @since 0.2.0
+ * @since 0.1.0
  */
 public class NacosPropertiesTest {
 

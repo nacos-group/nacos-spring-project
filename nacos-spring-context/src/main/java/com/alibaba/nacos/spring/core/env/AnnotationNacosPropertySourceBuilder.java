@@ -32,7 +32,7 @@ import static com.alibaba.nacos.spring.context.annotation.config.NacosPropertySo
  * @see NacosPropertySource
  * @see NacosPropertySources
  * @see AnnotatedBeanDefinition
- * @since 0.2.0
+ * @since 0.1.0
  */
 public class AnnotationNacosPropertySourceBuilder extends
         AbstractNacosPropertySourceBuilder<AnnotatedBeanDefinition> {

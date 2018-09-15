@@ -43,7 +43,7 @@ import static org.springframework.util.StringUtils.hasText;
  *
  * @author <a href="mailto:huangxiaoyu1018@gmail.com">hxy1991</a>
  * @see NacosValue
- * @since 0.2.0
+ * @since 0.1.0
  */
 public class NacosValueAnnotationBeanPostProcessor extends AnnotationInjectedBeanPostProcessor<NacosValue>
     implements BeanFactoryAware, ApplicationListener<NacosConfigReceivedEvent> {

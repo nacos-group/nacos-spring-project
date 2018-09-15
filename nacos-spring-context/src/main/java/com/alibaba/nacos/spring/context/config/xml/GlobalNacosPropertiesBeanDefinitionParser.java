@@ -17,7 +17,7 @@
 package com.alibaba.nacos.spring.context.config.xml;
 
 import com.alibaba.nacos.api.PropertyKeyConst;
-import com.alibaba.nacos.api.config.annotation.NacosProperties;
+import com.alibaba.nacos.api.annotation.NacosProperties;
 import com.alibaba.nacos.spring.util.NacosBeanUtils;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
@@ -28,7 +28,7 @@ import org.w3c.dom.Element;
 
 import java.util.Properties;
 
-import static com.alibaba.nacos.api.config.annotation.NacosProperties.*;
+import static com.alibaba.nacos.api.annotation.NacosProperties.*;
 import static com.alibaba.nacos.spring.util.NacosBeanUtils.GLOBAL_NACOS_PROPERTIES_BEAN_NAME;
 import static com.alibaba.nacos.spring.util.NacosBeanUtils.registerGlobalNacosProperties;
 
@@ -39,7 +39,7 @@ import static com.alibaba.nacos.spring.util.NacosBeanUtils.registerGlobalNacosPr
  * @see NacosBeanUtils#GLOBAL_NACOS_PROPERTIES_BEAN_NAME
  * @see NacosProperties
  * @see PropertyKeyConst
- * @since 0.2.0
+ * @since 0.1.0
  */
 public class GlobalNacosPropertiesBeanDefinitionParser implements BeanDefinitionParser {
 

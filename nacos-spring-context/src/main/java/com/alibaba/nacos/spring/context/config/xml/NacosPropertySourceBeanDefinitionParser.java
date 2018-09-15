@@ -35,7 +35,7 @@ import static com.alibaba.nacos.spring.util.NacosBeanUtils.registerXmlNacosPrope
  * @author <a href="mailto:huangxiaoyu1018@gmail.com">hxy1991</a>
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
  * @see NacosPropertySource
- * @since 0.2.0
+ * @since 0.1.0
  */
 public class NacosPropertySourceBeanDefinitionParser extends AbstractBeanDefinitionParser {
 

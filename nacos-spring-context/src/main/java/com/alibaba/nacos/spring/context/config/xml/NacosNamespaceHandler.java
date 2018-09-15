@@ -24,7 +24,7 @@ import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
  *
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
  * @see NamespaceHandler
- * @since 0.2.0
+ * @since 0.1.0
  */
 public class NacosNamespaceHandler extends NamespaceHandlerSupport {
 

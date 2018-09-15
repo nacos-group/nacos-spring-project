@@ -16,9 +16,9 @@
  */
 package com.alibaba.nacos.spring.context.properties.config;
 
+import com.alibaba.nacos.api.annotation.NacosProperties;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.config.annotation.NacosConfigurationProperties;
-import com.alibaba.nacos.api.config.annotation.NacosProperties;
 import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.spring.factory.NacosServiceFactory;
 import com.alibaba.nacos.spring.util.NacosBeanUtils;
@@ -42,7 +42,7 @@ import static org.springframework.core.annotation.AnnotationUtils.findAnnotation
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
  * @see NacosConfigurationProperties
  * @see BeanPostProcessor
- * @since 0.2.0
+ * @since 0.1.0
  */
 public class NacosConfigurationPropertiesBindingPostProcessor implements BeanPostProcessor, ApplicationContextAware,
         EnvironmentAware {

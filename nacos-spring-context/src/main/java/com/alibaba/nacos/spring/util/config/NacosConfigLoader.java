@@ -17,8 +17,8 @@
 package com.alibaba.nacos.spring.util.config;
 
 import com.alibaba.nacos.api.NacosFactory;
+import com.alibaba.nacos.api.annotation.NacosProperties;
 import com.alibaba.nacos.api.config.ConfigService;
-import com.alibaba.nacos.api.config.annotation.NacosProperties;
 import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.spring.factory.NacosServiceFactory;
 import com.alibaba.nacos.spring.util.NacosUtils;
@@ -32,7 +32,7 @@ import java.util.Properties;
  * Nacos Configuration Loader
  *
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
- * @since 0.2.0
+ * @since 0.1.0
  */
 public class NacosConfigLoader {
 

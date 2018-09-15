@@ -22,7 +22,7 @@ import com.alibaba.nacos.api.config.ConfigService;
  * The {@link NacosConfigEvent event} of Nacos Configuration that has been removed.
  *
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
- * @since 0.2.0
+ * @since 0.1.0
  */
 public class NacosConfigRemovedEvent extends NacosConfigEvent {
 

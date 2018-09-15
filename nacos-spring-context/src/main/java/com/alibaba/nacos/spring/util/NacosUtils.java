@@ -16,9 +16,9 @@
  */
 package com.alibaba.nacos.spring.util;
 
+import com.alibaba.nacos.api.annotation.NacosProperties;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.config.annotation.NacosConfigurationProperties;
-import com.alibaba.nacos.api.config.annotation.NacosProperties;
 import com.alibaba.nacos.api.exception.NacosException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,7 +47,7 @@ import static org.springframework.core.annotation.AnnotationUtils.getAnnotationA
  * Nacos Utilities class
  *
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
- * @since 0.2.0
+ * @since 0.1.0
  */
 public abstract class NacosUtils {
 

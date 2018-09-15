@@ -16,21 +16,21 @@
  */
 package com.alibaba.nacos.spring.context.annotation.discovery;
 
-import com.alibaba.nacos.api.config.annotation.NacosInjected;
-import com.alibaba.nacos.api.config.annotation.NacosProperties;
+import com.alibaba.nacos.api.annotation.NacosInjected;
+import com.alibaba.nacos.api.annotation.NacosProperties;
 import com.alibaba.nacos.spring.context.annotation.NacosBeanDefinitionRegistrar;
 import org.springframework.context.annotation.Import;
 
 import java.lang.annotation.*;
 
-import static com.alibaba.nacos.api.config.annotation.NacosProperties.*;
+import static com.alibaba.nacos.api.annotation.NacosProperties.*;
 
 /**
  * Annotation for enabling Nacos discovery features.
  *
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
  * @see NacosBeanDefinitionRegistrar
- * @since 0.2.0
+ * @since 0.1.0
  */
 @Target({ElementType.TYPE, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
@@ -47,49 +47,50 @@ public @interface EnableNacosDiscovery {
      * The placeholder of endpoint, the value is
      * <code>"${nacos.discovery.endpoint:${nacos.endpoint:}}"</code>
      */
-    String ENDPOINT_PLACEHOLDER = "${" + DISCOVERY_PREFIX + ENDPOINT + ":${" + PREFIX + ENDPOINT + ":}}";
+    String ENDPOINT_PLACEHOLDER = "${" + DISCOVERY_PREFIX + ENDPOINT + ":" + NacosProperties.ENDPOINT_PLACEHOLDER + "}";
 
     /**
      * The placeholder of endpoint, the value is
      * <code>"${nacos.discovery.namespace:${nacos.namespace:}}"</code>
      */
-    String NAMESPACE_PLACEHOLDER = "${" + DISCOVERY_PREFIX + NAMESPACE + ":${" + PREFIX + NAMESPACE + ":}}";
+    String NAMESPACE_PLACEHOLDER = "${" + DISCOVERY_PREFIX + NAMESPACE + ":" + NacosProperties.NAMESPACE_PLACEHOLDER + "}";
 
     /**
      * The placeholder of endpoint, the value is
      * <code>"${nacos.discovery.access-key:${nacos.access-key:}}"</code>
      */
-    String ACCESS_KEY_PLACEHOLDER = "${" + DISCOVERY_PREFIX + ACCESS_KEY + ":${" + PREFIX + ACCESS_KEY + ":}}";
+    String ACCESS_KEY_PLACEHOLDER = "${" + DISCOVERY_PREFIX + ACCESS_KEY +":" + NacosProperties.ACCESS_KEY_PLACEHOLDER + "}";
 
     /**
      * The placeholder of endpoint, the value is
      * <code>"${nacos.discovery.secret-key:${nacos.secret-key:}}"</code>
      */
-    String SECRET_KEY_PLACEHOLDER = "${" + DISCOVERY_PREFIX + SECRET_KEY + ":${" + PREFIX + SECRET_KEY + ":}}";
+    String SECRET_KEY_PLACEHOLDER = "${" + DISCOVERY_PREFIX + SECRET_KEY + ":" + NacosProperties.SECRET_KEY_PLACEHOLDER + "}";
 
     /**
      * The placeholder of endpoint, the value is
      * <code>"${nacos.discovery.server-addr:${nacos.server-addr:}}"</code>
      */
-    String SERVER_ADDR_PLACEHOLDER = "${" + DISCOVERY_PREFIX + SERVER_ADDR + ":${" + PREFIX + SERVER_ADDR + ":}}";
+    String SERVER_ADDR_PLACEHOLDER = "${" + DISCOVERY_PREFIX + SERVER_ADDR + ":" + NacosProperties.SERVER_ADDR_PLACEHOLDER + "}";
+
 
     /**
      * The placeholder of endpoint, the value is
      * <code>"${nacos.discovery.context-path:${nacos.context-path:}}"</code>
      */
-    String CONTEXT_PATH_PLACEHOLDER = "${" + DISCOVERY_PREFIX + CONTEXT_PATH + ":${" + PREFIX + CONTEXT_PATH + ":}}";
+    String CONTEXT_PATH_PLACEHOLDER = "${" + DISCOVERY_PREFIX + CONTEXT_PATH + ":" + NacosProperties.CONTEXT_PATH_PLACEHOLDER + "}";
 
     /**
      * The placeholder of endpoint, the value is
      * <code>"${nacos.discovery.cluster-name:${nacos.cluster-name:}}"</code>
      */
-    String CLUSTER_NAME_PLACEHOLDER = "${" + DISCOVERY_PREFIX + CLUSTER_NAME + ":${" + PREFIX + CLUSTER_NAME + ":}}";
+    String CLUSTER_NAME_PLACEHOLDER = "${" + DISCOVERY_PREFIX + CLUSTER_NAME + ":" + NacosProperties.CLUSTER_NAME_PLACEHOLDER + "}";
 
     /**
      * The placeholder of {@link NacosProperties#ENCODE encode}, the value is
      * <code>"${nacos.discovery.encode:${nacos.encode:UTF-8}}"</code>
      */
-    String ENCODE_PLACEHOLDER = "${" + DISCOVERY_PREFIX + ENCODE + ":${" + PREFIX + ENCODE + ":UTF-8}}";
+    String ENCODE_PLACEHOLDER = "${" + DISCOVERY_PREFIX + ENCODE + ":" + NacosProperties.ENCODE_PLACEHOLDER + "}";
 
     /**
      * Global {@link NacosProperties Nacos Properties}

@@ -16,9 +16,9 @@
  */
 package com.alibaba.nacos.spring.context.annotation.config;
 
+import com.alibaba.nacos.api.annotation.NacosInjected;
+import com.alibaba.nacos.api.annotation.NacosProperties;
 import com.alibaba.nacos.api.config.ConfigService;
-import com.alibaba.nacos.api.config.annotation.NacosInjected;
-import com.alibaba.nacos.api.config.annotation.NacosProperties;
 import com.alibaba.nacos.api.config.annotation.NacosValue;
 import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.spring.context.annotation.EnableNacos;
@@ -50,7 +50,7 @@ import static com.alibaba.nacos.spring.test.NacosConfigHttpHandler.*;
  * @author <a href="mailto:huangxiaoyu1018@gmail.com">hxy1018</a>
  * @see NacosPropertySource
  * @see Value
- * @since 0.2.0
+ * @since 0.1.0
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {

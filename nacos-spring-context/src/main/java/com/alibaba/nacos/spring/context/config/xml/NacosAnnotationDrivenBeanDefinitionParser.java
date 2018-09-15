@@ -29,7 +29,7 @@ import org.w3c.dom.Element;
  *
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
  * @see BeanDefinitionParser
- * @since 0.2.0
+ * @since 0.1.0
  */
 public class NacosAnnotationDrivenBeanDefinitionParser implements BeanDefinitionParser {
 

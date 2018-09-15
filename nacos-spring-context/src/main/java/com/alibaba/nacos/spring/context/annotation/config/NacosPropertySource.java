@@ -16,8 +16,8 @@
  */
 package com.alibaba.nacos.spring.context.annotation.config;
 
+import com.alibaba.nacos.api.annotation.NacosProperties;
 import com.alibaba.nacos.api.common.Constants;
-import com.alibaba.nacos.api.config.annotation.NacosProperties;
 import com.alibaba.nacos.spring.context.annotation.EnableNacos;
 import com.alibaba.nacos.spring.util.NacosUtils;
 import org.springframework.core.env.PropertySource;
@@ -35,7 +35,7 @@ import static com.alibaba.nacos.spring.util.NacosUtils.DEFAULT_STRING_ATTRIBUTE_
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
  * @see PropertySource
  * @see org.springframework.context.annotation.PropertySource
- * @since 0.2.0
+ * @since 0.1.0
  */
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)

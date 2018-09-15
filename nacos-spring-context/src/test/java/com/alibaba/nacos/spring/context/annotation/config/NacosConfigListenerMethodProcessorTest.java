@@ -16,8 +16,8 @@
  */
 package com.alibaba.nacos.spring.context.annotation.config;
 
+import com.alibaba.nacos.api.annotation.NacosInjected;
 import com.alibaba.nacos.api.config.ConfigService;
-import com.alibaba.nacos.api.config.annotation.NacosInjected;
 import com.alibaba.nacos.spring.beans.factory.annotation.AnnotationNacosInjectedBeanPostProcessor;
 import com.alibaba.nacos.spring.beans.factory.annotation.ConfigServiceBeanBuilder;
 import com.alibaba.nacos.spring.test.ListenersConfiguration;
@@ -34,7 +34,7 @@ import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.DATA_ID;
  * {@link NacosConfigListenerMethodProcessor} Test
  *
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
- * @since 0.2.0
+ * @since 0.1.0
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {

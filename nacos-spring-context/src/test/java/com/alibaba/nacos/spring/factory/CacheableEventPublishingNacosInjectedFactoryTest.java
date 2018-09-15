@@ -34,7 +34,7 @@ import java.util.Properties;
  * {@link CacheableEventPublishingNacosServiceFactory} Test
  *
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
- * @since 0.2.0
+ * @since 0.1.0
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {CacheableEventPublishingNacosServiceFactory.class})

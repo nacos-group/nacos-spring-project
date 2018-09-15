@@ -62,7 +62,7 @@ import static org.springframework.util.ObjectUtils.nullSafeEquals;
  * @see NacosPropertySourceXmlBeanDefinition
  * @see PropertySource
  * @see BeanDefinitionRegistryPostProcessor
- * @since 0.2.0
+ * @since 0.1.0
  */
 public class NacosPropertySourcePostProcessor implements BeanDefinitionRegistryPostProcessor, BeanFactoryPostProcessor,
         EnvironmentAware, Ordered, ApplicationEventPublisherAware {

@@ -16,8 +16,8 @@
  */
 package com.alibaba.nacos.spring.context.config.xml;
 
+import com.alibaba.nacos.api.annotation.NacosInjected;
 import com.alibaba.nacos.api.config.ConfigService;
-import com.alibaba.nacos.api.config.annotation.NacosInjected;
 import com.alibaba.nacos.spring.beans.factory.annotation.AnnotationNacosInjectedBeanPostProcessor;
 import com.alibaba.nacos.spring.context.annotation.config.NacosConfigListenerMethodProcessor;
 import com.alibaba.nacos.spring.context.properties.config.NacosConfigurationPropertiesBindingPostProcessor;
@@ -41,7 +41,7 @@ import java.util.Properties;
  *
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
  * @see NacosNamespaceHandler
- * @since 0.2.0
+ * @since 0.1.0
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {

@@ -16,8 +16,8 @@
  */
 package com.alibaba.nacos.spring.beans.factory.annotation;
 
-import com.alibaba.nacos.api.config.annotation.NacosInjected;
-import com.alibaba.nacos.api.config.annotation.NacosProperties;
+import com.alibaba.nacos.api.annotation.NacosInjected;
+import com.alibaba.nacos.api.annotation.NacosProperties;
 import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.spring.context.annotation.EnableNacos;
 import com.alibaba.nacos.spring.context.annotation.config.EnableNacosConfig;
@@ -41,7 +41,7 @@ import static java.lang.String.format;
  *
  * @param <S> Nacos Service type
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
- * @since 0.2.0
+ * @since 0.1.0
  */
 public abstract class AbstractNacosServiceBeanBuilder<S> implements BeanFactoryAware, EnvironmentAware {
 

@@ -16,7 +16,7 @@
  */
 package com.alibaba.nacos.spring.context.annotation.config;
 
-import com.alibaba.nacos.api.config.annotation.NacosProperties;
+import com.alibaba.nacos.api.annotation.NacosProperties;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.BeanFactory;
@@ -34,7 +34,7 @@ import static com.alibaba.nacos.spring.util.NacosBeanUtils.CONFIG_GLOBAL_NACOS_P
  * {@link NacosConfigBeanDefinitionRegistrar} Test
  *
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
- * @since 0.2.0
+ * @since 0.1.0
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = NacosConfigBeanDefinitionRegistrarTest.class)

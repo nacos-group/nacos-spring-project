@@ -16,8 +16,8 @@
  */
 package com.alibaba.nacos.spring.util;
 
-import com.alibaba.nacos.api.config.annotation.NacosInjected;
-import com.alibaba.nacos.api.config.annotation.NacosProperties;
+import com.alibaba.nacos.api.annotation.NacosInjected;
+import com.alibaba.nacos.api.annotation.NacosProperties;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.util.ReflectionUtils;
@@ -28,7 +28,7 @@ import java.lang.reflect.Field;
  * {@link NacosUtils} Test
  *
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
- * @since 0.2.0
+ * @since 0.1.0
  */
 public class NacosUtilsTest {
 

@@ -29,7 +29,7 @@ import static com.alibaba.nacos.spring.util.NacosUtils.toProperties;
  *
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
  * @see com.alibaba.nacos.spring.context.annotation.config.NacosPropertySource
- * @since 0.2.0
+ * @since 0.1.0
  */
 public class NacosPropertySource extends PropertiesPropertySource {
 

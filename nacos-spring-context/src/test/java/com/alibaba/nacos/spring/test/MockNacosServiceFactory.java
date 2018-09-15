@@ -33,7 +33,7 @@ import static com.alibaba.nacos.spring.util.NacosUtils.identify;
  * Mock {@link NacosServiceFactory}
  *
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
- * @since 0.2.0
+ * @since 0.1.0
  */
 public class MockNacosServiceFactory implements NacosServiceFactory {
 

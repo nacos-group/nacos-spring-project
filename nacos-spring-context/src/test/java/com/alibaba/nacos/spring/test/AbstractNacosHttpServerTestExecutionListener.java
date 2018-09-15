@@ -16,7 +16,7 @@
  */
 package com.alibaba.nacos.spring.test;
 
-import com.alibaba.nacos.api.config.annotation.NacosProperties;
+import com.alibaba.nacos.api.annotation.NacosProperties;
 import org.springframework.test.context.TestContext;
 import org.springframework.test.context.TestExecutionListener;
 import org.springframework.test.context.support.AbstractTestExecutionListener;
@@ -25,7 +25,7 @@ import org.springframework.test.context.support.AbstractTestExecutionListener;
  * Abstract Nacos HTTP Server {@link TestExecutionListener}
  *
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
- * @since 0.2.0
+ * @since 0.1.0
  */
 public abstract class AbstractNacosHttpServerTestExecutionListener extends AbstractTestExecutionListener {
 

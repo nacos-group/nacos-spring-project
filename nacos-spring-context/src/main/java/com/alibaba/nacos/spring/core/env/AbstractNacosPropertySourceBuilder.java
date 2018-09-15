@@ -45,7 +45,7 @@ import static java.lang.String.format;
  *
  * @param <T> The type of {@link BeanDefinition}
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
- * @since 0.2.0
+ * @since 0.1.0
  */
 public abstract class AbstractNacosPropertySourceBuilder<T extends BeanDefinition> implements EnvironmentAware,
         BeanFactoryAware, InitializingBean {

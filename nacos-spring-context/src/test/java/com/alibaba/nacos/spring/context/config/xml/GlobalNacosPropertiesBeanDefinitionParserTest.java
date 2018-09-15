@@ -16,8 +16,6 @@
  */
 package com.alibaba.nacos.spring.context.config.xml;
 
-import com.alibaba.nacos.spring.context.config.xml.GlobalNacosPropertiesBeanDefinitionParser;
-import com.alibaba.nacos.spring.context.config.xml.NacosNamespaceHandler;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -38,7 +36,7 @@ import static com.alibaba.nacos.spring.util.NacosBeanUtils.GLOBAL_NACOS_PROPERTI
  *
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
  * @see NacosNamespaceHandler
- * @since 0.2.0
+ * @since 0.1.0
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {

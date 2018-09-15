@@ -16,7 +16,7 @@
  */
 package com.alibaba.nacos.spring.util;
 
-import com.alibaba.nacos.api.config.annotation.NacosProperties;
+import com.alibaba.nacos.api.annotation.NacosProperties;
 import org.springframework.beans.factory.BeanFactory;
 
 import java.util.Map;
@@ -30,7 +30,7 @@ import static java.util.Collections.emptyMap;
  * The source enumeration of Global {@link NacosProperties}
  *
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
- * @since 0.2.0
+ * @since 0.1.0
  */
 public enum GlobalNacosPropertiesSource {
 
