@@ -26,6 +26,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
 
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -41,6 +42,11 @@ import static com.alibaba.nacos.spring.util.NacosUtils.identify;
  * @since 0.1.0
  */
 public class CacheableEventPublishingNacosServiceFactory implements NacosServiceFactory, ApplicationContextAware {
+
+    /**
+     * The bean name of {@link NacosServiceFactory}
+     */
+    public static final String BEAN_NAME = "nacosServiceFactory";
 
     private Map<String, ConfigService> configServicesCache = new LinkedHashMap<String, ConfigService>(2);
 
@@ -97,5 +103,23 @@ public class CacheableEventPublishingNacosServiceFactory implements NacosService
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.context = (ConfigurableApplicationContext) applicationContext;
         this.nacosConfigListenerExecutor = getNacosConfigListenerExecutor(applicationContext);
+    }
+
+    /**
+     * Get all instances of {@link ConfigService}
+     *
+     * @return read-only {@link Collection}
+     */
+    public Collection<ConfigService> getConfigServices() {
+        return configServicesCache.values();
+    }
+
+    /**
+     * Get all instances of {@link NamingService}
+     *
+     * @return read-only {@link Collection}
+     */
+    public Collection<NamingService> getNamingServices() {
+        return namingServicesCache.values();
     }
 }

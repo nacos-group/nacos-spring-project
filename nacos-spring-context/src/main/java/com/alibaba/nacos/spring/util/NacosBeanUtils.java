@@ -85,11 +85,6 @@ public abstract class NacosBeanUtils {
             "$discovery";
 
     /**
-     * The bean name of {@link NacosServiceFactory}
-     */
-    public static final String NACOS_SERVICE_FACTORY_BEAN_NAME = "nacosServiceFactory";
-
-    /**
      * The bean name of {@link Executor} for Nacos Config Listener
      */
     public static final String NACOS_CONFIG_LISTENER_EXECUTOR_BEAN_NAME = "nacosConfigListenerExecutor";
@@ -235,7 +230,8 @@ public abstract class NacosBeanUtils {
      * @param registry {@link BeanDefinitionRegistry}
      */
     public static void registerNacosServiceFactory(BeanDefinitionRegistry registry) {
-        registerInfrastructureBeanIfAbsent(registry, NACOS_SERVICE_FACTORY_BEAN_NAME, CacheableEventPublishingNacosServiceFactory.class);
+        registerInfrastructureBeanIfAbsent(registry, CacheableEventPublishingNacosServiceFactory.BEAN_NAME,
+                CacheableEventPublishingNacosServiceFactory.class);
     }
 
     public static void registerNacosConfigPropertiesBindingPostProcessor(BeanDefinitionRegistry registry) {
@@ -375,7 +371,7 @@ public abstract class NacosBeanUtils {
      * @throws NoSuchBeanDefinitionException if there is no such bean definition
      */
     public static NacosServiceFactory getNacosServiceFactoryBean(BeanFactory beanFactory) throws NoSuchBeanDefinitionException {
-        return beanFactory.getBean(NACOS_SERVICE_FACTORY_BEAN_NAME, NacosServiceFactory.class);
+        return beanFactory.getBean(CacheableEventPublishingNacosServiceFactory.BEAN_NAME, NacosServiceFactory.class);
     }
 
     /**
