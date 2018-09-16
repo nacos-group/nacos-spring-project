@@ -44,9 +44,9 @@ import static com.alibaba.nacos.spring.util.NacosBeanUtils.NACOS_CONFIG_LISTENER
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
         CacheableEventPublishingNacosServiceFactory.class,
-        CacheableEventPublishingNacosInjectedFactoryTest.class
+        CacheableEventPublishingNacosServiceFactoryTest.class
 })
-public class CacheableEventPublishingNacosInjectedFactoryTest {
+public class CacheableEventPublishingNacosServiceFactoryTest {
 
     @Bean(name = NACOS_CONFIG_LISTENER_EXECUTOR_BEAN_NAME)
     public static ExecutorService executorService() {
@@ -65,21 +65,34 @@ public class CacheableEventPublishingNacosInjectedFactoryTest {
 
     @Test
     public void testCreateConfigService() throws NacosException {
-
         ConfigService configService = nacosServiceFactory.createConfigService(properties);
         ConfigService configService2 = nacosServiceFactory.createConfigService(properties);
-
         Assert.assertTrue(configService == configService2);
-
     }
 
     @Test
     public void testCreateNamingService() throws NacosException {
-
         NamingService namingService = nacosServiceFactory.createNamingService(properties);
         NamingService namingService2 = nacosServiceFactory.createNamingService(properties);
-
         Assert.assertTrue(namingService == namingService2);
+    }
+
+    @Test
+    public void testGetConfigServices() throws NacosException {
+        ConfigService configService = nacosServiceFactory.createConfigService(properties);
+        ConfigService configService2 = nacosServiceFactory.createConfigService(properties);
+        Assert.assertTrue(configService == configService2);
+        Assert.assertEquals(1, nacosServiceFactory.getConfigServices().size());
+        Assert.assertEquals(configService, nacosServiceFactory.getConfigServices().iterator().next());
+    }
+
+    @Test
+    public void testGetNamingServices() throws NacosException {
+        NamingService namingService = nacosServiceFactory.createNamingService(properties);
+        NamingService namingService2 = nacosServiceFactory.createNamingService(properties);
+        Assert.assertTrue(namingService == namingService2);
+        Assert.assertEquals(1, nacosServiceFactory.getNamingServices().size());
+        Assert.assertEquals(namingService, nacosServiceFactory.getNamingServices().iterator().next());
     }
 
 }

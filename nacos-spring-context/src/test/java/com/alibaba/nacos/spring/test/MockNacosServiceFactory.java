@@ -22,9 +22,7 @@ import com.alibaba.nacos.api.naming.NamingService;
 import com.alibaba.nacos.spring.factory.NacosServiceFactory;
 import org.mockito.Mockito;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 import static com.alibaba.nacos.spring.util.NacosUtils.DEFAULT_TIMEOUT;
 import static com.alibaba.nacos.spring.util.NacosUtils.identify;
@@ -115,5 +113,15 @@ public class MockNacosServiceFactory implements NacosServiceFactory {
     @Override
     public NamingService createNamingService(Properties properties) throws NacosException {
         return Mockito.mock(NamingService.class);
+    }
+
+    @Override
+    public Collection<ConfigService> getConfigServices() {
+        return configServiceCache.values();
+    }
+
+    @Override
+    public Collection<NamingService> getNamingServices() {
+        return Collections.emptyList();
     }
 }

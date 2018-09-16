@@ -43,11 +43,6 @@ import static com.alibaba.nacos.spring.util.NacosUtils.identify;
  */
 public class CacheableEventPublishingNacosServiceFactory implements NacosServiceFactory, ApplicationContextAware {
 
-    /**
-     * The bean name of {@link NacosServiceFactory}
-     */
-    public static final String BEAN_NAME = "nacosServiceFactory";
-
     private Map<String, ConfigService> configServicesCache = new LinkedHashMap<String, ConfigService>(2);
 
     private Map<String, NamingService> namingServicesCache = new LinkedHashMap<String, NamingService>(2);
@@ -105,20 +100,12 @@ public class CacheableEventPublishingNacosServiceFactory implements NacosService
         this.nacosConfigListenerExecutor = getNacosConfigListenerExecutor(applicationContext);
     }
 
-    /**
-     * Get all instances of {@link ConfigService}
-     *
-     * @return read-only {@link Collection}
-     */
+    @Override
     public Collection<ConfigService> getConfigServices() {
         return configServicesCache.values();
     }
 
-    /**
-     * Get all instances of {@link NamingService}
-     *
-     * @return read-only {@link Collection}
-     */
+    @Override
     public Collection<NamingService> getNamingServices() {
         return namingServicesCache.values();
     }

@@ -21,6 +21,7 @@ import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.api.naming.NamingService;
 
+import java.util.Collection;
 import java.util.Properties;
 
 /**
@@ -31,6 +32,11 @@ import java.util.Properties;
  * @since 0.1.0
  */
 public interface NacosServiceFactory {
+
+    /**
+     * The bean name of {@link NacosServiceFactory}
+     */
+    String BEAN_NAME = "nacosServiceFactory";
 
     /**
      * Create {@link ConfigService} instance
@@ -52,5 +58,18 @@ public interface NacosServiceFactory {
      */
     NamingService createNamingService(Properties properties) throws NacosException;
 
+    /**
+     * Get all instances of {@link ConfigService}
+     *
+     * @return read-only {@link Collection}
+     */
+    Collection<ConfigService> getConfigServices();
+
+    /**
+     * Get all instances of {@link NamingService}
+     *
+     * @return read-only {@link Collection}
+     */
+    Collection<NamingService> getNamingServices();
 
 }
