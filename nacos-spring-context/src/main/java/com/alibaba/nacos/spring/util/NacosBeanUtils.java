@@ -393,4 +393,26 @@ public abstract class NacosBeanUtils {
         return beanFactory.getBean(NACOS_CONFIG_LISTENER_EXECUTOR_BEAN_NAME, ExecutorService.class);
     }
 
+    /**
+     * Get {@link ConfigServiceBeanBuilder} Bean
+     *
+     * @param beanFactory {@link BeanFactory}
+     * @return {@link ConfigServiceBeanBuilder} Bean
+     * @throws NoSuchBeanDefinitionException if there is no such bean definition
+     */
+    public static ConfigServiceBeanBuilder getConfigServiceBeanBuilder(BeanFactory beanFactory) throws NoSuchBeanDefinitionException {
+        return beanFactory.getBean(ConfigServiceBeanBuilder.BEAN_NAME, ConfigServiceBeanBuilder.class);
+    }
+
+    /**
+     * Get {@link NamingServiceBeanBuilder} Bean
+     *
+     * @param beanFactory {@link BeanFactory}
+     * @return {@link ConfigServiceBeanBuilder} Bean
+     * @throws NoSuchBeanDefinitionException if there is no such bean definition
+     */
+    public static NamingServiceBeanBuilder getNamingServiceBeanBuilder(BeanFactory beanFactory) throws NoSuchBeanDefinitionException {
+        return beanFactory.getBean(NamingServiceBeanBuilder.BEAN_NAME, NamingServiceBeanBuilder.class);
+    }
+
 }

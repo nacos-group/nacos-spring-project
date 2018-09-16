@@ -27,7 +27,6 @@ import org.springframework.util.ReflectionUtils;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.Collection;
 import java.util.Map;
 
 import static com.alibaba.nacos.spring.util.NacosUtils.resolveGenericType;
@@ -98,19 +97,19 @@ public abstract class AnnotationListenerMethodProcessor<A extends Annotation> im
 
         Map<String, Object> beansMap = applicationContext.getBeansOfType(Object.class);
 
-        Collection<Object> beans = beansMap.values();
-
-        processBeans(beans, applicationContext);
+        processBeans(beansMap, applicationContext);
 
     }
 
-    private void processBeans(Collection<Object> beans, ApplicationContext applicationContext) {
+    private void processBeans(Map<String, Object> beansMap, ApplicationContext applicationContext) {
 
-        for (Object bean : beans) {
+        for (Map.Entry<String, Object> entry : beansMap.entrySet()) {
+            String beanName = entry.getKey();
+            Object bean = entry.getValue();
             // Bean type
             if (bean != null) {
                 Class<?> beanClass = AopUtils.getTargetClass(bean);
-                processBean(bean, beanClass, applicationContext);
+                processBean(beanName, bean, beanClass, applicationContext);
             }
         }
 
@@ -119,18 +118,19 @@ public abstract class AnnotationListenerMethodProcessor<A extends Annotation> im
     /**
      * Select those methods from bean that annotated
      *
+     * @param beanName           Bean name
      * @param bean               Bean object
      * @param beanClass          the {@link Class} of Bean
      * @param applicationContext
      */
-    private void processBean(final Object bean, final Class<?> beanClass, final ApplicationContext applicationContext) {
+    private void processBean(final String beanName, final Object bean, final Class<?> beanClass, final ApplicationContext applicationContext) {
 
         ReflectionUtils.doWithMethods(beanClass, new ReflectionUtils.MethodCallback() {
             @Override
             public void doWith(Method method) throws IllegalArgumentException, IllegalAccessException {
                 A annotation = AnnotationUtils.getAnnotation(method, annotationType);
                 if (annotation != null && isCandidateMethod(bean, beanClass, annotation, method, applicationContext)) {
-                    processListenerMethod(bean, beanClass, annotation, method, applicationContext);
+                    processListenerMethod(beanName, bean, beanClass, annotation, method, applicationContext);
                 }
             }
 
@@ -146,13 +146,14 @@ public abstract class AnnotationListenerMethodProcessor<A extends Annotation> im
     /**
      * Process Listener Method when {@link #isCandidateMethod(Object, Class, Annotation, Method, ApplicationContext)} returns <code>true</code>
      *
+     * @param beanName           Bean name
      * @param bean               Bean object
      * @param beanClass          Bean Class
      * @param annotation         Annotation object
      * @param method             Method
      * @param applicationContext ApplicationContext
      */
-    protected abstract void processListenerMethod(Object bean, Class<?> beanClass, A annotation, Method method,
+    protected abstract void processListenerMethod(String beanName, Object bean, Class<?> beanClass, A annotation, Method method,
                                                   ApplicationContext applicationContext);
 
     /**

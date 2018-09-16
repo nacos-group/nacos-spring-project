@@ -17,6 +17,7 @@
 package com.alibaba.nacos.spring.core.env;
 
 import com.alibaba.nacos.spring.context.config.xml.NacosPropertySourceXmlBeanDefinition;
+import com.alibaba.nacos.spring.context.event.config.NacosConfigMetadataEvent;
 import org.springframework.beans.factory.xml.XmlReaderContext;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.io.Resource;
@@ -115,4 +116,16 @@ public class XmlNacosPropertySourceBuilder extends
         return attributeValue;
     }
 
+
+    @Override
+    protected NacosConfigMetadataEvent createMetaEvent(NacosPropertySource nacosPropertySource,
+                                                       NacosPropertySourceXmlBeanDefinition beanDefinition) {
+        return new NacosConfigMetadataEvent(beanDefinition.getElement());
+    }
+
+    @Override
+    protected void doInitMetadataEvent(NacosPropertySource nacosPropertySource,
+                                       NacosPropertySourceXmlBeanDefinition beanDefinition, NacosConfigMetadataEvent metadataEvent) {
+        metadataEvent.setXmlResource(beanDefinition.getXmlReaderContext().getResource());
+    }
 }

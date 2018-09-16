@@ -17,6 +17,7 @@
 package com.alibaba.nacos.spring.core.env;
 
 import com.alibaba.nacos.spring.context.annotation.config.NacosPropertySources;
+import com.alibaba.nacos.spring.context.event.config.NacosConfigMetadataEvent;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.core.type.AnnotationMetadata;
 
@@ -34,8 +35,7 @@ import static com.alibaba.nacos.spring.context.annotation.config.NacosPropertySo
  * @see AnnotatedBeanDefinition
  * @since 0.1.0
  */
-public class AnnotationNacosPropertySourceBuilder extends
-        AbstractNacosPropertySourceBuilder<AnnotatedBeanDefinition> {
+public class AnnotationNacosPropertySourceBuilder extends AbstractNacosPropertySourceBuilder<AnnotatedBeanDefinition> {
 
     /**
      * The bean name of {@link AnnotationNacosPropertySourceBuilder}
@@ -99,6 +99,18 @@ public class AnnotationNacosPropertySourceBuilder extends
         nacosPropertySource.setFirst(first);
         nacosPropertySource.setBefore(before);
         nacosPropertySource.setAfter(after);
+    }
+
+    @Override
+    protected NacosConfigMetadataEvent createMetaEvent(NacosPropertySource nacosPropertySource,
+                                                       AnnotatedBeanDefinition beanDefinition) {
+        return new NacosConfigMetadataEvent(beanDefinition.getMetadata());
+    }
+
+    @Override
+    protected void doInitMetadataEvent(NacosPropertySource nacosPropertySource, AnnotatedBeanDefinition beanDefinition,
+                                       NacosConfigMetadataEvent metadataEvent) {
+        metadataEvent.setAnnotatedElement(metadataEvent.getAnnotatedElement());
     }
 
 }

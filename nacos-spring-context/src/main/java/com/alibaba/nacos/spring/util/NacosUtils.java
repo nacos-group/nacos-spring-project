@@ -164,6 +164,9 @@ public abstract class NacosUtils {
         return records.isEmpty();
     }
 
+    public static Properties resolveProperties(NacosProperties nacosProperties, PropertyResolver propertyResolver) {
+        return resolveProperties(nacosProperties, propertyResolver, null);
+    }
 
     public static Properties resolveProperties(NacosProperties nacosProperties, PropertyResolver propertyResolver,
                                                Properties defaultProperties) {

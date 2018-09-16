@@ -16,22 +16,18 @@
  */
 package com.alibaba.nacos.spring.context.properties.config;
 
-import com.alibaba.nacos.api.annotation.NacosProperties;
-import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.config.annotation.NacosConfigurationProperties;
-import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.spring.factory.NacosServiceFactory;
-import com.alibaba.nacos.spring.util.NacosBeanUtils;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.context.*;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.Environment;
 
 import java.util.Properties;
 
-import static com.alibaba.nacos.spring.util.GlobalNacosPropertiesSource.CONFIG;
-import static com.alibaba.nacos.spring.util.NacosUtils.resolveProperties;
 import static org.springframework.core.annotation.AnnotationUtils.findAnnotation;
 
 /**
@@ -42,8 +38,7 @@ import static org.springframework.core.annotation.AnnotationUtils.findAnnotation
  * @see BeanPostProcessor
  * @since 0.1.0
  */
-public class NacosConfigurationPropertiesBindingPostProcessor implements BeanPostProcessor, ApplicationContextAware,
-        EnvironmentAware, ApplicationEventPublisherAware {
+public class NacosConfigurationPropertiesBindingPostProcessor implements BeanPostProcessor, ApplicationContextAware {
 
     /**
      * The name of {@link NacosConfigurationPropertiesBindingPostProcessor} Bean
@@ -57,6 +52,8 @@ public class NacosConfigurationPropertiesBindingPostProcessor implements BeanPos
     private Environment environment;
 
     private ApplicationEventPublisher applicationEventPublisher;
+
+    private ConfigurableApplicationContext applicationContext;
 
     @Override
     public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
@@ -72,32 +69,12 @@ public class NacosConfigurationPropertiesBindingPostProcessor implements BeanPos
 
     private void bind(Object bean, String beanName, NacosConfigurationProperties nacosConfigurationProperties) {
 
-        ConfigService configService = resolveConfigService(nacosConfigurationProperties);
-
-        NacosConfigurationPropertiesBinder binder =
-                new NacosConfigurationPropertiesBinder(configService, applicationEventPublisher);
+        NacosConfigurationPropertiesBinder binder = new NacosConfigurationPropertiesBinder(applicationContext);
 
         binder.bind(bean, beanName, nacosConfigurationProperties);
 
     }
 
-    private ConfigService resolveConfigService(NacosConfigurationProperties nacosConfigurationProperties)
-            throws BeansException {
-
-        NacosProperties nacosProperties = nacosConfigurationProperties.properties();
-
-        Properties properties = resolveProperties(nacosProperties, environment, globalNacosProperties);
-
-        ConfigService configService = null;
-
-        try {
-            configService = nacosServiceFactory.createConfigService(properties);
-        } catch (NacosException e) {
-            throw new BeanCreationException(e.getErrMsg(), e);
-        }
-
-        return configService;
-    }
 
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
@@ -106,17 +83,6 @@ public class NacosConfigurationPropertiesBindingPostProcessor implements BeanPos
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        globalNacosProperties = CONFIG.getMergedGlobalProperties(applicationContext);
-        nacosServiceFactory = NacosBeanUtils.getNacosServiceFactoryBean(applicationContext);
-    }
-
-    @Override
-    public void setEnvironment(Environment environment) {
-        this.environment = environment;
-    }
-
-    @Override
-    public void setApplicationEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
-        this.applicationEventPublisher = applicationEventPublisher;
+        this.applicationContext = (ConfigurableApplicationContext) applicationContext;
     }
 }

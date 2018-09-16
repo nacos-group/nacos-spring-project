@@ -19,9 +19,9 @@ package com.alibaba.nacos.spring.core.env;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.config.listener.AbstractListener;
 import com.alibaba.nacos.api.exception.NacosException;
+import com.alibaba.nacos.spring.beans.factory.annotation.ConfigServiceBeanBuilder;
 import com.alibaba.nacos.spring.context.annotation.config.NacosPropertySources;
 import com.alibaba.nacos.spring.context.config.xml.NacosPropertySourceXmlBeanDefinition;
-import com.alibaba.nacos.spring.factory.NacosServiceFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
@@ -37,12 +37,13 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySources;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
-import static com.alibaba.nacos.spring.util.GlobalNacosPropertiesSource.CONFIG;
-import static com.alibaba.nacos.spring.util.NacosBeanUtils.getNacosServiceFactoryBean;
+import static com.alibaba.nacos.spring.util.NacosBeanUtils.getConfigServiceBeanBuilder;
 import static com.alibaba.nacos.spring.util.NacosUtils.DEFAULT_STRING_ATTRIBUTE_VALUE;
-import static com.alibaba.nacos.spring.util.NacosUtils.resolveProperties;
 import static org.springframework.util.ObjectUtils.nullSafeEquals;
 
 /**
@@ -70,11 +71,9 @@ public class NacosPropertySourcePostProcessor implements BeanDefinitionRegistryP
 
     private ConfigurableEnvironment environment;
 
-    private Properties globalNacosProperties;
-
-    private NacosServiceFactory nacosServiceFactory;
-
     private Collection<AbstractNacosPropertySourceBuilder> nacosPropertySourceBuilders;
+
+    private ConfigServiceBeanBuilder configServiceBeanBuilder;
 
     @Override
     public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
@@ -84,8 +83,7 @@ public class NacosPropertySourcePostProcessor implements BeanDefinitionRegistryP
     public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
 
         this.nacosPropertySourceBuilders = beanFactory.getBeansOfType(AbstractNacosPropertySourceBuilder.class).values();
-        this.globalNacosProperties = CONFIG.getMergedGlobalProperties(beanFactory);
-        this.nacosServiceFactory = getNacosServiceFactoryBean(beanFactory);
+        this.configServiceBeanBuilder = getConfigServiceBeanBuilder(beanFactory);
 
         String[] beanNames = beanFactory.getBeanDefinitionNames();
 
@@ -99,7 +97,7 @@ public class NacosPropertySourcePostProcessor implements BeanDefinitionRegistryP
 
         BeanDefinition beanDefinition = beanFactory.getBeanDefinition(beanName);
         // Build multiple instance if possible
-        List<NacosPropertySource> nacosPropertySources = buildNacosPropertySources(beanDefinition);
+        List<NacosPropertySource> nacosPropertySources = buildNacosPropertySources(beanName, beanDefinition);
 
         // Add Orderly
         for (NacosPropertySource nacosPropertySource : nacosPropertySources) {
@@ -109,10 +107,10 @@ public class NacosPropertySourcePostProcessor implements BeanDefinitionRegistryP
 
     }
 
-    private List<NacosPropertySource> buildNacosPropertySources(BeanDefinition beanDefinition) {
+    private List<NacosPropertySource> buildNacosPropertySources(String beanName, BeanDefinition beanDefinition) {
         for (AbstractNacosPropertySourceBuilder builder : nacosPropertySourceBuilders) {
             if (builder.supports(beanDefinition)) {
-                return builder.build(beanDefinition);
+                return builder.build(beanName, beanDefinition);
             }
         }
         return Collections.emptyList();
@@ -153,10 +151,10 @@ public class NacosPropertySourcePostProcessor implements BeanDefinitionRegistryP
 
         final String dataId = nacosPropertySource.getDataId();
         final String groupId = nacosPropertySource.getGroupId();
-        final Map<String, Object> properties = nacosPropertySource.getProperties();
-        Properties nacosProperties = resolveProperties(properties, environment, globalNacosProperties);
+        final Map<String, Object> nacosPropertiesAttributes = nacosPropertySource.getAttributesMetadata();
+        final ConfigService configService = configServiceBeanBuilder.build(nacosPropertiesAttributes);
+
         try {
-            final ConfigService configService = nacosServiceFactory.createConfigService(nacosProperties);
             configService.addListener(dataId, groupId, new AbstractListener() {
 
                 @Override
@@ -170,7 +168,7 @@ public class NacosPropertySourcePostProcessor implements BeanDefinitionRegistryP
                 }
             });
         } catch (NacosException e) {
-            throw new RuntimeException("ConfigService can't add Listener with properties : " + nacosProperties, e);
+            throw new RuntimeException("ConfigService can't add Listener with properties : " + nacosPropertiesAttributes, e);
         }
     }
 

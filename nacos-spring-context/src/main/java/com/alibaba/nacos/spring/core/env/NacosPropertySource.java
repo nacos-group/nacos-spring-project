@@ -19,6 +19,7 @@ package com.alibaba.nacos.spring.core.env;
 import org.springframework.core.env.PropertiesPropertySource;
 import org.springframework.core.env.PropertySource;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
 
@@ -45,11 +46,15 @@ public class NacosPropertySource extends PropertiesPropertySource {
 
     private String after;
 
-    private Map<String, Object> properties;
+    private Properties properties;
 
     private Map<String, Object> attributesMetadata;
 
     private Object origin;
+
+    private String beanName;
+
+    private Class<?> beanType;
 
     /**
      * @param name        the name of Nacos {@link PropertySource}
@@ -107,11 +112,11 @@ public class NacosPropertySource extends PropertiesPropertySource {
         this.after = after;
     }
 
-    public Map<String, Object> getProperties() {
+    public Properties getProperties() {
         return properties;
     }
 
-    public void setProperties(Map<String, Object> properties) {
+    public void setProperties(Properties properties) {
         this.properties = properties;
     }
 
@@ -137,7 +142,7 @@ public class NacosPropertySource extends PropertiesPropertySource {
      * or &lt;nacos:property-source ... &gt;
      */
     public Map<String, Object> getAttributesMetadata() {
-        return attributesMetadata;
+        return attributesMetadata != null ? attributesMetadata : Collections.<String, Object>emptyMap();
     }
 
     /**
@@ -145,6 +150,22 @@ public class NacosPropertySource extends PropertiesPropertySource {
      */
     public Object getOrigin() {
         return origin;
+    }
+
+    public String getBeanName() {
+        return beanName;
+    }
+
+    public void setBeanName(String beanName) {
+        this.beanName = beanName;
+    }
+
+    public Class<?> getBeanType() {
+        return beanType;
+    }
+
+    public void setBeanType(Class<?> beanType) {
+        this.beanType = beanType;
     }
 
     protected void copy(NacosPropertySource original) {
@@ -157,5 +178,7 @@ public class NacosPropertySource extends PropertiesPropertySource {
         this.properties = original.properties;
         this.attributesMetadata = original.attributesMetadata;
         this.origin = original.origin;
+        this.beanName = original.beanName;
+        this.beanType = original.beanType;
     }
 }

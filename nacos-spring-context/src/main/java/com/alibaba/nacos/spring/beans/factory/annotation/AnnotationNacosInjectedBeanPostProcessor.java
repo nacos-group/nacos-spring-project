@@ -89,7 +89,7 @@ public class AnnotationNacosInjectedBeanPostProcessor extends AnnotationInjected
 
         AbstractNacosServiceBeanBuilder serviceBeanBuilder = nacosServiceBeanBuilderMap.get(injectedType);
 
-        return serviceBeanBuilder.build(annotation);
+        return serviceBeanBuilder.build(annotation.properties());
 
     }
 
@@ -107,7 +107,7 @@ public class AnnotationNacosInjectedBeanPostProcessor extends AnnotationInjected
                             nacosServiceBeanBuilderMap.keySet(), injectedType, injectedElement.getMember()));
         }
 
-        Properties properties = serviceBeanBuilder.resolveProperties(annotation);
+        Properties properties = serviceBeanBuilder.resolveProperties(annotation.properties());
 
         keyBuilder.append(properties);
 

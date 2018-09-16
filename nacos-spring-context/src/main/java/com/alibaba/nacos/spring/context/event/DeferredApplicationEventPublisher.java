@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.alibaba.nacos.spring.context.event.config;
+package com.alibaba.nacos.spring.context.event;
 
 import org.springframework.context.*;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -34,13 +34,13 @@ import java.util.List;
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
  * @since 0.1.0
  */
-class DeferredApplicationEventPublisher implements ApplicationEventPublisher, ApplicationListener<ContextRefreshedEvent> {
+public class DeferredApplicationEventPublisher implements ApplicationEventPublisher, ApplicationListener<ContextRefreshedEvent> {
 
     private final ConfigurableApplicationContext context;
 
     private final List<ApplicationEvent> deferredEvents = new LinkedList<ApplicationEvent>();
 
-    DeferredApplicationEventPublisher(ConfigurableApplicationContext context) {
+    public DeferredApplicationEventPublisher(ConfigurableApplicationContext context) {
         this.context = context;
         this.context.addApplicationListener(this);
     }

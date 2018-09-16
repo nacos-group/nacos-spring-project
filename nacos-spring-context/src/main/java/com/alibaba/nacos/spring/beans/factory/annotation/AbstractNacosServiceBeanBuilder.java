@@ -16,11 +16,8 @@
  */
 package com.alibaba.nacos.spring.beans.factory.annotation;
 
-import com.alibaba.nacos.api.annotation.NacosInjected;
 import com.alibaba.nacos.api.annotation.NacosProperties;
 import com.alibaba.nacos.api.exception.NacosException;
-import com.alibaba.nacos.spring.context.annotation.EnableNacos;
-import com.alibaba.nacos.spring.context.annotation.config.EnableNacosConfig;
 import com.alibaba.nacos.spring.factory.NacosServiceFactory;
 import com.alibaba.nacos.spring.util.GlobalNacosPropertiesSource;
 import com.alibaba.nacos.spring.util.NacosUtils;
@@ -30,11 +27,13 @@ import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
 
+import java.util.Map;
 import java.util.Properties;
 
 import static com.alibaba.nacos.spring.util.NacosBeanUtils.getNacosServiceFactoryBean;
 import static com.alibaba.spring.util.ClassUtils.resolveGenericType;
 import static java.lang.String.format;
+import static org.springframework.core.annotation.AnnotationUtils.getAnnotationAttributes;
 
 /**
  * Abstract Nacos Service Bean Builder
@@ -58,20 +57,26 @@ public abstract class AbstractNacosServiceBeanBuilder<S> implements BeanFactoryA
         this.source = source;
     }
 
-    public S build(NacosInjected nacosInjected) throws NacosException {
+    public S build(NacosProperties nacosProperties) {
+        return build(getAnnotationAttributes(nacosProperties));
+    }
+
+    public S build(Map<String, Object> nacosPropertiesAttributes) {
 
         NacosServiceFactory nacosServiceFactory = getNacosServiceFactoryBean(beanFactory);
-        Properties properties = resolveProperties(nacosInjected);
+        Properties properties = resolveProperties(nacosPropertiesAttributes);
 
         if (properties.isEmpty()) {
             throw new BeanCreationException(
-                    format("The globalProperties() attribute that must be configured from @%s , @%s or @%s",
-                            NacosInjected.class.getSimpleName(),
-                            EnableNacosConfig.class.getSimpleName(),
-                            EnableNacos.class.getSimpleName()));
+                    format("The @%s attributes must be configured",
+                            NacosProperties.class.getSimpleName()));
         }
 
-        return createService(nacosServiceFactory, properties);
+        try {
+            return createService(nacosServiceFactory, properties);
+        } catch (NacosException e) {
+            throw new BeanCreationException(e.getErrMsg(), e);
+        }
     }
 
     /**
@@ -84,10 +89,26 @@ public abstract class AbstractNacosServiceBeanBuilder<S> implements BeanFactoryA
      */
     protected abstract S createService(NacosServiceFactory nacosServiceFactory, Properties properties) throws NacosException;
 
-    final Properties resolveProperties(NacosInjected nacosInjected) {
-        NacosProperties nacosProperties = nacosInjected.properties();
+    /**
+     * Resolve Nacos {@link Properties} from {@link NacosProperties @NacosProperties}
+     *
+     * @param nacosProperties {@link NacosProperties @NacosProperties}
+     * @return non-null
+     */
+    public final Properties resolveProperties(NacosProperties nacosProperties) {
         Properties globalNacosProperties = resolveGlobalNacosProperties();
         return NacosUtils.resolveProperties(nacosProperties, environment, globalNacosProperties);
+    }
+
+    /**
+     * Resolve Nacos {@link Properties} from {@link NacosProperties @NacosProperties}
+     *
+     * @param nacosPropertiesAttributes {@link NacosProperties Nacos Properties}'s attributes
+     * @return non-null
+     */
+    public final Properties resolveProperties(Map<String, Object> nacosPropertiesAttributes) {
+        Properties globalNacosProperties = resolveGlobalNacosProperties();
+        return NacosUtils.resolveProperties(nacosPropertiesAttributes, environment, globalNacosProperties);
     }
 
     private Properties resolveGlobalNacosProperties() {

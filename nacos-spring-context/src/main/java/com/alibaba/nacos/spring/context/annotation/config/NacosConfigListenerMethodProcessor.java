@@ -21,27 +21,31 @@ import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.config.annotation.NacosConfigListener;
 import com.alibaba.nacos.api.config.convert.NacosConfigConverter;
 import com.alibaba.nacos.api.exception.NacosException;
+import com.alibaba.nacos.spring.beans.factory.annotation.ConfigServiceBeanBuilder;
 import com.alibaba.nacos.spring.context.event.AnnotationListenerMethodProcessor;
+import com.alibaba.nacos.spring.context.event.config.NacosConfigMetadataEvent;
 import com.alibaba.nacos.spring.context.event.config.TimeoutNacosConfigListener;
 import com.alibaba.nacos.spring.convert.converter.config.DefaultNacosConfigConverter;
 import com.alibaba.nacos.spring.factory.NacosServiceFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanCreationException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.*;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.core.env.Environment;
 import org.springframework.format.support.DefaultFormattingConversionService;
 import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Method;
+import java.util.Map;
 import java.util.Properties;
 
 import static com.alibaba.nacos.spring.util.GlobalNacosPropertiesSource.CONFIG;
+import static com.alibaba.nacos.spring.util.NacosBeanUtils.getConfigServiceBeanBuilder;
 import static com.alibaba.nacos.spring.util.NacosBeanUtils.getNacosServiceFactoryBean;
-import static com.alibaba.nacos.spring.util.NacosUtils.resolveProperties;
 import static org.springframework.beans.BeanUtils.instantiateClass;
+import static org.springframework.core.annotation.AnnotationUtils.getAnnotationAttributes;
 
 /**
  * {@link NacosConfigListener @NacosConfigListener} {@link Method method} Processor
@@ -53,7 +57,7 @@ import static org.springframework.beans.BeanUtils.instantiateClass;
  * @since 0.1.0
  */
 public class NacosConfigListenerMethodProcessor extends AnnotationListenerMethodProcessor<NacosConfigListener>
-        implements ApplicationContextAware {
+        implements ApplicationContextAware, ApplicationEventPublisherAware, EnvironmentAware {
 
     /**
      * The bean name of {@link NacosConfigListenerMethodProcessor}
@@ -71,9 +75,16 @@ public class NacosConfigListenerMethodProcessor extends AnnotationListenerMethod
 
     private ConversionService conversionService;
 
+    private ConfigServiceBeanBuilder configServiceBeanBuilder;
+
+    private Environment environment;
+
+    private ApplicationEventPublisher applicationEventPublisher;
+
     @Override
-    protected void processListenerMethod(final Object bean, Class<?> beanClass, final NacosConfigListener listener,
-                                         final Method method, ApplicationContext applicationContext) {
+    protected void processListenerMethod(String beanName, final Object bean, Class<?> beanClass,
+                                         final NacosConfigListener listener, final Method method,
+                                         ApplicationContext applicationContext) {
 
         String dataId = listener.dataId();
         String groupId = listener.groupId();
@@ -83,9 +94,10 @@ public class NacosConfigListenerMethodProcessor extends AnnotationListenerMethod
         Assert.isTrue(StringUtils.hasText(groupId), "groupId must have content");
         Assert.isTrue(timeout > 0, "timeout must be greater than zero");
 
-        ConfigService configService = resolveConfigService(listener, applicationContext);
+        ConfigService configService = configServiceBeanBuilder.build(listener.properties());
 
         try {
+
             configService.addListener(dataId, groupId, new TimeoutNacosConfigListener(dataId, groupId, timeout) {
 
                 @Override
@@ -103,19 +115,44 @@ public class NacosConfigListenerMethodProcessor extends AnnotationListenerMethod
             }
         }
 
+        publishMetadataEvent(beanName, bean, beanClass, dataId, groupId, listener, method);
+
     }
 
-    private ConfigService resolveConfigService(NacosConfigListener listener, ApplicationContext applicationContext)
-            throws BeansException {
+    private void publishMetadataEvent(String beanName, Object bean, Class<?> beanClass, String dataId, String groupId,
+                                      NacosConfigListener listener, Method method) {
 
         NacosProperties nacosProperties = listener.properties();
 
-        Properties properties = resolveProperties(nacosProperties, applicationContext.getEnvironment(), globalNacosProperties);
+        Properties resolvedNacosProperties = configServiceBeanBuilder.resolveProperties(nacosProperties);
+
+        NacosConfigMetadataEvent metadataEvent = new NacosConfigMetadataEvent(listener);
+
+        // Nacos Metadata
+        metadataEvent.setDataId(dataId);
+        metadataEvent.setGroupId(groupId);
+
+        Map<String, Object> nacosPropertiesAttributes = getAnnotationAttributes(nacosProperties);
+        metadataEvent.setNacosPropertiesAttributes(nacosPropertiesAttributes);
+        metadataEvent.setNacosProperties(resolvedNacosProperties);
+
+        // Bean Metadata
+        metadataEvent.setBeanName(beanName);
+        metadataEvent.setBean(bean);
+        metadataEvent.setBeanType(beanClass);
+        metadataEvent.setAnnotatedElement(method);
+
+        // Publish event
+        applicationEventPublisher.publishEvent(metadataEvent);
+    }
+
+    private ConfigService resolveConfigService(Properties nacosProperties, ApplicationContext applicationContext)
+            throws BeansException {
 
         ConfigService configService = null;
 
         try {
-            configService = nacosServiceFactory.createConfigService(properties);
+            configService = nacosServiceFactory.createConfigService(nacosProperties);
         } catch (NacosException e) {
             throw new BeanCreationException(e.getErrMsg(), e);
         }
@@ -174,6 +211,7 @@ public class NacosConfigListenerMethodProcessor extends AnnotationListenerMethod
         globalNacosProperties = CONFIG.getMergedGlobalProperties(applicationContext);
         nacosServiceFactory = getNacosServiceFactoryBean(applicationContext);
         conversionService = determineConversionService(applicationContext);
+        configServiceBeanBuilder = getConfigServiceBeanBuilder(applicationContext);
     }
 
     private ConversionService determineConversionService(ApplicationContext applicationContext) {
@@ -190,4 +228,13 @@ public class NacosConfigListenerMethodProcessor extends AnnotationListenerMethod
         return conversionService;
     }
 
+    @Override
+    public void setApplicationEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
+        this.applicationEventPublisher = applicationEventPublisher;
+    }
+
+    @Override
+    public void setEnvironment(Environment environment) {
+        this.environment = environment;
+    }
 }

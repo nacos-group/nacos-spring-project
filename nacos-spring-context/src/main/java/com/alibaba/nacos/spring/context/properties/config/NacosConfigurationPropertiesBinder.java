@@ -16,30 +16,36 @@
  */
 package com.alibaba.nacos.spring.context.properties.config;
 
+import com.alibaba.nacos.api.annotation.NacosProperties;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.config.annotation.NacosConfigurationProperties;
 import com.alibaba.nacos.api.config.annotation.NacosIgnore;
 import com.alibaba.nacos.api.config.annotation.NacosProperty;
 import com.alibaba.nacos.api.config.listener.AbstractListener;
 import com.alibaba.nacos.api.exception.NacosException;
+import com.alibaba.nacos.spring.beans.factory.annotation.ConfigServiceBeanBuilder;
 import com.alibaba.nacos.spring.context.event.config.NacosConfigEvent;
+import com.alibaba.nacos.spring.context.event.config.NacosConfigMetadataEvent;
 import com.alibaba.nacos.spring.context.event.config.NacosConfigurationPropertiesBeanBoundEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.PropertyValues;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.core.env.Environment;
 import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.validation.DataBinder;
 
 import java.lang.reflect.Field;
+import java.util.Map;
 import java.util.Properties;
 
+import static com.alibaba.nacos.spring.util.NacosBeanUtils.getConfigServiceBeanBuilder;
 import static com.alibaba.nacos.spring.util.NacosUtils.getContent;
 import static com.alibaba.nacos.spring.util.NacosUtils.toProperties;
-import static org.springframework.core.annotation.AnnotationUtils.findAnnotation;
-import static org.springframework.core.annotation.AnnotationUtils.getAnnotation;
+import static org.springframework.core.annotation.AnnotationUtils.*;
 import static org.springframework.util.StringUtils.hasText;
 
 /**
@@ -52,14 +58,20 @@ class NacosConfigurationPropertiesBinder {
 
     private static final Logger logger = LoggerFactory.getLogger(NacosConfigurationPropertiesBinder.class);
 
-    private final ConfigService configService;
+    private final ConfigurableApplicationContext applicationContext;
+
+    private final Environment environment;
 
     private final ApplicationEventPublisher applicationEventPublisher;
 
-    NacosConfigurationPropertiesBinder(ConfigService configService, ApplicationEventPublisher applicationEventPublisher) {
-        this.applicationEventPublisher = applicationEventPublisher;
-        Assert.notNull(configService, "ConfigService must not be null!");
-        this.configService = configService;
+    private final ConfigServiceBeanBuilder configServiceBeanBuilder;
+
+    NacosConfigurationPropertiesBinder(ConfigurableApplicationContext applicationContext) {
+        Assert.notNull(applicationContext, "ConfigurableApplicationContext must not be null!");
+        this.applicationContext = applicationContext;
+        this.environment = applicationContext.getEnvironment();
+        this.applicationEventPublisher = applicationContext;
+        this.configServiceBeanBuilder = getConfigServiceBeanBuilder(applicationContext);
     }
 
     protected void bind(Object bean, String beanName) {
@@ -80,13 +92,15 @@ class NacosConfigurationPropertiesBinder {
 
         final String groupId = properties.groupId();
 
+        final ConfigService configService = configServiceBeanBuilder.build(properties.properties());
+
         if (properties.autoRefreshed()) { // Add a Listener if auto-refreshed
 
             try {
                 configService.addListener(dataId, groupId, new AbstractListener() {
                     @Override
                     public void receiveConfigInfo(String config) {
-                        doBind(bean, beanName, dataId, groupId, properties, config);
+                        doBind(bean, beanName, dataId, groupId, properties, config, configService);
                     }
                 });
             } catch (NacosException e) {
@@ -99,19 +113,46 @@ class NacosConfigurationPropertiesBinder {
         String content = getContent(configService, dataId, groupId);
 
         if (hasText(content)) {
-            doBind(bean, beanName, dataId, groupId, properties, content);
+            doBind(bean, beanName, dataId, groupId, properties, content, configService);
         }
     }
 
     private void doBind(Object bean, String beanName, String dataId, String groupId,
-                        NacosConfigurationProperties properties, String content) {
+                        NacosConfigurationProperties properties, String content, ConfigService configService) {
         PropertyValues propertyValues = resolvePropertyValues(bean, content);
         doBind(bean, properties, propertyValues);
-        publishBoundEvent(bean, beanName, dataId, groupId, properties, content);
+        publishBoundEvent(bean, beanName, dataId, groupId, properties, content, configService);
+        publishMetadataEvent(bean, beanName, dataId, groupId, properties);
+    }
+
+    private void publishMetadataEvent(Object bean, String beanName, String dataId, String groupId,
+                                      NacosConfigurationProperties properties) {
+
+        NacosProperties nacosProperties = properties.properties();
+
+        NacosConfigMetadataEvent metadataEvent = new NacosConfigMetadataEvent(properties);
+
+        // Nacos Metadata
+        metadataEvent.setDataId(dataId);
+        metadataEvent.setGroupId(groupId);
+        Properties resolvedNacosProperties = configServiceBeanBuilder.resolveProperties(nacosProperties);
+        Map<String, Object> nacosPropertiesAttributes = getAnnotationAttributes(nacosProperties);
+        metadataEvent.setNacosPropertiesAttributes(nacosPropertiesAttributes);
+        metadataEvent.setNacosProperties(resolvedNacosProperties);
+
+        // Bean Metadata
+        Class<?> beanClass = bean.getClass();
+        metadataEvent.setBeanName(beanName);
+        metadataEvent.setBean(bean);
+        metadataEvent.setBeanType(beanClass);
+        metadataEvent.setAnnotatedElement(beanClass);
+
+        // Publish event
+        applicationEventPublisher.publishEvent(metadataEvent);
     }
 
     private void publishBoundEvent(Object bean, String beanName, String dataId, String groupId,
-                                   NacosConfigurationProperties properties, String content) {
+                                   NacosConfigurationProperties properties, String content, ConfigService configService) {
         NacosConfigEvent event = new NacosConfigurationPropertiesBeanBoundEvent(configService, dataId, groupId, bean,
                 beanName, properties, content);
         applicationEventPublisher.publishEvent(event);
