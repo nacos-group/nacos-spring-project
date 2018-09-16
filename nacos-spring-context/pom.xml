@@ -37,6 +37,14 @@
             <version>1.0.1</version>
         </dependency>
 
+        <!-- Testing -->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>nacos-embedded-webserver</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>

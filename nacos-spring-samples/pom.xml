@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>nacos-spring-parent</artifactId>
+        <groupId>com.alibaba.nacos</groupId>
+        <version>0.1.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.alibaba.nacos</groupId>
+    <artifactId>nacos-spring-samples</artifactId>
+    <packaging>pom</packaging>
+    <name>Alibaba Nacos :: Spring Samples POM Project :: ${version}</name>
+
+    <modules>
+        <module>nacos-embedded-webserver</module>
+        <module>nacos-spring-webmvc-sample</module>
+    </modules>
+
+    <properties>
+        <servlet-api.version>3.0</servlet-api.version>
+    </properties>
+
+    <dependencyManagement>
+
+        <dependencies>
+
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-webmvc</artifactId>
+                <version>${spring.framework.version}</version>
+            </dependency>
+
+        </dependencies>
+
+    </dependencyManagement>
+
+</project>

@@ -16,8 +16,8 @@
  */
 package com.alibaba.nacos.spring.context.config.xml;
 
+import com.alibaba.nacos.embedded.web.server.EmbeddedNacosHttpServer;
 import com.alibaba.nacos.spring.test.AbstractNacosHttpServerTestExecutionListener;
-import com.alibaba.nacos.spring.test.EmbeddedNacosHttpServer;
 import com.alibaba.nacos.spring.test.User;
 import org.junit.Assert;
 import org.junit.Test;
@@ -34,7 +34,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.alibaba.nacos.api.common.Constants.DEFAULT_GROUP;
-import static com.alibaba.nacos.spring.test.NacosConfigHttpHandler.*;
+import static com.alibaba.nacos.embedded.web.server.NacosConfigHttpHandler.*;
 
 /**
  * {@link NacosPropertySourceBeanDefinitionParser} Test

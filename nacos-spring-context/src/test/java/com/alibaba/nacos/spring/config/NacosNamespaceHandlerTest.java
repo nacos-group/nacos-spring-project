@@ -18,11 +18,11 @@ package com.alibaba.nacos.spring.config;
 
 import com.alibaba.nacos.api.annotation.NacosInjected;
 import com.alibaba.nacos.api.config.ConfigService;
+import com.alibaba.nacos.embedded.web.server.EmbeddedNacosHttpServer;
 import com.alibaba.nacos.spring.context.config.xml.GlobalNacosPropertiesBeanDefinitionParser;
 import com.alibaba.nacos.spring.context.config.xml.NacosAnnotationDrivenBeanDefinitionParser;
 import com.alibaba.nacos.spring.context.config.xml.NacosNamespaceHandler;
 import com.alibaba.nacos.spring.test.AbstractNacosHttpServerTestExecutionListener;
-import com.alibaba.nacos.spring.test.EmbeddedNacosHttpServer;
 import com.alibaba.nacos.spring.test.User;
 import org.junit.Assert;
 import org.junit.Test;
@@ -39,8 +39,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.alibaba.nacos.api.common.Constants.DEFAULT_GROUP;
+import static com.alibaba.nacos.embedded.web.server.NacosConfigHttpHandler.*;
 import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.DATA_ID;
-import static com.alibaba.nacos.spring.test.NacosConfigHttpHandler.*;
 
 /**
  * {@link NacosNamespaceHandler} Test

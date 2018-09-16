@@ -14,10 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.alibaba.nacos.spring.test;
+package com.alibaba.nacos.embedded.web.server;
 
-import com.alibaba.nacos.api.NacosFactory;
-import com.alibaba.nacos.api.config.ConfigService;
+import com.alibaba.nacos.api.common.Constants;
 import com.alibaba.nacos.client.utils.ParamUtil;
 import com.sun.net.httpserver.HttpServer;
 
@@ -27,8 +26,6 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-
-import static com.alibaba.nacos.api.common.Constants.CONFIG_CONTROLLER_PATH;
 
 /**
  * Embedded Nacos HTTP Server
@@ -42,7 +39,7 @@ public class EmbeddedNacosHttpServer {
 
     private final int port;
 
-    private final String path = "/" + ParamUtil.getDefaultContextPath() + CONFIG_CONTROLLER_PATH;
+    private final String path = "/" + ParamUtil.getDefaultContextPath() + Constants.CONFIG_CONTROLLER_PATH;
 
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
@@ -115,22 +112,4 @@ public class EmbeddedNacosHttpServer {
 
         return this;
     }
-
-    public static void main(String[] args) throws Exception {
-
-        EmbeddedNacosHttpServer httpServer = new EmbeddedNacosHttpServer();
-
-        httpServer.start(false);
-
-        ConfigService configService = NacosFactory.createConfigService("127.0.0.1:" + httpServer.getPort());
-        System.out.println(configService.publishConfig("testId", "groupId", "Test Content "
-                + System.currentTimeMillis()));
-        System.out.println(configService.getConfig("testId", "groupId", 50000));
-        System.out.println(configService.removeConfig("testId", "groupId"));
-        System.out.println(configService.getConfig("testId", "groupId", 50000));
-
-        httpServer.stop();
-
-    }
-
 }

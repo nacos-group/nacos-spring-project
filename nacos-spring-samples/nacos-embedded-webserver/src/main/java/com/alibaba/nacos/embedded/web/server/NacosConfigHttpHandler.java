@@ -14,8 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.alibaba.nacos.spring.test;
+package com.alibaba.nacos.embedded.web.server;
 
+import com.alibaba.nacos.api.common.Constants;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.common.util.Md5Utils;
 import com.sun.net.httpserver.HttpExchange;
@@ -35,11 +36,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import static com.alibaba.nacos.api.common.Constants.LINE_SEPARATOR;
-import static com.alibaba.nacos.api.common.Constants.WORD_SEPARATOR;
 import static java.nio.charset.Charset.forName;
-import static org.springframework.util.StreamUtils.copyToString;
-import static org.springframework.util.StringUtils.trimAllWhitespace;
 
 /**
  * Nacos Config {@link HttpHandler} which only supports request parameters :
@@ -109,7 +106,7 @@ public class NacosConfigHttpHandler implements HttpHandler {
         if ("GET".equals(method)) {
             handleGetConfig(httpExchange);
         } else if ("POST".equals(method)) {
-            String queryString = copyToString(httpExchange.getRequestBody(), forName("UTF-8"));
+            String queryString = StreamUtils.copyToString(httpExchange.getRequestBody(), forName("UTF-8"));
             Map<String, String> params = parseParams(queryString);
             String listeningConfigs = params.get("Listening-Configs");
             if (listeningConfigs != null) {
@@ -164,7 +161,7 @@ public class NacosConfigHttpHandler implements HttpHandler {
     }
 
     private String createLongPollingResult(String dataId, String groupId) throws IOException {
-        String sb = dataId + WORD_SEPARATOR + groupId + LINE_SEPARATOR;
+        String sb = dataId + Constants.WORD_SEPARATOR + groupId + Constants.LINE_SEPARATOR;
         return URLEncoder.encode(sb, "UTF-8");
     }
 
@@ -176,7 +173,7 @@ public class NacosConfigHttpHandler implements HttpHandler {
         List<String> changeGroupIdList = new ArrayList<String>();
         List<String> contentKeyList = new ArrayList<String>();
 
-        String[] lines = listeningConfigs.split(LINE_SEPARATOR);
+        String[] lines = listeningConfigs.split(Constants.LINE_SEPARATOR);
         for (String line : lines) {
             parseLine(changeDataIdList, changeGroupIdList, contentKeyList, line);
         }
@@ -196,7 +193,7 @@ public class NacosConfigHttpHandler implements HttpHandler {
 
     private void parseLine(List<String> changeDataIdList, List<String> changeGroupIdList, List<String> contentKeyList,
                            String line) {
-        String[] arr = line.split(WORD_SEPARATOR, 3);
+        String[] arr = line.split(Constants.WORD_SEPARATOR, 3);
         if (arr.length < 3) {
             logger.warn("Listening-Configs is wrong format, line: {}", line);
             return;
@@ -221,9 +218,9 @@ public class NacosConfigHttpHandler implements HttpHandler {
         int size = dataIdList.size();
         for (int i = 0; i < size; i++) {
             sb.append(dataIdList.get(i));
-            sb.append(WORD_SEPARATOR);
+            sb.append(Constants.WORD_SEPARATOR);
             sb.append(groupIdList.get(i));
-            sb.append(LINE_SEPARATOR);
+            sb.append(Constants.LINE_SEPARATOR);
         }
         return URLEncoder.encode(sb.toString(), "UTF-8");
     }
@@ -302,7 +299,7 @@ public class NacosConfigHttpHandler implements HttpHandler {
         String[] parts = StringUtils.delimitedListToStringArray(queryString, "&");
         for (String part : parts) {
             String[] nameAndValue = StringUtils.split(part, "=");
-            params.put(trimAllWhitespace(nameAndValue[0]), trimAllWhitespace(nameAndValue[1]));
+            params.put(StringUtils.trimAllWhitespace(nameAndValue[0]), StringUtils.trimAllWhitespace(nameAndValue[1]));
         }
         return params;
     }
