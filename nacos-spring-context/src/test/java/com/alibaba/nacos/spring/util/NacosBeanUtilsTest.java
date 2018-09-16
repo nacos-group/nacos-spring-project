@@ -16,6 +16,7 @@
  */
 package com.alibaba.nacos.spring.util;
 
+import com.alibaba.nacos.spring.factory.CacheableEventPublishingNacosServiceFactory;
 import com.alibaba.nacos.spring.factory.NacosServiceFactory;
 import com.alibaba.nacos.spring.test.TestConfiguration;
 import org.junit.Assert;
@@ -30,7 +31,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.Properties;
 
-import static com.alibaba.nacos.spring.util.NacosBeanUtils.*;
+import static com.alibaba.nacos.spring.util.NacosBeanUtils.GLOBAL_NACOS_PROPERTIES_BEAN_NAME;
+import static com.alibaba.nacos.spring.util.NacosBeanUtils.isBeanDefinitionPresent;
 
 /**
  * {@link NacosBeanUtils} Test
@@ -50,7 +52,7 @@ public class NacosBeanUtilsTest {
     private Properties globalProperties;
 
     @Autowired
-    @Qualifier(NACOS_SERVICE_FACTORY_BEAN_NAME)
+    @Qualifier(CacheableEventPublishingNacosServiceFactory.BEAN_NAME)
     private NacosServiceFactory nacosServiceFactory;
 
     @Test
@@ -67,8 +69,8 @@ public class NacosBeanUtilsTest {
         BeanDefinitionRegistry registry = (BeanDefinitionRegistry) beanFactory;
 
         Assert.assertTrue(isBeanDefinitionPresent(registry, GLOBAL_NACOS_PROPERTIES_BEAN_NAME, Properties.class));
-        Assert.assertTrue(isBeanDefinitionPresent(registry, NACOS_SERVICE_FACTORY_BEAN_NAME, NacosServiceFactory.class));
-        Assert.assertTrue(isBeanDefinitionPresent(registry, NACOS_SERVICE_FACTORY_BEAN_NAME, NacosServiceFactory.class));
+        Assert.assertTrue(isBeanDefinitionPresent(registry, CacheableEventPublishingNacosServiceFactory.BEAN_NAME, NacosServiceFactory.class));
+        Assert.assertTrue(isBeanDefinitionPresent(registry, CacheableEventPublishingNacosServiceFactory.BEAN_NAME, NacosServiceFactory.class));
 
     }
 

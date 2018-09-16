@@ -30,6 +30,7 @@ import com.alibaba.nacos.spring.context.annotation.discovery.EnableNacosDiscover
 import com.alibaba.nacos.spring.context.properties.config.NacosConfigurationPropertiesBindingPostProcessor;
 import com.alibaba.nacos.spring.core.env.AnnotationNacosPropertySourceBuilder;
 import com.alibaba.nacos.spring.core.env.NacosPropertySourcePostProcessor;
+import com.alibaba.nacos.spring.factory.CacheableEventPublishingNacosServiceFactory;
 import com.alibaba.nacos.spring.factory.NacosServiceFactory;
 import com.alibaba.nacos.spring.test.AbstractNacosHttpServerTestExecutionListener;
 import com.alibaba.nacos.spring.test.Config;
@@ -95,7 +96,7 @@ public class NacosBeanDefinitionRegistrarTest extends AbstractNacosHttpServerTes
     private Properties discoveryGlobalProperties;
 
     @Autowired
-    @Qualifier(NacosBeanUtils.NACOS_SERVICE_FACTORY_BEAN_NAME)
+    @Qualifier(CacheableEventPublishingNacosServiceFactory.BEAN_NAME)
     private NacosServiceFactory nacosServiceFactory;
 
     @Autowired

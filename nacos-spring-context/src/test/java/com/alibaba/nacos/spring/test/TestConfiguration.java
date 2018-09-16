@@ -17,6 +17,7 @@
 package com.alibaba.nacos.spring.test;
 
 import com.alibaba.nacos.api.config.ConfigService;
+import com.alibaba.nacos.spring.factory.CacheableEventPublishingNacosServiceFactory;
 import com.alibaba.nacos.spring.factory.NacosServiceFactory;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.context.annotation.Bean;
@@ -27,7 +28,8 @@ import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import static com.alibaba.nacos.spring.util.NacosBeanUtils.*;
+import static com.alibaba.nacos.spring.util.NacosBeanUtils.GLOBAL_NACOS_PROPERTIES_BEAN_NAME;
+import static com.alibaba.nacos.spring.util.NacosBeanUtils.NACOS_CONFIG_LISTENER_EXECUTOR_BEAN_NAME;
 
 /**
  * Test {@link Configuration @Configuration} Class
@@ -59,7 +61,7 @@ public class TestConfiguration {
         return properties;
     }
 
-    @Bean(name = NACOS_SERVICE_FACTORY_BEAN_NAME)
+    @Bean(name = CacheableEventPublishingNacosServiceFactory.BEAN_NAME)
     public NacosServiceFactory nacosServiceFactory(ListableBeanFactory beanFactory) {
 
         MockNacosServiceFactory nacosServiceFactory = new MockNacosServiceFactory();

@@ -22,6 +22,7 @@ import com.alibaba.nacos.spring.beans.factory.annotation.AnnotationNacosInjected
 import com.alibaba.nacos.spring.context.annotation.config.NacosConfigListenerMethodProcessor;
 import com.alibaba.nacos.spring.context.properties.config.NacosConfigurationPropertiesBindingPostProcessor;
 import com.alibaba.nacos.spring.core.env.NacosPropertySourcePostProcessor;
+import com.alibaba.nacos.spring.factory.CacheableEventPublishingNacosServiceFactory;
 import com.alibaba.nacos.spring.factory.NacosServiceFactory;
 import com.alibaba.nacos.spring.util.NacosBeanUtils;
 import org.junit.AfterClass;
@@ -64,7 +65,7 @@ public class NacosAnnotationDrivenBeanDefinitionParserTest {
     private Properties globalProperties;
 
     @Autowired
-    @Qualifier(NacosBeanUtils.NACOS_SERVICE_FACTORY_BEAN_NAME)
+    @Qualifier(CacheableEventPublishingNacosServiceFactory.BEAN_NAME)
     private NacosServiceFactory nacosServiceFactory;
 
     @Autowired
