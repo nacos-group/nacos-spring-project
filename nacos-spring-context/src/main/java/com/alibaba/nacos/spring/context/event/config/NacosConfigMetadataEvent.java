@@ -162,6 +162,4 @@ public class NacosConfigMetadataEvent extends ApplicationEvent {
     public void setNacosPropertiesAttributes(Map<String, Object> nacosPropertiesAttributes) {
         this.nacosPropertiesAttributes = nacosPropertiesAttributes;
     }
-
-
 }
