@@ -18,22 +18,27 @@ package com.alibaba.nacos.spring.context.annotation.config;
 
 import com.alibaba.nacos.api.annotation.NacosInjected;
 import com.alibaba.nacos.api.config.ConfigService;
+import com.alibaba.nacos.api.config.annotation.NacosConfigListener;
+import com.alibaba.nacos.api.config.listener.AbstractListener;
+import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.spring.beans.factory.annotation.AnnotationNacosInjectedBeanPostProcessor;
 import com.alibaba.nacos.spring.beans.factory.annotation.ConfigServiceBeanBuilder;
-import com.alibaba.nacos.spring.test.ListenersConfiguration;
+import com.alibaba.nacos.spring.convert.converter.config.UserNacosConfigConverter;
+import com.alibaba.nacos.spring.test.Listeners;
 import com.alibaba.nacos.spring.test.TestConfiguration;
+import com.alibaba.nacos.spring.test.User;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.util.concurrent.ExecutorService;
+import javax.annotation.PostConstruct;
 
 import static com.alibaba.nacos.api.common.Constants.DEFAULT_GROUP;
 import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.DATA_ID;
-import static com.alibaba.nacos.spring.util.NacosBeanUtils.NACOS_CONFIG_LISTENER_EXECUTOR_BEAN_NAME;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 /**
  * {@link NacosConfigListenerMethodProcessor} Test
@@ -44,7 +49,7 @@ import static com.alibaba.nacos.spring.util.NacosBeanUtils.NACOS_CONFIG_LISTENER
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
         TestConfiguration.class,
-        ListenersConfiguration.class,
+        Listeners.class,
         ConfigServiceBeanBuilder.class,
         AnnotationNacosInjectedBeanPostProcessor.class,
         NacosConfigListenerMethodProcessor.class,
@@ -53,23 +58,54 @@ import static com.alibaba.nacos.spring.util.NacosBeanUtils.NACOS_CONFIG_LISTENER
 })
 public class NacosConfigListenerMethodProcessorTest {
 
+    @Autowired
+    private Listeners listeners;
+
     @NacosInjected
     private ConfigService configService;
 
-    @Autowired
-    private ListenersConfiguration listenersConfiguration;
+    @PostConstruct
+    public void initListener() throws NacosException {
+        configService.addListener(DATA_ID, DEFAULT_GROUP, new AbstractListener() {
+            @Override
+            public void receiveConfigInfo(String config) {
+                assertEquals("9527", config); // asserts true
+            }
+        });
+    }
 
-    @Autowired
-    @Qualifier(NACOS_CONFIG_LISTENER_EXECUTOR_BEAN_NAME)
-    private ExecutorService executorService;
+    @NacosConfigListener(dataId = DATA_ID)
+    public void onMessage(String config) {
+        assertEquals("9527", config); // asserts true
+    }
+
+    @NacosConfigListener(dataId = DATA_ID)
+    public void onInteger(Integer value) {
+        assertEquals(Integer.valueOf(9527), value); // asserts true
+    }
+
+    @NacosConfigListener(dataId = DATA_ID)
+    public void onInt(int value) {
+        assertEquals(9527, value); // asserts true
+    }
 
     @Test
-    public void testOn() throws Exception {
-
+    public void testPublishConfig() throws NacosException {
         configService.publishConfig(DATA_ID, DEFAULT_GROUP, "9527");
-        // Publish User
-        configService.publishConfig("user", DEFAULT_GROUP, "{\"id\":1,\"name\":\"mercyblitz\"}");
+        assertNull(listeners.getIntegerValue()); // asserts true
+        assertEquals(Double.valueOf(9527), listeners.getDoubleValue());   // asserts true
+    }
 
+
+    @Test
+    public void testPublishUser() throws NacosException {
+        configService.publishConfig("user", DEFAULT_GROUP, "{\"id\":1,\"name\":\"mercyblitz\"}");
+    }
+
+    @NacosConfigListener(dataId = "user", converter = UserNacosConfigConverter.class)
+    public void onUser(User user) {
+        assertEquals(Long.valueOf(1L), user.getId());
+        assertEquals("mercyblitz", user.getName());
     }
 
 }

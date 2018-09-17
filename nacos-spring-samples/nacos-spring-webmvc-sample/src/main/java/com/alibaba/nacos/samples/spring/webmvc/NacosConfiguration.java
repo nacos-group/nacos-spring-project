@@ -16,7 +16,10 @@
  */
 package com.alibaba.nacos.samples.spring.webmvc;
 
+import com.alibaba.nacos.api.annotation.NacosInjected;
 import com.alibaba.nacos.api.annotation.NacosProperties;
+import com.alibaba.nacos.api.config.ConfigService;
+import com.alibaba.nacos.api.naming.NamingService;
 import com.alibaba.nacos.spring.context.annotation.EnableNacos;
 import org.springframework.context.annotation.Configuration;
 
@@ -27,6 +30,16 @@ import org.springframework.context.annotation.Configuration;
  * @since 0.1.0
  */
 @Configuration
-@EnableNacos(globalProperties = @NacosProperties(serverAddr = "${nacos.server-addr:localhost:12345}"))
+@EnableNacos(
+        globalProperties =
+        @NacosProperties(serverAddr = "${nacos.server-addr:localhost:12345}")
+)
 public class NacosConfiguration {
+
+    @NacosInjected
+    private NamingService namingService;
+
+    @NacosInjected
+    private ConfigService configService;
+
 }

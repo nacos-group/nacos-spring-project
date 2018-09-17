@@ -43,16 +43,16 @@ public class ConfigServiceDemoController {
     @NacosInjected
     private ConfigService configService;
 
+    @RequestMapping(value = "/get", method = GET)
+    @ResponseBody
+    public String get(@RequestParam String dataId, @RequestParam(defaultValue = DEFAULT_GROUP) String groupId) throws NacosException {
+        return configService.getConfig(dataId, groupId, TimeUnit.SECONDS.toMillis(1));
+    }
+
     @RequestMapping(value = "/publish", method = POST)
     @ResponseBody
     public boolean publish(@RequestParam String dataId, @RequestParam(defaultValue = DEFAULT_GROUP) String groupId,
                            @RequestParam String content) throws NacosException {
         return configService.publishConfig(dataId, groupId, content);
-    }
-
-    @RequestMapping(value = "/get", method = GET)
-    @ResponseBody
-    public String get(@RequestParam String dataId, @RequestParam(defaultValue = DEFAULT_GROUP) String groupId) throws NacosException {
-        return configService.getConfig(dataId, groupId, TimeUnit.SECONDS.toMillis(1));
     }
 }
