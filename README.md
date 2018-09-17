@@ -12,10 +12,12 @@ including:
 
 [Nacos Spring Project](https://github.com/nacos-group/nacos-spring-project) is based on [it](https://github.com/alibaba/nacos) and embraces Spring ECO System so that developers could build Spring application rapidly. [`nacos-spring-context`](nacos-spring-context) is a core module that fully expands modern Java programming models:
 
-- Annotation-Driven
-- Externalized Configuration 
-- Dependency Injection
-- Event-Driven
+- [Annotation-Driven](#annotation-driven)
+- [Dependency Injection](#dependency-injection)
+- [Externalized Configuration](#externalized-configuration)
+- [Event-Driven](#eventlistener-driven)
+
+
 
 Those features strongly depends Spring Framework 3.2+ API and seamlessly integrates any Spring Stack. 
 
@@ -114,7 +116,7 @@ try {
 }
 ```
 
-However, `@NacosInjected` will enhance the `ConfigService` instances that make them to be **cacheable** and **event-driven**, and also can inject any `NamingService` instance for "Service Discovery" scenario:
+However,  also can inject any `NamingService` instance for "Service Discovery" scenario:
 
 ```java
     @NacosInjected
@@ -129,16 +131,14 @@ If you were not familiar with usages of `ConfigService` and `NamingService`, ple
 
 [`nacos-spring-context`](nacos-spring-context) is a core module of Nacos integrating with Spring Framework, which provides much rich features around Spring Stack, including Spring Boot and Spring Cloud. Their core features include:
 
-- Annotation-Driven
-- Externalized Configuration 
-- Dependency Injection
-- Event-Driven
+- [Annotation-Driven](#annotation-driven)
+- [Dependency Injection](#dependency-injection)
+- [Externalized Configuration](#externalized-configuration)
+- [Event-Driven](#eventlistener-driven)
 
 
 
-
-### Annotation-Driven 
-
+### Annotation-Driven
 
 
 
@@ -368,19 +368,74 @@ public class Listeners {
 
 
 
+### Dependency Injection
+
+`@NacosInjected` is a core annotation to inject`ConfigService` or `NamingService` instance in your Spring Beans, which make those instances to be **cacheable**, that means they will be same if their `@NacosProperties` are equal whether they come from Global or Special Nacos Properties:
+
+```java
+    @NacosInjected
+    private ConfigService configService;
+
+    @NacosInjected(properties = @NacosProperties(encode = "UTF-8"))
+    private ConfigService configService2;
+
+    @NacosInjected(properties = @NacosProperties(encode = "GBK"))
+    private ConfigService configService3;
+
+    @NacosInjected
+    private NamingService namingService;
+
+    @NacosInjected(properties = @NacosProperties(encode = "UTF-8"))
+    private NamingService namingService2;
+
+    @NacosInjected(properties = @NacosProperties(encode = "GBK"))
+    private NamingService namingService3;
+
+    @Test
+    public void testInjection() {
+
+        Assert.assertEquals(configService, configService2);
+        Assert.assertNotEquals(configService2, configService3);
+
+        Assert.assertEquals(namingService, namingService2);
+        Assert.assertNotEquals(namingService2, namingService3);
+    }
+```
+
+The property `configService` certainty uses `@EnableNacos#globalProperties()` or `@EnableConfigNacos#globalProperties()` , because the `encode` attribute's default value is “UTF-8”, thus `configService2` annotated `@NacosProperties(encode = "GBK")` and `configService` are same. In same reason, `namingService2` and `namingService3` are same, and vice versa.
+
+More powerfull feature that is `@NacosInjected` will enhance `ConfigService` instances that different from those created by `NacosFactory.createConfigService()` method, they support Nacos Spring events, for instance, there will be an `NacosConfigPublishedEvent`  after an enhanced `ConfigService` invokes `publishConfig()` method, more details, please refer to [Event/Listener Driven](#eventlistener-driven).
+
 
 
 ### Externalized Configuration
 
+Externalized Configuration is a concept involved by Spring Boot, which allow application to receive external property sources controlling runtime behavior. Nacos Server as an isolation process outsize application that maintain applications' configuration, is also a external source, thus [`nacos-spring-context`](nacos-spring-context) provides properties features including object binding, dynamic configuration(auto-refreshed) and so on, and it's required to depend on Spring Boot or Spring Cloud framework.
 
+Here is a simple comparison between  [`nacos-spring-context`](nacos-spring-context) and Spring stack:
 
-### Dependency Injection
+| Spring Stack               | Nacos Spring                    | Highlight                                      |
+| -------------------------- | ------------------------------- | ---------------------------------------------- |
+| `@Value`                   | `@NacosValue`                   | auto-refreshed                                 |
+| `@ConfigurationProperties` | `@NacosConfigurationProperties` | auto-refreshed,`@NacosProperty`,`@NacosIgnore` |
+| `@PropertySource`          | `@NacosPropertySource`          | auto-refreshed, precedence order control       |
+| `@PropertySources`         | `@NacosPropertySources`         |                                                |
 
 
 
 ### Event/Listener Driven
 
+Nacos Event/Listener Driven is based on standard Spring Event/Listener mechanism, Spring's `ApplicationEvent` is a abstract super class for all Nacos Spring Event:
 
+| Nacos Spring Event                           | Trigger                                                      |
+| -------------------------------------------- | ------------------------------------------------------------ |
+| `NacosConfigPublishedEvent`                  | After `ConfigService.publishConfig()`                        |
+| `NacosConfigReceivedEvent`                   | After`Listener.receiveConfigInfo()`                          |
+| `NacosConfigRemovedEvent`                    | After `configService.removeConfig()`                         |
+| `NacosConfigTimeoutEvent`                    | `ConfigService.getConfig()` on timeout                       |
+| `NacosConfigListenerRegisteredEvent`         | After `ConfigService.addListner()` or `ConfigService.removeListener()` |
+| `NacosConfigurationPropertiesBeanBoundEvent` | After `@NacosConfigurationProperties` binding                |
+| `NacosConfigMetadataEvent`                   | After Nacos Config operations                                |
 
 
 
