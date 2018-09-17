@@ -32,7 +32,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 
-import static com.alibaba.nacos.spring.util.NacosBeanUtils.getNacosConfigListenerExecutor;
+import static com.alibaba.nacos.spring.util.NacosBeanUtils.getNacosConfigListenerExecutorIfPresent;
 import static com.alibaba.nacos.spring.util.NacosUtils.identify;
 
 /**
@@ -97,7 +97,7 @@ public class CacheableEventPublishingNacosServiceFactory implements NacosService
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.context = (ConfigurableApplicationContext) applicationContext;
-        this.nacosConfigListenerExecutor = getNacosConfigListenerExecutor(applicationContext);
+        this.nacosConfigListenerExecutor = getNacosConfigListenerExecutorIfPresent(applicationContext);
     }
 
     @Override
