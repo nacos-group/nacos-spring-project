@@ -34,3 +34,4 @@ target
 /bin/
 *.prefs
 *~
+.extract
