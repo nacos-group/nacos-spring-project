@@ -99,7 +99,7 @@ public class NacosEventListenerConfiguration {
         return new ApplicationListener<NacosConfigListenerRegisteredEvent>() {
             @Override
             public void onApplicationEvent(NacosConfigListenerRegisteredEvent event) {
-                logger.info("Listening on NacosConfigRemovedEvent -  dataId : {} , groupId : {} , " + "registered : {} , "
+                logger.info("Listening on NacosConfigListenerRegisteredEvent -  dataId : {} , groupId : {} , " + "registered : {} , "
                         + "source : {}", event.getDataId(), event.getGroupId(), event.isRegistered(), event.getSource());
             }
         };
