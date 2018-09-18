@@ -14,32 +14,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.alibaba.nacos.samples.spring.webmvc;
+package com.alibaba.nacos.samples.spring.config;
 
-import com.alibaba.nacos.api.annotation.NacosInjected;
-import com.alibaba.nacos.api.annotation.NacosProperties;
-import com.alibaba.nacos.api.config.ConfigService;
-import com.alibaba.nacos.api.naming.NamingService;
-import com.alibaba.nacos.spring.context.annotation.EnableNacos;
-import org.springframework.context.annotation.Configuration;
+import com.alibaba.nacos.api.config.convert.NacosConfigConverter;
+import com.alibaba.nacos.samples.spring.domain.Pojo;
+import org.codehaus.jackson.map.ObjectMapper;
+
+import java.io.IOException;
 
 /**
- * Nacos {@link Configuration}
+ * {@link Pojo} Jackson {@link NacosConfigConverter}
  *
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
  * @since 0.1.0
  */
-@Configuration
-@EnableNacos(
-        globalProperties =
-        @NacosProperties(serverAddr = "${nacos.server-addr:localhost:12345}")
-)
-public class NacosConfiguration {
+public class PojoNacosConfigConverter implements NacosConfigConverter<Pojo> {
 
-    @NacosInjected
-    private NamingService namingService;
+    private ObjectMapper objectMapper = new ObjectMapper();
 
-    @NacosInjected
-    private ConfigService configService;
+    @Override
+    public boolean canConvert(Class<Pojo> targetType) {
+        return objectMapper.canSerialize(targetType);
+    }
 
+    @Override
+    public Pojo convert(String config) {
+        try {
+            return objectMapper.readValue(config, Pojo.class);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

@@ -31,14 +31,14 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 /**
- * Nacos {@link ConfigService} Demo {@link Controller}
+ * Nacos {@link ConfigService} {@link Controller}
  *
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
  * @since 0.1.0
  */
 @Controller
 @RequestMapping("/nacos/config/service")
-public class ConfigServiceDemoController {
+public class ConfigServiceController {
 
     @NacosInjected
     private ConfigService configService;
