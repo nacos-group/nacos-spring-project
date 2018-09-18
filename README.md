@@ -26,6 +26,24 @@ We recommend developers to use annotation-driven programming, even though XML-ba
 
 
 
+## Demos
+
+- [`@NacosConfigListener` Simple Demo](https://github.com/nacos-group/nacos-spring-project/blob/master/nacos-spring-samples/nacos-spring-webmvc-sample/src/main/java/com/alibaba/nacos/samples/spring/listener/SimpleNacosConfigListener.java)
+
+- [`@NacosConfigListener` Type-Conversion Demo](https://github.com/nacos-group/nacos-spring-project/blob/master/nacos-spring-samples/nacos-spring-webmvc-sample/src/main/java/com/alibaba/nacos/samples/spring/listener/PojoNacosConfigListener.java)
+
+- [`@NacosConfigListener` Timeout Demo](https://github.com/nacos-group/nacos-spring-project/blob/master/nacos-spring-samples/nacos-spring-webmvc-sample/src/main/java/com/alibaba/nacos/samples/spring/listener/TimeoutNacosConfigListener.java)
+
+- [`@NacosInjected` Dependency Injection Demo](https://github.com/nacos-group/nacos-spring-project/blob/master/nacos-spring-samples/nacos-spring-webmvc-sample/src/main/java/com/alibaba/nacos/samples/spring/NacosConfiguration.java)
+
+- [`@NacosPropertySources`/`@NacosPropertySource` Demo](https://github.com/nacos-group/nacos-spring-project/blob/master/nacos-spring-samples/nacos-spring-webmvc-sample/src/main/java/com/alibaba/nacos/samples/spring/env/NacosPropertySourceConfiguration.java)
+
+- [Event/Listener Demo](https://github.com/nacos-group/nacos-spring-project/blob/master/nacos-spring-samples/nacos-spring-webmvc-sample/src/main/java/com/alibaba/nacos/samples/spring/event/NacosEventListenerConfiguration.java)
+
+
+
+
+
 ## Dependencies & Compatibility
 
 | Dependencies   | Compatibility |
@@ -265,6 +283,12 @@ Howerver `@NacosConfigListener` supports richer type-conversion feature.
 
 
 
+
+##### [`@NacosConfigListener` Simple Demo](https://github.com/nacos-group/nacos-spring-project/blob/master/nacos-spring-samples/nacos-spring-webmvc-sample/src/main/java/com/alibaba/nacos/samples/spring/listener/SimpleNacosConfigListener.java)
+
+
+
+
 ##### Type Conversion
 
 `@NacosConfigListener`'s type-conversion includes build-in and customized implementations. Default, build-in type-conversion is based on Spring `DefaultFormattingConversionService`, that means it had involved most general cases and the higher Spring framework , the richer features. Thus, the content "9527" in above example also be listened by a method with integer or `Integer` argument:
@@ -318,6 +342,12 @@ public class UserNacosConfigConverter implements NacosConfigConverter<User> {
 
 
 
+
+##### [`@NacosConfigListener` Type-Conversion Demo](https://github.com/nacos-group/nacos-spring-project/blob/master/nacos-spring-samples/nacos-spring-webmvc-sample/src/main/java/com/alibaba/nacos/samples/spring/listener/PojoNacosConfigListener.java)
+
+
+
+
 ##### Timeout of Execution
 
 Customized  `NacosConfigConverter` may cost must time, thus `@NacosConfigListener.timeout()` attribute could be set timeout that limits max execution time to prevent blocking other listeners:
@@ -368,6 +398,12 @@ public class Listeners {
 
 
 
+
+##### [`@NacosConfigListener` Timeout Demo](https://github.com/nacos-group/nacos-spring-project/blob/master/nacos-spring-samples/nacos-spring-webmvc-sample/src/main/java/com/alibaba/nacos/samples/spring/listener/TimeoutNacosConfigListener.java)
+
+
+
+
 ### Dependency Injection
 
 `@NacosInjected` is a core annotation to inject`ConfigService` or `NamingService` instance in your Spring Beans, which make those instances to be **cacheable**, that means they will be same if their `@NacosProperties` are equal whether they come from Global or Special Nacos Properties:
@@ -408,6 +444,12 @@ More powerfull feature that is `@NacosInjected` will enhance `ConfigService` ins
 
 
 
+
+#### [Dependency Injection Demo](https://github.com/nacos-group/nacos-spring-project/blob/master/nacos-spring-samples/nacos-spring-webmvc-sample/src/main/java/com/alibaba/nacos/samples/spring/NacosConfiguration.java)
+
+
+
+
 ### Externalized Configuration
 
 Externalized Configuration is a concept involved by Spring Boot, which allow application to receive external property sources controlling runtime behavior. Nacos Server as an isolation process outsize application that maintain applications' configuration, is also a external source, thus [`nacos-spring-context`](nacos-spring-context) provides properties features including object binding, dynamic configuration(auto-refreshed) and so on, and it's required to depend on Spring Boot or Spring Cloud framework.
@@ -420,6 +462,11 @@ Here is a simple comparison between  [`nacos-spring-context`](nacos-spring-conte
 | `@ConfigurationProperties` | `@NacosConfigurationProperties` | auto-refreshed,`@NacosProperty`,`@NacosIgnore` |
 | `@PropertySource`          | `@NacosPropertySource`          | auto-refreshed, precedence order control       |
 | `@PropertySources`         | `@NacosPropertySources`         |                                                |
+
+
+
+
+#### [`@NacosPropertySources` and `@NacosPropertySource` Demo](https://github.com/nacos-group/nacos-spring-project/blob/master/nacos-spring-samples/nacos-spring-webmvc-sample/src/main/java/com/alibaba/nacos/samples/spring/env/NacosPropertySourceConfiguration.java)
 
 
 
@@ -439,10 +486,17 @@ Nacos Event/Listener Driven is based on standard Spring Event/Listener mechanism
 
 
 
+
+#### [Event/Listener Demo](https://github.com/nacos-group/nacos-spring-project/blob/master/nacos-spring-samples/nacos-spring-webmvc-sample/src/main/java/com/alibaba/nacos/samples/spring/event/NacosEventListenerConfiguration.java)
+
+
+
+
 ## Modules
 
-### [`nacos-spring-context`](nacos-spring-context)  
-
+### [`nacos-spring-context`](nacos-spring-context)
+  
+### [`nacos-spring-samples`](nacos-spring-samples)
 
 
 
