@@ -21,8 +21,7 @@ import com.alibaba.nacos.spring.context.event.config.NacosConfigMetadataEvent;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.core.type.AnnotationMetadata;
 
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 import static com.alibaba.nacos.spring.context.annotation.config.NacosPropertySource.*;
 
@@ -46,22 +45,31 @@ public class AnnotationNacosPropertySourceBuilder extends AbstractNacosPropertyS
     protected Map<String, Object>[] resolveRuntimeAttributesArray(AnnotatedBeanDefinition beanDefinition, Properties globalNacosProperties) {
         // Get AnnotationMetadata
         AnnotationMetadata metadata = beanDefinition.getMetadata();
-        // Try to get @NacosPropertySources
-        Map<String, Object> annotationAttributes = metadata.getAnnotationAttributes(NacosPropertySources.class.getName());
 
-        Map<String, Object>[] annotationAttributesArray = null;
+        Set<String> annotationTypes = metadata.getAnnotationTypes();
 
-        // If @NacosPropertySources annotated , get the attributes of @NacosPropertySource array from value() attribute
-        if (annotationAttributes != null) {
-            annotationAttributesArray = (Map<String, Object>[]) annotationAttributes.get("value");
-        } else {
-            // try to get @NacosPropertySource
-            Map<String, Object> attributes = metadata.getAnnotationAttributes(com.alibaba.nacos.spring.context.annotation.config.NacosPropertySource.class.getName());
-            if (attributes != null) {
-                annotationAttributesArray = new Map[]{attributes};
-            }
+        List<Map<String, Object>> annotationAttributesList = new LinkedList<Map<String, Object>>();
+
+        for (String annotationType : annotationTypes) {
+            annotationAttributesList.addAll(getAnnotationAttributesList(metadata, annotationType));
         }
-        return annotationAttributesArray != null ? annotationAttributesArray : new Map[0];
+
+        return annotationAttributesList.toArray(new Map[0]);
+    }
+
+    private List<Map<String, Object>> getAnnotationAttributesList(AnnotationMetadata metadata, String annotationType) {
+
+        List<Map<String, Object>> annotationAttributesList = new LinkedList<Map<String, Object>>();
+
+        if (NacosPropertySources.class.getName().equals(annotationType)) {
+            Map<String, Object> annotationAttributes = metadata.getAnnotationAttributes(annotationType);
+            if (annotationAttributes != null) {
+                annotationAttributesList.addAll(Arrays.asList((Map<String, Object>[]) annotationAttributes.get("value")));
+            }
+        } else if (com.alibaba.nacos.spring.context.annotation.config.NacosPropertySource.class.getName().equals(annotationType)) {
+            annotationAttributesList.add(metadata.getAnnotationAttributes(annotationType));
+        }
+        return annotationAttributesList;
     }
 
     @Override
