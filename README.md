@@ -28,18 +28,19 @@ We recommend developers to use annotation-driven programming, even though XML-ba
 
 ## Demos
 
+- [`@NacosInjected` Dependency Injection Demo](https://github.com/nacos-group/nacos-spring-project/blob/master/nacos-spring-samples/nacos-spring-webmvc-sample/src/main/java/com/alibaba/nacos/samples/spring/NacosConfiguration.java)
+
 - [`@NacosConfigListener` Simple Demo](https://github.com/nacos-group/nacos-spring-project/blob/master/nacos-spring-samples/nacos-spring-webmvc-sample/src/main/java/com/alibaba/nacos/samples/spring/listener/SimpleNacosConfigListener.java)
 
 - [`@NacosConfigListener` Type-Conversion Demo](https://github.com/nacos-group/nacos-spring-project/blob/master/nacos-spring-samples/nacos-spring-webmvc-sample/src/main/java/com/alibaba/nacos/samples/spring/listener/PojoNacosConfigListener.java)
 
 - [`@NacosConfigListener` Timeout Demo](https://github.com/nacos-group/nacos-spring-project/blob/master/nacos-spring-samples/nacos-spring-webmvc-sample/src/main/java/com/alibaba/nacos/samples/spring/listener/TimeoutNacosConfigListener.java)
 
-- [`@NacosInjected` Dependency Injection Demo](https://github.com/nacos-group/nacos-spring-project/blob/master/nacos-spring-samples/nacos-spring-webmvc-sample/src/main/java/com/alibaba/nacos/samples/spring/NacosConfiguration.java)
+- [`@NacosConfigurationProperties` Auto-Refreshed Demo](https://github.com/nacos-group/nacos-spring-project/blob/master/nacos-spring-samples/nacos-spring-webmvc-sample/src/main/java/com/alibaba/nacos/samples/spring/properties/NacosConfigurationPropertiesConfiguration.java)
 
 - [`@NacosPropertySources`/`@NacosPropertySource` Demo](https://github.com/nacos-group/nacos-spring-project/blob/master/nacos-spring-samples/nacos-spring-webmvc-sample/src/main/java/com/alibaba/nacos/samples/spring/env/NacosPropertySourceConfiguration.java)
 
 - [Event/Listener Demo](https://github.com/nacos-group/nacos-spring-project/blob/master/nacos-spring-samples/nacos-spring-webmvc-sample/src/main/java/com/alibaba/nacos/samples/spring/event/NacosEventListenerConfiguration.java)
-
 
 
 
@@ -462,6 +463,11 @@ Here is a simple comparison between  [`nacos-spring-context`](nacos-spring-conte
 | `@ConfigurationProperties` | `@NacosConfigurationProperties` | auto-refreshed,`@NacosProperty`,`@NacosIgnore` |
 | `@PropertySource`          | `@NacosPropertySource`          | auto-refreshed, precedence order control       |
 | `@PropertySources`         | `@NacosPropertySources`         |                                                |
+
+
+
+
+#### [`@NacosConfigurationProperties` Auto-Refreshed Demo](https://github.com/nacos-group/nacos-spring-project/blob/master/nacos-spring-samples/nacos-spring-webmvc-sample/src/main/java/com/alibaba/nacos/samples/spring/properties/NacosConfigurationPropertiesConfiguration.java)
 
 
 
