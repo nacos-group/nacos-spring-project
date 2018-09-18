@@ -16,7 +16,11 @@
  */
 package com.alibaba.nacos.samples.spring.domain;
 
+import com.alibaba.nacos.api.config.annotation.NacosConfigurationProperties;
+
 import java.util.Date;
+
+import static com.alibaba.nacos.samples.spring.domain.Pojo.DATA_ID;
 
 /**
  * POJO
@@ -24,7 +28,10 @@ import java.util.Date;
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
  * @since 0.1.0
  */
+@NacosConfigurationProperties(dataId = DATA_ID, autoRefreshed = true)
 public class Pojo {
+
+    public static final String DATA_ID = "pojo-data-id";
 
     private Long id;
 
