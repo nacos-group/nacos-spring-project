@@ -68,6 +68,10 @@ public class NacosPropertySourcePostProcessorTest {
                     before = SYSTEM_PROPERTIES_PROPERTY_SOURCE_NAME,
                     after = SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME)
     })
+    @NacosPropertySource(
+            dataId = DATA_ID,
+            before = SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME,
+            after = SYSTEM_PROPERTIES_PROPERTY_SOURCE_NAME)
     private static class FirstOrderNacosPropertySource {
 
     }

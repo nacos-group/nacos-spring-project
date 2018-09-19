@@ -395,13 +395,15 @@ public abstract class NacosBeanUtils {
     }
 
     /**
-     * Get {@link Executor} Bean for Nacos Config Listener
+     * Get {@link Executor} Bean for Nacos Config Listener If Present
      *
      * @param beanFactory {@link BeanFactory}
-     * @return {@link Executor} Bean
-     * @throws NoSuchBeanDefinitionException if there is no such bean definition
+     * @return {@link Executor} Bean If Present, or <code>null</code>
      */
-    public static ExecutorService getNacosConfigListenerExecutor(BeanFactory beanFactory) throws NoSuchBeanDefinitionException {
+    public static ExecutorService getNacosConfigListenerExecutorIfPresent(BeanFactory beanFactory) {
+        if (!beanFactory.containsBean(NACOS_CONFIG_LISTENER_EXECUTOR_BEAN_NAME)) {
+            return null;
+        }
         return beanFactory.getBean(NACOS_CONFIG_LISTENER_EXECUTOR_BEAN_NAME, ExecutorService.class);
     }
 
