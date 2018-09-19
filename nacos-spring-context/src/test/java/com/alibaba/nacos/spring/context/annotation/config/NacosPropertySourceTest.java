@@ -47,7 +47,7 @@ import static com.alibaba.nacos.embedded.web.server.NacosConfigHttpHandler.*;
 /**
  * {@link NacosPropertySource} {@link Value} Test
  *
- * @author <a href="mailto:huangxiaoyu1018@gmail.com">hxy1018</a>
+ * @author <a href="mailto:huangxiaoyu1018@gmail.com">hxy1991</a>
  * @see NacosPropertySource
  * @see Value
  * @since 0.1.0
@@ -134,7 +134,7 @@ public class NacosPropertySourceTest extends AbstractNacosHttpServerTestExecutio
 
         Thread.sleep(1000);
 
-        Assert.assertEquals(APP_NAME, app.name);
+        Assert.assertEquals(ANOTHER_APP_NAME, app.name);
 
         Assert.assertEquals(ANOTHER_APP_NAME, app.nacosNameAutoRefreshed);
 
