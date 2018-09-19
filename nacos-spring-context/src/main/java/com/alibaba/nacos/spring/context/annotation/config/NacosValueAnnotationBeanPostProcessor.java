@@ -25,6 +25,7 @@ import org.springframework.beans.PropertyValues;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.annotation.InjectionMetadata;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.ApplicationListener;
 import org.springframework.util.ReflectionUtils;
@@ -32,7 +33,11 @@ import org.springframework.validation.DataBinder;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
 import static com.alibaba.nacos.spring.util.NacosUtils.toProperties;
 import static org.springframework.core.annotation.AnnotationUtils.getAnnotation;
@@ -95,23 +100,7 @@ public class NacosValueAnnotationBeanPostProcessor extends AnnotationInjectedBea
 
         final Map<String, List<BeanProperty>> beanNamePropertyListMap = new HashMap<String, List<BeanProperty>>();
 
-        ReflectionUtils.doWithFields(bean.getClass(), new ReflectionUtils.FieldCallback() {
-            @Override
-            public void doWith(Field field) throws IllegalArgumentException {
-                NacosValue annotation = getAnnotation(field, NacosValue.class);
-                if (annotation != null) {
-                    if (Modifier.isStatic(field.getModifiers())) {
-                        return;
-                    }
-                    if (annotation.autoRefreshed()) {
-                        String placeHolder = annotation.value();
-                        BeanProperty beanProperty = new BeanProperty(field.getName(), placeHolder);
-                        put2ListMap(beanNamePropertyListMap, beanName, beanProperty);
-                        put2ListMap(placeholderPropertyListMap, placeHolder, beanProperty);
-                    }
-                }
-            }
-        });
+        doWithAnnotationFields(bean, beanName, beanNamePropertyListMap);
 
         List<BeanProperty> beanPropertyList = beanNamePropertyListMap.get(beanName);
         if (beanPropertyList != null) {
@@ -121,6 +110,49 @@ public class NacosValueAnnotationBeanPostProcessor extends AnnotationInjectedBea
         }
 
         return super.postProcessBeforeInitialization(bean, beanName);
+    }
+
+    private void doWithAnnotationFields(Object bean, final String beanName,
+                                        final Map<String, List<BeanProperty>> beanNamePropertyListMap) {
+        ReflectionUtils.doWithFields(bean.getClass(), new ReflectionUtils.FieldCallback() {
+            @Override
+            public void doWith(Field field) throws IllegalArgumentException {
+
+                doWithNacosValueField(field);
+
+                doWithValueField(field);
+            }
+
+            private void doWithNacosValueField(Field field) {
+                NacosValue annotation = getAnnotation(field, NacosValue.class);
+                if (annotation != null) {
+                    if (Modifier.isStatic(field.getModifiers())) {
+                        return;
+                    }
+                    if (annotation.autoRefreshed()) {
+                        String placeHolder = annotation.value();
+                        doWithListMap(field, placeHolder);
+                    }
+                }
+            }
+
+            private void doWithValueField(Field field) {
+                Value annotation = getAnnotation(field, Value.class);
+                if (annotation != null) {
+                    if (Modifier.isStatic(field.getModifiers())) {
+                        return;
+                    }
+                    String placeHolder = annotation.value();
+                    doWithListMap(field, placeHolder);
+                }
+            }
+
+            private void doWithListMap(Field field, String placeHolder) {
+                BeanProperty beanProperty = new BeanProperty(field.getName(), placeHolder);
+                put2ListMap(beanNamePropertyListMap, beanName, beanProperty);
+                put2ListMap(placeholderPropertyListMap, placeHolder, beanProperty);
+            }
+        });
     }
 
     private <K, V> void put2ListMap(Map<K, List<V>> map, K key, V value) {
