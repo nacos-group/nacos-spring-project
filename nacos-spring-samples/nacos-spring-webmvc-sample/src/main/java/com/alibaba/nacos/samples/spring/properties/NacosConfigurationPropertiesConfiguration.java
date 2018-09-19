@@ -58,8 +58,12 @@ public class NacosConfigurationPropertiesConfiguration {
         logger.info("pojo = {}", pojo);
         configService.publishConfig(DATA_ID, DEFAULT_GROUP, "id = 1");
         configService.publishConfig(DATA_ID, DEFAULT_GROUP, "name = mercyblitz");
-        logger.info("pojo.id = {}", pojo.getId());
-        logger.info("pojo.name = {}", pojo.getName());
+        configService.publishConfig(DATA_ID, DEFAULT_GROUP, "desc = description");
+        configService.publishConfig(DATA_ID, DEFAULT_GROUP, "ignored = true");
+        logger.info("pojo.id = {}", pojo.getId());                   // 1
+        logger.info("pojo.name = {}", pojo.getName());               // mercyblitz
+        logger.info("pojo.description = {}", pojo.getDescription()); // description
+        logger.info("pojo.ignored = {}", pojo.isIgnored());          // false
     }
 
 }

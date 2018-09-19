@@ -17,6 +17,8 @@
 package com.alibaba.nacos.samples.spring.domain;
 
 import com.alibaba.nacos.api.config.annotation.NacosConfigurationProperties;
+import com.alibaba.nacos.api.config.annotation.NacosIgnore;
+import com.alibaba.nacos.api.config.annotation.NacosProperty;
 
 import java.util.Date;
 
@@ -38,6 +40,12 @@ public class Pojo {
     private String name;
 
     private Date created;
+
+    @NacosProperty("desc")
+    private String description;
+
+    @NacosIgnore
+    private boolean ignored;
 
     public Long getId() {
         return id;
@@ -63,24 +71,20 @@ public class Pojo {
         this.created = created;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Pojo pojo = (Pojo) o;
-
-        if (id != null ? !id.equals(pojo.id) : pojo.id != null) return false;
-        if (name != null ? !name.equals(pojo.name) : pojo.name != null) return false;
-        return created != null ? created.equals(pojo.created) : pojo.created == null;
+    public String getDescription() {
+        return description;
     }
 
-    @Override
-    public int hashCode() {
-        int result = id != null ? id.hashCode() : 0;
-        result = 31 * result + (name != null ? name.hashCode() : 0);
-        result = 31 * result + (created != null ? created.hashCode() : 0);
-        return result;
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public boolean isIgnored() {
+        return ignored;
+    }
+
+    public void setIgnored(boolean ignored) {
+        this.ignored = ignored;
     }
 
     @Override
@@ -89,6 +93,8 @@ public class Pojo {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", created=" + created +
+                ", description='" + description + '\'' +
+                ", ignored=" + ignored +
                 '}';
     }
 }
