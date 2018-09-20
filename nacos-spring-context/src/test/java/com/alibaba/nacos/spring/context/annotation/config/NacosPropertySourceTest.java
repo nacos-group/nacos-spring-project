@@ -42,7 +42,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.alibaba.nacos.api.common.Constants.DEFAULT_GROUP;
-import static com.alibaba.nacos.embedded.web.server.NacosConfigHttpHandler.*;
+import static com.alibaba.nacos.embedded.web.server.NacosConfigHttpHandler.CONTENT_PARAM_NAME;
+import static com.alibaba.nacos.embedded.web.server.NacosConfigHttpHandler.DATA_ID_PARAM_NAME;
+import static com.alibaba.nacos.embedded.web.server.NacosConfigHttpHandler.GROUP_ID_PARAM_NAME;
 
 /**
  * {@link NacosPropertySource} {@link Value} Test
@@ -54,10 +56,10 @@ import static com.alibaba.nacos.embedded.web.server.NacosConfigHttpHandler.*;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
-        NacosPropertySourceTest.class
+    NacosPropertySourceTest.class
 })
 @TestExecutionListeners({DependencyInjectionTestExecutionListener.class,
-        DirtiesContextTestExecutionListener.class, NacosPropertySourceTest.class})
+    DirtiesContextTestExecutionListener.class, NacosPropertySourceTest.class})
 @NacosPropertySource(dataId = NacosPropertySourceTest.DATA_ID, autoRefreshed = true)
 @EnableNacos(globalProperties = @NacosProperties(serverAddr = "${server.addr}"))
 @Component
@@ -84,11 +86,18 @@ public class NacosPropertySourceTest extends AbstractNacosHttpServerTestExecutio
     }
 
     public static class App {
+
         @Value("${app.name}")
         private String name;
 
+        @Value("${app.name:Nacos}")
+        private String nameWithDefaultValue;
+
         @NacosValue(value = "${app.name}", autoRefreshed = true)
         private String nacosNameAutoRefreshed;
+
+        @NacosValue(value = "${app.name:Nacos}", autoRefreshed = true)
+        private String nacosNameAutoRefreshedWithDefaultValue;
 
         @NacosValue("${app.name}")
         private String nacosNameNotAutoRefreshed;
@@ -97,8 +106,16 @@ public class NacosPropertySourceTest extends AbstractNacosHttpServerTestExecutio
             this.name = name;
         }
 
+        public void setNameWithDefaultValue(String nameWithDefaultValue) {
+            this.nameWithDefaultValue = nameWithDefaultValue;
+        }
+
         public void setNacosNameAutoRefreshed(String nacosNameAutoRefreshed) {
             this.nacosNameAutoRefreshed = nacosNameAutoRefreshed;
+        }
+
+        public void setNacosNameAutoRefreshedWithDefaultValue(String nacosNameAutoRefreshedWithDefaultValue) {
+            this.nacosNameAutoRefreshedWithDefaultValue = nacosNameAutoRefreshedWithDefaultValue;
         }
 
         public void setNacosNameNotAutoRefreshed(String nacosNameNotAutoRefreshed) {
@@ -124,7 +141,11 @@ public class NacosPropertySourceTest extends AbstractNacosHttpServerTestExecutio
     public void testValue() throws NacosException, InterruptedException {
         Assert.assertEquals(APP_NAME, app.name);
 
+        Assert.assertEquals(APP_NAME, app.nameWithDefaultValue);
+
         Assert.assertEquals(APP_NAME, app.nacosNameAutoRefreshed);
+
+        Assert.assertEquals(APP_NAME, app.nacosNameAutoRefreshedWithDefaultValue);
 
         Assert.assertEquals(APP_NAME, app.nacosNameNotAutoRefreshed);
 
@@ -136,7 +157,11 @@ public class NacosPropertySourceTest extends AbstractNacosHttpServerTestExecutio
 
         Assert.assertEquals(ANOTHER_APP_NAME, app.name);
 
+        Assert.assertEquals(ANOTHER_APP_NAME, app.nameWithDefaultValue);
+
         Assert.assertEquals(ANOTHER_APP_NAME, app.nacosNameAutoRefreshed);
+
+        Assert.assertEquals(ANOTHER_APP_NAME, app.nacosNameAutoRefreshedWithDefaultValue);
 
         Assert.assertEquals(APP_NAME, app.nacosNameNotAutoRefreshed);
 

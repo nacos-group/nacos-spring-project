@@ -62,6 +62,8 @@ public class NacosValueAnnotationBeanPostProcessor extends AnnotationInjectedBea
 
     private static final String PLACEHOLDER_SUFFIX = "}";
 
+    private static final String VALUE_SEPARATOR = ":";
+
     // placeholder, beanProperty
     private Map<String, List<BeanProperty>> placeholderPropertyListMap = new HashMap<String, List<BeanProperty>>();
 
@@ -147,11 +149,39 @@ public class NacosValueAnnotationBeanPostProcessor extends AnnotationInjectedBea
                 }
             }
 
-            private void doWithListMap(Field field, String placeHolder) {
-                BeanProperty beanProperty = new BeanProperty(field.getName(), placeHolder);
+            private void doWithListMap(Field field, String placeholder) {
+                if (!placeholder.startsWith(PLACEHOLDER_PREFIX)) {
+                    return;
+                }
+
+                if (!placeholder.endsWith(PLACEHOLDER_SUFFIX)) {
+                    return;
+                }
+
+                if (placeholder.length() <= PLACEHOLDER_PREFIX.length() + PLACEHOLDER_SUFFIX.length()) {
+                    return;
+                }
+
+                String actualPlaceholder = resolveActualPlaceholder(placeholder);
+                BeanProperty beanProperty = new BeanProperty(field.getName(), actualPlaceholder);
                 put2ListMap(beanNamePropertyListMap, beanName, beanProperty);
-                put2ListMap(placeholderPropertyListMap, placeHolder, beanProperty);
+                put2ListMap(placeholderPropertyListMap, actualPlaceholder, beanProperty);
             }
+
+            private String resolveActualPlaceholder(String placeholder) {
+                int beginIndex = PLACEHOLDER_PREFIX.length();
+                int endIndex = placeholder.length() - PLACEHOLDER_PREFIX.length() + 1;
+
+                placeholder = placeholder.substring(beginIndex, endIndex);
+
+                int separatorIndex = placeholder.indexOf(VALUE_SEPARATOR);
+                if (separatorIndex != -1) {
+                    return placeholder.substring(0, separatorIndex);
+                }
+
+                return placeholder;
+            }
+
         });
     }
 
@@ -171,8 +201,7 @@ public class NacosValueAnnotationBeanPostProcessor extends AnnotationInjectedBea
             Map<Object, List<BeanProperty>> map = new HashMap<Object, List<BeanProperty>>();
             Properties configProperties = toProperties(content);
             for (Object key : configProperties.keySet()) {
-                String placeholder = PLACEHOLDER_PREFIX + key + PLACEHOLDER_SUFFIX;
-                List<BeanProperty> beanPropertyList = placeholderPropertyListMap.get(placeholder);
+                List<BeanProperty> beanPropertyList = placeholderPropertyListMap.get(key.toString());
                 if (beanPropertyList == null) {
                     continue;
                 }
