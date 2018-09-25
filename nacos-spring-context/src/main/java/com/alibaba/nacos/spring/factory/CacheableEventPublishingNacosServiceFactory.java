@@ -87,8 +87,8 @@ public class CacheableEventPublishingNacosServiceFactory implements NacosService
         NamingService namingService = namingServicesCache.get(cacheKey);
 
         if (namingService == null) {
-            namingService = NacosFactory.createNamingService(copy);
-            namingServicesCache.put(cacheKey, new DelegatingNamingService(namingService, properties));
+            namingService = new DelegatingNamingService(NacosFactory.createNamingService(copy), properties);
+            namingServicesCache.put(cacheKey, namingService);
         }
 
         return namingService;
