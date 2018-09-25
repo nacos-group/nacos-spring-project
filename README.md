@@ -46,8 +46,6 @@ These features strongly depend on Spring Framework 3.2+ API, and can be seamless
     - [4.5. Global and Special Nacos Properties](#45-global-and-special-nacos-properties)
     - [4.6. `@NacosProperties`](#46-nacosproperties)
 - [5. Modules](#5-modules)
-    - [5.1. [`nacos-spring-context`](nacos-spring-context)](#51-nacos-spring-contextnacos-spring-context)
-    - [5.2. [`nacos-spring-samples`](nacos-spring-samples)](#52-nacos-spring-samplesnacos-spring-samples)
 - [6. Relative Projects](#6-relative-projects)
 
 <!-- /TOC -->
@@ -529,13 +527,13 @@ These placeholders of `@EnableNacosDiscovery` and `@EnableNacosConfig` are desig
 
 # 5. Modules
 
-## 5.1. [`nacos-spring-context`](nacos-spring-context)
+- [`nacos-spring-context`](nacos-spring-context)
   
-## 5.2. [`nacos-spring-samples`](nacos-spring-samples)
+- [`nacos-spring-samples`](nacos-spring-samples)
 
 
 
 # 6. Relative Projects
 
-* [Alibaba Nacos](https://github.com/alibaba/nacos)
-* [Alibaba Spring Context Support](https://github.com/alibaba/spring-context-support)
+- [Alibaba Nacos](https://github.com/alibaba/nacos)
+- [Alibaba Spring Context Support](https://github.com/alibaba/spring-context-support)
