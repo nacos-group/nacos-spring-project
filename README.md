@@ -23,6 +23,8 @@ These features strongly depend on Spring Framework 3.2+ API, and can be seamless
 
 **Note:** We recommend that you use annotation-driven programming, even though XML-based features also work.
 
+Content
+===============================
 <!-- TOC -->
 
 - [1. Samples](#1-samples)
