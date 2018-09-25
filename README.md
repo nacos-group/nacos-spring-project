@@ -40,11 +40,11 @@ These features strongly depend on Spring Framework 3.2+ API, and can be seamless
         - [4.1.2. Configure Change Listener method](#412-configure-change-listener-method)
             - [4.1.2.1. Type Conversion](#4121-type-conversion)
             - [4.1.2.2. Timeout of Execution](#4122-timeout-of-execution)
+        - [4.1.3. Global and Special Nacos Properties](#413-global-and-special-nacos-properties)
+        - [4.1.4. `@NacosProperties`](#414-nacosproperties)
     - [4.2. Dependency Injection](#42-dependency-injection)
     - [4.3. Externalized Configuration](#43-externalized-configuration)
     - [4.4. Event/Listener Driven](#44-eventlistener-driven)
-    - [4.5. Global and Special Nacos Properties](#45-global-and-special-nacos-properties)
-    - [4.6. `@NacosProperties`](#46-nacosproperties)
 - [5. Modules](#5-modules)
 - [6. Relative Projects](#6-relative-projects)
 
@@ -372,6 +372,66 @@ The `integerValue` of `Listeners` Bean is always `null` and will not be changed.
 
 - See [Timeout Sample of `@NacosConfigListener`](https://github.com/nacos-group/nacos-spring-project/blob/master/nacos-spring-samples/nacos-spring-webmvc-sample/src/main/java/com/alibaba/nacos/samples/spring/listener/TimeoutNacosConfigListener.java)
 
+### 4.1.3. Global and Special Nacos Properties
+
+The `globalProperties` is a required attribute in any `@EnableNacos`, `@EnableNacosDiscovery` or `@EnableNacosConfig`, and its type is `@NacosProperties`. `globalProperties` initializes "**Global Nacos Properties**" that will be used by other annotations 
+and components, e,g `@NacosInjected`. In other words, **Global Nacos Properties**" defines the global and default properties. It is set with the lowest priority and can be overridden if needed. The precedence of overiding rules is shown in the following table:
+
+| Precedence Order | Nacos Annotation                                             | Required |
+| ---------------- | ------------------------------------------------------------ | -------- |
+| 1                | `*.properties()`                                             | N        |
+| 2                | `@EnableNacosConfig.globalProperties()` or `@EnableNacosDiscovery.globalProperties()` | Y        |
+| 3                | `@EnableNacos.globalProperties()`                            | Y        |
+
+
+`*.properties()` defines special Nacos properties which come from one of the following:  
+
+- `@NacosInjected.properties()` 
+- `@NacosConfigListener.properties()`
+- `@NacosPropertySource.properties()` 
+- `@NacosConfigurationProperties.properties()`
+
+Special Nacos properties are also configured by `@NacosProperties`. However, they are optional and are used to override Global Nacos Properties in special scenarios. If not defined, the Nacos Properties will 
+try to retrieve properities from `@EnableNacosConfig.globalProperties()` or `@EnableNacosDiscovery.globalProperties()`, or 
+`@EnableNacos.globalProperties()`.
+
+
+
+### 4.1.4. `@NacosProperties`
+
+`@NacosProperties` is a uniform annotation for global and special Nacos properties. It serves as a mediator between Java `Properties` and `NacosFactory` class.   `NacosFactory` is responsible for creating `ConfigService` or `NamingService` instances. 
+
+The attributes of `@NacosProperties` completely support placeholders whose source is all kinds of `PropertySource` in Spring `Environment` abstraction, typically Java System `Properties` and OS environment variables. The prefix of all placeholders are `nacos.`.  The mapping between the attributes of `@NacosProperties` and Nacos properties are shown below: 
+
+| Attribute       | Property       | Placeholder              | Description | Required  |
+| --------------- | -------------- | ------------------------ | ----------- | --------- |
+| `endpoint()`    | `endpoint`     | `${nacos.endpoint:}`     |             |     N     |
+| `namespace()`   | `namespace`    | `${nacos.namespace:}`    |             |     N     |
+| `accessKey()`   | `access-key`   | `${nacos.access-key:}`   |             |     N     |
+| `secretKey()`   | `secret-key`   | `${nacos.secret-key:}`   |             |     N     |
+| `serverAddr()`  | `server-addr`  | `${nacos.server-addr:}`  |             |     Y     |
+| `contextPath()` | `context-path` | `${nacos.context-path:}` |             |     N     |
+| `clusterName()` | `cluster-name` | `${nacos.cluster-name:}` |             |     N     |
+| `encode()`      | `encode`       | `${nacos.encode:UTF-8}`  |             |     N     |
+
+
+Note that there are some differences in the placeholders of `globalProperties()` between `@EnableNacosDiscovery` and `@EnableNacosConfig`:
+
+| Attribute       | `@EnableNacosDiscovery`'s Placeholder                     |`@EnableNacosConfig`'s Placeholder  |
+| --------------- | -------------------------------------------------------- |
+| `endpoint()`    | `${nacos.discovery.endpoint:${nacos.endpoint:}}`         |`${nacos.config.endpoint:${nacos.endpoint:}}`         |
+| `namespace()`   | `${nacos.discovery.namespace:${nacos.namespace:}}`       |`${nacos.config.namespace:${nacos.namespace:}}`       |
+| `accessKey()`   | `${nacos.discovery.access-key:${nacos.access-key:}}`     |`${nacos.config.access-key:${nacos.access-key:}}`     |
+| `secretKey()`   | `${nacos.discovery.secret-key:${nacos.secret-key:}}`     |`${nacos.config.secret-key:${nacos.secret-key:}}`     |
+| `serverAddr()`  | `${nacos.discovery.server-addr:${nacos.server-addr:}}`   | `${nacos.config.server-addr:${nacos.server-addr:}}`   |
+| `contextPath()` | `${nacos.discovery.context-path:${nacos.context-path:}}` | `${nacos.config.context-path:${nacos.context-path:}}` |
+| `clusterName()` | `${nacos.discovery.cluster-name:${nacos.cluster-name:}}` |`${nacos.config.cluster-name:${nacos.cluster-name:}}` |
+| `encode()`      | `${nacos.discovery.encode:${nacos.encode:UTF-8}}`        |`${nacos.config.encode:${nacos.encode:UTF-8}}`        |
+
+
+
+These placeholders of `@EnableNacosDiscovery` and `@EnableNacosConfig` are designed to isolate different Nacos servers, and are unnecessary in most scenarios.  By default, general placeholders will be reused.
+
 
 
 
@@ -461,65 +521,7 @@ Nacos Event/Listener Driven is based on the standard Spring Event/Listener mecha
 
 - See [Event/Listener Sample](https://github.com/nacos-group/nacos-spring-project/blob/master/nacos-spring-samples/nacos-spring-webmvc-sample/src/main/java/com/alibaba/nacos/samples/spring/event/NacosEventListenerConfiguration.java)
 
-## 4.5. Global and Special Nacos Properties
 
-The `globalProperties` is a required attribute in any `@EnableNacos`, `@EnableNacosDiscovery` or `@EnableNacosConfig`, and its type is `@NacosProperties`. `globalProperties` initializes "**Global Nacos Properties**" that will be used by other annotations 
-and components, e,g `@NacosInjected`. In other words, **Global Nacos Properties**" defines the global and default properties. It is set with the lowest priority and can be overridden if needed. The precedence of overiding rules is shown in the following table:
-
-| Precedence Order | Nacos Annotation                                             | Required |
-| ---------------- | ------------------------------------------------------------ | -------- |
-| 1                | `*.properties()`                                             | N        |
-| 2                | `@EnableNacosConfig.globalProperties()` or `@EnableNacosDiscovery.globalProperties()` | Y        |
-| 3                | `@EnableNacos.globalProperties()`                            | Y        |
-
-
-`*.properties()` defines special Nacos properties which come from one of the following:  
-
-- `@NacosInjected.properties()` 
-- `@NacosConfigListener.properties()`
-- `@NacosPropertySource.properties()` 
-- `@NacosConfigurationProperties.properties()`
-
-Special Nacos properties are also configured by `@NacosProperties`. However, they are optional and are used to override Global Nacos Properties in special scenarios. If not defined, the Nacos Properties will 
-try to retrieve properities from `@EnableNacosConfig.globalProperties()` or `@EnableNacosDiscovery.globalProperties()`, or 
-`@EnableNacos.globalProperties()`.
-
-
-
-## 4.6. `@NacosProperties`
-
-`@NacosProperties` is a uniform annotation for global and special Nacos properties. It serves as a mediator between Java `Properties` and `NacosFactory` class.   `NacosFactory` is responsible for creating `ConfigService` or `NamingService` instances. 
-
-The attributes of `@NacosProperties` completely support placeholders whose source is all kinds of `PropertySource` in Spring `Environment` abstraction, typically Java System `Properties` and OS environment variables. The prefix of all placeholders are `nacos.`.  The mapping between the attributes of `@NacosProperties` and Nacos properties are shown below: 
-
-| Attribute       | Property       | Placeholder              | Description | Required  |
-| --------------- | -------------- | ------------------------ | ----------- | --------- |
-| `endpoint()`    | `endpoint`     | `${nacos.endpoint:}`     |             |     N     |
-| `namespace()`   | `namespace`    | `${nacos.namespace:}`    |             |     N     |
-| `accessKey()`   | `access-key`   | `${nacos.access-key:}`   |             |     N     |
-| `secretKey()`   | `secret-key`   | `${nacos.secret-key:}`   |             |     N     |
-| `serverAddr()`  | `server-addr`  | `${nacos.server-addr:}`  |             |     Y     |
-| `contextPath()` | `context-path` | `${nacos.context-path:}` |             |     N     |
-| `clusterName()` | `cluster-name` | `${nacos.cluster-name:}` |             |     N     |
-| `encode()`      | `encode`       | `${nacos.encode:UTF-8}`  |             |     N     |
-
-
-Note that there are some differences in the placeholders of `globalProperties()` between `@EnableNacosDiscovery` and `@EnableNacosConfig`:
-
-| Attribute       | `@EnableNacosDiscovery`'s Placeholder                     |`@EnableNacosConfig`'s Placeholder  |
-| --------------- | -------------------------------------------------------- |
-| `endpoint()`    | `${nacos.discovery.endpoint:${nacos.endpoint:}}`         |`${nacos.config.endpoint:${nacos.endpoint:}}`         |
-| `namespace()`   | `${nacos.discovery.namespace:${nacos.namespace:}}`       |`${nacos.config.namespace:${nacos.namespace:}}`       |
-| `accessKey()`   | `${nacos.discovery.access-key:${nacos.access-key:}}`     |`${nacos.config.access-key:${nacos.access-key:}}`     |
-| `secretKey()`   | `${nacos.discovery.secret-key:${nacos.secret-key:}}`     |`${nacos.config.secret-key:${nacos.secret-key:}}`     |
-| `serverAddr()`  | `${nacos.discovery.server-addr:${nacos.server-addr:}}`   | `${nacos.config.server-addr:${nacos.server-addr:}}`   |
-| `contextPath()` | `${nacos.discovery.context-path:${nacos.context-path:}}` | `${nacos.config.context-path:${nacos.context-path:}}` |
-| `clusterName()` | `${nacos.discovery.cluster-name:${nacos.cluster-name:}}` |`${nacos.config.cluster-name:${nacos.cluster-name:}}` |
-| `encode()`      | `${nacos.discovery.encode:${nacos.encode:UTF-8}}`        |`${nacos.config.encode:${nacos.encode:UTF-8}}`        |
-
-
-
-These placeholders of `@EnableNacosDiscovery` and `@EnableNacosConfig` are designed to isolate different Nacos servers, and are unnecessary in most scenarios.  By default, general placeholders will be reused.
 
 
 
