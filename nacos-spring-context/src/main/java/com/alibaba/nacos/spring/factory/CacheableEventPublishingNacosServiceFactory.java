@@ -43,9 +43,9 @@ import static com.alibaba.nacos.spring.util.NacosUtils.identify;
  */
 public class CacheableEventPublishingNacosServiceFactory implements NacosServiceFactory, ApplicationContextAware {
 
-    private Map<String, ConfigService> configServicesCache = new LinkedHashMap<String, ConfigService>(2);
+    private final Map<String, ConfigService> configServicesCache = new LinkedHashMap<String, ConfigService>(2);
 
-    private Map<String, NamingService> namingServicesCache = new LinkedHashMap<String, NamingService>(2);
+    private final Map<String, NamingService> namingServicesCache = new LinkedHashMap<String, NamingService>(2);
 
     private ConfigurableApplicationContext context;
 
@@ -72,7 +72,7 @@ public class CacheableEventPublishingNacosServiceFactory implements NacosService
 
     private ConfigService doCreateConfigService(Properties properties) throws NacosException {
         ConfigService configService = NacosFactory.createConfigService(properties);
-        return new EventPublishingConfigService(configService, context, nacosConfigListenerExecutor);
+        return new EventPublishingConfigService(configService, properties, context, nacosConfigListenerExecutor);
     }
 
     @Override
@@ -88,7 +88,7 @@ public class CacheableEventPublishingNacosServiceFactory implements NacosService
 
         if (namingService == null) {
             namingService = NacosFactory.createNamingService(copy);
-            namingServicesCache.put(cacheKey, namingService);
+            namingServicesCache.put(cacheKey, new DelegatingNamingService(namingService, properties));
         }
 
         return namingService;
