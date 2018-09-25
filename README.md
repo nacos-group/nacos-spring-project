@@ -1,71 +1,69 @@
-# Nacos Spring Project
+Nacos Spring Project
+=================================
 
 [![Build Status](https://travis-ci.org/nacos-group/nacos-spring-project.svg?branch=master)](https://travis-ci.org/nacos-group/nacos-spring-project)
 
-[Alibaba Nacos](https://github.com/alibaba/nacos) ships main core features of Cloud-Native application, 
-including:
+[Nacos](https://github.com/alibaba/nacos) is an open source project for discovering, configuring and managing cloud-native applications. Key features of Nacos include:
 
 - Service Discovery and Service Health Check
 - Dynamic Configuration Management
 - Dynamic DNS Service
-- Service and MetaData Management
+- Service and Metadata Management
 
-[Nacos Spring Project](https://github.com/nacos-group/nacos-spring-project) is based on [it](https://github.com/alibaba/nacos) and embraces Spring ECO System so that developers could build Spring application rapidly. [`nacos-spring-context`](nacos-spring-context) is a core module that fully expands modern Java programming models:
+[Nacos Spring Project](https://github.com/nacos-group/nacos-spring-project), which is based on [Nacos](https://github.com/alibaba/nacos), fully embraces the Spring ecosystem and is designed to help you build Spring applications rapidly. 
+
+The project contains a core module named [`nacos-spring-context`](nacos-spring-context). It enables you to expand modern Java programming models in the following ways:
 
 - [Annotation-Driven](#annotation-driven)
 - [Dependency Injection](#dependency-injection)
 - [Externalized Configuration](#externalized-configuration)
 - [Event-Driven](#eventlistener-driven)
 
+These features strongly depend on Spring Framework 3.2+ API, and can be seamlessly integrated with any Spring Stack, such as Spring Boot and Spring Cloud.
 
-
-Those features strongly depends Spring Framework 3.2+ API and seamlessly integrates any Spring Stack. 
-
-We recommend developers to use annotation-driven programming, even though XML-based features also work.
-
+**Note:** We recommend that you use annotation-driven programming, even though XML-based features also work.
 
 
 
-## Samples
+# 1. Samples
 
+Included in this section are some samples for you to get a quick start with Nacos Spring.
 
+## 1.1. Samples
 
+- [Dependency Injection Sample of `@NacosInjected`](https://github.com/nacos-group/nacos-spring-project/blob/master/nacos-spring-samples/nacos-spring-webmvc-sample/src/main/java/com/alibaba/nacos/samples/spring/NacosConfiguration.java)
 
-### How To Run
+- [Simple Sample of `@NacosConfigListener`](https://github.com/nacos-group/nacos-spring-project/blob/master/nacos-spring-samples/nacos-spring-webmvc-sample/src/main/java/com/alibaba/nacos/samples/spring/listener/SimpleNacosConfigListener.java)
 
-1. Checkout `nacos-spring-project` Source Code
-    > $ git clone git@github.com:nacos-group/nacos-spring-project.git
+- [Type Conversion Sample of `@NacosConfigListener`](https://github.com/nacos-group/nacos-spring-project/blob/master/nacos-spring-samples/nacos-spring-webmvc-sample/src/main/java/com/alibaba/nacos/samples/spring/listener/PojoNacosConfigListener.java)
 
-2. Maven Build Source Code
-    > $ mvn clean package
-    
-3. Run Spring Web MVC Samples
+- [Timeout Sample of `@NacosConfigListener`](https://github.com/nacos-group/nacos-spring-project/blob/master/nacos-spring-samples/nacos-spring-webmvc-sample/src/main/java/com/alibaba/nacos/samples/spring/listener/TimeoutNacosConfigListener.java)
 
-    > $ java -jar target/nacos-spring-webmvc-sample.war
+- [Sample of `@NacosConfigurationProperties`/`@NacosProperty`/`@NacosIgnore`](https://github.com/nacos-group/nacos-spring-project/blob/master/nacos-spring-samples/nacos-spring-webmvc-sample/src/main/java/com/alibaba/nacos/samples/spring/properties/NacosConfigurationPropertiesConfiguration.java)
 
-
-
-
-### Scenarios
-
-- [`@NacosInjected` Dependency Injection Sample](https://github.com/nacos-group/nacos-spring-project/blob/master/nacos-spring-samples/nacos-spring-webmvc-sample/src/main/java/com/alibaba/nacos/samples/spring/NacosConfiguration.java)
-
-- [`@NacosConfigListener` Simple Sample](https://github.com/nacos-group/nacos-spring-project/blob/master/nacos-spring-samples/nacos-spring-webmvc-sample/src/main/java/com/alibaba/nacos/samples/spring/listener/SimpleNacosConfigListener.java)
-
-- [`@NacosConfigListener` Type-Conversion Sample](https://github.com/nacos-group/nacos-spring-project/blob/master/nacos-spring-samples/nacos-spring-webmvc-sample/src/main/java/com/alibaba/nacos/samples/spring/listener/PojoNacosConfigListener.java)
-
-- [`@NacosConfigListener` Timeout Sample](https://github.com/nacos-group/nacos-spring-project/blob/master/nacos-spring-samples/nacos-spring-webmvc-sample/src/main/java/com/alibaba/nacos/samples/spring/listener/TimeoutNacosConfigListener.java)
-
-- [`@NacosConfigurationProperties`/`@NacosProperty`/`@NacosIgnore` Sample](https://github.com/nacos-group/nacos-spring-project/blob/master/nacos-spring-samples/nacos-spring-webmvc-sample/src/main/java/com/alibaba/nacos/samples/spring/properties/NacosConfigurationPropertiesConfiguration.java)
-
-- [`@NacosPropertySources`/`@NacosPropertySource` Sample](https://github.com/nacos-group/nacos-spring-project/blob/master/nacos-spring-samples/nacos-spring-webmvc-sample/src/main/java/com/alibaba/nacos/samples/spring/env/NacosPropertySourceConfiguration.java)
+- [Sample of `@NacosPropertySources`/`@NacosPropertySource`](https://github.com/nacos-group/nacos-spring-project/blob/master/nacos-spring-samples/nacos-spring-webmvc-sample/src/main/java/com/alibaba/nacos/samples/spring/env/NacosPropertySourceConfiguration.java)
 
 - [Event/Listener Sample](https://github.com/nacos-group/nacos-spring-project/blob/master/nacos-spring-samples/nacos-spring-webmvc-sample/src/main/java/com/alibaba/nacos/samples/spring/event/NacosEventListenerConfiguration.java)
 
+## 1.2. How To Run the Samples
 
+Take the Spring Web MVC project for example:
 
+1. Check out the source code of `nacos-spring-project` :
+   
+	` $ git clone git@github.com:nacos-group/nacos-spring-project.git`
 
-## Dependencies & Compatibility
+2. Build your source code with Maven:
+    
+	`$ mvn clean package`
+    
+3. Run Spring Web MVC Samples:
+
+      `$ java -jar target/nacos-spring-webmvc-sample.war`
+
+# 2. Dependencies & Compatibility
+
+The following table shows the dependencies and compatabilities of Nacos Spring Project.
 
 | Dependencies   | Compatibility |
 | -------------- | ------------- |
@@ -77,42 +75,49 @@ We recommend developers to use annotation-driven programming, even though XML-ba
 
 
 
-## Quick Start
+# 3. Quickstart
 
-First, you have to start a Nacos Server in backend , If you don't know steps, you can learn about [quick start](https://nacos.io/en-us/docs/quick-start.html).
+This quickstart shows you how to enable Nacos and its service discovery and configuration management features in your Spring project.
 
-Suppose your Nacos Server is startup, you would add [`nacos-spring-context`](nacos-spring-context) in your  Spring application's dependencies :
+## 3.1. Prerequisite
 
-```xml
-    <dependencies>
-        ...
-        
-        <dependency>
-            <groupId>com.alibaba.nacos</groupId>
-            <artifactId>nacos-spring-context</artifactId>
-            <version>${latest.version}</version>
-        </dependency>
-        
-        ...
-    </dependencies>
-```
+Before you configure your Spring project to use Nacos, you need to start a Nacos server in the backend. Refer to [Nacos Quick Start](https://nacos.io/en-us/docs/quick-start.html) for instructions on how to start a Nacos server.
 
-After that, you could annotate `@EnableNacos` in Spring `@Configuration` Class :
+## 3.2. Enable Nacos
+Complete the following steps to enable Nacos for your Spring project.
 
-```java
-@Configuration
-@EnableNacos(
-        globalProperties =
-        @NacosProperties(serverAddr = "${nacos.server-addr:localhost:12345}")
-)
-public class NacosConfiguration {
-    ...
-}
-```
+1. Add [`nacos-spring-context`](nacos-spring-context) in your Spring application's dependencies:
 
-> `serverAddr` attribute configures "\${host}:${port}" of your Nacos Server
+	```xml
+	    <dependencies>
+	        ...
+	        
+	        <dependency>
+	            <groupId>com.alibaba.nacos</groupId>
+	            <artifactId>nacos-spring-context</artifactId>
+	            <version>${latest.version}</version>
+	        </dependency>
+	        
+	        ...
+	    </dependencies>
+	```
 
-If you'd like to use "Distributed Configuration" features, `ConfigService` is a core service interface to get or publish config, you could use "Dependency Injection" to inject `ConfigService` instance in your Spring Beans when `@EnableNacos` is annotated:
+2. Add the `@EnableNacos` annotation in the `@Configuration` class of Spring and specify "\${host}:${port}" of your Nacos server in the `serverAddr` attribute:
+
+	```java
+	@Configuration
+	@EnableNacos(
+	        globalProperties =
+	        @NacosProperties(serverAddr = "${nacos.server-addr:localhost:12345}")
+	)
+	public class NacosConfiguration {
+	    ...
+	}
+	```
+
+
+## 3.3. Enable configuration service
+Now you would like to use the confguration service of Nacos. Simply use **Dependency Injection** to inject `ConfigService` instance in your Spring Beans when `@EnableNacos` is annotated, as shown below: 
 
 ```java
 @Service
@@ -135,7 +140,9 @@ public class ConfigServiceDemo {
 }
 ```
 
-above code equals below one: 
+`ConfigService` is the key interface of Nacos which helps you to get or publish configurations.
+
+The following code achieves the same effect: 
 
 ```java
 try {
@@ -154,21 +161,21 @@ try {
     e.printStackTrace();
 }
 ```
-
-However,  also can inject any `NamingService` instance for "Service Discovery" scenario:
+## 3.4. Enable Service Discovery
+If you would also like to use the service discovery feature of Nacos, you can inject a `NamingService` instance for service discovery:
 
 ```java
     @NacosInjected
     private NamingService namingService;
 ```
 
-If you were not familiar with usages of `ConfigService` and `NamingService`, please learn about [SDK](https://nacos.io/en-us/docs/sdk.html) first.
+For details about the usages of `ConfigService` and `NamingService`, please refer to [Nacos SDK](https://nacos.io/en-us/docs/sdk.html).
 
 
 
-## Core Features
+# 4. Core Features
 
-[`nacos-spring-context`](nacos-spring-context) is a core module of Nacos integrating with Spring Framework, which provides much rich features around Spring Stack, including Spring Boot and Spring Cloud. Their core features include:
+This section provides a detailed description of the key features of [`nacos-spring-context`](nacos-spring-context):
 
 - [Annotation-Driven](#annotation-driven)
 - [Dependency Injection](#dependency-injection)
@@ -177,98 +184,16 @@ If you were not familiar with usages of `ConfigService` and `NamingService`, ple
 
 
 
-### Annotation-Driven
+## 4.1. Annotation-Driven
 
+### 4.1.1. Enable Nacos
 
+`@EnableNacos` is a modular-driven annotation that enables all features of Nacos Spring, including **Service Discovery** and **Distributed Configuration**. It equals to  `@EnableNacosDiscovery` and 
+`@EnableNacosConfig`, which can be configured separately and used in different scenarios.
 
-#### Enable Modular-Driven
+### 4.1.2. Configure Change Listener method
 
-`@EnableNacos` is a modular-driven annotation that enables all features of Nacos Spring, mainly includes "**Service Discovery**" and  "**Distributed Configuration**", it is equals to  `@EnableNacosDiscovery` and 
-`@EnableNacosConfig`, they also could be configured separately, that means you could use them in different scenarios.
-
-
-
-
-#### Global and Special Nacos Properties
-
-The `globalProperties` is a required attribute in any `@EnableNacos`, `@EnableNacosDiscovery` or `@EnableNacosConfig`, 
-whose type is `@NacosProperties`, which initializes "**Global Nacos Properties**" that will be used other annotations 
-and components, e,g `@NacosInjected`. In other words, **Global Nacos Properties**" that is a global or default properties 
-with lowest order can be override if need be. The precedence rules of override:
-
-| Precedence Order | Nacos Annotation                                             | Required |
-| ---------------- | ------------------------------------------------------------ | -------- |
-| 1                | `*.proeprties()`                                             | N        |
-| 2                | `@EnableNacosConfig.globalProperties()` or `@EnableNacosDiscovery.globalProperties()` | Y        |
-| 3                | `@EnableNacos.globalProperties()`                            | Y        |
-
-
-`*.proeprties()` is a Special Nacos Properties that comes from one of them :  
-
-- `@NacosInjected.proeprties()` 
-- `@NacosConfigListener.proeprties()`
-- `@NacosPropertySource.proeprties()` 
-- `@NacosConfigurationProperties.proeprties()`
-
-Special Nacos Properties is also configured by `@NacosProperties`, however it's optional and used to override Global 
-Nacos Properties for special scenarios, even though it is not required. If they are absent, The Nacos Properties will 
-try to retrieve from `@EnableNacosConfig.globalProperties()` or `@EnableNacosDiscovery.globalProperties()`, or 
-`@EnableNacos.globalProperties()`.
-
-
-
-#### `@NacosProperties`
-
-`@NacosProperties` is an uniform annotation of Global and Special Nacos Properties, which plays a mediator between Java `Properties` and `NacosFactory` class creating the instances of `ConfigService` or `NamingService`. 
-
-`@NacosProperties`‘s attributes completely support placeholders whose source is all kinds of `PropertySource` in Spring `Environment` abstraction, typically Java System `Properties` and OS environment variables. The prefix of all placeholders are "`nacos.`", the mapping between `@NacosProperties`'s attributes and Nacos Properties as below: 
-
-| Attribute       | Property       | Placeholder              | Description | Required  |
-| --------------- | -------------- | ------------------------ | ----------- | --------- |
-| `endpoint()`    | `endpoint`     | `${nacos.endpoint:}`     |             |     N     |
-| `namespace()`   | `namespace`    | `${nacos.namespace:}`    |             |     N     |
-| `accessKey()`   | `access-key`   | `${nacos.access-key:}`   |             |     N     |
-| `secretKey()`   | `secret-key`   | `${nacos.secret-key:}`   |             |     N     |
-| `serverAddr()`  | `server-addr`  | `${nacos.server-addr:}`  |             |     Y     |
-| `contextPath()` | `context-path` | `${nacos.context-path:}` |             |     N     |
-| `clusterName()` | `cluster-name` | `${nacos.cluster-name:}` |             |     N     |
-| `encode()`      | `encode`       | `${nacos.encode:UTF-8}`  |             |     N     |
-
-
-There are some different in `globalProperties()`'s placeholders between `@EnableNacosDiscovery` and `@EnableNacosConfig`:
-
-| Attribute       | `@EnableNacosDiscovery`'s Placeholder                     |
-| --------------- | -------------------------------------------------------- |
-| `endpoint()`    | `${nacos.discovery.endpoint:${nacos.endpoint:}}`         |
-| `namespace()`   | `${nacos.discovery.namespace:${nacos.namespace:}}`       |
-| `accessKey()`   | `${nacos.discovery.access-key:${nacos.access-key:}}`     |
-| `secretKey()`   | `${nacos.discovery.secret-key:${nacos.secret-key:}}`     |
-| `serverAddr()`  | `${nacos.discovery.server-addr:${nacos.server-addr:}}`   |
-| `contextPath()` | `${nacos.discovery.context-path:${nacos.context-path:}}` |
-| `clusterName()` | `${nacos.discovery.cluster-name:${nacos.cluster-name:}}` |
-| `encode()`      | `${nacos.discovery.encode:${nacos.encode:UTF-8}}`        |
-
-
-
-| Attribute       | `@EnableNacosConfig`'s Placeholder                     |
-| --------------- | ----------------------------------------------------- |
-| `endpoint()`    | `${nacos.config.endpoint:${nacos.endpoint:}}`         |
-| `namespace()`   | `${nacos.config.namespace:${nacos.namespace:}}`       |
-| `accessKey()`   | `${nacos.config.access-key:${nacos.access-key:}}`     |
-| `secretKey()`   | `${nacos.config.secret-key:${nacos.secret-key:}}`     |
-| `serverAddr()`  | `${nacos.config.server-addr:${nacos.server-addr:}}`   |
-| `contextPath()` | `${nacos.config.context-path:${nacos.context-path:}}` |
-| `clusterName()` | `${nacos.config.cluster-name:${nacos.cluster-name:}}` |
-| `encode()`      | `${nacos.config.encode:${nacos.encode:UTF-8}}`        |
-
-
-Such placeholders of `@EnableNacosDiscovery` and `@EnableNacosConfig` are designed to isolate different Nacos servers, maybe a lot of scenarios are unnecessary, as well as re-use general placeholders as default.
-
-
-
-#### Config Change Listener method
-
-Suppose there was a config in Nacos Server whose `dataId` is "testDataId" and `groupId` is default group("DEFAULT_GROUP"), and then you'd like to change its' content by `ConfigService#publishConfig` method:
+Suppose there was a config in Nacos Server whose `dataId` is "testDataId" and `groupId` is default group("DEFAULT_GROUP"). Now you would like to change its content by using the `ConfigService#publishConfig` method:
 
 ```java
     @NacosInjected
@@ -280,7 +205,7 @@ Suppose there was a config in Nacos Server whose `dataId` is "testDataId" and `g
     }
 ```
 
-This new content should be notified in somewhere, and your could add a config change listener method into your Spring Beans:
+Then you would like to add a listener, which will be listening for the config changes. You can do this by adding a config change listener method into your Spring Beans:
 
 ```java
     @NacosConfigListener(dataId = DATA_ID)
@@ -289,7 +214,7 @@ This new content should be notified in somewhere, and your could add a config ch
     }
 ```
 
-It's equals to below code :
+The code below has the same effect:
 
 ```java
 	configService.addListener(DATA_ID, DEFAULT_GROUP, new AbstractListener() {
@@ -300,19 +225,21 @@ It's equals to below code :
     });
 ```
 
-Howerver `@NacosConfigListener` supports richer type-conversion feature.
+**Note:** `@NacosConfigListener` supports richer type conversions.
 
 
 
 
-##### [`@NacosConfigListener` Simple Sample](https://github.com/nacos-group/nacos-spring-project/blob/master/nacos-spring-samples/nacos-spring-webmvc-sample/src/main/java/com/alibaba/nacos/samples/spring/listener/SimpleNacosConfigListener.java)
+#### 4.1.2.1. [Simple Sample of `@NacosConfigListener`](https://github.com/nacos-group/nacos-spring-project/blob/master/nacos-spring-samples/nacos-spring-webmvc-sample/src/main/java/com/alibaba/nacos/samples/spring/listener/SimpleNacosConfigListener.java)
 
 
 
 
-##### Type Conversion
+#### 4.1.2.2. Type Conversion
 
-`@NacosConfigListener`'s type-conversion includes build-in and customized implementations. Default, build-in type-conversion is based on Spring `DefaultFormattingConversionService`, that means it had involved most general cases and the higher Spring framework , the richer features. Thus, the content "9527" in above example also be listened by a method with integer or `Integer` argument:
+The type conversion of `@NacosConfigListener` includes both build-in and customized implementations. By default, build-in type conversion is based on Spring `DefaultFormattingConversionService`, which means it covers most of the general cases as well as the rich features of the higher Spring framework. 
+
+For example, the content "9527" in the preceding example can also be listened by a method with integer or the `Integer` argument:
 
 ```java
     @NacosConfigListener(dataId = DATA_ID)
@@ -326,7 +253,7 @@ Howerver `@NacosConfigListener` supports richer type-conversion feature.
     }
 ```
 
-Of couse, [`nacos-spring-context`](nacos-spring-context) provides elastic extension for devlopers. If you define a named `nacosConfigConversionService` Spring Bean whose type is `ConversionService` , the `DefaultFormattingConversionService` will be ignored. What's more, you could customize  `NacosConfigConverter` interface's implementation to specify a listener method for type conversion:
+Of course, [`nacos-spring-context`](nacos-spring-context) provides elastic extension for developers. If you define a named `nacosConfigConversionService` Spring Bean whose type is `ConversionService` , the `DefaultFormattingConversionService` will be ignored. In addition, you can customize the implementation of  the `NacosConfigConverter` interface to specify a listener method for type conversion:
 
 ```java
 public class UserNacosConfigConverter implements NacosConfigConverter<User> {
@@ -343,7 +270,7 @@ public class UserNacosConfigConverter implements NacosConfigConverter<User> {
 }
 ```
 
-`UserNacosConfigConverter` class binds `@NacosConfigListener.converter()` attribute:
+The `UserNacosConfigConverter` class binds the `@NacosConfigListener.converter()` attribute:
 
 ```java
 	@NacosInjected
@@ -364,14 +291,14 @@ public class UserNacosConfigConverter implements NacosConfigConverter<User> {
 
 
 
-##### [`@NacosConfigListener` Type-Conversion Sample](https://github.com/nacos-group/nacos-spring-project/blob/master/nacos-spring-samples/nacos-spring-webmvc-sample/src/main/java/com/alibaba/nacos/samples/spring/listener/PojoNacosConfigListener.java)
+##### 4.1.2.2.1. [Type Conversion Sample of `@NacosConfigListener`](https://github.com/nacos-group/nacos-spring-project/blob/master/nacos-spring-samples/nacos-spring-webmvc-sample/src/main/java/com/alibaba/nacos/samples/spring/listener/PojoNacosConfigListener.java)
 
 
 
 
-##### Timeout of Execution
+#### 4.1.2.3. Timeout of Execution
 
-Customized  `NacosConfigConverter` may cost must time, thus `@NacosConfigListener.timeout()` attribute could be set timeout that limits max execution time to prevent blocking other listeners:
+As it might cost some time to run customized `NacosConfigConverter`, you can set  max execution time in the `@NacosConfigListener.timeout()` attribute to prevent it from blocking other listeners:
 
 ```java
 @Configuration
@@ -403,7 +330,7 @@ public class Listeners {
 }
 ```
 
-`Listeners` Bean's `integerValue` will not be changed, always `null`, thus those asserts will be `true`:
+The `integerValue` of `Listeners` Bean is always `null` and will not be changed. Therefore, those asserts will be `true`:
 
 ```java
     @Autowired
@@ -420,14 +347,14 @@ public class Listeners {
 
 
 
-##### [`@NacosConfigListener` Timeout Sample](https://github.com/nacos-group/nacos-spring-project/blob/master/nacos-spring-samples/nacos-spring-webmvc-sample/src/main/java/com/alibaba/nacos/samples/spring/listener/TimeoutNacosConfigListener.java)
+##### 4.1.2.3.1. [Timeout Sample of `@NacosConfigListener`](https://github.com/nacos-group/nacos-spring-project/blob/master/nacos-spring-samples/nacos-spring-webmvc-sample/src/main/java/com/alibaba/nacos/samples/spring/listener/TimeoutNacosConfigListener.java)
 
 
 
 
-### Dependency Injection
+## 4.2. Dependency Injection
 
-`@NacosInjected` is a core annotation to inject`ConfigService` or `NamingService` instance in your Spring Beans, which make those instances to be **cacheable**, that means they will be same if their `@NacosProperties` are equal whether they come from Global or Special Nacos Properties:
+`@NacosInjected` is a core annotation which is used to inject `ConfigService` or `NamingService` instance in your Spring Beans and make these instances **cacheable**. This means the instances will be the same if their `@NacosProperties` are equal, regargless of whether the properties come from global or special Nacos properties:
 
 ```java
     @NacosInjected
@@ -459,21 +386,21 @@ public class Listeners {
     }
 ```
 
-The property `configService` certainty uses `@EnableNacos#globalProperties()` or `@EnableConfigNacos#globalProperties()` , because the `encode` attribute's default value is “UTF-8”, thus `configService2` annotated `@NacosProperties(encode = "GBK")` and `configService` are same. In same reason, `namingService2` and `namingService3` are same, and vice versa.
+The property `configService` uses `@EnableNacos#globalProperties()` or `@EnableConfigNacos#globalProperties()`, and because the default value of the `encode` attribute is “UTF-8”, therefore the `configService` instance and the `configService2` instance which is annotated by `@NacosProperties(encode = "UTF-8")` are the same. The same is true for `namingService` and `namingService2`.
 
-More powerfull feature that is `@NacosInjected` will enhance `ConfigService` instances that different from those created by `NacosFactory.createConfigService()` method, they support Nacos Spring events, for instance, there will be an `NacosConfigPublishedEvent`  after an enhanced `ConfigService` invokes `publishConfig()` method, more details, please refer to [Event/Listener Driven](#eventlistener-driven).
-
-
-
-
-#### [Dependency Injection Sample](https://github.com/nacos-group/nacos-spring-project/blob/master/nacos-spring-samples/nacos-spring-webmvc-sample/src/main/java/com/alibaba/nacos/samples/spring/NacosConfiguration.java)
+More importantly, unlike the `ConfigService` instances created by the `NacosFactory.createConfigService()` method, the `ConfigService` instances created by the `@NacosInjected` annotation support Nacos Spring events. For instance, there will be an `NacosConfigPublishedEvent`  after an enhanced `ConfigService` invokes the `publishConfig()` method. Refer to the [Event/Listener Driven](#eventlistener-driven) section for more details.
 
 
 
 
-### Externalized Configuration
+### 4.2.1. [Dependency Injection Sample](https://github.com/nacos-group/nacos-spring-project/blob/master/nacos-spring-samples/nacos-spring-webmvc-sample/src/main/java/com/alibaba/nacos/samples/spring/NacosConfiguration.java)
 
-Externalized Configuration is a concept involved by Spring Boot, which allow application to receive external property sources controlling runtime behavior. Nacos Server as an isolation process outsize application that maintain applications' configuration, is also a external source, thus [`nacos-spring-context`](nacos-spring-context) provides properties features including object binding, dynamic configuration(auto-refreshed) and so on, and it's required to depend on Spring Boot or Spring Cloud framework.
+
+
+
+## 4.3. Externalized Configuration
+
+Externalized configuration is a concept introduced by Spring Boot, which allows applications to receive external property sources to control runtime behavior. Nacos Server runs an isolation process outside the application to maintain the application configurations. [`nacos-spring-context`](nacos-spring-context) provides properties features including object binding, dynamic configuration(auto-refreshed) and so on, and dependence on Spring Boot or Spring Cloud framework is required.
 
 Here is a simple comparison between  [`nacos-spring-context`](nacos-spring-context) and Spring stack:
 
@@ -487,18 +414,18 @@ Here is a simple comparison between  [`nacos-spring-context`](nacos-spring-conte
 
 
 
-#### [`@NacosConfigurationProperties` Auto-Refreshed Sample](https://github.com/nacos-group/nacos-spring-project/blob/master/nacos-spring-samples/nacos-spring-webmvc-sample/src/main/java/com/alibaba/nacos/samples/spring/properties/NacosConfigurationPropertiesConfiguration.java)
+### 4.3.1. [Auto-Refreshed Sample of `@NacosConfigurationProperties`](https://github.com/nacos-group/nacos-spring-project/blob/master/nacos-spring-samples/nacos-spring-webmvc-sample/src/main/java/com/alibaba/nacos/samples/spring/properties/NacosConfigurationPropertiesConfiguration.java)
 
 
 
 
-#### [`@NacosPropertySources` and `@NacosPropertySource` Sample](https://github.com/nacos-group/nacos-spring-project/blob/master/nacos-spring-samples/nacos-spring-webmvc-sample/src/main/java/com/alibaba/nacos/samples/spring/env/NacosPropertySourceConfiguration.java)
+### 4.3.2. [Sample of `@NacosPropertySources` and `@NacosPropertySource`](https://github.com/nacos-group/nacos-spring-project/blob/master/nacos-spring-samples/nacos-spring-webmvc-sample/src/main/java/com/alibaba/nacos/samples/spring/env/NacosPropertySourceConfiguration.java)
 
 
 
-### Event/Listener Driven
+## 4.4. Event/Listener Driven
 
-Nacos Event/Listener Driven is based on standard Spring Event/Listener mechanism, Spring's `ApplicationEvent` is a abstract super class for all Nacos Spring Event:
+Nacos Event/Listener Driven is based on the standard Spring Event/Listener mechanism. The `ApplicationEvent` of Spring is an abstract super class for all Nacos Spring events:
 
 | Nacos Spring Event                           | Trigger                                                      |
 | -------------------------------------------- | ------------------------------------------------------------ |
@@ -510,24 +437,81 @@ Nacos Event/Listener Driven is based on standard Spring Event/Listener mechanism
 | `NacosConfigurationPropertiesBeanBoundEvent` | After `@NacosConfigurationProperties` binding                |
 | `NacosConfigMetadataEvent`                   | After Nacos Config operations                                |
 
+### 4.4.1. [Event/Listener Sample](https://github.com/nacos-group/nacos-spring-project/blob/master/nacos-spring-samples/nacos-spring-webmvc-sample/src/main/java/com/alibaba/nacos/samples/spring/event/NacosEventListenerConfiguration.java)
+
+## 4.5. Global and Special Nacos Properties
+
+The `globalProperties` is a required attribute in any `@EnableNacos`, `@EnableNacosDiscovery` or `@EnableNacosConfig`, and its type is `@NacosProperties`. `globalProperties` initializes "**Global Nacos Properties**" that will be used by other annotations 
+and components, e,g `@NacosInjected`. In other words, **Global Nacos Properties**" defines the global and default properties. It is set with the lowest priority and can be overridden if needed. The precedence of overiding rules is shown in the following table:
+
+| Precedence Order | Nacos Annotation                                             | Required |
+| ---------------- | ------------------------------------------------------------ | -------- |
+| 1                | `*.properties()`                                             | N        |
+| 2                | `@EnableNacosConfig.globalProperties()` or `@EnableNacosDiscovery.globalProperties()` | Y        |
+| 3                | `@EnableNacos.globalProperties()`                            | Y        |
+
+
+`*.properties()` defines special Nacos properties which come from one of the following:  
+
+- `@NacosInjected.properties()` 
+- `@NacosConfigListener.properties()`
+- `@NacosPropertySource.properties()` 
+- `@NacosConfigurationProperties.properties()`
+
+Special Nacos properties are also configured by `@NacosProperties`. However, they are optional and are used to override Global Nacos Properties in special scenarios. If not defined, the Nacos Properties will 
+try to retrieve properities from `@EnableNacosConfig.globalProperties()` or `@EnableNacosDiscovery.globalProperties()`, or 
+`@EnableNacos.globalProperties()`.
 
 
 
-#### [Event/Listener Sample](https://github.com/nacos-group/nacos-spring-project/blob/master/nacos-spring-samples/nacos-spring-webmvc-sample/src/main/java/com/alibaba/nacos/samples/spring/event/NacosEventListenerConfiguration.java)
+## 4.6. `@NacosProperties`
+
+`@NacosProperties` is a uniform annotation for global and special Nacos properties. It serves as a mediator between Java `Properties` and `NacosFactory` class.   `NacosFactory` is responsible for creating `ConfigService` or `NamingService` instances. 
+
+The attributes of `@NacosProperties` completely support placeholders whose source is all kinds of `PropertySource` in Spring `Environment` abstraction, typically Java System `Properties` and OS environment variables. The prefix of all placeholders are `nacos.`.  The mapping between the attributes of `@NacosProperties` and Nacos properties are shown below: 
+
+| Attribute       | Property       | Placeholder              | Description | Required  |
+| --------------- | -------------- | ------------------------ | ----------- | --------- |
+| `endpoint()`    | `endpoint`     | `${nacos.endpoint:}`     |             |     N     |
+| `namespace()`   | `namespace`    | `${nacos.namespace:}`    |             |     N     |
+| `accessKey()`   | `access-key`   | `${nacos.access-key:}`   |             |     N     |
+| `secretKey()`   | `secret-key`   | `${nacos.secret-key:}`   |             |     N     |
+| `serverAddr()`  | `server-addr`  | `${nacos.server-addr:}`  |             |     Y     |
+| `contextPath()` | `context-path` | `${nacos.context-path:}` |             |     N     |
+| `clusterName()` | `cluster-name` | `${nacos.cluster-name:}` |             |     N     |
+| `encode()`      | `encode`       | `${nacos.encode:UTF-8}`  |             |     N     |
+
+
+Note that there are some differences in the placeholders of `globalProperties()` between `@EnableNacosDiscovery` and `@EnableNacosConfig`:
+
+| Attribute       | `@EnableNacosDiscovery`'s Placeholder                     |`@EnableNacosConfig`'s Placeholder  |
+| --------------- | -------------------------------------------------------- |
+| `endpoint()`    | `${nacos.discovery.endpoint:${nacos.endpoint:}}`         |`${nacos.config.endpoint:${nacos.endpoint:}}`         |
+| `namespace()`   | `${nacos.discovery.namespace:${nacos.namespace:}}`       |`${nacos.config.namespace:${nacos.namespace:}}`       |
+| `accessKey()`   | `${nacos.discovery.access-key:${nacos.access-key:}}`     |`${nacos.config.access-key:${nacos.access-key:}}`     |
+| `secretKey()`   | `${nacos.discovery.secret-key:${nacos.secret-key:}}`     |`${nacos.config.secret-key:${nacos.secret-key:}}`     |
+| `serverAddr()`  | `${nacos.discovery.server-addr:${nacos.server-addr:}}`   | `${nacos.config.server-addr:${nacos.server-addr:}}`   |
+| `contextPath()` | `${nacos.discovery.context-path:${nacos.context-path:}}` | `${nacos.config.context-path:${nacos.context-path:}}` |
+| `clusterName()` | `${nacos.discovery.cluster-name:${nacos.cluster-name:}}` |`${nacos.config.cluster-name:${nacos.cluster-name:}}` |
+| `encode()`      | `${nacos.discovery.encode:${nacos.encode:UTF-8}}`        |`${nacos.config.encode:${nacos.encode:UTF-8}}`        |
+
+
+
+These placeholders of `@EnableNacosDiscovery` and `@EnableNacosConfig` are designed to isolate different Nacos servers, and are unnecessary in most scenarios.  By default, general placeholders will be reused.
 
 
 
 
-## Modules
 
-### [`nacos-spring-context`](nacos-spring-context)
+# 5. Modules
+
+## 5.1. [`nacos-spring-context`](nacos-spring-context)
   
-### [`nacos-spring-samples`](nacos-spring-samples)
+## 5.2. [`nacos-spring-samples`](nacos-spring-samples)
 
 
 
-## Relative Projects
+# 6. Relative Projects
 
 * [Alibaba Nacos](https://github.com/alibaba/nacos)
 * [Alibaba Spring Context Support](https://github.com/alibaba/spring-context-support)
-
