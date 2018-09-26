@@ -123,7 +123,7 @@ Complete the following steps to enable Nacos for your Spring project.
 	        <dependency>
 	            <groupId>com.alibaba.nacos</groupId>
 	            <artifactId>nacos-spring-context</artifactId>
-	            <version>${latest.version}</version>
+	            <version>0.1.0-RC1</version>
 	        </dependency>
 	        
 	        ...
