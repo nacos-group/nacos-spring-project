@@ -472,7 +472,7 @@ These placeholders of `@EnableNacosDiscovery` and `@EnableNacosConfig` are desig
     }
 ```
 
-The property `configService` uses `@EnableNacos#globalProperties()` or `@EnableConfigNacos#globalProperties()`, and because the default value of the `encode` attribute is “UTF-8”, therefore the `configService` instance and the `configService2` instance which is annotated by `@NacosProperties(encode = "UTF-8")` are the same. The same is true for `namingService` and `namingService2`.
+The property `configService` uses `@EnableNacos#globalProperties()` or `@EnableNacosConfig#globalProperties()`, and because the default value of the `encode` attribute is “UTF-8”, therefore the `configService` instance and the `configService2` instance which is annotated by `@NacosProperties(encode = "UTF-8")` are the same. The same is true for `namingService` and `namingService2`.
 
 More importantly, unlike the `ConfigService` instances created by the `NacosFactory.createConfigService()` method, the `ConfigService` instances created by the `@NacosInjected` annotation support Nacos Spring events. For instance, there will be an `NacosConfigPublishedEvent`  after an enhanced `ConfigService` invokes the `publishConfig()` method. Refer to the [Event/Listener Driven](#eventlistener-driven) section for more details.
 
