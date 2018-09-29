@@ -20,9 +20,11 @@ import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.config.listener.Listener;
 import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.spring.context.event.DeferredApplicationEventPublisher;
+import com.alibaba.nacos.spring.metadata.NacosServiceMetaData;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ConfigurableApplicationContext;
 
+import java.util.Properties;
 import java.util.concurrent.Executor;
 
 /**
@@ -31,7 +33,7 @@ import java.util.concurrent.Executor;
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
  * @since 0.1.0
  */
-public class EventPublishingConfigService implements ConfigService {
+public class EventPublishingConfigService implements ConfigService, NacosServiceMetaData {
 
     private final ConfigService configService;
 
@@ -39,9 +41,12 @@ public class EventPublishingConfigService implements ConfigService {
 
     private final Executor executor;
 
-    public EventPublishingConfigService(ConfigService configService, ConfigurableApplicationContext context,
+    private final Properties properties;
+
+    public EventPublishingConfigService(ConfigService configService, Properties properties, ConfigurableApplicationContext context,
                                         Executor executor) {
         this.configService = configService;
+        this.properties = properties;
         this.applicationEventPublisher = new DeferredApplicationEventPublisher(context);
         this.executor = executor;
     }
@@ -92,5 +97,10 @@ public class EventPublishingConfigService implements ConfigService {
 
     private void publishEvent(NacosConfigEvent nacosConfigEvent) {
         applicationEventPublisher.publishEvent(nacosConfigEvent);
+    }
+
+    @Override
+    public Properties getProperties() {
+        return properties;
     }
 }

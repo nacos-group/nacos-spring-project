@@ -5,14 +5,14 @@
     <parent>
         <artifactId>nacos-spring-samples</artifactId>
         <groupId>com.alibaba.nacos</groupId>
-        <version>0.1.0-SNAPSHOT</version>
+        <version>0.1.0-RC1</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.alibaba.nacos</groupId>
     <artifactId>nacos-spring-webmvc-sample</artifactId>
-    <name>Alibaba Nacos :: Spring Web MVC Sample :: ${version}</name>
+    <name>Alibaba Nacos :: Samples :: Spring Web MVC </name>
     <packaging>war</packaging>
 
     <dependencies>

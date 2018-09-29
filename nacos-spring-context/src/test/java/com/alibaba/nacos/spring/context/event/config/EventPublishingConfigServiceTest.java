@@ -20,6 +20,7 @@ import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.config.listener.AbstractListener;
 import com.alibaba.nacos.api.config.listener.Listener;
 import com.alibaba.nacos.api.exception.NacosException;
+import com.alibaba.nacos.spring.metadata.NacosServiceMetaData;
 import com.alibaba.nacos.spring.test.MockConfigService;
 import org.junit.After;
 import org.junit.Assert;
@@ -29,6 +30,7 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 
+import java.util.Properties;
 import java.util.concurrent.Executor;
 
 import static com.alibaba.nacos.spring.test.MockConfigService.TIMEOUT_ERROR_MESSAGE;
@@ -48,12 +50,14 @@ public class EventPublishingConfigServiceTest {
 
     private ConfigService configService;
 
+    private Properties properties = new Properties();
+
     @Before
     public void init() {
         this.mockConfigService = new MockConfigService();
         this.context = new GenericApplicationContext();
         this.context.refresh();
-        this.configService = new EventPublishingConfigService(mockConfigService, context, new Executor() {
+        this.configService = new EventPublishingConfigService(mockConfigService, properties, context, new Executor() {
             @Override
             public void execute(Runnable command) {
                 command.run();
@@ -180,6 +184,11 @@ public class EventPublishingConfigServiceTest {
         Assert.assertEquals(mockConfigService, event.getSource());
         Assert.assertEquals(DATA_ID, event.getDataId());
         Assert.assertEquals(GROUP_ID, event.getGroupId());
+    }
+
+    @Test
+    public void testGetProperties() {
+        Assert.assertSame(properties, ((NacosServiceMetaData) configService).getProperties());
     }
 
 }

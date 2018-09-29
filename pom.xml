@@ -12,8 +12,8 @@
 
     <groupId>com.alibaba.nacos</groupId>
     <artifactId>nacos-spring-parent</artifactId>
-    <version>0.1.0-SNAPSHOT</version>
-    <name>Alibaba Nacos :: Spring Project ${version}</name>
+    <version>0.1.0-RC1</version>
+    <name>Alibaba Nacos :: Spring :: POM</name>
     <packaging>pom</packaging>
 
 
@@ -85,7 +85,7 @@
         <sonar.jacoco.itReportPath>${project.basedir}/../test/target/jacoco-it.exec</sonar.jacoco.itReportPath>
         <sonar.exclusions>file:**/generated-sources/**,**/test/**</sonar.exclusions>
         <!-- Nacos -->
-        <nacos.version>0.2.1-SNAPSHOT</nacos.version>
+        <nacos.version>0.2.1-RC1</nacos.version>
         <!-- Spring -->
         <spring.framework.version>3.2.18.RELEASE</spring.framework.version>
         <!-- Servlet -->
