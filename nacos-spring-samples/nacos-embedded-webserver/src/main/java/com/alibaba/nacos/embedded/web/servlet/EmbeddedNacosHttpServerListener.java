@@ -38,7 +38,7 @@ public class EmbeddedNacosHttpServerListener implements ServletContextListener {
     @Override
     public void contextInitialized(ServletContextEvent servletContextEvent) {
         try {
-            if (!System.getProperties().contains(SERVER_ADDRESS_PROPERTY_NAME)) {
+            if (!System.getProperties().containsKey(SERVER_ADDRESS_PROPERTY_NAME)) {
                 httpServer = new EmbeddedNacosHttpServer();
                 httpServer.start(false);
                 System.setProperty(SERVER_ADDRESS_PROPERTY_NAME, "127.0.0.1:" + httpServer.getPort());
