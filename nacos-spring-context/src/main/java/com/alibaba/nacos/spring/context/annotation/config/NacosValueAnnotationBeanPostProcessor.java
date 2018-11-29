@@ -19,17 +19,15 @@ package com.alibaba.nacos.spring.context.annotation.config;
 import com.alibaba.nacos.api.config.annotation.NacosValue;
 import com.alibaba.nacos.spring.context.event.config.NacosConfigReceivedEvent;
 import com.alibaba.spring.beans.factory.annotation.AnnotationInjectedBeanPostProcessor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.MutablePropertyValues;
-import org.springframework.beans.PropertyValues;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.annotation.InjectionMetadata;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.ApplicationListener;
 import org.springframework.util.ReflectionUtils;
-import org.springframework.validation.DataBinder;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -41,7 +39,6 @@ import java.util.Properties;
 
 import static com.alibaba.nacos.spring.util.NacosUtils.toProperties;
 import static org.springframework.core.annotation.AnnotationUtils.getAnnotation;
-import static org.springframework.util.StringUtils.hasText;
 
 /**
  * {@link org.springframework.beans.factory.config.BeanPostProcessor} implementation
@@ -52,6 +49,8 @@ import static org.springframework.util.StringUtils.hasText;
  */
 public class NacosValueAnnotationBeanPostProcessor extends AnnotationInjectedBeanPostProcessor<NacosValue>
     implements BeanFactoryAware, ApplicationListener<NacosConfigReceivedEvent> {
+
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     /**
      * The name of {@link NacosValueAnnotationBeanPostProcessor} bean
@@ -64,11 +63,11 @@ public class NacosValueAnnotationBeanPostProcessor extends AnnotationInjectedBea
 
     private static final String VALUE_SEPARATOR = ":";
 
-    // placeholder, beanProperty
-    private Map<String, List<BeanProperty>> placeholderPropertyListMap = new HashMap<String, List<BeanProperty>>();
+    // placeholder, beanFieldProperty
+    private Map<String, List<BeanFieldProperty>> placeholderPropertyListMap = new HashMap<String, List<BeanFieldProperty>>();
 
-    // beanProperty, bean
-    private Map<BeanProperty, List<Object>> propertyBeanListMap = new HashMap<BeanProperty, List<Object>>();
+    // beanFieldProperty, bean
+    private Map<BeanFieldProperty, List<Object>> propertyBeanListMap = new HashMap<BeanFieldProperty, List<Object>>();
 
     private ConfigurableListableBeanFactory beanFactory;
 
@@ -100,14 +99,14 @@ public class NacosValueAnnotationBeanPostProcessor extends AnnotationInjectedBea
     public Object postProcessBeforeInitialization(Object bean, final String beanName)
         throws BeansException {
 
-        final Map<String, List<BeanProperty>> beanNamePropertyListMap = new HashMap<String, List<BeanProperty>>();
+        final Map<String, List<BeanFieldProperty>> beanNamePropertyListMap = new HashMap<String, List<BeanFieldProperty>>();
 
         doWithAnnotationFields(bean, beanName, beanNamePropertyListMap);
 
-        List<BeanProperty> beanPropertyList = beanNamePropertyListMap.get(beanName);
+        List<BeanFieldProperty> beanPropertyList = beanNamePropertyListMap.get(beanName);
         if (beanPropertyList != null) {
-            for (BeanProperty beanProperty : beanPropertyList) {
-                put2ListMap(propertyBeanListMap, beanProperty, bean);
+            for (BeanFieldProperty beanFieldProperty : beanPropertyList) {
+                put2ListMap(propertyBeanListMap, beanFieldProperty, bean);
             }
         }
 
@@ -115,14 +114,13 @@ public class NacosValueAnnotationBeanPostProcessor extends AnnotationInjectedBea
     }
 
     private void doWithAnnotationFields(Object bean, final String beanName,
-                                        final Map<String, List<BeanProperty>> beanNamePropertyListMap) {
+                                        final Map<String, List<BeanFieldProperty>> beanNamePropertyListMap) {
         ReflectionUtils.doWithFields(bean.getClass(), new ReflectionUtils.FieldCallback() {
             @Override
             public void doWith(Field field) throws IllegalArgumentException {
 
                 doWithNacosValueField(field);
 
-                doWithValueField(field);
             }
 
             private void doWithNacosValueField(Field field) {
@@ -135,17 +133,6 @@ public class NacosValueAnnotationBeanPostProcessor extends AnnotationInjectedBea
                         String placeHolder = annotation.value();
                         doWithListMap(field, placeHolder);
                     }
-                }
-            }
-
-            private void doWithValueField(Field field) {
-                Value annotation = getAnnotation(field, Value.class);
-                if (annotation != null) {
-                    if (Modifier.isStatic(field.getModifiers())) {
-                        return;
-                    }
-                    String placeHolder = annotation.value();
-                    doWithListMap(field, placeHolder);
                 }
             }
 
@@ -163,9 +150,9 @@ public class NacosValueAnnotationBeanPostProcessor extends AnnotationInjectedBea
                 }
 
                 String actualPlaceholder = resolveActualPlaceholder(placeholder);
-                BeanProperty beanProperty = new BeanProperty(field.getName(), actualPlaceholder);
-                put2ListMap(beanNamePropertyListMap, beanName, beanProperty);
-                put2ListMap(placeholderPropertyListMap, actualPlaceholder, beanProperty);
+                BeanFieldProperty beanFieldProperty = new BeanFieldProperty(beanName, field.getName(), actualPlaceholder);
+                put2ListMap(beanNamePropertyListMap, beanName, beanFieldProperty);
+                put2ListMap(placeholderPropertyListMap, actualPlaceholder, beanFieldProperty);
             }
 
             private String resolveActualPlaceholder(String placeholder) {
@@ -198,21 +185,21 @@ public class NacosValueAnnotationBeanPostProcessor extends AnnotationInjectedBea
     public void onApplicationEvent(NacosConfigReceivedEvent event) {
         String content = event.getContent();
         if (content != null) {
-            Map<Object, List<BeanProperty>> map = new HashMap<Object, List<BeanProperty>>();
+            Map<Object, List<BeanFieldProperty>> map = new HashMap<Object, List<BeanFieldProperty>>();
             Properties configProperties = toProperties(content);
             for (Object key : configProperties.keySet()) {
-                List<BeanProperty> beanPropertyList = placeholderPropertyListMap.get(key.toString());
+                List<BeanFieldProperty> beanPropertyList = placeholderPropertyListMap.get(key.toString());
                 if (beanPropertyList == null) {
                     continue;
                 }
-                for (BeanProperty beanProperty : beanPropertyList) {
-                    List<Object> beanList = propertyBeanListMap.get(beanProperty);
+                for (BeanFieldProperty beanFieldProperty : beanPropertyList) {
+                    List<Object> beanList = propertyBeanListMap.get(beanFieldProperty);
                     if (beanList == null) {
                         continue;
                     }
                     for (Object bean : beanList) {
-                        beanProperty.setKey((String)key);
-                        put2ListMap(map, bean, beanProperty);
+                        beanFieldProperty.setKey((String)key);
+                        put2ListMap(map, bean, beanFieldProperty);
                     }
                 }
             }
@@ -221,55 +208,72 @@ public class NacosValueAnnotationBeanPostProcessor extends AnnotationInjectedBea
 
     }
 
-    private void doBind(Map<Object, List<BeanProperty>> map,
+    private void doBind(Map<Object, List<BeanFieldProperty>> map,
                         Properties configProperties) {
-        for (Map.Entry<Object, List<BeanProperty>> entry : map.entrySet()) {
+        for (Map.Entry<Object, List<BeanFieldProperty>> entry : map.entrySet()) {
             Object bean = entry.getKey();
-            List<BeanProperty> beanPropertyList = entry.getValue();
-            PropertyValues propertyValues = resolvePropertyValues(bean, configProperties, beanPropertyList);
-
-            DataBinder dataBinder = new DataBinder(bean);
-            dataBinder.bind(propertyValues);
+            List<BeanFieldProperty> beanPropertyList = entry.getValue();
+            doWithFields(bean, configProperties, beanPropertyList);
         }
     }
 
-    private PropertyValues resolvePropertyValues(Object bean, final Properties configProperties,
-                                                 final List<BeanProperty> beanPropertyList) {
-        final MutablePropertyValues propertyValues = new MutablePropertyValues();
+    private void doWithFields(final Object bean, final Properties configProperties,
+                              final List<BeanFieldProperty> beanPropertyList) {
         ReflectionUtils.doWithFields(bean.getClass(), new ReflectionUtils.FieldCallback() {
             @Override
             public void doWith(Field field) throws IllegalArgumentException {
-                String propertyName = resolvePropertyName(field, beanPropertyList);
-                if (hasText(propertyName) && configProperties.containsKey(propertyName)) {
-                    String propertyValue = configProperties.getProperty(propertyName);
-                    propertyValues.add(field.getName(), propertyValue);
+                BeanFieldProperty beanFieldProperty = resolveBeanFieldProperty(field, beanPropertyList);
+                if (beanFieldProperty == null) {
+                    return;
+                }
+
+                if (configProperties.containsKey(beanFieldProperty.key)) {
+                    String propertyValue = configProperties.getProperty(beanFieldProperty.key);
+                    String fieldName = field.getName();
+                    try {
+                        setFieldValue(bean, field, propertyValue);
+                        if (logger.isDebugEnabled()) {
+                            logger.debug("Update value of the {}" + " (field) in {} (bean) with {}", fieldName,
+                                beanFieldProperty.beanName, propertyValue);
+                        }
+                    } catch (IllegalAccessException e) {
+                        if (logger.isErrorEnabled()) {
+                            logger.error(
+                                "Can't update value of the " + fieldName + " (field) in " + beanFieldProperty.beanName
+                                    + " (bean)", e);
+                        }
+                    }
                 }
             }
         });
-        return propertyValues;
     }
 
-    private String resolvePropertyName(Field field, final List<BeanProperty> beanPropertyList) {
-        for (BeanProperty beanProperty : beanPropertyList) {
-            if (field.getName().equals(beanProperty.name)) {
-                return beanProperty.getKey();
+    private void setFieldValue(Object bean, Field field, Object value) throws IllegalAccessException {
+        boolean accessible = field.isAccessible();
+        field.setAccessible(true);
+        field.set(bean, value);
+        field.setAccessible(accessible);
+    }
+
+    private BeanFieldProperty resolveBeanFieldProperty(Field field, final List<BeanFieldProperty> beanPropertyList) {
+        for (BeanFieldProperty beanFieldProperty : beanPropertyList) {
+            if (field.getName().equals(beanFieldProperty.name)) {
+                return beanFieldProperty;
             }
         }
         return null;
     }
 
-    private static class BeanProperty {
+    private static class BeanFieldProperty {
+        private String beanName;
         private String name;
         private String value;
         private String key;
 
-        BeanProperty(String name, String value) {
+        BeanFieldProperty(String beanName, String name, String value) {
+            this.beanName = beanName;
             this.name = name;
             this.value = value;
-        }
-
-        String getKey() {
-            return key;
         }
 
         void setKey(String key) {
@@ -278,7 +282,7 @@ public class NacosValueAnnotationBeanPostProcessor extends AnnotationInjectedBea
 
         @Override
         public String toString() {
-            return "BeanProperty{" +
+            return "BeanFieldProperty{" +
                 "name='" + name + '\'' +
                 ", value='" + value + '\'' +
                 '}';

@@ -101,26 +101,6 @@ public class NacosPropertySourceTest extends AbstractNacosHttpServerTestExecutio
 
         @NacosValue("${app.name}")
         private String nacosNameNotAutoRefreshed;
-
-        public void setName(String name) {
-            this.name = name;
-        }
-
-        public void setNameWithDefaultValue(String nameWithDefaultValue) {
-            this.nameWithDefaultValue = nameWithDefaultValue;
-        }
-
-        public void setNacosNameAutoRefreshed(String nacosNameAutoRefreshed) {
-            this.nacosNameAutoRefreshed = nacosNameAutoRefreshed;
-        }
-
-        public void setNacosNameAutoRefreshedWithDefaultValue(String nacosNameAutoRefreshedWithDefaultValue) {
-            this.nacosNameAutoRefreshedWithDefaultValue = nacosNameAutoRefreshedWithDefaultValue;
-        }
-
-        public void setNacosNameNotAutoRefreshed(String nacosNameNotAutoRefreshed) {
-            this.nacosNameNotAutoRefreshed = nacosNameNotAutoRefreshed;
-        }
     }
 
     @Bean
@@ -155,9 +135,9 @@ public class NacosPropertySourceTest extends AbstractNacosHttpServerTestExecutio
 
         Thread.sleep(1000);
 
-        Assert.assertEquals(ANOTHER_APP_NAME, app.name);
+        Assert.assertEquals(APP_NAME, app.name);
 
-        Assert.assertEquals(ANOTHER_APP_NAME, app.nameWithDefaultValue);
+        Assert.assertEquals(APP_NAME, app.nameWithDefaultValue);
 
         Assert.assertEquals(ANOTHER_APP_NAME, app.nacosNameAutoRefreshed);
 
