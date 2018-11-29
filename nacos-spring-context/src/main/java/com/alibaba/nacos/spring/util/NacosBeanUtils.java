@@ -143,7 +143,7 @@ public abstract class NacosBeanUtils {
      */
     public static void registerInfrastructureBeanIfAbsent(BeanDefinitionRegistry registry, String beanName, Class<?> beanClass,
                                                           Object... constructorArgs) {
-        if (!isBeanDefinitionPresent(registry, beanName, beanClass)) {
+        if (!isBeanDefinitionPresent(registry, beanName, beanClass) && !registry.containsBeanDefinition(beanName)) {
             registerInfrastructureBean(registry, beanName, beanClass, constructorArgs);
         }
     }
