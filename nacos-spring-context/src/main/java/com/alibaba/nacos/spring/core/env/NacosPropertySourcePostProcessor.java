@@ -22,11 +22,11 @@ import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.spring.beans.factory.annotation.ConfigServiceBeanBuilder;
 import com.alibaba.nacos.spring.context.annotation.config.NacosPropertySources;
 import com.alibaba.nacos.spring.context.config.xml.NacosPropertySourceXmlBeanDefinition;
+
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.ConfigurationClassPostProcessor;
@@ -39,8 +39,10 @@ import org.springframework.core.env.PropertySources;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static com.alibaba.nacos.spring.util.NacosBeanUtils.getConfigServiceBeanBuilder;
 import static com.alibaba.nacos.spring.util.NacosUtils.DEFAULT_STRING_ATTRIBUTE_VALUE;
@@ -61,23 +63,20 @@ import static org.springframework.util.ObjectUtils.nullSafeEquals;
  * @see BeanDefinitionRegistryPostProcessor
  * @since 0.1.0
  */
-public class NacosPropertySourcePostProcessor implements BeanDefinitionRegistryPostProcessor, BeanFactoryPostProcessor,
-        EnvironmentAware, Ordered {
+public class NacosPropertySourcePostProcessor implements BeanFactoryPostProcessor, EnvironmentAware, Ordered {
 
     /**
      * The bean name of {@link NacosPropertySourcePostProcessor}
      */
     public static final String BEAN_NAME = "nacosPropertySourcePostProcessor";
 
+    private final Set<String> processedBeanNames = new LinkedHashSet<String>();
+
     private ConfigurableEnvironment environment;
 
     private Collection<AbstractNacosPropertySourceBuilder> nacosPropertySourceBuilders;
 
     private ConfigServiceBeanBuilder configServiceBeanBuilder;
-
-    @Override
-    public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
-    }
 
     @Override
     public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
@@ -95,6 +94,10 @@ public class NacosPropertySourcePostProcessor implements BeanDefinitionRegistryP
 
     private void processPropertySource(String beanName, ConfigurableListableBeanFactory beanFactory) {
 
+        if (processedBeanNames.contains(beanName)) { // If processed , return immediately.
+            return;
+        }
+
         BeanDefinition beanDefinition = beanFactory.getBeanDefinition(beanName);
         // Build multiple instance if possible
         List<NacosPropertySource> nacosPropertySources = buildNacosPropertySources(beanName, beanDefinition);
@@ -104,6 +107,8 @@ public class NacosPropertySourcePostProcessor implements BeanDefinitionRegistryP
             addNacosPropertySource(nacosPropertySource);
             addListenerIfAutoRefreshed(nacosPropertySource);
         }
+
+        processedBeanNames.add(beanName);
 
     }
 
