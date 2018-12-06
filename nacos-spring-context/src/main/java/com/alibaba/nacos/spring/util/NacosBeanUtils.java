@@ -34,6 +34,7 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.config.SingletonBeanRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
@@ -332,6 +333,17 @@ public abstract class NacosBeanUtils {
         registerConfigServiceBeanBuilder(registry);
 
         registerLoggingNacosConfigMetadataEventListener(registry);
+    }
+
+    /**
+     * Invokes {@link NacosPropertySourcePostProcessor}
+     *
+     * @param beanFactory {@link BeanFactory}
+     */
+    public static void invokeNacosPropertySourcePostProcessor(BeanFactory beanFactory) {
+        NacosPropertySourcePostProcessor postProcessor =
+                beanFactory.getBean(NacosPropertySourcePostProcessor.BEAN_NAME, NacosPropertySourcePostProcessor.class);
+        postProcessor.postProcessBeanFactory((ConfigurableListableBeanFactory) beanFactory);
     }
 
     /**
