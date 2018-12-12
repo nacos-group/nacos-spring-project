@@ -88,9 +88,13 @@ public class NacosPropertySourcePostProcessor implements BeanDefinitionRegistryP
 
     @Override
     public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
-        this.nacosPropertySourceBuilders = new ArrayList<AbstractNacosPropertySourceBuilder>(2);
+        String[] abstractNacosPropertySourceBuilderBeanNames = BeanUtils.getBeanNames(beanFactory,
+            AbstractNacosPropertySourceBuilder.class);
 
-        for (String beanName : BeanUtils.getBeanNames(beanFactory, AbstractNacosPropertySourceBuilder.class)) {
+        this.nacosPropertySourceBuilders = new ArrayList<AbstractNacosPropertySourceBuilder>(
+            abstractNacosPropertySourceBuilderBeanNames.length);
+
+        for (String beanName : abstractNacosPropertySourceBuilderBeanNames) {
             this.nacosPropertySourceBuilders.add(
                 beanFactory.getBean(beanName, AbstractNacosPropertySourceBuilder.class));
         }

@@ -65,9 +65,15 @@ public class AnnotationNacosInjectedBeanPostProcessor extends AnnotationInjected
 
         Class<AbstractNacosServiceBeanBuilder> builderClass = AbstractNacosServiceBeanBuilder.class;
 
+        String[] beanNames = BeanUtils.getBeanNames(beanFactory, builderClass);
+        if (beanNames.length == 0) {
+            throw new NoSuchBeanDefinitionException(builderClass,
+                format("Please check the BeanDefinition of %s in Spring BeanFactory", builderClass));
+        }
+
         Collection<AbstractNacosServiceBeanBuilder> serviceBeanBuilders
-            = new ArrayList<AbstractNacosServiceBeanBuilder>(2);
-        for (String beanName : BeanUtils.getBeanNames(beanFactory, builderClass)) {
+            = new ArrayList<AbstractNacosServiceBeanBuilder>(beanNames.length);
+        for (String beanName : beanNames) {
             serviceBeanBuilders.add(beanFactory.getBean(beanName, builderClass));
         }
 
