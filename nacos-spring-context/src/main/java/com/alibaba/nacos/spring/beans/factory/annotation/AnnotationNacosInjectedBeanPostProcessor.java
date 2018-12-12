@@ -20,11 +20,13 @@ import com.alibaba.nacos.api.annotation.NacosInjected;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.naming.NamingService;
 import com.alibaba.spring.beans.factory.annotation.AnnotationInjectedBeanPostProcessor;
+import com.alibaba.spring.util.BeanUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.InjectionMetadata;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -52,7 +54,7 @@ public class AnnotationNacosInjectedBeanPostProcessor extends AnnotationInjected
     private Map<Class<?>, AbstractNacosServiceBeanBuilder> nacosServiceBeanBuilderMap;
 
     @Override
-    public final void afterPropertiesSet() throws Exception {
+    public final void afterPropertiesSet() {
         // Get beanFactory from super
         ConfigurableListableBeanFactory beanFactory = getBeanFactory();
 
@@ -63,8 +65,17 @@ public class AnnotationNacosInjectedBeanPostProcessor extends AnnotationInjected
 
         Class<AbstractNacosServiceBeanBuilder> builderClass = AbstractNacosServiceBeanBuilder.class;
 
-        Collection<AbstractNacosServiceBeanBuilder> serviceBeanBuilders =
-                beanFactory.getBeansOfType(builderClass).values();
+        String[] beanNames = BeanUtils.getBeanNames(beanFactory, builderClass);
+        if (beanNames.length == 0) {
+            throw new NoSuchBeanDefinitionException(builderClass,
+                format("Please check the BeanDefinition of %s in Spring BeanFactory", builderClass));
+        }
+
+        Collection<AbstractNacosServiceBeanBuilder> serviceBeanBuilders
+            = new ArrayList<AbstractNacosServiceBeanBuilder>(beanNames.length);
+        for (String beanName : beanNames) {
+            serviceBeanBuilders.add(beanFactory.getBean(beanName, builderClass));
+        }
 
         if (serviceBeanBuilders.isEmpty()) {
             throw new NoSuchBeanDefinitionException(builderClass,
@@ -85,7 +96,7 @@ public class AnnotationNacosInjectedBeanPostProcessor extends AnnotationInjected
 
     @Override
     protected Object doGetInjectedBean(NacosInjected annotation, Object bean, String beanName, Class<?> injectedType,
-                                       InjectionMetadata.InjectedElement injectedElement) throws Exception {
+                                       InjectionMetadata.InjectedElement injectedElement) {
 
         AbstractNacosServiceBeanBuilder serviceBeanBuilder = nacosServiceBeanBuilderMap.get(injectedType);
 

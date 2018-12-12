@@ -23,6 +23,7 @@ import com.alibaba.nacos.spring.beans.factory.annotation.ConfigServiceBeanBuilde
 import com.alibaba.nacos.spring.context.annotation.config.NacosPropertySources;
 import com.alibaba.nacos.spring.context.config.xml.NacosPropertySourceXmlBeanDefinition;
 
+import com.alibaba.spring.util.BeanUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
@@ -38,6 +39,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySources;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -86,8 +88,17 @@ public class NacosPropertySourcePostProcessor implements BeanDefinitionRegistryP
 
     @Override
     public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
+        String[] abstractNacosPropertySourceBuilderBeanNames = BeanUtils.getBeanNames(beanFactory,
+            AbstractNacosPropertySourceBuilder.class);
 
-        this.nacosPropertySourceBuilders = beanFactory.getBeansOfType(AbstractNacosPropertySourceBuilder.class).values();
+        this.nacosPropertySourceBuilders = new ArrayList<AbstractNacosPropertySourceBuilder>(
+            abstractNacosPropertySourceBuilderBeanNames.length);
+
+        for (String beanName : abstractNacosPropertySourceBuilderBeanNames) {
+            this.nacosPropertySourceBuilders.add(
+                beanFactory.getBean(beanName, AbstractNacosPropertySourceBuilder.class));
+        }
+
         this.configServiceBeanBuilder = getConfigServiceBeanBuilder(beanFactory);
 
         String[] beanNames = beanFactory.getBeanDefinitionNames();
