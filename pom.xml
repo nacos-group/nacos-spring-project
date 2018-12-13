@@ -12,7 +12,7 @@
 
     <groupId>com.alibaba.nacos</groupId>
     <artifactId>nacos-spring-parent</artifactId>
-    <version>0.1.0-RC2</version>
+    <version>0.2.2-RC1</version>
     <name>Alibaba Nacos :: Spring :: POM</name>
     <packaging>pom</packaging>
 
@@ -170,6 +170,18 @@
 
                 </plugins>
             </build>
+
+            <distributionManagement>
+                <snapshotRepository>
+                    <id>sona</id>
+                    <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+                </snapshotRepository>
+                <repository>
+                    <id>sona</id>
+                    <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
+                </repository>
+            </distributionManagement>
+
         </profile>
     </profiles>
 
