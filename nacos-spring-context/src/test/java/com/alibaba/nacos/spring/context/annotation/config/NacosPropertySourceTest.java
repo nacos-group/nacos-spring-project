@@ -65,18 +65,32 @@ import static com.alibaba.nacos.embedded.web.server.NacosConfigHttpHandler.GROUP
 @Component
 public class NacosPropertySourceTest extends AbstractNacosHttpServerTestExecutionListener {
 
+    private static final String LINE_SEPARATOR = System.getProperty("line.separator");
+
     public static final String DATA_ID = "app";
 
     private static final String APP_NAME = "Nacos-Spring";
 
     private static final String ANOTHER_APP_NAME = "Nacos-Spring-1";
 
+    private static final int VALUE_1 = 1;
+
+    private static final int VALUE_2 = 2;
+
+    private static final int VALUE_3 = 3;
+
+    private static final int VALUE_4 = 4;
+
     @Override
     public void init(EmbeddedNacosHttpServer httpServer) {
         Map<String, String> config = new HashMap<String, String>(1);
         config.put(DATA_ID_PARAM_NAME, DATA_ID);
         config.put(GROUP_ID_PARAM_NAME, DEFAULT_GROUP);
-        config.put(CONTENT_PARAM_NAME, "app.name=" + APP_NAME);
+
+
+        config.put(CONTENT_PARAM_NAME,
+            "app.name=" + APP_NAME + LINE_SEPARATOR + "app.nacosFieldIntValueAutoRefreshed=" + VALUE_1 + LINE_SEPARATOR
+                + "app.nacosMethodIntValueAutoRefreshed=" + VALUE_2);
         httpServer.initConfig(config);
     }
 
@@ -101,6 +115,26 @@ public class NacosPropertySourceTest extends AbstractNacosHttpServerTestExecutio
 
         @NacosValue("${app.name}")
         private String nacosNameNotAutoRefreshed;
+
+        @NacosValue("${app.nacosFieldIntValue:" + VALUE_1 + "}")
+        private int nacosFieldIntValue;
+
+        @NacosValue(value = "${app.nacosFieldIntValueAutoRefreshed}", autoRefreshed = true)
+        private int nacosFieldIntValueAutoRefreshed;
+
+        private int nacosMethodIntValue;
+
+        @NacosValue("${app.nacosMethodIntValue:" + VALUE_2 + "}")
+        public void setNacosMethodIntValue(int nacosMethodIntValue) {
+            this.nacosMethodIntValue = nacosMethodIntValue;
+        }
+
+        private int nacosMethodIntValueAutoRefreshed;
+
+        @NacosValue(value = "${app.nacosMethodIntValueAutoRefreshed}", autoRefreshed = true)
+        public void setNacosMethodIntValueAutoRefreshed(int nacosMethodIntValueAutoRefreshed) {
+            this.nacosMethodIntValueAutoRefreshed = nacosMethodIntValueAutoRefreshed;
+        }
     }
 
     @Bean
@@ -131,7 +165,17 @@ public class NacosPropertySourceTest extends AbstractNacosHttpServerTestExecutio
 
         Assert.assertEquals(APP_NAME, environment.getProperty("app.name"));
 
-        configService.publishConfig(DATA_ID, DEFAULT_GROUP, "app.name=" + ANOTHER_APP_NAME);
+        Assert.assertEquals(VALUE_1, app.nacosFieldIntValue);
+
+        Assert.assertEquals(VALUE_2, app.nacosMethodIntValue);
+
+        Assert.assertEquals(VALUE_1, app.nacosFieldIntValueAutoRefreshed);
+
+        Assert.assertEquals(VALUE_2, app.nacosMethodIntValueAutoRefreshed);
+
+        configService.publishConfig(DATA_ID, DEFAULT_GROUP,
+            "app.name=" + ANOTHER_APP_NAME + LINE_SEPARATOR + "app.nacosFieldIntValueAutoRefreshed=" + VALUE_3
+                + LINE_SEPARATOR + "app.nacosMethodIntValueAutoRefreshed=" + VALUE_4);
 
         Thread.sleep(1000);
 
@@ -146,6 +190,14 @@ public class NacosPropertySourceTest extends AbstractNacosHttpServerTestExecutio
         Assert.assertEquals(APP_NAME, app.nacosNameNotAutoRefreshed);
 
         Assert.assertEquals(ANOTHER_APP_NAME, environment.getProperty("app.name"));
+
+        Assert.assertEquals(VALUE_1, app.nacosFieldIntValue);
+
+        Assert.assertEquals(VALUE_2, app.nacosMethodIntValue);
+
+        Assert.assertEquals(VALUE_3, app.nacosFieldIntValueAutoRefreshed);
+
+        Assert.assertEquals(VALUE_4, app.nacosMethodIntValueAutoRefreshed);
     }
 
 }
