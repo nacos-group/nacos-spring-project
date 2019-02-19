@@ -48,7 +48,7 @@ public class GlobalNacosPropertiesBeanDefinitionParser implements BeanDefinition
 
         Properties properties = new Properties();
 
-        Environment environment = parserContext.getDelegate().getEnvironment();
+        Environment environment = parserContext.getDelegate().getReaderContext().getReader().getEnvironment();
 
         properties.setProperty(PropertyKeyConst.ENDPOINT, element.getAttribute(ENDPOINT));
         properties.setProperty(PropertyKeyConst.NAMESPACE, element.getAttribute(NAMESPACE));

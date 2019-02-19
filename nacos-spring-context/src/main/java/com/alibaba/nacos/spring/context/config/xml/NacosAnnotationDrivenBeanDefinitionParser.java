@@ -36,7 +36,7 @@ public class NacosAnnotationDrivenBeanDefinitionParser implements BeanDefinition
     @Override
     public BeanDefinition parse(Element element, ParserContext parserContext) {
         // Get Environment
-        Environment environment = parserContext.getDelegate().getEnvironment();
+        Environment environment = parserContext.getDelegate().getReaderContext().getReader().getEnvironment();
         // Get BeanDefinitionRegistry
         BeanDefinitionRegistry registry = parserContext.getRegistry();
         // Register Nacos Annotation Beans
