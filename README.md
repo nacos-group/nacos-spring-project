@@ -123,12 +123,14 @@ Complete the following steps to enable Nacos for your Spring project.
 	        <dependency>
 	            <groupId>com.alibaba.nacos</groupId>
 	            <artifactId>nacos-spring-context</artifactId>
-	            <version>0.2.2-RC1</version>
+	            <version>0.2.3-RC1</version>
 	        </dependency>
 	        
 	        ...
 	    </dependencies>
 	```
+
+**Note:** Support Spring 5 from version 0.2.3-RC1.
 
 2. Add the `@EnableNacos` annotation in the `@Configuration` class of Spring and specify "\${host}:${port}" of your Nacos server in the `serverAddr` attribute:
 
