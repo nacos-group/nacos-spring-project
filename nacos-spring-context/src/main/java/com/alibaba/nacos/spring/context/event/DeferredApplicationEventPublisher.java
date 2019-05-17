@@ -16,6 +16,8 @@
  */
 package com.alibaba.nacos.spring.context.event;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.context.*;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.support.AbstractApplicationContext;
@@ -26,8 +28,7 @@ import java.util.List;
 
 /**
  * Deferred {@link ApplicationEventPublisher} to resolve {@link #publishEvent(ApplicationEvent)} too early to publish
- * {@link ApplicationEvent} when {@link AbstractApplicationContext#initApplicationEventMulticaster()
- * Spring ApplicationContexts' ApplicationEventMulticaster} is not ready, thus current class will hold
+ * {@link ApplicationEvent} when  is not ready, thus current class will hold
  * all early {@link ApplicationEvent events} temporary until {@link ConfigurableApplicationContext#isRunning() Spring
  * ApplicationContext is active}, and then those {@link ApplicationEvent events} will be replayed.
  *
@@ -36,6 +37,7 @@ import java.util.List;
  */
 public class DeferredApplicationEventPublisher implements ApplicationEventPublisher, ApplicationListener<ContextRefreshedEvent> {
 
+    private final Log logger = LogFactory.getLog(this.getClass());
     private final ConfigurableApplicationContext context;
 
     private final List<ApplicationEvent> deferredEvents = new LinkedList<ApplicationEvent>();
@@ -45,9 +47,11 @@ public class DeferredApplicationEventPublisher implements ApplicationEventPublis
         this.context.addApplicationListener(this);
     }
 
+    //FIXME DEBUG日志信息需要删除
     @Override
     public void publishEvent(ApplicationEvent event) {
-
+        logger.info("[publishEvent] DEBUG THREAD NAME [" + Thread.currentThread().getName() + "]");
+        logger.debug("[context] DEBUG IS RUNNING [" + context.isRunning() + "," + context.hashCode() + "]");
         if (context.isRunning()) {
             context.publishEvent(event);
         } else {
@@ -69,10 +73,13 @@ public class DeferredApplicationEventPublisher implements ApplicationEventPublis
         replayDeferredEvents();
     }
 
+    //FIXME DEBUG日志信息需要删除，以及为什么会出现NPE异常
     private void replayDeferredEvents() {
         Iterator<ApplicationEvent> iterator = deferredEvents.iterator();
         while (iterator.hasNext()) {
+            logger.info("[replayDeferredEvents] DEBUG THREAD NAME [" + Thread.currentThread().getName() + "]");
             ApplicationEvent event = iterator.next();
+            // if use publishEvent, maybe case NPE or CME
             publishEvent(event);
             iterator.remove(); // remove if published
         }
