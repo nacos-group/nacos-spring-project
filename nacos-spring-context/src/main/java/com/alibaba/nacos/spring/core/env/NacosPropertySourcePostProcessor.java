@@ -88,6 +88,8 @@ public class NacosPropertySourcePostProcessor implements BeanDefinitionRegistryP
 
     @Override
     public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
+
+        // maybe is AnnotationNacosPropertySourceBuilder or XmlNacosPropertySourceBuilder
         String[] abstractNacosPropertySourceBuilderBeanNames = BeanUtils.getBeanNames(beanFactory,
             AbstractNacosPropertySourceBuilder.class);
 
@@ -142,6 +144,7 @@ public class NacosPropertySourcePostProcessor implements BeanDefinitionRegistryP
 
         MutablePropertySources propertySources = environment.getPropertySources();
 
+        // 确定 NacosPropertySource 加入的位置
         boolean first = nacosPropertySource.isFirst();
         String before = nacosPropertySource.getBefore();
         String after = nacosPropertySource.getAfter();
@@ -177,6 +180,7 @@ public class NacosPropertySourcePostProcessor implements BeanDefinitionRegistryP
         final ConfigService configService = configServiceBeanBuilder.build(nacosPropertiesAttributes);
 
         try {
+            //TODO 此处的监听器的用途？为什么要 replace NacosPropertySource
             configService.addListener(dataId, groupId, new AbstractListener() {
 
                 @Override

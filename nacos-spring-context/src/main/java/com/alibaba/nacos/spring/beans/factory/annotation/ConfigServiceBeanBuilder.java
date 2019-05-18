@@ -43,6 +43,7 @@ public class ConfigServiceBeanBuilder extends AbstractNacosServiceBeanBuilder<Co
     @Override
     protected ConfigService createService(NacosServiceFactory nacosServiceFactory, Properties properties)
             throws NacosException {
+        // 从 CacheableEventPublishingNacosServiceFactory 中创建 or 获取一个 ConfigService
         return nacosServiceFactory.createConfigService(properties);
     }
 }

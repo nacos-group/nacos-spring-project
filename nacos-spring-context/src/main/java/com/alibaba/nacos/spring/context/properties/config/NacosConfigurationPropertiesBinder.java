@@ -164,6 +164,7 @@ class NacosConfigurationPropertiesBinder {
         dataBinder.setAutoGrowNestedPaths(properties.ignoreNestedProperties());
         dataBinder.setIgnoreInvalidFields(properties.ignoreInvalidFields());
         dataBinder.setIgnoreUnknownFields(properties.ignoreUnknownFields());
+        // 最终执行属性赋值操作的 code
         dataBinder.bind(propertyValues);
     }
 

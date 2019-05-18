@@ -317,18 +317,25 @@ public abstract class NacosBeanUtils {
      */
     public static void registerNacosConfigBeans(BeanDefinitionRegistry registry, Environment environment) {
         // Register PropertySourcesPlaceholderConfigurer Bean
+        // 此处代码无需关心
         registerPropertySourcesPlaceholderConfigurer(registry);
 
+        // POJO 使用了 @NacosConfigProperties
         registerNacosConfigPropertiesBindingPostProcessor(registry);
 
+        // 方法使用了 @NacosConfigListener
         registerNacosConfigListenerMethodProcessor(registry);
 
+        // 根据使用方式注册对应的 NacosPropertySourcePostProcessor
         registerNacosPropertySourcePostProcessor(registry);
 
+        // 注册 AnnotationNacosPropertySourceBuilder
         registerAnnotationNacosPropertySourceBuilder(registry);
 
+        // 多线程执行池
         registerNacosConfigListenerExecutor(registry, environment);
 
+        // 注册 NacosValueAnnotationBeanPostProcessor，该 Bean 承担了 @NacosValue 的绑定以及自动刷新操作
         registerNacosValueAnnotationBeanPostProcessor(registry);
 
         registerConfigServiceBeanBuilder(registry);

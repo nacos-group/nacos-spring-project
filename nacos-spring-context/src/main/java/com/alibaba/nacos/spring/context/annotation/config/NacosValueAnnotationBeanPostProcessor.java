@@ -120,6 +120,11 @@ public class NacosValueAnnotationBeanPostProcessor extends AnnotationInjectedBea
         return super.postProcessBeforeInitialization(bean, beanName);
     }
 
+    /**
+     * receive {@link NacosConfigReceivedEvent} event to bind or update {@link NacosValue} field
+     *
+     * @param event
+     */
     @Override
     public void onApplicationEvent(NacosConfigReceivedEvent event) {
         String content = event.getContent();
@@ -202,6 +207,7 @@ public class NacosValueAnnotationBeanPostProcessor extends AnnotationInjectedBea
                     return;
                 }
 
+                // 将 @NacosValue 以及 target obj 缓存起来
                 NacosValueTarget nacosValueTarget = new NacosValueTarget(bean, beanName, method, field);
                 put2ListMap(placeholderNacosValueTargetMap, placeholder, nacosValueTarget);
             }

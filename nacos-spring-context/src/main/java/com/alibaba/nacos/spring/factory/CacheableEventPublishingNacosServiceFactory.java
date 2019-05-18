@@ -61,6 +61,7 @@ public class CacheableEventPublishingNacosServiceFactory implements NacosService
 
         copy.putAll(properties);
 
+        // 根据配置信息创建一个key用于缓存 ConfigService
         String cacheKey = identify(copy);
 
         ConfigService configService = configServicesCache.get(cacheKey);
