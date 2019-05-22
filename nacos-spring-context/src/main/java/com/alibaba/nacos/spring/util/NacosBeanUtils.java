@@ -304,7 +304,7 @@ public abstract class NacosBeanUtils {
      */
     public static void registerNacosCommonBeans(BeanDefinitionRegistry registry) {
         // Register NacosServiceFactory Bean
-        registerNacosServiceFactory(registry);
+//        registerNacosServiceFactory(registry);
         // Register AnnotationNacosInjectedBeanPostProcessor Bean
         registerAnnotationNacosInjectedBeanPostProcessor(registry);
     }
@@ -419,7 +419,7 @@ public abstract class NacosBeanUtils {
      * @throws NoSuchBeanDefinitionException if there is no such bean definition
      */
     public static NacosServiceFactory getNacosServiceFactoryBean(BeanFactory beanFactory) throws NoSuchBeanDefinitionException {
-        return beanFactory.getBean(CacheableEventPublishingNacosServiceFactory.BEAN_NAME, NacosServiceFactory.class);
+        return CacheableEventPublishingNacosServiceFactory.getSingleton();
     }
 
     /**

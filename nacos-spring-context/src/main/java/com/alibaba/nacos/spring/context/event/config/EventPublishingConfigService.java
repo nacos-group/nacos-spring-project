@@ -41,12 +41,15 @@ public class EventPublishingConfigService implements ConfigService, NacosService
 
     private final Executor executor;
 
+    private final ConfigurableApplicationContext context;
+
     private final Properties properties;
 
     public EventPublishingConfigService(ConfigService configService, Properties properties, ConfigurableApplicationContext context,
                                         Executor executor) {
         this.configService = configService;
         this.properties = properties;
+        this.context = context;
         this.applicationEventPublisher = new DeferredApplicationEventPublisher(context);
         this.executor = executor;
     }
@@ -65,7 +68,7 @@ public class EventPublishingConfigService implements ConfigService, NacosService
 
     @Override
     public void addListener(String dataId, String group, Listener listener) throws NacosException {
-        Listener listenerAdapter = new DelegatingEventPublishingListener(configService, dataId, group, applicationEventPublisher, executor, listener);
+        Listener listenerAdapter = new DelegatingEventPublishingListener(configService, dataId, group, applicationEventPublisher, context, executor, listener);
         configService.addListener(dataId, group, listenerAdapter);
         publishEvent(new NacosConfigListenerRegisteredEvent(configService, dataId, group, listener, true));
     }

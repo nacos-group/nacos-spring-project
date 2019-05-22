@@ -51,6 +51,8 @@ import static org.springframework.core.annotation.AnnotationUtils.getAnnotationA
  */
 public abstract class NacosUtils {
 
+    public static final String NACOS_BOOTSTRAP_PROPERTY_APPLICATION = "nacos.bootstrap.property.application";
+
     /**
      * Default value of {@link String} attribute for {@link Annotation}
      */

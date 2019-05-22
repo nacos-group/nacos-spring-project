@@ -29,6 +29,7 @@ import org.springframework.beans.factory.annotation.InjectionMetadata;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.MethodParameter;
+import org.springframework.core.env.Environment;
 import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Field;
@@ -66,6 +67,8 @@ public class NacosValueAnnotationBeanPostProcessor extends AnnotationInjectedBea
     private static final String PLACEHOLDER_SUFFIX = "}";
 
     private static final String VALUE_SEPARATOR = ":";
+
+    private Environment environment;
 
     /**
      * placeholder, nacosValueTarget
@@ -149,6 +152,11 @@ public class NacosValueAnnotationBeanPostProcessor extends AnnotationInjectedBea
                 }
             }
         }
+    }
+
+    @Override
+    public void setEnvironment(Environment environment) {
+        this.environment = environment;
     }
 
     private Object convertIfNecessary(Field field, Object value) {

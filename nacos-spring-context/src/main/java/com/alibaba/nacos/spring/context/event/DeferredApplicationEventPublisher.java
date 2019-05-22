@@ -20,7 +20,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.context.*;
 import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.context.support.AbstractApplicationContext;
 
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -47,17 +46,15 @@ public class DeferredApplicationEventPublisher implements ApplicationEventPublis
         this.context.addApplicationListener(this);
     }
 
-    //FIXME DEBUG日志信息需要删除
     @Override
     public void publishEvent(ApplicationEvent event) {
-        logger.info("[publishEvent] DEBUG THREAD NAME [" + Thread.currentThread().getName() + "]");
+        logger.info("[publishEvent] DEBUG THREAD NAME [" + Thread.currentThread().getName() + "] " + event);
         logger.debug("[context] DEBUG IS RUNNING [" + context.isRunning() + "," + context.hashCode() + "]");
         if (context.isRunning()) {
             context.publishEvent(event);
         } else {
             deferredEvents.add(event);
         }
-
     }
 
     @Override
@@ -84,4 +81,5 @@ public class DeferredApplicationEventPublisher implements ApplicationEventPublis
             iterator.remove(); // remove if published
         }
     }
+
 }

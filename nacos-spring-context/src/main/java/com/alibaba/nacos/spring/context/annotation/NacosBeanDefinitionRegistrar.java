@@ -22,6 +22,8 @@ import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.context.ApplicationContextInitializer;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
@@ -49,6 +51,7 @@ public class NacosBeanDefinitionRegistrar implements ImportBeanDefinitionRegistr
 
     private BeanFactory beanFactory;
 
+
     @Override
     public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
         BeanDefinition annotationProcessor = BeanDefinitionBuilder.genericBeanDefinition(
@@ -61,6 +64,7 @@ public class NacosBeanDefinitionRegistrar implements ImportBeanDefinitionRegistr
         // Register Global Nacos Properties Bean
         registerGlobalNacosProperties(attributes, registry, environment, GLOBAL_NACOS_PROPERTIES_BEAN_NAME);
         // Register Nacos Annotation Beans
+
         registerNacosAnnotationBeans(registry);
         // Invoke NacosPropertySourcePostProcessor immediately
         // in order to enhance the precedence of @NacosPropertySource process
@@ -82,4 +86,5 @@ public class NacosBeanDefinitionRegistrar implements ImportBeanDefinitionRegistr
     public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
         this.beanFactory = beanFactory;
     }
+
 }

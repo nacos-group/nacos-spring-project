@@ -17,6 +17,7 @@
 package com.alibaba.nacos.spring.context.event.config;
 
 import com.alibaba.nacos.api.config.ConfigService;
+import org.springframework.context.ConfigurableApplicationContext;
 
 /**
  * The {@link NacosConfigEvent event} of Nacos Configuration that has been changed.
@@ -27,9 +28,11 @@ import com.alibaba.nacos.api.config.ConfigService;
 public class NacosConfigReceivedEvent extends NacosConfigEvent {
 
     private final String content;
+    private final ConfigurableApplicationContext context;
 
-    public NacosConfigReceivedEvent(ConfigService configService, String dataId, String groupId, String content) {
+    public NacosConfigReceivedEvent(ConfigurableApplicationContext context, ConfigService configService, String dataId, String groupId, String content) {
         super(configService, dataId, groupId);
+        this.context = context;
         this.content = content;
     }
 
@@ -40,5 +43,9 @@ public class NacosConfigReceivedEvent extends NacosConfigEvent {
      */
     public String getContent() {
         return content;
+    }
+
+    public ConfigurableApplicationContext getContext() {
+        return context;
     }
 }

@@ -18,10 +18,14 @@ package com.alibaba.nacos.spring.context.annotation.config;
 
 import com.alibaba.nacos.spring.util.NacosBeanUtils;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.context.ApplicationContextInitializer;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.annotation.AnnotationAttributes;
@@ -29,11 +33,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertyResolver;
 import org.springframework.core.type.AnnotationMetadata;
 
-import static com.alibaba.nacos.spring.util.NacosBeanUtils.CONFIG_GLOBAL_NACOS_PROPERTIES_BEAN_NAME;
-import static com.alibaba.nacos.spring.util.NacosBeanUtils.invokeNacosPropertySourcePostProcessor;
-import static com.alibaba.nacos.spring.util.NacosBeanUtils.registerGlobalNacosProperties;
-import static com.alibaba.nacos.spring.util.NacosBeanUtils.registerNacosCommonBeans;
-import static com.alibaba.nacos.spring.util.NacosBeanUtils.registerNacosConfigBeans;
+import static com.alibaba.nacos.spring.util.NacosBeanUtils.*;
 import static org.springframework.core.annotation.AnnotationAttributes.fromMap;
 
 /**
@@ -49,6 +49,8 @@ import static org.springframework.core.annotation.AnnotationAttributes.fromMap;
 public class NacosConfigBeanDefinitionRegistrar implements ImportBeanDefinitionRegistrar, EnvironmentAware,
         BeanFactoryAware {
 
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+
     private Environment environment;
 
     private BeanFactory beanFactory;
@@ -63,6 +65,7 @@ public class NacosConfigBeanDefinitionRegistrar implements ImportBeanDefinitionR
         // Register Nacos Config Beans
         registerNacosConfigBeans(registry, environment);
         // Invoke NacosPropertySourcePostProcessor immediately
+//        registerNacosServiceFactory(registry);
         // in order to enhance the precedence of @NacosPropertySource process
         invokeNacosPropertySourcePostProcessor(beanFactory);
     }
@@ -76,4 +79,5 @@ public class NacosConfigBeanDefinitionRegistrar implements ImportBeanDefinitionR
     public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
         this.beanFactory = beanFactory;
     }
+
 }
