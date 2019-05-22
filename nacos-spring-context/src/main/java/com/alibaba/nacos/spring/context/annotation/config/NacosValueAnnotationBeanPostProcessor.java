@@ -124,7 +124,7 @@ public class NacosValueAnnotationBeanPostProcessor extends AnnotationInjectedBea
     /**
      * receive {@link NacosConfigReceivedEvent} event to bind or update {@link NacosValue} field
      *
-     * @param event
+     * @param event {@link NacosConfigReceivedEvent}
      */
     @Override
     public void onApplicationEvent(NacosConfigReceivedEvent event) {

@@ -365,12 +365,11 @@ public abstract class NacosBeanUtils {
     }
 
     /**
-     * <del>Register Nacos Discovery Beans</del>
+     * Register Nacos Discovery Beans
      * Register Nacos Discovery Beans of NamingService and NamingMaintainService
      *
      * @param registry {@link BeanDefinitionRegistry}
-     * @@author liaochuntao
-     * @since
+     * @author liaochuntao
      */
     public static void registerNacosDiscoveryBeans(BeanDefinitionRegistry registry) {
         registerNamingServiceBeanBuilder(registry);
@@ -462,7 +461,7 @@ public abstract class NacosBeanUtils {
      *
      * @param beanFactory {@link BeanFactory}
      * @return {@link NamingMaintainServiceBeanBuilder} Bean
-     * @throws NoSuchBeanDefinitionException
+     * @throws NoSuchBeanDefinitionException if there is no such bean definition
      */
     public static NamingMaintainServiceBeanBuilder getNamingMaintainServiceBeanBuilder(BeanFactory beanFactory) throws NoSuchBeanDefinitionException {
         return beanFactory.getBean(NamingMaintainServiceBeanBuilder.BEAN_NAME, NamingMaintainServiceBeanBuilder.class);

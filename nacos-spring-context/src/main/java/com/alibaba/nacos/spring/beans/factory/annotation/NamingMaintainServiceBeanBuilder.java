@@ -11,7 +11,6 @@ import java.util.Properties;
  * {@link NamingMaintainService} Bean Builder
  *
  * @author liaochuntao
- * @since
  */
 public class NamingMaintainServiceBeanBuilder extends AbstractNacosServiceBeanBuilder<NamingMaintainService>  {
 
