@@ -26,7 +26,6 @@ import com.alibaba.nacos.spring.context.config.xml.NacosPropertySourceXmlBeanDef
 import com.alibaba.nacos.spring.factory.CacheableEventPublishingNacosServiceFactory;
 import com.alibaba.nacos.spring.factory.NacosServiceFactory;
 import com.alibaba.nacos.spring.util.NacosBeanUtils;
-import com.alibaba.nacos.spring.util.NacosUtils;
 import com.alibaba.spring.util.BeanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,10 +39,21 @@ import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.ConfigurationClassPostProcessor;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.Ordered;
-import org.springframework.core.env.*;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.Environment;
+import org.springframework.core.env.MutablePropertySources;
+import org.springframework.core.env.PropertySources;
 
-import java.util.*;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Properties;
+import java.util.Set;
+
+import static com.alibaba.nacos.spring.util.NacosBeanUtils.getConfigServiceBeanBuilder;
 import static com.alibaba.nacos.spring.util.NacosUtils.DEFAULT_STRING_ATTRIBUTE_VALUE;
 import static org.springframework.util.ObjectUtils.nullSafeEquals;
 
@@ -99,7 +109,7 @@ public class NacosPropertySourcePostProcessor implements BeanDefinitionRegistryP
                 beanFactory.getBean(beanName, AbstractNacosPropertySourceBuilder.class));
         }
 
-        this.configServiceBeanBuilder = NacosBeanUtils.getConfigServiceBeanBuilder(beanFactory);
+        this.configServiceBeanBuilder = getConfigServiceBeanBuilder(beanFactory);
 
         String[] beanNames = beanFactory.getBeanDefinitionNames();
 
@@ -167,7 +177,6 @@ public class NacosPropertySourcePostProcessor implements BeanDefinitionRegistryP
         }
     }
 
-    //TODO 此处改为了静态方法
     public static void addListenerIfAutoRefreshed(final NacosPropertySource nacosPropertySource, final Properties properties, final ConfigurableEnvironment environment) {
 
         if (!nacosPropertySource.isAutoRefreshed()) { // Disable Auto-Refreshed
@@ -182,7 +191,6 @@ public class NacosPropertySourcePostProcessor implements BeanDefinitionRegistryP
 
             final ConfigService configService = nacosServiceFactory.createConfigService(properties);
 
-            // 用于刷新 Spring Environment 中存储下的配置信息数据
             configService.addListener(dataId, groupId, new AbstractListener() {
 
                 @Override

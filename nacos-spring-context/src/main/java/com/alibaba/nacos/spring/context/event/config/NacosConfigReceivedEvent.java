@@ -28,11 +28,9 @@ import org.springframework.context.ConfigurableApplicationContext;
 public class NacosConfigReceivedEvent extends NacosConfigEvent {
 
     private final String content;
-    private final ConfigurableApplicationContext context;
 
-    public NacosConfigReceivedEvent(ConfigurableApplicationContext context, ConfigService configService, String dataId, String groupId, String content) {
+    public NacosConfigReceivedEvent(ConfigService configService, String dataId, String groupId, String content) {
         super(configService, dataId, groupId);
-        this.context = context;
         this.content = content;
     }
 
@@ -43,9 +41,5 @@ public class NacosConfigReceivedEvent extends NacosConfigEvent {
      */
     public String getContent() {
         return content;
-    }
-
-    public ConfigurableApplicationContext getContext() {
-        return context;
     }
 }

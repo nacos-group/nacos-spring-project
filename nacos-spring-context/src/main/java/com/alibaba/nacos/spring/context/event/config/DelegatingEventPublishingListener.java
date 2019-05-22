@@ -44,21 +44,17 @@ final class DelegatingEventPublishingListener implements Listener {
 
     private final ApplicationEventPublisher applicationEventPublisher;
 
-    private final ConfigurableApplicationContext context;
-
     private final Executor executor;
 
     private final Listener delegate;
 
     DelegatingEventPublishingListener(ConfigService configService, String dataId, String groupId,
                                       ApplicationEventPublisher applicationEventPublisher,
-                                      ConfigurableApplicationContext context,
                                       Executor executor, Listener delegate) {
         this.configService = configService;
         this.dataId = dataId;
         this.groupId = groupId;
         this.applicationEventPublisher = applicationEventPublisher;
-        this.context = context;
         this.executor = executor;
         this.delegate = delegate;
     }
@@ -84,7 +80,7 @@ final class DelegatingEventPublishingListener implements Listener {
     }
 
     private void publishEvent(String content) {
-        NacosConfigReceivedEvent event = new NacosConfigReceivedEvent(context, configService, dataId, groupId, content);
+        NacosConfigReceivedEvent event = new NacosConfigReceivedEvent(configService, dataId, groupId, content);
         applicationEventPublisher.publishEvent(event);
     }
 

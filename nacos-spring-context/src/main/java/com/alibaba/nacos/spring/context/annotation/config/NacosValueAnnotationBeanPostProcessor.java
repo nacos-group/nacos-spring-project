@@ -68,8 +68,6 @@ public class NacosValueAnnotationBeanPostProcessor extends AnnotationInjectedBea
 
     private static final String VALUE_SEPARATOR = ":";
 
-    private Environment environment;
-
     /**
      * placeholder, nacosValueTarget
      */
@@ -152,11 +150,6 @@ public class NacosValueAnnotationBeanPostProcessor extends AnnotationInjectedBea
                 }
             }
         }
-    }
-
-    @Override
-    public void setEnvironment(Environment environment) {
-        this.environment = environment;
     }
 
     private Object convertIfNecessary(Field field, Object value) {

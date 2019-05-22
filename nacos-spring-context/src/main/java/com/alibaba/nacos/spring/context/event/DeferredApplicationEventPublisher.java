@@ -48,8 +48,7 @@ public class DeferredApplicationEventPublisher implements ApplicationEventPublis
 
     @Override
     public void publishEvent(ApplicationEvent event) {
-        logger.info("[publishEvent] DEBUG THREAD NAME [" + Thread.currentThread().getName() + "] " + event);
-        logger.debug("[context] DEBUG IS RUNNING [" + context.isRunning() + "," + context.hashCode() + "]");
+        logger.debug("[publishEvent] DEBUG THREAD NAME [" + Thread.currentThread().getName() + "] " + this.hashCode());
         if (context.isRunning()) {
             context.publishEvent(event);
         } else {
@@ -70,11 +69,10 @@ public class DeferredApplicationEventPublisher implements ApplicationEventPublis
         replayDeferredEvents();
     }
 
-    //FIXME DEBUG日志信息需要删除，以及为什么会出现NPE异常
     private void replayDeferredEvents() {
         Iterator<ApplicationEvent> iterator = deferredEvents.iterator();
         while (iterator.hasNext()) {
-            logger.info("[replayDeferredEvents] DEBUG THREAD NAME [" + Thread.currentThread().getName() + "]");
+            logger.info("[replayDeferredEvents] DEBUG THREAD NAME [" + Thread.currentThread().getName() + "]" + this.hashCode());
             ApplicationEvent event = iterator.next();
             // if use publishEvent, maybe case NPE or CME
             publishEvent(event);

@@ -65,7 +65,7 @@ public class NacosConfigBeanDefinitionRegistrar implements ImportBeanDefinitionR
         // Register Nacos Config Beans
         registerNacosConfigBeans(registry, environment);
         // Invoke NacosPropertySourcePostProcessor immediately
-//        registerNacosServiceFactory(registry);
+
         // in order to enhance the precedence of @NacosPropertySource process
         invokeNacosPropertySourcePostProcessor(beanFactory);
     }
