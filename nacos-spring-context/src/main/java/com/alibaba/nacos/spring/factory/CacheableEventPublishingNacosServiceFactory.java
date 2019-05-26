@@ -39,7 +39,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.alibaba.nacos.spring.context.constants.NacosConstants.DEFAULT_NACOS_CONFIG_LISTENER_PARALLELISM;
 import static com.alibaba.nacos.spring.context.constants.NacosConstants.NACOS_CONFIG_LISTENER_PARALLELISM;
-import static com.alibaba.nacos.spring.util.NacosBeanUtils.getNacosConfigListenerExecutorIfPresent;
 import static com.alibaba.nacos.spring.util.NacosUtils.identify;
 
 /**
@@ -53,7 +52,7 @@ import static com.alibaba.nacos.spring.util.NacosUtils.identify;
  */
 public class CacheableEventPublishingNacosServiceFactory implements NacosServiceFactory, ApplicationContextAware {
 
-    private static final CacheableEventPublishingNacosServiceFactory singleton = new CacheableEventPublishingNacosServiceFactory();;
+    private static final CacheableEventPublishingNacosServiceFactory singleton = new CacheableEventPublishingNacosServiceFactory();
 
     private final Map<String, ConfigService> configServicesCache = new LinkedHashMap<String, ConfigService>(2);
 

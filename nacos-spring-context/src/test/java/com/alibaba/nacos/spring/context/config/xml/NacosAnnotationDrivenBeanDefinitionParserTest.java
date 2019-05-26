@@ -64,9 +64,7 @@ public class NacosAnnotationDrivenBeanDefinitionParserTest {
     @Qualifier(NacosBeanUtils.GLOBAL_NACOS_PROPERTIES_BEAN_NAME)
     private Properties globalProperties;
 
-    @Autowired
-    @Qualifier(CacheableEventPublishingNacosServiceFactory.BEAN_NAME)
-    private NacosServiceFactory nacosServiceFactory;
+    private NacosServiceFactory nacosServiceFactory = CacheableEventPublishingNacosServiceFactory.getSingleton();
 
     @Autowired
     @Qualifier(AnnotationNacosInjectedBeanPostProcessor.BEAN_NAME)

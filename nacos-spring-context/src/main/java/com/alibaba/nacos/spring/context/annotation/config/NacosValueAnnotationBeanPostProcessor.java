@@ -29,8 +29,10 @@ import org.springframework.beans.factory.annotation.InjectionMetadata;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.MethodParameter;
+import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.util.ReflectionUtils;
+import org.springframework.util.StringValueResolver;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
