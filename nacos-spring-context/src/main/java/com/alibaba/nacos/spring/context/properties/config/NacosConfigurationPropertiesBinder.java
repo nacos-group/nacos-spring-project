@@ -39,8 +39,10 @@ import org.springframework.util.ReflectionUtils;
 import org.springframework.validation.DataBinder;
 
 import java.lang.reflect.Field;
+import java.util.Enumeration;
 import java.util.Map;
 import java.util.Properties;
+import java.util.regex.Pattern;
 
 import static com.alibaba.nacos.spring.util.NacosBeanUtils.getConfigServiceBeanBuilder;
 import static com.alibaba.nacos.spring.util.NacosUtils.getContent;
@@ -164,10 +166,17 @@ class NacosConfigurationPropertiesBinder {
         dataBinder.setAutoGrowNestedPaths(properties.ignoreNestedProperties());
         dataBinder.setIgnoreInvalidFields(properties.ignoreInvalidFields());
         dataBinder.setIgnoreUnknownFields(properties.ignoreUnknownFields());
-        // 最终执行属性赋值操作的 code
         dataBinder.bind(propertyValues);
     }
 
+    /**
+     * 暂时处理为支持 map[key]=value的形式的map类型数据绑定
+     *
+     * @param bean
+     * @param content
+     * @return
+     */
+    //FIXME 无法转换为 Map，无法解析map属性
     private PropertyValues resolvePropertyValues(Object bean, String content) {
         final Properties configProperties = toProperties(content);
         final MutablePropertyValues propertyValues = new MutablePropertyValues();
@@ -175,9 +184,15 @@ class NacosConfigurationPropertiesBinder {
             @Override
             public void doWith(Field field) throws IllegalArgumentException, IllegalAccessException {
                 String propertyName = resolvePropertyName(field);
-                if (hasText(propertyName) && configProperties.containsKey(propertyName)) {
-                    String propertyValue = configProperties.getProperty(propertyName);
-                    propertyValues.add(field.getName(), propertyValue);
+                if (hasText(propertyName)) {
+                    if (field.getType().equals(Map.class)) {
+                        resolveMapField(propertyValues, configProperties, propertyName);
+                    } else {
+                        if (configProperties.containsKey(propertyName)) {
+                            String propertyValue = configProperties.getProperty(propertyName);
+                            propertyValues.add(field.getName(), propertyValue);
+                        }
+                    }
                 }
             }
         });
@@ -192,6 +207,18 @@ class NacosConfigurationPropertiesBinder {
         NacosProperty nacosProperty = getAnnotation(field, NacosProperty.class);
         // If @NacosProperty present ,return its value() , or field name
         return nacosProperty != null ? nacosProperty.value() : field.getName();
+    }
+
+    private void resolveMapField(MutablePropertyValues properties, Properties configProperties, String propertyName) {
+        String regx = propertyName + "\\[(.*)\\]";
+        Pattern pattern = Pattern.compile(regx);
+        Enumeration<String> enumeration = (Enumeration<String>) configProperties.propertyNames();
+        while (enumeration.hasMoreElements()) {
+            String s = enumeration.nextElement();
+            if (pattern.matcher(s).find()) {
+                properties.add(s, configProperties.getProperty(s));
+            }
+        }
     }
 
 }
