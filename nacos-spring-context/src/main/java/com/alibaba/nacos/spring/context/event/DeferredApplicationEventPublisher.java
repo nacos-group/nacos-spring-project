@@ -24,6 +24,7 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * Deferred {@link ApplicationEventPublisher} to resolve {@link #publishEvent(ApplicationEvent)} too early to publish
@@ -36,16 +37,20 @@ import java.util.List;
  */
 public class DeferredApplicationEventPublisher implements ApplicationEventPublisher, ApplicationListener<ContextRefreshedEvent> {
 
-    private final Log logger = LogFactory.getLog(this.getClass());
+    private final Log logger = LogFactory.getLog(DeferredApplicationEventPublisher.class);
+
     private final ConfigurableApplicationContext context;
 
-    private final List<ApplicationEvent> deferredEvents = new LinkedList<ApplicationEvent>();
+    // fix issue # 21
+    private final ConcurrentLinkedQueue<ApplicationEvent> deferredEvents = new ConcurrentLinkedQueue<ApplicationEvent>();
 
     public DeferredApplicationEventPublisher(ConfigurableApplicationContext context) {
         this.context = context;
         this.context.addApplicationListener(this);
     }
 
+    // com.alibaba.nacos.client.config.impl.CacheData.safeNotifyListener
+    // Executor was used for event publishing, leading to the possibility of concurrent use of LinkedList
     @Override
     public void publishEvent(ApplicationEvent event) {
         logger.debug("[publishEvent] DEBUG THREAD NAME [" + Thread.currentThread().getName() + "] " + this.hashCode());
@@ -72,7 +77,7 @@ public class DeferredApplicationEventPublisher implements ApplicationEventPublis
     private void replayDeferredEvents() {
         Iterator<ApplicationEvent> iterator = deferredEvents.iterator();
         while (iterator.hasNext()) {
-            logger.info("[replayDeferredEvents] DEBUG THREAD NAME [" + Thread.currentThread().getName() + "]" + this.hashCode());
+            logger.debug("[replayDeferredEvents] DEBUG THREAD NAME [" + Thread.currentThread().getName() + "]" + this.hashCode());
             ApplicationEvent event = iterator.next();
             // if use publishEvent, maybe case NPE or CME
             publishEvent(event);
