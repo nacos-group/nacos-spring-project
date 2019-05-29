@@ -121,7 +121,7 @@ class NacosConfigurationPropertiesBinder {
 
     private void doBind(Object bean, String beanName, String dataId, String groupId,
                         NacosConfigurationProperties properties, String content, ConfigService configService) {
-        PropertyValues propertyValues = resolvePropertyValues(bean, content);
+        PropertyValues propertyValues = resolvePropertyValues(bean, content, properties);
         doBind(bean, properties, propertyValues);
         publishBoundEvent(bean, beanName, dataId, groupId, properties, content, configService);
         publishMetadataEvent(bean, beanName, dataId, groupId, properties);
@@ -177,8 +177,8 @@ class NacosConfigurationPropertiesBinder {
      * @return
      */
     //FIXME 无法转换为 Map，无法解析map属性
-    private PropertyValues resolvePropertyValues(Object bean, String content) {
-        final Properties configProperties = toProperties(content);
+    private PropertyValues resolvePropertyValues(Object bean, String content, NacosConfigurationProperties properties) {
+        final Properties configProperties = toProperties(content, properties.yaml());
         final MutablePropertyValues propertyValues = new MutablePropertyValues();
         ReflectionUtils.doWithFields(bean.getClass(), new ReflectionUtils.FieldCallback() {
             @Override
@@ -210,13 +210,22 @@ class NacosConfigurationPropertiesBinder {
     }
 
     private void resolveMapField(MutablePropertyValues properties, Properties configProperties, String propertyName) {
-        String regx = propertyName + "\\[(.*)\\]";
-        Pattern pattern = Pattern.compile(regx);
+        String regx1 = propertyName + "\\[(.*)\\]";
+        String regx2 = propertyName + "\\..*";
+        Pattern pattern1 = Pattern.compile(regx1);
+        Pattern pattern2 = Pattern.compile(regx2);
         Enumeration<String> enumeration = (Enumeration<String>) configProperties.propertyNames();
         while (enumeration.hasMoreElements()) {
             String s = enumeration.nextElement();
-            if (pattern.matcher(s).find()) {
-                properties.add(s, configProperties.getProperty(s));
+            String value = configProperties.getProperty(s);
+            if (pattern1.matcher(s).find()) {
+                properties.add(s, value);
+            } else if (pattern2.matcher(s).find()) {
+                int index = s.indexOf('.');
+                if (index != -1) {
+                    String key = s.substring(index + 1);
+                    properties.add(propertyName + "[" + key + "]", value);
+                }
             }
         }
     }

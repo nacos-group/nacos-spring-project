@@ -46,6 +46,8 @@ public class NacosPropertySource extends PropertiesPropertySource {
 
     private String after;
 
+    private boolean yaml;
+
     private Properties properties;
 
     private Map<String, Object> attributesMetadata;
@@ -62,6 +64,10 @@ public class NacosPropertySource extends PropertiesPropertySource {
      */
     public NacosPropertySource(String name, String nacosConfig) {
         super(name, toProperties(nacosConfig));
+    }
+
+    public NacosPropertySource(String name, String nacosConfig, boolean isYaml) {
+        super(name, toProperties(nacosConfig, isYaml));
     }
 
     public String getGroupId() {
@@ -110,6 +116,14 @@ public class NacosPropertySource extends PropertiesPropertySource {
 
     public void setAfter(String after) {
         this.after = after;
+    }
+
+    public boolean isYaml() {
+        return yaml;
+    }
+
+    public void setYaml(boolean yaml) {
+        this.yaml = yaml;
     }
 
     public Properties getProperties() {
@@ -175,6 +189,7 @@ public class NacosPropertySource extends PropertiesPropertySource {
         this.first = original.first;
         this.before = original.before;
         this.after = original.after;
+        this.yaml = original.yaml;
         this.properties = original.properties;
         this.attributesMetadata = original.attributesMetadata;
         this.origin = original.origin;

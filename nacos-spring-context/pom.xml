@@ -42,6 +42,12 @@
             <artifactId>spring-context</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+            <version>${snake.yaml.version}</version>
+        </dependency>
+
         <!-- Spring Context Extras -->
         <dependency>
             <groupId>com.alibaba.spring</groupId>
