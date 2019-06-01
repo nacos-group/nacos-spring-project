@@ -19,7 +19,6 @@ package com.alibaba.nacos.spring.context.event.config;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.config.listener.Listener;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.context.ConfigurableApplicationContext;
 
 import java.util.concurrent.Executor;
 

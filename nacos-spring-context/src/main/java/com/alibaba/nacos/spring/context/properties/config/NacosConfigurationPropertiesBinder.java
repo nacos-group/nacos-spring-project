@@ -33,7 +33,6 @@ import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.PropertyValues;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.core.env.Environment;
 import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.validation.DataBinder;
@@ -52,26 +51,23 @@ import static org.springframework.util.StringUtils.hasText;
 
 /**
  * {@link NacosConfigurationProperties} Bean Binder
+ * update some function's modifier private => protect
  *
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
  * @since 0.1.0
  */
-class NacosConfigurationPropertiesBinder {
+public class NacosConfigurationPropertiesBinder {
+
+    public static final String BEAN_NAME = "nacosConfigurationPropertiesBinder";
 
     private static final Logger logger = LoggerFactory.getLogger(NacosConfigurationPropertiesBinder.class);
-
-    private final ConfigurableApplicationContext applicationContext;
-
-    private final Environment environment;
 
     private final ApplicationEventPublisher applicationEventPublisher;
 
     private final ConfigServiceBeanBuilder configServiceBeanBuilder;
 
-    NacosConfigurationPropertiesBinder(ConfigurableApplicationContext applicationContext) {
+    protected NacosConfigurationPropertiesBinder(ConfigurableApplicationContext applicationContext) {
         Assert.notNull(applicationContext, "ConfigurableApplicationContext must not be null!");
-        this.applicationContext = applicationContext;
-        this.environment = applicationContext.getEnvironment();
         this.applicationEventPublisher = applicationContext;
         this.configServiceBeanBuilder = getConfigServiceBeanBuilder(applicationContext);
     }
@@ -119,7 +115,7 @@ class NacosConfigurationPropertiesBinder {
         }
     }
 
-    private void doBind(Object bean, String beanName, String dataId, String groupId,
+    protected void doBind(Object bean, String beanName, String dataId, String groupId,
                         NacosConfigurationProperties properties, String content, ConfigService configService) {
         PropertyValues propertyValues = resolvePropertyValues(bean, content, properties);
         doBind(bean, properties, propertyValues);
@@ -127,7 +123,7 @@ class NacosConfigurationPropertiesBinder {
         publishMetadataEvent(bean, beanName, dataId, groupId, properties);
     }
 
-    private void publishMetadataEvent(Object bean, String beanName, String dataId, String groupId,
+    protected void publishMetadataEvent(Object bean, String beanName, String dataId, String groupId,
                                       NacosConfigurationProperties properties) {
 
         NacosProperties nacosProperties = properties.properties();
@@ -135,6 +131,7 @@ class NacosConfigurationPropertiesBinder {
         NacosConfigMetadataEvent metadataEvent = new NacosConfigMetadataEvent(properties);
 
         // Nacos Metadata
+
         metadataEvent.setDataId(dataId);
         metadataEvent.setGroupId(groupId);
         Properties resolvedNacosProperties = configServiceBeanBuilder.resolveProperties(nacosProperties);
@@ -143,6 +140,7 @@ class NacosConfigurationPropertiesBinder {
         metadataEvent.setNacosProperties(resolvedNacosProperties);
 
         // Bean Metadata
+
         Class<?> beanClass = bean.getClass();
         metadataEvent.setBeanName(beanName);
         metadataEvent.setBean(bean);
@@ -153,7 +151,7 @@ class NacosConfigurationPropertiesBinder {
         applicationEventPublisher.publishEvent(metadataEvent);
     }
 
-    private void publishBoundEvent(Object bean, String beanName, String dataId, String groupId,
+    protected void publishBoundEvent(Object bean, String beanName, String dataId, String groupId,
                                    NacosConfigurationProperties properties, String content, ConfigService configService) {
         NacosConfigEvent event = new NacosConfigurationPropertiesBeanBoundEvent(configService, dataId, groupId, bean,
                 beanName, properties, content);
@@ -169,14 +167,8 @@ class NacosConfigurationPropertiesBinder {
         dataBinder.bind(propertyValues);
     }
 
-    /**
-     * 暂时处理为支持 map[key]=value的形式的map类型数据绑定
-     *
-     * @param bean
-     * @param content
-     * @return
-     */
-    //FIXME 无法转换为 Map，无法解析map属性
+    // 在 SpringMVC 下不支持嵌套对象的解析工作
+
     private PropertyValues resolvePropertyValues(Object bean, String content, NacosConfigurationProperties properties) {
         final Properties configProperties = toProperties(content, properties.yaml());
         final MutablePropertyValues propertyValues = new MutablePropertyValues();
@@ -185,13 +177,13 @@ class NacosConfigurationPropertiesBinder {
             public void doWith(Field field) throws IllegalArgumentException, IllegalAccessException {
                 String propertyName = resolvePropertyName(field);
                 if (hasText(propertyName)) {
-                    if (field.getType().equals(Map.class)) {
-                        resolveMapField(propertyValues, configProperties, propertyName);
-                    } else {
-                        if (configProperties.containsKey(propertyName)) {
-                            String propertyValue = configProperties.getProperty(propertyName);
-                            propertyValues.add(field.getName(), propertyValue);
-                        }
+                    // If it is a map, the data will not be fetched
+                    if (configProperties.containsKey(propertyName)) {
+                        String propertyValue = configProperties.getProperty(propertyName);
+                        propertyValues.add(field.getName(), propertyValue);
+                    }
+                    if (field.getType().isAssignableFrom(Map.class)) {
+                        resolveMap(propertyName, configProperties, propertyValues);
                     }
                 }
             }
@@ -209,9 +201,16 @@ class NacosConfigurationPropertiesBinder {
         return nacosProperty != null ? nacosProperty.value() : field.getName();
     }
 
-    private void resolveMapField(MutablePropertyValues properties, Properties configProperties, String propertyName) {
-        String regx1 = propertyName + "\\[(.*)\\]";
-        String regx2 = propertyName + "\\..*";
+    /**
+     * Simple solutions do not resolve map objects
+     *
+     * @param fieldName property name
+     * @param configProperties config context
+     * @param propertyValues {@link MutablePropertyValues}
+     */
+    private void resolveMap(String fieldName, Properties configProperties, MutablePropertyValues propertyValues) {
+        String regx1 = fieldName + "\\[(.*)\\]";
+        String regx2 = fieldName + "\\..*";
         Pattern pattern1 = Pattern.compile(regx1);
         Pattern pattern2 = Pattern.compile(regx2);
         Enumeration<String> enumeration = (Enumeration<String>) configProperties.propertyNames();
@@ -219,12 +218,12 @@ class NacosConfigurationPropertiesBinder {
             String s = enumeration.nextElement();
             String value = configProperties.getProperty(s);
             if (pattern1.matcher(s).find()) {
-                properties.add(s, value);
+                propertyValues.add(s, value);
             } else if (pattern2.matcher(s).find()) {
                 int index = s.indexOf('.');
                 if (index != -1) {
                     String key = s.substring(index + 1);
-                    properties.add(propertyName + "[" + key + "]", value);
+                    propertyValues.add(fieldName + "[" + key + "]", value);
                 }
             }
         }

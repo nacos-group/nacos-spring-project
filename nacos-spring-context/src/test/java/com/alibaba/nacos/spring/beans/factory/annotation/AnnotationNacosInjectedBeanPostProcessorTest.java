@@ -26,7 +26,9 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
 
 import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.*;
 
@@ -42,7 +44,6 @@ import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.*;
         ConfigServiceBeanBuilder.class,
         NamingServiceBeanBuilder.class,
         AnnotationNacosInjectedBeanPostProcessor.class,
-        AnnotationNacosInjectedBeanPostProcessorTest.class
 })
 public class AnnotationNacosInjectedBeanPostProcessorTest {
 

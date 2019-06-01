@@ -16,6 +16,7 @@
  */
 package com.alibaba.nacos.spring.test;
 
+import com.alibaba.nacos.api.PropertyKeyConst;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.spring.factory.CacheableEventPublishingNacosServiceFactory;
 import com.alibaba.nacos.spring.factory.NacosServiceFactory;
@@ -55,6 +56,7 @@ public class TestConfiguration {
     @Bean(name = GLOBAL_NACOS_PROPERTIES_BEAN_NAME)
     public Properties globalNacosProperties() {
         Properties properties = new Properties();
+        properties.setProperty(PropertyKeyConst.SERVER_ADDR, "127.0.0.1:8848");
         return properties;
     }
 

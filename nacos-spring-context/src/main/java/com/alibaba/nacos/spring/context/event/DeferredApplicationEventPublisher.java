@@ -18,12 +18,14 @@ package com.alibaba.nacos.spring.context.event;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.context.*;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationEvent;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.event.ContextRefreshedEvent;
 
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
