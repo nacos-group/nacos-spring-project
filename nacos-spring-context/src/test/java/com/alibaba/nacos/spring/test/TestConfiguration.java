@@ -22,6 +22,7 @@ import com.alibaba.nacos.spring.factory.ApplicationContextHolder;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 
 import java.util.Properties;
 
@@ -54,6 +55,7 @@ public class TestConfiguration {
     @Bean(name = GLOBAL_NACOS_PROPERTIES_BEAN_NAME)
     public Properties globalNacosProperties() {
         Properties properties = new Properties();
+        properties.put(PropertyKeyConst.SERVER_ADDR, "120.24.90.180:8848");
         return properties;
     }
 

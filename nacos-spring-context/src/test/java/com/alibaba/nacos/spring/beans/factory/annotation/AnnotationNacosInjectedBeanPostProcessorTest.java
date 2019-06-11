@@ -21,13 +21,22 @@ import com.alibaba.nacos.api.annotation.NacosProperties;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.api.naming.NamingService;
+import com.alibaba.nacos.spring.context.annotation.EnableNacos;
+import com.alibaba.nacos.spring.context.annotation.config.NacosPropertySource;
+import com.alibaba.nacos.spring.context.annotation.config.NacosPropertySourceTest;
+import com.alibaba.nacos.spring.factory.ApplicationContextHolder;
+import com.alibaba.nacos.spring.test.AbstractNacosHttpServerTestExecutionListener;
 import com.alibaba.nacos.spring.test.TestConfiguration;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.*;
@@ -40,13 +49,22 @@ import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.*;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
-        TestConfiguration.class,
         ConfigServiceBeanBuilder.class,
         NamingServiceBeanBuilder.class,
         AnnotationNacosInjectedBeanPostProcessor.class,
         AnnotationNacosInjectedBeanPostProcessorTest.class
 })
-public class AnnotationNacosInjectedBeanPostProcessorTest {
+@TestExecutionListeners({DependencyInjectionTestExecutionListener.class,
+        DirtiesContextTestExecutionListener.class, AnnotationNacosInjectedBeanPostProcessorTest.class})
+@EnableNacos(globalProperties = @NacosProperties(serverAddr = "${server.addr}"))
+public class AnnotationNacosInjectedBeanPostProcessorTest extends AbstractNacosHttpServerTestExecutionListener {
+
+    @Bean(name = ApplicationContextHolder.BEAN_NAME)
+    public ApplicationContextHolder applicationContextHolder(ApplicationContext applicationContext) {
+        ApplicationContextHolder applicationContextHolder = new ApplicationContextHolder();
+        applicationContextHolder.setApplicationContext(applicationContext);
+        return applicationContextHolder;
+    }
 
     @NacosInjected
     private ConfigService configService;
@@ -80,5 +98,10 @@ public class AnnotationNacosInjectedBeanPostProcessorTest {
     public void test() throws NacosException {
         configService.publishConfig(DATA_ID, GROUP_ID, CONTENT);
         Assert.assertEquals(CONTENT, configService.getConfig(DATA_ID, GROUP_ID, 5000));
+    }
+
+    @Override
+    protected String getServerAddressPropertyName() {
+        return "server.addr";
     }
 }

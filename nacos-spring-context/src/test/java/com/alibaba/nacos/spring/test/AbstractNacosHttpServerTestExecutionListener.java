@@ -59,6 +59,10 @@ public abstract class AbstractNacosHttpServerTestExecutionListener extends Abstr
 
     }
 
+    public int getPort() {
+        return httpServer.getPort();
+    }
+
     /**
      * The property name of Nacos HTTP Server Address
      *
