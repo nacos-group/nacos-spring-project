@@ -54,7 +54,6 @@ public class TestConfiguration {
     @Bean(name = GLOBAL_NACOS_PROPERTIES_BEAN_NAME)
     public Properties globalNacosProperties() {
         Properties properties = new Properties();
-        properties.setProperty(PropertyKeyConst.SERVER_ADDR, "127.0.0.1:8848");
         return properties;
     }
 

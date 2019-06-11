@@ -17,10 +17,15 @@
 package com.alibaba.nacos.spring.context.properties.config;
 
 import com.alibaba.nacos.api.annotation.NacosInjected;
+import com.alibaba.nacos.api.annotation.NacosProperties;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.exception.NacosException;
+import com.alibaba.nacos.embedded.web.server.EmbeddedNacosHttpServer;
 import com.alibaba.nacos.spring.beans.factory.annotation.AnnotationNacosInjectedBeanPostProcessor;
 import com.alibaba.nacos.spring.beans.factory.annotation.ConfigServiceBeanBuilder;
+import com.alibaba.nacos.spring.context.annotation.EnableNacos;
+import com.alibaba.nacos.spring.context.annotation.config.NacosPropertySourceTest;
+import com.alibaba.nacos.spring.test.AbstractNacosHttpServerTestExecutionListener;
 import com.alibaba.nacos.spring.test.Config;
 import com.alibaba.nacos.spring.test.TestConfiguration;
 import org.junit.Assert;
@@ -29,8 +34,18 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import static com.alibaba.nacos.api.common.Constants.DEFAULT_GROUP;
+import static com.alibaba.nacos.embedded.web.server.NacosConfigHttpHandler.CONTENT_PARAM_NAME;
+import static com.alibaba.nacos.embedded.web.server.NacosConfigHttpHandler.DATA_ID_PARAM_NAME;
+import static com.alibaba.nacos.embedded.web.server.NacosConfigHttpHandler.GROUP_ID_PARAM_NAME;
 import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.DATA_ID;
 import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.GROUP_ID;
 import static com.alibaba.nacos.spring.test.TestConfiguration.MODIFIED_TEST_CONTEXT;
@@ -44,13 +59,12 @@ import static com.alibaba.nacos.spring.test.TestConfiguration.TEST_CONFIG;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
-        TestConfiguration.class,
-        ConfigServiceBeanBuilder.class,
-        NacosConfigurationPropertiesBindingPostProcessor.class,
-        AnnotationNacosInjectedBeanPostProcessor.class,
         NacosConfigurationPropertiesBindingPostProcessorTest.class
 })
-public class NacosConfigurationPropertiesBindingPostProcessorTest {
+@TestExecutionListeners({DependencyInjectionTestExecutionListener.class,
+        DirtiesContextTestExecutionListener.class, NacosConfigurationPropertiesBindingPostProcessorTest.class})
+@EnableNacos(globalProperties = @NacosProperties(serverAddr = "${server.addr}"))
+public class NacosConfigurationPropertiesBindingPostProcessorTest extends AbstractNacosHttpServerTestExecutionListener {
 
     @Autowired
     private Config config;
@@ -89,4 +103,8 @@ public class NacosConfigurationPropertiesBindingPostProcessorTest {
 
     }
 
+    @Override
+    protected String getServerAddressPropertyName() {
+        return "server.addr";
+    }
 }
