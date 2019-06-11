@@ -39,18 +39,19 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.alibaba.nacos.spring.context.constants.NacosConstants.DEFAULT_NACOS_CONFIG_LISTENER_PARALLELISM;
 import static com.alibaba.nacos.spring.context.constants.NacosConstants.NACOS_CONFIG_LISTENER_PARALLELISM;
+import static com.alibaba.nacos.spring.util.NacosBeanUtils.getNacosConfigListenerExecutorIfPresent;
 import static com.alibaba.nacos.spring.util.NacosUtils.identify;
 
 /**
  * Cacheable Event Publishing {@link NacosServiceFactory}
- *
+ * <p>
  * Remove the object from the spring container for a singleton
  *
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
  * @author liaochuntao
  * @since 0.1.0
  */
-public class CacheableEventPublishingNacosServiceFactory implements NacosServiceFactory, ApplicationContextAware {
+public class CacheableEventPublishingNacosServiceFactory implements NacosServiceFactory {
 
     private static final CacheableEventPublishingNacosServiceFactory singleton = new CacheableEventPublishingNacosServiceFactory();
 
@@ -90,7 +91,7 @@ public class CacheableEventPublishingNacosServiceFactory implements NacosService
 
     private ConfigService doCreateConfigService(Properties properties) throws NacosException {
         ConfigService configService = NacosFactory.createConfigService(properties);
-        return new EventPublishingConfigService(configService, properties, context, nacosConfigListenerExecutor);
+        return new EventPublishingConfigService(configService, properties, getSingleton().context, nacosConfigListenerExecutor);
     }
 
     @Override
@@ -103,14 +104,12 @@ public class CacheableEventPublishingNacosServiceFactory implements NacosService
         String cacheKey = identify(copy);
 
         NamingService namingService;
-        synchronized (this) {
 
-            namingService = namingServicesCache.get(cacheKey);
+        namingService = namingServicesCache.get(cacheKey);
 
-            if (namingService == null) {
-                namingService = new DelegatingNamingService(NacosFactory.createNamingService(copy), properties);
-                namingServicesCache.put(cacheKey, namingService);
-            }
+        if (namingService == null) {
+            namingService = new DelegatingNamingService(NacosFactory.createNamingService(copy), properties);
+            namingServicesCache.put(cacheKey, namingService);
         }
 
         return namingService;
@@ -126,22 +125,21 @@ public class CacheableEventPublishingNacosServiceFactory implements NacosService
 
         NamingMaintainService maintainService;
 
-        synchronized (this) {
-            maintainService = maintainServicesCache.get(cacheKey);
+        maintainService = maintainServicesCache.get(cacheKey);
 
-            if (maintainService == null) {
-                maintainService = new DelegatingNamingMaintainService(NacosFactory.createMaintainService(properties), properties);
-                maintainServicesCache.put(cacheKey, maintainService);
-            }
+        if (maintainService == null) {
+            maintainService = new DelegatingNamingMaintainService(NacosFactory.createMaintainService(properties), properties);
+            maintainServicesCache.put(cacheKey, maintainService);
         }
 
         return maintainService;
     }
 
-    @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        this.context = (ConfigurableApplicationContext) applicationContext;
-        this.nacosConfigListenerExecutor = buildExecutorService(applicationContext.getEnvironment());
+        this.context = getSingleton().context == null ?
+                (ConfigurableApplicationContext) applicationContext : this.context;
+        this.nacosConfigListenerExecutor = this.nacosConfigListenerExecutor == null ?
+                getNacosConfigListenerExecutorIfPresent(applicationContext) : this.nacosConfigListenerExecutor;
     }
 
     @Override
@@ -158,23 +156,4 @@ public class CacheableEventPublishingNacosServiceFactory implements NacosService
         return singleton;
     }
 
-    private ExecutorService buildExecutorService(Environment environment) {
-        int parallelism = getParallelism(environment);
-        return Executors.newFixedThreadPool(parallelism, new ThreadFactory() {
-            private final AtomicInteger threadNumber = new AtomicInteger(1);
-
-            @Override
-            public Thread newThread(Runnable r) {
-                Thread thread = new Thread(r);
-                thread.setName("NacosConfigListener-ThreadPool-" + threadNumber.getAndIncrement());
-                return thread;
-            }
-        });
-    }
-
-    private static int getParallelism(Environment environment) {
-        int parallelism = environment.getProperty(NACOS_CONFIG_LISTENER_PARALLELISM, int.class,
-                DEFAULT_NACOS_CONFIG_LISTENER_PARALLELISM);
-        return parallelism < 1 ? DEFAULT_NACOS_CONFIG_LISTENER_PARALLELISM : parallelism;
-    }
 }

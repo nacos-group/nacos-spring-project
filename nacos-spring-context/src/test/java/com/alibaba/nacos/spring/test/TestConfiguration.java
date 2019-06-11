@@ -18,13 +18,11 @@ package com.alibaba.nacos.spring.test;
 
 import com.alibaba.nacos.api.PropertyKeyConst;
 import com.alibaba.nacos.api.config.ConfigService;
-import com.alibaba.nacos.spring.factory.CacheableEventPublishingNacosServiceFactory;
-import com.alibaba.nacos.spring.factory.NacosServiceFactory;
-import org.springframework.beans.factory.ListableBeanFactory;
+import com.alibaba.nacos.spring.factory.ApplicationContextHolder;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.util.Map;
 import java.util.Properties;
 
 import static com.alibaba.nacos.spring.util.NacosBeanUtils.GLOBAL_NACOS_PROPERTIES_BEAN_NAME;
@@ -60,19 +58,11 @@ public class TestConfiguration {
         return properties;
     }
 
-    @Bean(name = CacheableEventPublishingNacosServiceFactory.BEAN_NAME)
-    public NacosServiceFactory nacosServiceFactory(ListableBeanFactory beanFactory) {
-
-        MockNacosServiceFactory nacosServiceFactory = new MockNacosServiceFactory();
-
-        Map<String, ConfigService> configServices = beanFactory.getBeansOfType(ConfigService.class);
-
-        if (configServices.containsKey(CONFIG_SERVICE_BEAN_NAME)) {
-            ConfigService configService = configServices.get(CONFIG_SERVICE_BEAN_NAME);
-            nacosServiceFactory.setConfigService(configService);
-        }
-
-        return nacosServiceFactory;
+    @Bean(name = ApplicationContextHolder.BEAN_NAME)
+    public ApplicationContextHolder applicationContextHolder(ApplicationContext applicationContext) {
+        ApplicationContextHolder applicationContextHolder = new ApplicationContextHolder();
+        applicationContextHolder.setApplicationContext(applicationContext);
+        return applicationContextHolder;
     }
 
 }

@@ -27,6 +27,7 @@ import com.alibaba.nacos.spring.context.properties.config.NacosConfigurationProp
 import com.alibaba.nacos.spring.core.env.AnnotationNacosPropertySourceBuilder;
 import com.alibaba.nacos.spring.core.env.NacosPropertySourcePostProcessor;
 import com.alibaba.nacos.spring.core.env.XmlNacosPropertySourceBuilder;
+import com.alibaba.nacos.spring.factory.ApplicationContextHolder;
 import com.alibaba.nacos.spring.factory.CacheableEventPublishingNacosServiceFactory;
 import com.alibaba.nacos.spring.factory.NacosServiceFactory;
 import com.alibaba.spring.util.BeanUtils;
@@ -227,15 +228,14 @@ public abstract class NacosBeanUtils {
         registerSingleton(registry, beanName, globalProperties);
     }
 
-
     /**
-     * Register {@link CacheableEventPublishingNacosServiceFactory NacosServiceFactory}
+     * Register {@link ApplicationContextHolder ApplicationContextHolder}
      *
      * @param registry {@link BeanDefinitionRegistry}
      */
-    public static void registerNacosServiceFactory(BeanDefinitionRegistry registry) {
-        registerInfrastructureBeanIfAbsent(registry, CacheableEventPublishingNacosServiceFactory.BEAN_NAME,
-                CacheableEventPublishingNacosServiceFactory.class);
+    public static void registerApplicationContextHolder(BeanDefinitionRegistry registry) {
+        registerInfrastructureBeanIfAbsent(registry, ApplicationContextHolder.BEAN_NAME,
+                ApplicationContextHolder.class);
     }
 
     public static void registerNacosConfigPropertiesBindingPostProcessor(BeanDefinitionRegistry registry) {
@@ -303,8 +303,8 @@ public abstract class NacosBeanUtils {
      * @param registry {@link BeanDefinitionRegistry}
      */
     public static void registerNacosCommonBeans(BeanDefinitionRegistry registry) {
-        // Register NacosServiceFactory Bean
-//        registerNacosServiceFactory(registry);
+        // Register ApplicationContextHolder Bean
+        registerApplicationContextHolder(registry);
         // Register AnnotationNacosInjectedBeanPostProcessor Bean
         registerAnnotationNacosInjectedBeanPostProcessor(registry);
     }
@@ -317,25 +317,18 @@ public abstract class NacosBeanUtils {
      */
     public static void registerNacosConfigBeans(BeanDefinitionRegistry registry, Environment environment) {
         // Register PropertySourcesPlaceholderConfigurer Bean
-        // 此处代码无需关心
         registerPropertySourcesPlaceholderConfigurer(registry);
 
-        // POJO 使用了 @NacosConfigProperties
         registerNacosConfigPropertiesBindingPostProcessor(registry);
 
-        // 方法使用了 @NacosConfigListener
         registerNacosConfigListenerMethodProcessor(registry);
 
-        // 根据使用方式注册对应的 NacosPropertySourcePostProcessor
         registerNacosPropertySourcePostProcessor(registry);
 
-        // 注册 AnnotationNacosPropertySourceBuilder
         registerAnnotationNacosPropertySourceBuilder(registry);
 
-        // 多线程执行池
         registerNacosConfigListenerExecutor(registry, environment);
 
-        // 注册 NacosValueAnnotationBeanPostProcessor，该 Bean 承担了 @NacosValue 的绑定以及自动刷新操作
         registerNacosValueAnnotationBeanPostProcessor(registry);
 
         registerConfigServiceBeanBuilder(registry);
@@ -418,7 +411,14 @@ public abstract class NacosBeanUtils {
      * @throws NoSuchBeanDefinitionException if there is no such bean definition
      */
     public static NacosServiceFactory getNacosServiceFactoryBean(BeanFactory beanFactory) throws NoSuchBeanDefinitionException {
-        return CacheableEventPublishingNacosServiceFactory.getSingleton();
+        ApplicationContextHolder applicationContextHolder = getApplicationContextHolder(beanFactory);
+        CacheableEventPublishingNacosServiceFactory nacosServiceFactory = CacheableEventPublishingNacosServiceFactory.getSingleton();
+        nacosServiceFactory.setApplicationContext(applicationContextHolder.getApplicationContext());
+        return nacosServiceFactory;
+    }
+
+    public static ApplicationContextHolder getApplicationContextHolder(BeanFactory beanFactory) throws NoSuchBeanDefinitionException {
+        return beanFactory.getBean(ApplicationContextHolder.BEAN_NAME, ApplicationContextHolder.class);
     }
 
     /**

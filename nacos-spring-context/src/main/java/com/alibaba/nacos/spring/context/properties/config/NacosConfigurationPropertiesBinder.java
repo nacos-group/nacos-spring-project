@@ -51,7 +51,7 @@ import static org.springframework.util.StringUtils.hasText;
 
 /**
  * {@link NacosConfigurationProperties} Bean Binder
- * update some function's modifier private => protect
+ * update some function's modifier private to protect
  *
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
  * @since 0.1.0

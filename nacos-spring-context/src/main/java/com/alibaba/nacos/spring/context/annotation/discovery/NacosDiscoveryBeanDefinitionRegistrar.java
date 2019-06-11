@@ -44,6 +44,7 @@ public class NacosDiscoveryBeanDefinitionRegistrar implements ImportBeanDefiniti
 
     @Override
     public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
+
         AnnotationAttributes attributes = AnnotationAttributes.fromMap(
                 importingClassMetadata.getAnnotationAttributes(EnableNacosDiscovery.class.getName()));
         // Register Global Nacos Properties Bean

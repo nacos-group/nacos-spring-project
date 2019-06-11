@@ -30,6 +30,7 @@ import com.alibaba.spring.util.BeanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -54,6 +55,7 @@ import java.util.Properties;
 import java.util.Set;
 
 import static com.alibaba.nacos.spring.util.NacosBeanUtils.getConfigServiceBeanBuilder;
+import static com.alibaba.nacos.spring.util.NacosBeanUtils.getNacosServiceFactoryBean;
 import static com.alibaba.nacos.spring.util.NacosUtils.DEFAULT_STRING_ATTRIBUTE_VALUE;
 import static org.springframework.util.ObjectUtils.nullSafeEquals;
 
@@ -82,6 +84,8 @@ public class NacosPropertySourcePostProcessor implements BeanDefinitionRegistryP
      */
     public static final String BEAN_NAME = "nacosPropertySourcePostProcessor";
 
+    private static BeanFactory beanFactory;
+
     private final Set<String> processedBeanNames = new LinkedHashSet<String>();
 
     private ConfigurableEnvironment environment;
@@ -109,6 +113,7 @@ public class NacosPropertySourcePostProcessor implements BeanDefinitionRegistryP
                 beanFactory.getBean(beanName, AbstractNacosPropertySourceBuilder.class));
         }
 
+        NacosPropertySourcePostProcessor.beanFactory = beanFactory;
         this.configServiceBeanBuilder = getConfigServiceBeanBuilder(beanFactory);
 
         String[] beanNames = beanFactory.getBeanDefinitionNames();
@@ -185,7 +190,7 @@ public class NacosPropertySourcePostProcessor implements BeanDefinitionRegistryP
 
         final String dataId = nacosPropertySource.getDataId();
         final String groupId = nacosPropertySource.getGroupId();
-        final NacosServiceFactory nacosServiceFactory = CacheableEventPublishingNacosServiceFactory.getSingleton();
+        final NacosServiceFactory nacosServiceFactory = getNacosServiceFactoryBean(beanFactory);
 
         try {
 

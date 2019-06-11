@@ -44,6 +44,7 @@ import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.*;
         ConfigServiceBeanBuilder.class,
         NamingServiceBeanBuilder.class,
         AnnotationNacosInjectedBeanPostProcessor.class,
+        AnnotationNacosInjectedBeanPostProcessorTest.class
 })
 public class AnnotationNacosInjectedBeanPostProcessorTest {
 

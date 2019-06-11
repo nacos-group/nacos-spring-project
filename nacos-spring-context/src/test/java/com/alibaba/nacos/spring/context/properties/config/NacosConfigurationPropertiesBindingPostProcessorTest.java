@@ -64,9 +64,11 @@ public class NacosConfigurationPropertiesBindingPostProcessorTest {
     }
 
     @Test
-    public void test() throws NacosException {
+    public void test() throws NacosException, InterruptedException {
 
         configService.publishConfig(DATA_ID, GROUP_ID, TEST_CONFIG);
+
+        Thread.sleep(3000);
 
         Assert.assertEquals(1, config.getId());
         Assert.assertEquals("mercyblitz", config.getName());
@@ -76,6 +78,8 @@ public class NacosConfigurationPropertiesBindingPostProcessorTest {
 
         // Publishing config emits change
         configService.publishConfig(DATA_ID, GROUP_ID, MODIFIED_TEST_CONTEXT);
+
+        Thread.sleep(3000);
 
         Assert.assertEquals(1, config.getId());
         Assert.assertEquals("mercyblitz@gmail.com", config.getName());

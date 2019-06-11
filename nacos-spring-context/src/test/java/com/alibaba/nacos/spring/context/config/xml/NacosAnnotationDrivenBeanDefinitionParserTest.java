@@ -64,8 +64,6 @@ public class NacosAnnotationDrivenBeanDefinitionParserTest {
     @Qualifier(NacosBeanUtils.GLOBAL_NACOS_PROPERTIES_BEAN_NAME)
     private Properties globalProperties;
 
-    private NacosServiceFactory nacosServiceFactory = CacheableEventPublishingNacosServiceFactory.getSingleton();
-
     @Autowired
     @Qualifier(AnnotationNacosInjectedBeanPostProcessor.BEAN_NAME)
     private AnnotationNacosInjectedBeanPostProcessor annotationNacosInjectedBeanPostProcessor;
@@ -88,7 +86,6 @@ public class NacosAnnotationDrivenBeanDefinitionParserTest {
     @Test
     public void test() {
         Assert.assertNotNull(globalProperties);
-        Assert.assertNotNull(nacosServiceFactory);
         Assert.assertNotNull(annotationNacosInjectedBeanPostProcessor);
         Assert.assertNotNull(nacosConfigurationPropertiesBindingPostProcessor);
         Assert.assertNotNull(nacosConfigListenerMethodProcessor);

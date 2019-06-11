@@ -87,7 +87,6 @@ public class NacosPropertySourceTest extends AbstractNacosHttpServerTestExecutio
         config.put(DATA_ID_PARAM_NAME, DATA_ID);
         config.put(GROUP_ID_PARAM_NAME, DEFAULT_GROUP);
 
-
         config.put(CONTENT_PARAM_NAME,
             "app.name=" + APP_NAME + LINE_SEPARATOR + "app.nacosFieldIntValueAutoRefreshed=" + VALUE_1 + LINE_SEPARATOR
                 + "app.nacosMethodIntValueAutoRefreshed=" + VALUE_2);
@@ -177,7 +176,7 @@ public class NacosPropertySourceTest extends AbstractNacosHttpServerTestExecutio
             "app.name=" + ANOTHER_APP_NAME + LINE_SEPARATOR + "app.nacosFieldIntValueAutoRefreshed=" + VALUE_3
                 + LINE_SEPARATOR + "app.nacosMethodIntValueAutoRefreshed=" + VALUE_4);
 
-        Thread.sleep(1000);
+        Thread.sleep(3000);
 
         Assert.assertEquals(APP_NAME, app.name);
 

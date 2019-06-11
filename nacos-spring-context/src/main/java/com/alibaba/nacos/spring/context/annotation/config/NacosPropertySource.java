@@ -151,6 +151,10 @@ public @interface NacosPropertySource {
      */
     String after() default DEFAULT_STRING_ATTRIBUTE_VALUE;
 
+    /**
+     *
+     * @return the config style is yaml default <code>false</code>
+     */
     boolean yaml() default DEFAULT_YAML_ATTRIBUTE_NAME;
 
     /**

@@ -73,9 +73,15 @@ public class NacosConfigurationPropertiesBindingPostProcessor implements BeanPos
 
     private void bind(Object bean, String beanName, NacosConfigurationProperties nacosConfigurationProperties) {
 
-        NacosConfigurationPropertiesBinder binder = applicationContext
-                .getBean(NacosConfigurationPropertiesBinder.BEAN_NAME, NacosConfigurationPropertiesBinder.class);
-        if (binder == null) {
+        NacosConfigurationPropertiesBinder binder;
+        try {
+            binder = applicationContext
+                    .getBean(NacosConfigurationPropertiesBinder.BEAN_NAME, NacosConfigurationPropertiesBinder.class);
+            if (binder == null) {
+                binder = new NacosConfigurationPropertiesBinder(applicationContext);
+            }
+
+        } catch (Exception e) {
             binder = new NacosConfigurationPropertiesBinder(applicationContext);
         }
 

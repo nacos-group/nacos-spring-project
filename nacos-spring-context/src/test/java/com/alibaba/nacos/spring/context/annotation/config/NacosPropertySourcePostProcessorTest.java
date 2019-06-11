@@ -16,13 +16,18 @@
  */
 package com.alibaba.nacos.spring.context.annotation.config;
 
+import com.alibaba.nacos.api.PropertyKeyConst;
+import com.alibaba.nacos.api.annotation.NacosInjected;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.exception.NacosException;
+import com.alibaba.nacos.embedded.web.server.EmbeddedNacosHttpServer;
 import com.alibaba.nacos.spring.beans.factory.annotation.AnnotationNacosInjectedBeanPostProcessor;
 import com.alibaba.nacos.spring.beans.factory.annotation.ConfigServiceBeanBuilder;
+import com.alibaba.nacos.spring.context.properties.config.NacosConfigurationPropertiesBindingPostProcessor;
 import com.alibaba.nacos.spring.core.env.AnnotationNacosPropertySourceBuilder;
 import com.alibaba.nacos.spring.core.env.NacosPropertySourcePostProcessor;
-import com.alibaba.nacos.spring.test.MockConfigService;
+import com.alibaba.nacos.spring.factory.CacheableEventPublishingNacosServiceFactory;
+import com.alibaba.nacos.spring.test.AbstractNacosHttpServerTestExecutionListener;
 import com.alibaba.nacos.spring.test.TestConfiguration;
 import org.junit.Assert;
 import org.junit.Test;
@@ -31,7 +36,14 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.PropertySource;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+
 import static com.alibaba.nacos.api.common.Constants.DEFAULT_GROUP;
+import static com.alibaba.nacos.embedded.web.server.NacosConfigHttpHandler.CONTENT_PARAM_NAME;
+import static com.alibaba.nacos.embedded.web.server.NacosConfigHttpHandler.DATA_ID_PARAM_NAME;
+import static com.alibaba.nacos.embedded.web.server.NacosConfigHttpHandler.GROUP_ID_PARAM_NAME;
 import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.DATA_ID;
 import static com.alibaba.nacos.spring.test.TestConfiguration.CONFIG_SERVICE_BEAN_NAME;
 import static org.springframework.core.env.StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME;
@@ -44,7 +56,7 @@ import static org.springframework.core.env.StandardEnvironment.SYSTEM_PROPERTIES
  * @ee NacosPropertySourcePostProcessor
  * @since 0.1.0
  */
-public class NacosPropertySourcePostProcessorTest {
+public class NacosPropertySourcePostProcessorTest extends AbstractNacosHttpServerTestExecutionListener {
 
     private static final String TEST_PROPERTY_NAME = "user.name";
 
@@ -53,6 +65,20 @@ public class NacosPropertySourcePostProcessorTest {
     private static final String TEST_CONTENT = TEST_PROPERTY_NAME + "=" + TEST_PROPERTY_VALUE
             + System.getProperty("line.separator")
             + "PATH = /My/Path";
+
+    @Override
+    protected void init(EmbeddedNacosHttpServer server) {
+        Map<String, String> config = new HashMap<String, String>(1);
+        config.put(DATA_ID_PARAM_NAME, DATA_ID);
+        config.put(GROUP_ID_PARAM_NAME, DEFAULT_GROUP);
+        config.put(CONTENT_PARAM_NAME, TEST_CONTENT);
+        server.initConfig(config);
+    }
+
+    @Override
+    protected String getServerAddressPropertyName() {
+        return "server-addr";
+    }
 
     @NacosPropertySources({
             @NacosPropertySource(
@@ -84,9 +110,10 @@ public class NacosPropertySourcePostProcessorTest {
 
     }
 
+    private ConfigService configService;
 
     @Test
-    public void testFirstOrder() throws NacosException {
+    public void testFirstOrder() throws NacosException, InterruptedException {
 
         AnnotationConfigApplicationContext context = createContext(DATA_ID, DEFAULT_GROUP, TEST_CONTENT);
 
@@ -117,7 +144,7 @@ public class NacosPropertySourcePostProcessorTest {
     }
 
     @Test
-    public void testRelativeOrder() throws NacosException {
+    public void testRelativeOrder() throws NacosException, InterruptedException {
 
         AnnotationConfigApplicationContext context = createContext(DATA_ID, DEFAULT_GROUP, TEST_CONTENT);
 
@@ -144,12 +171,17 @@ public class NacosPropertySourcePostProcessorTest {
         Assert.assertEquals("/My/Path", propertyValue);
     }
 
-    private AnnotationConfigApplicationContext createContext(String dataId, String groupId, String content) throws NacosException {
+    private AnnotationConfigApplicationContext createContext(String dataId, String groupId, String content) throws NacosException, InterruptedException {
         AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
         ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
 
-        ConfigService configService = new MockConfigService();
+        Properties properties = new Properties();
+        properties.put(PropertyKeyConst.SERVER_ADDR, "127.0.0.1:8848");
+
+        CacheableEventPublishingNacosServiceFactory.getSingleton().setApplicationContext(context);
+
+        ConfigService configService = CacheableEventPublishingNacosServiceFactory.getSingleton().createConfigService(properties);
 
         configService.publishConfig(dataId, groupId, content);
 
@@ -157,7 +189,7 @@ public class NacosPropertySourcePostProcessorTest {
 
         context.register(TestConfiguration.class, AnnotationNacosInjectedBeanPostProcessor.class,
                 NacosPropertySourcePostProcessor.class, ConfigServiceBeanBuilder.class,
-                AnnotationNacosPropertySourceBuilder.class);
+                AnnotationNacosPropertySourceBuilder.class, this.getClass());
         return context;
     }
 }

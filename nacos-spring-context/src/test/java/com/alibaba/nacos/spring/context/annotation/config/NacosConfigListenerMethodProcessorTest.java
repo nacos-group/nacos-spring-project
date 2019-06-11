@@ -90,8 +90,11 @@ public class NacosConfigListenerMethodProcessorTest {
     }
 
     @Test
-    public void testPublishConfig() throws NacosException {
+    public void testPublishConfig() throws NacosException, InterruptedException {
         configService.publishConfig(DATA_ID, DEFAULT_GROUP, "9527");
+
+        Thread.sleep(3000);
+
         assertNull(listeners.getIntegerValue()); // asserts true
         assertEquals(Double.valueOf(9527), listeners.getDoubleValue());   // asserts true
     }

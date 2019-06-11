@@ -96,10 +96,6 @@ public class NacosBeanDefinitionRegistrarTest extends AbstractNacosHttpServerTes
     private Properties discoveryGlobalProperties;
 
     @Autowired
-    @Qualifier(CacheableEventPublishingNacosServiceFactory.BEAN_NAME)
-    private NacosServiceFactory nacosServiceFactory;
-
-    @Autowired
     @Qualifier(AnnotationNacosInjectedBeanPostProcessor.BEAN_NAME)
     private AnnotationNacosInjectedBeanPostProcessor annotationNacosInjectedBeanPostProcessor;
 

@@ -37,7 +37,7 @@ import static com.alibaba.nacos.api.annotation.NacosProperties.*;
 @Target({ElementType.TYPE, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Import(NacosConfigBeanDefinitionRegistrar.class)
+@Import(value = {NacosConfigBeanDefinitionRegistrar.class})
 public @interface EnableNacosConfig {
 
     /**
