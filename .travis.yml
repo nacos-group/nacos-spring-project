@@ -14,3 +14,9 @@ jdk:
   - openjdk8
 
 script:
+  - mvn -B clean package apache-rat:check findbugs:findbugs -Dmaven.test.skip=true
+  - mvn -Prelease-nacos clean install -U
+  - mvn clean package -Pit-test
+after_success:
+  - mvn clean package -Pit-test
+  - mvn sonar:sonar -Psonar-apache
