@@ -19,6 +19,7 @@ package com.alibaba.nacos.spring.util;
 import com.alibaba.nacos.spring.factory.ApplicationContextHolder;
 import com.alibaba.nacos.spring.factory.CacheableEventPublishingNacosServiceFactory;
 import com.alibaba.nacos.spring.factory.NacosServiceFactory;
+import com.alibaba.nacos.spring.test.TestApplicationHolder;
 import com.alibaba.nacos.spring.test.TestConfiguration;
 import org.junit.Assert;
 import org.junit.Test;
@@ -43,7 +44,7 @@ import static com.alibaba.nacos.spring.util.NacosBeanUtils.isBeanDefinitionPrese
  * @since 0.1.0
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = TestConfiguration.class)
+@ContextConfiguration(classes = {TestConfiguration.class, TestApplicationHolder.class})
 public class NacosBeanUtilsTest {
 
     @Autowired
@@ -54,7 +55,6 @@ public class NacosBeanUtilsTest {
     private Properties globalProperties;
 
     @Autowired
-    @Qualifier(ApplicationContextHolder.BEAN_NAME)
     private ApplicationContextHolder applicationContextHolder;
 
     @Test

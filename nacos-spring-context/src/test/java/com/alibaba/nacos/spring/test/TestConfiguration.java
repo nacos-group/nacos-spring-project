@@ -18,11 +18,9 @@ package com.alibaba.nacos.spring.test;
 
 import com.alibaba.nacos.api.PropertyKeyConst;
 import com.alibaba.nacos.api.config.ConfigService;
-import com.alibaba.nacos.spring.factory.ApplicationContextHolder;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.Environment;
+import org.springframework.util.StringUtils;
 
 import java.util.Properties;
 
@@ -55,15 +53,10 @@ public class TestConfiguration {
     @Bean(name = GLOBAL_NACOS_PROPERTIES_BEAN_NAME)
     public Properties globalNacosProperties() {
         Properties properties = new Properties();
-        properties.put(PropertyKeyConst.SERVER_ADDR, "120.24.90.180:8848");
+        if (!StringUtils.isEmpty(System.getProperty("server.addr"))) {
+            properties.put(PropertyKeyConst.SERVER_ADDR, System.getProperty("server.addr"));
+        }
         return properties;
-    }
-
-    @Bean(name = ApplicationContextHolder.BEAN_NAME)
-    public ApplicationContextHolder applicationContextHolder(ApplicationContext applicationContext) {
-        ApplicationContextHolder applicationContextHolder = new ApplicationContextHolder();
-        applicationContextHolder.setApplicationContext(applicationContext);
-        return applicationContextHolder;
     }
 
 }

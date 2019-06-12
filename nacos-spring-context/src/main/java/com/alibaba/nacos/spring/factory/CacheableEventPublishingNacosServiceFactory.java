@@ -55,6 +55,8 @@ public class CacheableEventPublishingNacosServiceFactory implements NacosService
 
     private static final CacheableEventPublishingNacosServiceFactory singleton = new CacheableEventPublishingNacosServiceFactory();
 
+    private final Object mutex = new Object();
+
     private final Map<String, ConfigService> configServicesCache = new LinkedHashMap<String, ConfigService>(2);
 
     private final Map<String, NamingService> namingServicesCache = new LinkedHashMap<String, NamingService>(2);
@@ -76,9 +78,10 @@ public class CacheableEventPublishingNacosServiceFactory implements NacosService
         String cacheKey = identify(copy);
 
         ConfigService configService;
-        synchronized (this) {
 
-            configService = configServicesCache.get(cacheKey);
+        configService = configServicesCache.get(cacheKey);
+
+        synchronized (mutex) {
 
             if (configService == null) {
                 configService = doCreateConfigService(copy);
@@ -91,7 +94,7 @@ public class CacheableEventPublishingNacosServiceFactory implements NacosService
 
     private ConfigService doCreateConfigService(Properties properties) throws NacosException {
         ConfigService configService = NacosFactory.createConfigService(properties);
-        return new EventPublishingConfigService(configService, properties, getSingleton().context, nacosConfigListenerExecutor);
+        return new EventPublishingConfigService(configService, properties, getSingleton().context, getSingleton().nacosConfigListenerExecutor);
     }
 
     @Override
@@ -107,9 +110,11 @@ public class CacheableEventPublishingNacosServiceFactory implements NacosService
 
         namingService = namingServicesCache.get(cacheKey);
 
-        if (namingService == null) {
-            namingService = new DelegatingNamingService(NacosFactory.createNamingService(copy), properties);
-            namingServicesCache.put(cacheKey, namingService);
+        synchronized (mutex) {
+            if (namingService == null) {
+                namingService = new DelegatingNamingService(NacosFactory.createNamingService(copy), properties);
+                namingServicesCache.put(cacheKey, namingService);
+            }
         }
 
         return namingService;
@@ -127,9 +132,11 @@ public class CacheableEventPublishingNacosServiceFactory implements NacosService
 
         maintainService = maintainServicesCache.get(cacheKey);
 
-        if (maintainService == null) {
-            maintainService = new DelegatingNamingMaintainService(NacosFactory.createMaintainService(properties), properties);
-            maintainServicesCache.put(cacheKey, maintainService);
+        synchronized (mutex) {
+            if (maintainService == null) {
+                maintainService = new DelegatingNamingMaintainService(NacosFactory.createMaintainService(properties), properties);
+                maintainServicesCache.put(cacheKey, maintainService);
+            }
         }
 
         return maintainService;

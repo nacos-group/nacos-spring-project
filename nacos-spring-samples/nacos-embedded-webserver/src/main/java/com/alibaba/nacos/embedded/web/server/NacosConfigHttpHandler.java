@@ -309,6 +309,8 @@ public class NacosConfigHttpHandler implements HttpHandler {
         if(scheduledExecutorService != null){
             scheduledExecutorService.shutdown();
         }
+        contentCache.clear();
+        longPollingMap.clear();
     }
 
     private static class LongPolling {

@@ -55,7 +55,6 @@ public class DeferredApplicationEventPublisher implements ApplicationEventPublis
     // Executor was used for event publishing, leading to the possibility of concurrent use of LinkedList
     @Override
     public void publishEvent(ApplicationEvent event) {
-        logger.debug("[publishEvent] DEBUG THREAD NAME [" + Thread.currentThread().getName() + "] " + this.hashCode());
         if (context.isRunning()) {
             context.publishEvent(event);
         } else {
@@ -79,7 +78,6 @@ public class DeferredApplicationEventPublisher implements ApplicationEventPublis
     private void replayDeferredEvents() {
         Iterator<ApplicationEvent> iterator = deferredEvents.iterator();
         while (iterator.hasNext()) {
-            logger.debug("[replayDeferredEvents] DEBUG THREAD NAME [" + Thread.currentThread().getName() + "]" + this.hashCode());
             ApplicationEvent event = iterator.next();
             // if use publishEvent, maybe case NPE or CME
             publishEvent(event);
