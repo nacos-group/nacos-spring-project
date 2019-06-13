@@ -18,9 +18,11 @@ package com.alibaba.nacos.spring.core.env;
 
 import com.alibaba.nacos.spring.context.config.xml.NacosPropertySourceXmlBeanDefinition;
 import com.alibaba.nacos.spring.context.event.config.NacosConfigMetadataEvent;
+import com.alibaba.nacos.spring.convert.converter.NacosPropertySourceConverter;
 import org.springframework.beans.factory.xml.XmlReaderContext;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.io.Resource;
+import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -56,6 +58,16 @@ public class XmlNacosPropertySourceBuilder extends
         // Nacos Metadata
         runtimeAttributes.put(DATA_ID_ATTRIBUTE_NAME, getAttribute(element, "data-id", DEFAULT_STRING_ATTRIBUTE_VALUE));
         runtimeAttributes.put(GROUP_ID_ATTRIBUTE_NAME, getAttribute(element, "group-id", DEFAULT_GROUP));
+
+        String className = getAttribute(element, "converter-class", "com.alibaba.nacos.spring.convert.converter.NacosPropertySourceConverter.SimplePropertiesConverter");
+        Class<?> converterClass;
+        try {
+            converterClass = ClassUtils.resolveClassName(className, this.getClass().getClassLoader());
+        } catch (Exception e) {
+            throw new IllegalArgumentException("an error occurred while resolve NacosPropertySourceConverter");
+        }
+        runtimeAttributes.put(CONVERTER_ATTRIBUTE_NAME, converterClass);
+
         // PropertySource Name
         runtimeAttributes.put(NAME_ATTRIBUTE_NAME, getAttribute(element, NAME_ATTRIBUTE_NAME, DEFAULT_STRING_ATTRIBUTE_VALUE));
         // TODO support nested properties

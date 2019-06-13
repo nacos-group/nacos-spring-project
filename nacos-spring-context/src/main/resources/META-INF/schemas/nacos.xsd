@@ -62,6 +62,13 @@
             <xsd:attribute name="first" default="false"/>
             <xsd:attribute name="before" default=""/>
             <xsd:attribute name="after" default=""/>
+            <xsd:attribute name="converter-class" type="xsd:string">
+                <xsd:annotation>
+                    <xsd:documentation source="java:java.lang.Class"><![CDATA[
+	The fully qualified name of the Converter's class
+				]]></xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
         </xsd:complexType>
     </xsd:element>
 

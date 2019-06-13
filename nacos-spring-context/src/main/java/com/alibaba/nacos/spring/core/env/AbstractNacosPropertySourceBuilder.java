@@ -18,8 +18,8 @@ package com.alibaba.nacos.spring.core.env;
 
 import com.alibaba.nacos.spring.context.event.DeferredApplicationEventPublisher;
 import com.alibaba.nacos.spring.context.event.config.NacosConfigMetadataEvent;
-import com.alibaba.nacos.spring.util.config.NacosConfigLoader;
 import com.alibaba.nacos.spring.convert.converter.NacosPropertySourceConverter;
+import com.alibaba.nacos.spring.util.config.NacosConfigLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanInstantiationException;
@@ -41,7 +41,8 @@ import java.util.*;
 import static com.alibaba.nacos.spring.context.annotation.config.NacosPropertySource.*;
 import static com.alibaba.nacos.spring.util.GlobalNacosPropertiesSource.CONFIG;
 import static com.alibaba.nacos.spring.util.NacosBeanUtils.getNacosServiceFactoryBean;
-import static com.alibaba.nacos.spring.util.NacosUtils.*;
+import static com.alibaba.nacos.spring.util.NacosUtils.buildDefaultPropertySourceName;
+import static com.alibaba.nacos.spring.util.NacosUtils.resolveProperties;
 import static com.alibaba.spring.util.ClassUtils.resolveGenericType;
 import static java.lang.String.format;
 import static java.lang.String.valueOf;
@@ -167,8 +168,7 @@ public abstract class AbstractNacosPropertySourceBuilder<T extends BeanDefinitio
 
         final NacosPropertySourceConverter converter;
         try {
-            @SuppressWarnings("unchecked")
-            final Class<NacosPropertySourceConverter> converterClass = (Class<NacosPropertySourceConverter>) runtimeAttributes.get(CONVERTER_ATTRIBUTE_NAME);
+            @SuppressWarnings("unchecked") final Class<NacosPropertySourceConverter> converterClass = (Class<NacosPropertySourceConverter>) runtimeAttributes.get(CONVERTER_ATTRIBUTE_NAME);
             converter = BeanUtils.instantiate(converterClass);
         } catch (BeanInstantiationException e) {
             throw new RuntimeException("An exception occurred while creating the NacosPropertySourceConverter", e);

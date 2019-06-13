@@ -15,8 +15,10 @@ import java.util.Properties;
 public interface NacosPropertySourceConverter {
 
     /**
-     * {yaml | json | plainText} --> properties-based string.
-     * examples:<br/>
+     * <pre>
+     * (yaml or json or plainText)-based string to properties-based string.
+     * </pre>
+     * examples:<br>
      * Input (yml-based string):
      * <pre>
      * a:
@@ -43,7 +45,7 @@ public interface NacosPropertySourceConverter {
 
     /**
      * A built-in Converter from yaml-based string to properties-based string.
-     * Main logic was copied from {@link org.springframework.beans.factory.config.YamlProcessor#buildFlattenedMap(java.util.Map, java.util.Map, java.lang.String)}
+     * Main logic was copied from org.springframework.beans.factory.config.YamlProcessor#buildFlattenedMap(java.util.Map, java.util.Map, java.lang.String)
      * <p>
      * Github Address : https://github.com/spring-projects/spring-framework/blob/5.1.x/spring-beans/src/main/java/org/springframework/beans/factory/config/YamlProcessor.java
      *

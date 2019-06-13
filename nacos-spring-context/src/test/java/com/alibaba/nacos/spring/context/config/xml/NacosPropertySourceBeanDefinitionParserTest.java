@@ -46,12 +46,12 @@ import static com.alibaba.nacos.embedded.web.server.NacosConfigHttpHandler.*;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
-    "classpath:/META-INF/nacos-context.xml",
-    "classpath:/META-INF/nacos-property-source.xml"
+        "classpath:/META-INF/nacos-context.xml",
+        "classpath:/META-INF/nacos-property-source.xml"
 })
 @DirtiesContext
 @TestExecutionListeners({DependencyInjectionTestExecutionListener.class,
-    DirtiesContextTestExecutionListener.class, NacosPropertySourceBeanDefinitionParserTest.class})
+        DirtiesContextTestExecutionListener.class, NacosPropertySourceBeanDefinitionParserTest.class})
 public class NacosPropertySourceBeanDefinitionParserTest extends AbstractNacosHttpServerTestExecutionListener {
 
     private static final Long USER_ID = 1991L;
