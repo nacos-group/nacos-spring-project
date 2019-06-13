@@ -19,8 +19,11 @@ package com.alibaba.nacos.spring.core.env;
 import com.alibaba.nacos.spring.context.event.DeferredApplicationEventPublisher;
 import com.alibaba.nacos.spring.context.event.config.NacosConfigMetadataEvent;
 import com.alibaba.nacos.spring.util.config.NacosConfigLoader;
+import com.alibaba.nacos.spring.convert.converter.NacosPropertySourceConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanInstantiationException;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.BeanFactory;
@@ -38,8 +41,7 @@ import java.util.*;
 import static com.alibaba.nacos.spring.context.annotation.config.NacosPropertySource.*;
 import static com.alibaba.nacos.spring.util.GlobalNacosPropertiesSource.CONFIG;
 import static com.alibaba.nacos.spring.util.NacosBeanUtils.getNacosServiceFactoryBean;
-import static com.alibaba.nacos.spring.util.NacosUtils.buildDefaultPropertySourceName;
-import static com.alibaba.nacos.spring.util.NacosUtils.resolveProperties;
+import static com.alibaba.nacos.spring.util.NacosUtils.*;
 import static com.alibaba.spring.util.ClassUtils.resolveGenericType;
 import static java.lang.String.format;
 import static java.lang.String.valueOf;
@@ -163,7 +165,17 @@ public abstract class AbstractNacosPropertySourceBuilder<T extends BeanDefinitio
             name = buildDefaultPropertySourceName(dataId, groupId, nacosProperties);
         }
 
-        NacosPropertySource nacosPropertySource = new NacosPropertySource(name, nacosConfig);
+        final NacosPropertySourceConverter converter;
+        try {
+            @SuppressWarnings("unchecked")
+            final Class<NacosPropertySourceConverter> converterClass = (Class<NacosPropertySourceConverter>) runtimeAttributes.get(CONVERTER_ATTRIBUTE_NAME);
+            converter = BeanUtils.instantiate(converterClass);
+        } catch (BeanInstantiationException e) {
+            throw new RuntimeException("An exception occurred while creating the NacosPropertySourceConverter", e);
+        }
+
+        NacosPropertySource nacosPropertySource = new NacosPropertySource(name, converter.convert(nacosConfig));
+        nacosPropertySource.setNacosPropertySourceConverter(converter);
 
         nacosPropertySource.setBeanName(beanName);
 

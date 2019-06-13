@@ -18,6 +18,8 @@ package com.alibaba.nacos.spring.context.event.config;
 
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.config.listener.Listener;
+import com.alibaba.nacos.spring.convert.converter.NacosPropertySourceConverter;
+import com.alibaba.nacos.spring.listener.AbstractConvertibleNacosPropertiesListener;
 import org.springframework.context.ApplicationEventPublisher;
 
 import java.util.concurrent.Executor;
@@ -70,12 +72,23 @@ final class DelegatingEventPublishingListener implements Listener {
     /**
      * Callback method on Nacos config received
      *
-     * @param content Nacos config
+     * @param original Nacos config
      */
     @Override
-    public void receiveConfigInfo(String content) {
+    public void receiveConfigInfo(final String original) {
+        String content = convertIfNecessary(original);
         publishEvent(content);
         onReceived(content);
+    }
+
+    private String convertIfNecessary(String content) {
+        if (this.delegate instanceof AbstractConvertibleNacosPropertiesListener) {
+            final NacosPropertySourceConverter converter = ((AbstractConvertibleNacosPropertiesListener) delegate).getConverter();
+            if (converter != null) {
+                return converter.convert(content);
+            }
+        }
+        return content;
     }
 
     private void publishEvent(String content) {

@@ -20,6 +20,7 @@ import com.alibaba.nacos.api.annotation.NacosProperties;
 import com.alibaba.nacos.api.common.Constants;
 import com.alibaba.nacos.spring.context.annotation.EnableNacos;
 import com.alibaba.nacos.spring.util.NacosUtils;
+import com.alibaba.nacos.spring.convert.converter.NacosPropertySourceConverter;
 import org.springframework.core.env.PropertySource;
 
 import java.lang.annotation.*;
@@ -82,6 +83,8 @@ public @interface NacosPropertySource {
      * The attribute name of {@link NacosPropertySource#properties()}
      */
     String PROPERTIES_ATTRIBUTE_NAME = "properties";
+
+    String CONVERTER_ATTRIBUTE_NAME = "converter";
 
     /**
      * The name of Nacos {@link PropertySource}
@@ -154,5 +157,8 @@ public @interface NacosPropertySource {
      */
     NacosProperties properties() default @NacosProperties;
 
-
+    /**
+     * @return a converter's Class for convert original string to properties string.
+     */
+    Class<? extends NacosPropertySourceConverter> converter() default NacosPropertySourceConverter.SimplePropertiesConverter.class;
 }

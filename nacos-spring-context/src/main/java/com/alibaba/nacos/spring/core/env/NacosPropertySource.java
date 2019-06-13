@@ -16,6 +16,7 @@
  */
 package com.alibaba.nacos.spring.core.env;
 
+import com.alibaba.nacos.spring.convert.converter.NacosPropertySourceConverter;
 import org.springframework.core.env.PropertiesPropertySource;
 import org.springframework.core.env.PropertySource;
 
@@ -55,6 +56,12 @@ public class NacosPropertySource extends PropertiesPropertySource {
     private String beanName;
 
     private Class<?> beanType;
+
+    /**
+     * provided for {@link com.alibaba.nacos.spring.context.event.config.NacosConfigReceivedEvent}
+     * to convert original format to customized format
+     */
+    private NacosPropertySourceConverter nacosPropertySourceConverter;
 
     /**
      * @param name        the name of Nacos {@link PropertySource}
@@ -168,6 +175,14 @@ public class NacosPropertySource extends PropertiesPropertySource {
         this.beanType = beanType;
     }
 
+    public void setNacosPropertySourceConverter(NacosPropertySourceConverter nacosPropertySourceConverter) {
+        this.nacosPropertySourceConverter = nacosPropertySourceConverter;
+    }
+
+    public NacosPropertySourceConverter getNacosPropertySourceConverter() {
+        return nacosPropertySourceConverter;
+    }
+
     protected void copy(NacosPropertySource original) {
         this.groupId = original.groupId;
         this.dataId = original.dataId;
@@ -180,5 +195,6 @@ public class NacosPropertySource extends PropertiesPropertySource {
         this.origin = original.origin;
         this.beanName = original.beanName;
         this.beanType = original.beanType;
+        this.nacosPropertySourceConverter = original.nacosPropertySourceConverter;
     }
 }

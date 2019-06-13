@@ -17,12 +17,11 @@
 package com.alibaba.nacos.spring.core.env;
 
 import com.alibaba.nacos.api.config.ConfigService;
-import com.alibaba.nacos.api.config.listener.AbstractListener;
 import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.spring.beans.factory.annotation.ConfigServiceBeanBuilder;
 import com.alibaba.nacos.spring.context.annotation.config.NacosPropertySources;
 import com.alibaba.nacos.spring.context.config.xml.NacosPropertySourceXmlBeanDefinition;
-
+import com.alibaba.nacos.spring.listener.AbstractConvertibleNacosPropertiesListener;
 import com.alibaba.spring.util.BeanUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -39,13 +38,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySources;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static com.alibaba.nacos.spring.util.NacosBeanUtils.getConfigServiceBeanBuilder;
 import static com.alibaba.nacos.spring.util.NacosUtils.DEFAULT_STRING_ATTRIBUTE_VALUE;
@@ -89,14 +82,14 @@ public class NacosPropertySourcePostProcessor implements BeanDefinitionRegistryP
     @Override
     public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
         String[] abstractNacosPropertySourceBuilderBeanNames = BeanUtils.getBeanNames(beanFactory,
-            AbstractNacosPropertySourceBuilder.class);
+                AbstractNacosPropertySourceBuilder.class);
 
         this.nacosPropertySourceBuilders = new ArrayList<AbstractNacosPropertySourceBuilder>(
-            abstractNacosPropertySourceBuilderBeanNames.length);
+                abstractNacosPropertySourceBuilderBeanNames.length);
 
         for (String beanName : abstractNacosPropertySourceBuilderBeanNames) {
             this.nacosPropertySourceBuilders.add(
-                beanFactory.getBean(beanName, AbstractNacosPropertySourceBuilder.class));
+                    beanFactory.getBean(beanName, AbstractNacosPropertySourceBuilder.class));
         }
 
         this.configServiceBeanBuilder = getConfigServiceBeanBuilder(beanFactory);
@@ -161,13 +154,15 @@ public class NacosPropertySourcePostProcessor implements BeanDefinitionRegistryP
                 propertySources.addAfter(after, nacosPropertySource);
             }
         } else {
-            propertySources.addLast(nacosPropertySource); // default add last
+            // default add last
+            propertySources.addLast(nacosPropertySource);
         }
     }
 
     private void addListenerIfAutoRefreshed(final NacosPropertySource nacosPropertySource) {
 
-        if (!nacosPropertySource.isAutoRefreshed()) { // Disable Auto-Refreshed
+        // Disable Auto-Refreshed
+        if (!nacosPropertySource.isAutoRefreshed()) {
             return;
         }
 
@@ -177,17 +172,18 @@ public class NacosPropertySourcePostProcessor implements BeanDefinitionRegistryP
         final ConfigService configService = configServiceBeanBuilder.build(nacosPropertiesAttributes);
 
         try {
-            configService.addListener(dataId, groupId, new AbstractListener() {
+            configService.addListener(dataId, groupId, new AbstractConvertibleNacosPropertiesListener(nacosPropertySource.getNacosPropertySourceConverter()) {
 
                 @Override
-                public void receiveConfigInfo(String config) {
+                protected void process(String properties) {
                     String name = nacosPropertySource.getName();
-                    NacosPropertySource newNacosPropertySource = new NacosPropertySource(name, config);
+                    NacosPropertySource newNacosPropertySource = new NacosPropertySource(name, properties);
                     newNacosPropertySource.copy(nacosPropertySource);
                     MutablePropertySources propertySources = environment.getPropertySources();
                     // replace NacosPropertySource
                     propertySources.replace(name, newNacosPropertySource);
                 }
+
             });
         } catch (NacosException e) {
             throw new RuntimeException("ConfigService can't add Listener with properties : " + nacosPropertiesAttributes, e);
