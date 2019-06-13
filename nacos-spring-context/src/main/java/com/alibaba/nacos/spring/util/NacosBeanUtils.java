@@ -411,10 +411,17 @@ public abstract class NacosBeanUtils {
      * @throws NoSuchBeanDefinitionException if there is no such bean definition
      */
     public static NacosServiceFactory getNacosServiceFactoryBean(BeanFactory beanFactory) throws NoSuchBeanDefinitionException {
+        if (null == beanFactory) {
+            return getNacosServiceFactoryBean();
+        }
         ApplicationContextHolder applicationContextHolder = getApplicationContextHolder(beanFactory);
         CacheableEventPublishingNacosServiceFactory nacosServiceFactory = CacheableEventPublishingNacosServiceFactory.getSingleton();
         nacosServiceFactory.setApplicationContext(applicationContextHolder.getApplicationContext());
         return nacosServiceFactory;
+    }
+
+    public static NacosServiceFactory getNacosServiceFactoryBean() throws NoSuchBeanDefinitionException {
+        return CacheableEventPublishingNacosServiceFactory.getSingleton();
     }
 
     public static ApplicationContextHolder getApplicationContextHolder(BeanFactory beanFactory) throws NoSuchBeanDefinitionException {
