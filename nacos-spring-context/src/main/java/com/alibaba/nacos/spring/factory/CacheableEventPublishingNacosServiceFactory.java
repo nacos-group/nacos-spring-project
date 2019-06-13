@@ -126,8 +126,10 @@ public class CacheableEventPublishingNacosServiceFactory implements NacosService
     }
 
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        System.out.println(applicationContext);
         getSingleton().context = (ConfigurableApplicationContext) applicationContext;
-        getSingleton().nacosConfigListenerExecutor = getNacosConfigListenerExecutorIfPresent(applicationContext);
+        getSingleton().nacosConfigListenerExecutor = getSingleton().nacosConfigListenerExecutor == null ?
+                getNacosConfigListenerExecutorIfPresent(applicationContext) : getSingleton().nacosConfigListenerExecutor;
     }
 
     @Override
