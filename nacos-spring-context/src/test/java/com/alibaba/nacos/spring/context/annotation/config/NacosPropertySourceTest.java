@@ -213,7 +213,7 @@ public class NacosPropertySourceTest extends AbstractNacosHttpServerTestExecutio
 
         System.out.println(Thread.currentThread().getName());
 
-        Thread.sleep(3000);
+        Thread.sleep(1000);
 
         Assert.assertEquals(APP_NAME, app.name);
 
