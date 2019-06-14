@@ -53,11 +53,16 @@ public class DeferredApplicationEventPublisher implements ApplicationEventPublis
 
     // com.alibaba.nacos.client.config.impl.CacheData.safeNotifyListener
     // Executor was used for event publishing, leading to the possibility of concurrent use of LinkedList
+    // Fix issue 89
     @Override
     public void publishEvent(ApplicationEvent event) {
-        if (context.isRunning()) {
-            context.publishEvent(event);
-        } else {
+        try {
+            if (context.isRunning()) {
+                context.publishEvent(event);
+            } else {
+                deferredEvents.add(event);
+            }
+        } catch (Exception e) {
             deferredEvents.add(event);
         }
     }
@@ -79,7 +84,6 @@ public class DeferredApplicationEventPublisher implements ApplicationEventPublis
         Iterator<ApplicationEvent> iterator = deferredEvents.iterator();
         while (iterator.hasNext()) {
             ApplicationEvent event = iterator.next();
-            // if use publishEvent, maybe case NPE or CME
             publishEvent(event);
             iterator.remove(); // remove if published
         }
