@@ -90,6 +90,12 @@ public abstract class NacosBeanUtils {
             "$discovery";
 
     /**
+     * The bean name of global Nacos {@link Properties} for discovery
+     */
+    public static final String DISCOVERY_MAINTAIN_GLOBAL_NACOS_PROPERTIES_BEAN_NAME = GLOBAL_NACOS_PROPERTIES_BEAN_NAME +
+            "$maintain";
+
+    /**
      * The bean name of {@link Executor} for Nacos Config Listener
      */
     public static final String NACOS_CONFIG_LISTENER_EXECUTOR_BEAN_NAME = "nacosConfigListenerExecutor";
