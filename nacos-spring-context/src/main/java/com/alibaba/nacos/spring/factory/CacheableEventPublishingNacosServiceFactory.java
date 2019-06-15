@@ -19,6 +19,7 @@ package com.alibaba.nacos.spring.factory;
 import com.alibaba.nacos.api.NacosFactory;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.exception.NacosException;
+import com.alibaba.nacos.api.naming.NamingMaintainService;
 import com.alibaba.nacos.api.naming.NamingService;
 import com.alibaba.nacos.spring.context.event.config.EventPublishingConfigService;
 import org.springframework.beans.BeansException;
@@ -46,6 +47,8 @@ public class CacheableEventPublishingNacosServiceFactory implements NacosService
     private final Map<String, ConfigService> configServicesCache = new LinkedHashMap<String, ConfigService>(2);
 
     private final Map<String, NamingService> namingServicesCache = new LinkedHashMap<String, NamingService>(2);
+
+    private final Map<String, NamingMaintainService> namingMaintainServiceCache = new LinkedHashMap<String, NamingMaintainService>(2);
 
     private ConfigurableApplicationContext context;
 
@@ -92,6 +95,25 @@ public class CacheableEventPublishingNacosServiceFactory implements NacosService
         }
 
         return namingService;
+    }
+
+    @Override
+    public NamingMaintainService createNamingMaintainService(Properties properties) throws NacosException {
+
+        Properties copy = new Properties();
+
+        copy.putAll(properties);
+
+        String cacheKey = identify(copy);
+
+        NamingMaintainService namingMaintainService = namingMaintainServiceCache.get(cacheKey);
+
+        if (namingMaintainService == null) {
+            namingMaintainService = new DelegatingNamingMaintainService(NacosFactory.createMaintainService(copy), properties);
+            namingMaintainServiceCache.put(cacheKey, namingMaintainService);
+        }
+
+        return namingMaintainService;
     }
 
     @Override
