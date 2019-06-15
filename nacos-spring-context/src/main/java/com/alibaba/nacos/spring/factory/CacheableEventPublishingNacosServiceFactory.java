@@ -65,7 +65,9 @@ public class CacheableEventPublishingNacosServiceFactory implements NacosService
 
         String cacheKey = identify(copy);
 
-        ConfigService configService = configServicesCache.get(cacheKey);
+        ConfigService configService;
+
+        configService = configServicesCache.get(cacheKey);
 
         if (configService == null) {
             configService = doCreateConfigService(copy);
@@ -77,7 +79,7 @@ public class CacheableEventPublishingNacosServiceFactory implements NacosService
 
     private ConfigService doCreateConfigService(Properties properties) throws NacosException {
         ConfigService configService = NacosFactory.createConfigService(properties);
-        return new EventPublishingConfigService(configService, properties, context, nacosConfigListenerExecutor);
+        return new EventPublishingConfigService(configService, properties, getSingleton().context, getSingleton().nacosConfigListenerExecutor);
     }
 
     @Override
@@ -89,7 +91,9 @@ public class CacheableEventPublishingNacosServiceFactory implements NacosService
 
         String cacheKey = identify(copy);
 
-        NamingService namingService = namingServicesCache.get(cacheKey);
+        NamingService namingService;
+
+        namingService = namingServicesCache.get(cacheKey);
 
         if (namingService == null) {
             namingService = new DelegatingNamingService(NacosFactory.createNamingService(copy), properties);

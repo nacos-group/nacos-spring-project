@@ -24,6 +24,7 @@ import com.alibaba.nacos.api.naming.NamingService;
 import com.alibaba.nacos.spring.context.annotation.EnableNacos;
 import com.alibaba.nacos.spring.factory.ApplicationContextHolder;
 import com.alibaba.nacos.spring.test.AbstractNacosHttpServerTestExecutionListener;
+import com.alibaba.nacos.spring.test.TestApplicationHolder;
 import com.alibaba.nacos.spring.test.TestConfiguration;
 import org.junit.Assert;
 import org.junit.Test;
@@ -46,6 +47,7 @@ import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.*;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
+        TestApplicationHolder.class,
         ConfigServiceBeanBuilder.class,
         NamingServiceBeanBuilder.class,
         AnnotationNacosInjectedBeanPostProcessor.class,
@@ -73,13 +75,6 @@ public class AnnotationNacosInjectedBeanPostProcessorTest extends AbstractNacosH
 
     @NacosInjected(properties = @NacosProperties(encode = "GBK"))
     private NamingService namingService3;
-
-    @Bean(name = ApplicationContextHolder.BEAN_NAME)
-    public ApplicationContextHolder applicationContextHolder(ApplicationContext applicationContext) {
-        ApplicationContextHolder applicationContextHolder = new ApplicationContextHolder();
-        applicationContextHolder.setApplicationContext(applicationContext);
-        return applicationContextHolder;
-    }
 
     @Override
     protected String getServerAddressPropertyName() {

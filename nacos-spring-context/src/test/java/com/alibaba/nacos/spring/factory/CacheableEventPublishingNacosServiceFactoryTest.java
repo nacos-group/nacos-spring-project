@@ -20,6 +20,7 @@ import com.alibaba.nacos.api.PropertyKeyConst;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.api.naming.NamingService;
+import com.alibaba.nacos.spring.test.TestApplicationHolder;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -43,6 +44,7 @@ import static com.alibaba.nacos.spring.util.NacosBeanUtils.NACOS_CONFIG_LISTENER
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
+        TestApplicationHolder.class,
         CacheableEventPublishingNacosServiceFactory.class,
         CacheableEventPublishingNacosServiceFactoryTest.class
 })
