@@ -16,12 +16,14 @@
  */
 package com.alibaba.nacos.spring.test;
 
+import com.alibaba.nacos.api.PropertyKeyConst;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.spring.factory.CacheableEventPublishingNacosServiceFactory;
 import com.alibaba.nacos.spring.factory.NacosServiceFactory;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.util.StringUtils;
 
 import java.util.Map;
 import java.util.Properties;
@@ -55,22 +57,10 @@ public class TestConfiguration {
     @Bean(name = GLOBAL_NACOS_PROPERTIES_BEAN_NAME)
     public Properties globalNacosProperties() {
         Properties properties = new Properties();
-        return properties;
-    }
-
-    @Bean(name = CacheableEventPublishingNacosServiceFactory.BEAN_NAME)
-    public NacosServiceFactory nacosServiceFactory(ListableBeanFactory beanFactory) {
-
-        MockNacosServiceFactory nacosServiceFactory = new MockNacosServiceFactory();
-
-        Map<String, ConfigService> configServices = beanFactory.getBeansOfType(ConfigService.class);
-
-        if (configServices.containsKey(CONFIG_SERVICE_BEAN_NAME)) {
-            ConfigService configService = configServices.get(CONFIG_SERVICE_BEAN_NAME);
-            nacosServiceFactory.setConfigService(configService);
+        if (!StringUtils.isEmpty(System.getProperty("server.addr"))) {
+            properties.put(PropertyKeyConst.SERVER_ADDR, System.getProperty("server.addr"));
         }
-
-        return nacosServiceFactory;
+        return properties;
     }
 
 }
