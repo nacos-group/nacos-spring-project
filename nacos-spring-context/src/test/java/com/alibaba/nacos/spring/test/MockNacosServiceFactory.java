@@ -130,4 +130,9 @@ public class MockNacosServiceFactory implements NacosServiceFactory {
     public Collection<NamingService> getNamingServices() {
         return Collections.emptyList();
     }
+
+    @Override
+    public Collection<NamingMaintainService> getNamingMaintainService() {
+        return Collections.emptyList();
+    }
 }

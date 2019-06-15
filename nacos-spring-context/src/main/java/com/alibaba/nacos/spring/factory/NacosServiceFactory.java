@@ -83,4 +83,11 @@ public interface NacosServiceFactory {
      */
     Collection<NamingService> getNamingServices();
 
+    /**
+     * Get all instances of {@link NamingMaintainService}
+     *
+     * @return read-only {@link Collection}
+     */
+    Collection<NamingMaintainService> getNamingMaintainService();
+
 }
