@@ -135,6 +135,6 @@ public class CacheableEventPublishingNacosServiceFactory implements NacosService
 
     @Override
     public Collection<NamingMaintainService> getNamingMaintainService() {
-        return null;
+        return maintainServicesCache.values();
     }
 }
