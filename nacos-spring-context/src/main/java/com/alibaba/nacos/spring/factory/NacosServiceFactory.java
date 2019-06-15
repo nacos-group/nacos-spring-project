@@ -19,7 +19,6 @@ package com.alibaba.nacos.spring.factory;
 import com.alibaba.nacos.api.NacosFactory;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.exception.NacosException;
-import com.alibaba.nacos.api.naming.NamingMaintainService;
 import com.alibaba.nacos.api.naming.NamingService;
 
 import java.util.Collection;
@@ -58,16 +57,6 @@ public interface NacosServiceFactory {
      * @see NacosFactory#createNamingService(Properties)
      */
     NamingService createNamingService(Properties properties) throws NacosException;
-
-    /**
-     * Create {@link NamingMaintainService} instance
-     *
-     * @param properties init param
-     * @return a {@link NamingMaintainService} instance
-     * @throws NacosException If creation is failed.
-     * @see NacosFactory#createMaintainService(Properties)
-     */
-    NamingMaintainService createNamingMaintainService(Properties properties) throws NacosException;
 
     /**
      * Get all instances of {@link ConfigService}

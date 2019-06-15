@@ -39,7 +39,7 @@ public class LoggingNacosConfigMetadataEventListener implements ApplicationListe
     private final static String LOGGING_MESSAGE = "Nacos Config Metadata : " +
             "dataId='{}'" +
             ", groupId='{}'" +
-            ", BEAN_NAME='{}'" +
+            ", beanName='{}'" +
             ", bean='{}'" +
             ", beanType='{}'" +
             ", annotatedElement='{}'" +

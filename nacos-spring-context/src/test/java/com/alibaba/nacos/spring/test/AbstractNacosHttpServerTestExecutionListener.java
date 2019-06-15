@@ -56,10 +56,7 @@ public abstract class AbstractNacosHttpServerTestExecutionListener extends Abstr
      * @param server {@link EmbeddedNacosHttpServer}
      */
     protected void init(EmbeddedNacosHttpServer server) {
-    }
 
-    public int getPort() {
-        return httpServer.getPort();
     }
 
     /**

@@ -20,7 +20,6 @@ import com.alibaba.nacos.api.annotation.NacosInjected;
 import com.alibaba.nacos.api.annotation.NacosProperties;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.config.annotation.NacosValue;
-import com.alibaba.nacos.api.config.listener.Listener;
 import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.embedded.web.server.EmbeddedNacosHttpServer;
 import com.alibaba.nacos.spring.context.annotation.EnableNacos;
@@ -41,7 +40,6 @@ import org.springframework.test.context.support.DirtiesContextTestExecutionListe
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.Executor;
 
 import static com.alibaba.nacos.api.common.Constants.DEFAULT_GROUP;
 import static com.alibaba.nacos.embedded.web.server.NacosConfigHttpHandler.CONTENT_PARAM_NAME;
@@ -88,6 +86,7 @@ public class NacosPropertySourceTest extends AbstractNacosHttpServerTestExecutio
         Map<String, String> config = new HashMap<String, String>(1);
         config.put(DATA_ID_PARAM_NAME, DATA_ID);
         config.put(GROUP_ID_PARAM_NAME, DEFAULT_GROUP);
+
 
         config.put(CONTENT_PARAM_NAME,
             "app.name=" + APP_NAME + LINE_SEPARATOR + "app.nacosFieldIntValueAutoRefreshed=" + VALUE_1 + LINE_SEPARATOR
@@ -136,21 +135,6 @@ public class NacosPropertySourceTest extends AbstractNacosHttpServerTestExecutio
         public void setNacosMethodIntValueAutoRefreshed(int nacosMethodIntValueAutoRefreshed) {
             this.nacosMethodIntValueAutoRefreshed = nacosMethodIntValueAutoRefreshed;
         }
-
-        @Override
-        public String toString() {
-            return "App{" +
-                    "name='" + name + '\'' +
-                    ", nameWithDefaultValue='" + nameWithDefaultValue + '\'' +
-                    ", nacosNameAutoRefreshed='" + nacosNameAutoRefreshed + '\'' +
-                    ", nacosNameAutoRefreshedWithDefaultValue='" + nacosNameAutoRefreshedWithDefaultValue + '\'' +
-                    ", nacosNameNotAutoRefreshed='" + nacosNameNotAutoRefreshed + '\'' +
-                    ", nacosFieldIntValue=" + nacosFieldIntValue +
-                    ", nacosFieldIntValueAutoRefreshed=" + nacosFieldIntValueAutoRefreshed +
-                    ", nacosMethodIntValue=" + nacosMethodIntValue +
-                    ", nacosMethodIntValueAutoRefreshed=" + nacosMethodIntValueAutoRefreshed +
-                    '}';
-        }
     }
 
     @Bean
@@ -167,11 +151,8 @@ public class NacosPropertySourceTest extends AbstractNacosHttpServerTestExecutio
     @Autowired
     private Environment environment;
 
-    private volatile boolean receive = false;
-
     @Test
     public void testValue() throws NacosException, InterruptedException {
-
         Assert.assertEquals(APP_NAME, app.name);
 
         Assert.assertEquals(APP_NAME, app.nameWithDefaultValue);
@@ -195,23 +176,6 @@ public class NacosPropertySourceTest extends AbstractNacosHttpServerTestExecutio
         configService.publishConfig(DATA_ID, DEFAULT_GROUP,
             "app.name=" + ANOTHER_APP_NAME + LINE_SEPARATOR + "app.nacosFieldIntValueAutoRefreshed=" + VALUE_3
                 + LINE_SEPARATOR + "app.nacosMethodIntValueAutoRefreshed=" + VALUE_4);
-
-        configService.addListener(DATA_ID, DEFAULT_GROUP, new Listener() {
-            @Override
-            public Executor getExecutor() {
-                return null;
-            }
-
-            @Override
-            public void receiveConfigInfo(String configInfo) {
-                System.out.println("configInfo is : " + configInfo + "\n" + Thread.currentThread().getName());
-                receive = true;
-            }
-        });
-
-        while (!receive) {}
-
-        System.out.println(Thread.currentThread().getName());
 
         Thread.sleep(1000);
 

@@ -17,30 +17,21 @@
 package com.alibaba.nacos.spring.context.annotation.config;
 
 import com.alibaba.nacos.api.annotation.NacosInjected;
-import com.alibaba.nacos.api.annotation.NacosProperties;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.config.annotation.NacosConfigListener;
 import com.alibaba.nacos.api.config.listener.AbstractListener;
 import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.spring.beans.factory.annotation.AnnotationNacosInjectedBeanPostProcessor;
 import com.alibaba.nacos.spring.beans.factory.annotation.ConfigServiceBeanBuilder;
-import com.alibaba.nacos.spring.context.annotation.EnableNacos;
 import com.alibaba.nacos.spring.convert.converter.config.UserNacosConfigConverter;
-import com.alibaba.nacos.spring.factory.ApplicationContextHolder;
-import com.alibaba.nacos.spring.test.AbstractNacosHttpServerTestExecutionListener;
 import com.alibaba.nacos.spring.test.Listeners;
 import com.alibaba.nacos.spring.test.TestConfiguration;
 import com.alibaba.nacos.spring.test.User;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
-import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 
 import javax.annotation.PostConstruct;
 
@@ -57,6 +48,7 @@ import static org.junit.Assert.assertNull;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
+        TestConfiguration.class,
         Listeners.class,
         ConfigServiceBeanBuilder.class,
         AnnotationNacosInjectedBeanPostProcessor.class,
@@ -64,17 +56,7 @@ import static org.junit.Assert.assertNull;
         NacosConfigListenerMethodProcessorTest.class,
 
 })
-@TestExecutionListeners({DependencyInjectionTestExecutionListener.class,
-        DirtiesContextTestExecutionListener.class, NacosConfigListenerMethodProcessorTest.class})
-@EnableNacos(globalProperties = @NacosProperties(serverAddr = "${server.addr}"))
-public class NacosConfigListenerMethodProcessorTest extends AbstractNacosHttpServerTestExecutionListener {
-
-    @Bean(name = ApplicationContextHolder.BEAN_NAME)
-    public ApplicationContextHolder applicationContextHolder(ApplicationContext applicationContext) {
-        ApplicationContextHolder applicationContextHolder = new ApplicationContextHolder();
-        applicationContextHolder.setApplicationContext(applicationContext);
-        return applicationContextHolder;
-    }
+public class NacosConfigListenerMethodProcessorTest {
 
     @Autowired
     private Listeners listeners;
@@ -108,11 +90,8 @@ public class NacosConfigListenerMethodProcessorTest extends AbstractNacosHttpSer
     }
 
     @Test
-    public void testPublishConfig() throws NacosException, InterruptedException {
+    public void testPublishConfig() throws NacosException {
         configService.publishConfig(DATA_ID, DEFAULT_GROUP, "9527");
-
-        Thread.sleep(3000);
-
         assertNull(listeners.getIntegerValue()); // asserts true
         assertEquals(Double.valueOf(9527), listeners.getDoubleValue());   // asserts true
     }
@@ -129,8 +108,4 @@ public class NacosConfigListenerMethodProcessorTest extends AbstractNacosHttpSer
         assertEquals("mercyblitz", user.getName());
     }
 
-    @Override
-    protected String getServerAddressPropertyName() {
-        return "server.addr";
-    }
 }

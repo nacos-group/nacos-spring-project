@@ -16,21 +16,18 @@
  */
 package com.alibaba.nacos.spring.context.event;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationEvent;
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.context.ApplicationListener;
-import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.*;
 import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.context.support.AbstractApplicationContext;
 
 import java.util.Iterator;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Deferred {@link ApplicationEventPublisher} to resolve {@link #publishEvent(ApplicationEvent)} too early to publish
- * {@link ApplicationEvent} when  is not ready, thus current class will hold
+ * {@link ApplicationEvent} when {@link AbstractApplicationContext#initApplicationEventMulticaster()
+ * Spring ApplicationContexts' ApplicationEventMulticaster} is not ready, thus current class will hold
  * all early {@link ApplicationEvent events} temporary until {@link ConfigurableApplicationContext#isRunning() Spring
  * ApplicationContext is active}, and then those {@link ApplicationEvent events} will be replayed.
  *
@@ -39,27 +36,24 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 public class DeferredApplicationEventPublisher implements ApplicationEventPublisher, ApplicationListener<ContextRefreshedEvent> {
 
-    private final Log logger = LogFactory.getLog(DeferredApplicationEventPublisher.class);
-
     private final ConfigurableApplicationContext context;
 
-    // fix issue # 21
-    private final ConcurrentLinkedQueue<ApplicationEvent> deferredEvents = new ConcurrentLinkedQueue<ApplicationEvent>();
+    private final List<ApplicationEvent> deferredEvents = new LinkedList<ApplicationEvent>();
 
     public DeferredApplicationEventPublisher(ConfigurableApplicationContext context) {
         this.context = context;
         this.context.addApplicationListener(this);
     }
 
-    // com.alibaba.nacos.client.config.impl.CacheData.safeNotifyListener
-    // Executor was used for event publishing, leading to the possibility of concurrent use of LinkedList
     @Override
     public void publishEvent(ApplicationEvent event) {
+
         if (context.isRunning()) {
             context.publishEvent(event);
         } else {
             deferredEvents.add(event);
         }
+
     }
 
     @Override
@@ -79,10 +73,8 @@ public class DeferredApplicationEventPublisher implements ApplicationEventPublis
         Iterator<ApplicationEvent> iterator = deferredEvents.iterator();
         while (iterator.hasNext()) {
             ApplicationEvent event = iterator.next();
-            // if use publishEvent, maybe case NPE or CME
             publishEvent(event);
             iterator.remove(); // remove if published
         }
     }
-
 }

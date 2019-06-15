@@ -34,7 +34,7 @@ import java.lang.annotation.*;
 @Target({ElementType.TYPE, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Import(value = {NacosBeanDefinitionRegistrar.class})
+@Import(NacosBeanDefinitionRegistrar.class)
 public @interface EnableNacos {
 
     /**

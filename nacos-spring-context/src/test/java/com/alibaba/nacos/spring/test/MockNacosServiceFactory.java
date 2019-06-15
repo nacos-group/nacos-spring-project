@@ -18,9 +18,7 @@ package com.alibaba.nacos.spring.test;
 
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.exception.NacosException;
-import com.alibaba.nacos.api.naming.NamingMaintainService;
 import com.alibaba.nacos.api.naming.NamingService;
-import com.alibaba.nacos.client.config.NacosConfigService;
 import com.alibaba.nacos.spring.factory.NacosServiceFactory;
 import org.mockito.Mockito;
 
@@ -106,7 +104,8 @@ public class MockNacosServiceFactory implements NacosServiceFactory {
         String key = identify(properties);
         ConfigService configService = configServiceCache.get(key);
         if (configService == null) {
-            configService = new NacosConfigService(properties);
+            configService = new MockConfigService();
+            configServiceCache.put(key, configService);
         }
         return configService;
     }
@@ -114,11 +113,6 @@ public class MockNacosServiceFactory implements NacosServiceFactory {
     @Override
     public NamingService createNamingService(Properties properties) throws NacosException {
         return Mockito.mock(NamingService.class);
-    }
-
-    @Override
-    public NamingMaintainService createNamingMaintainService(Properties properties) throws NacosException {
-        return Mockito.mock(NamingMaintainService.class);
     }
 
     @Override
@@ -130,5 +124,4 @@ public class MockNacosServiceFactory implements NacosServiceFactory {
     public Collection<NamingService> getNamingServices() {
         return Collections.emptyList();
     }
-
 }

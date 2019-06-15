@@ -28,7 +28,6 @@ import java.util.Map;
 import static com.alibaba.nacos.api.common.Constants.DEFAULT_GROUP;
 import static com.alibaba.nacos.spring.util.NacosUtils.DEFAULT_BOOLEAN_ATTRIBUTE_VALUE;
 import static com.alibaba.nacos.spring.util.NacosUtils.DEFAULT_STRING_ATTRIBUTE_VALUE;
-import static com.alibaba.nacos.spring.util.NacosUtils.DEFAULT_YAML_ATTRIBUTE_NAME;
 
 /**
  * An annotation for Nacos {@link PropertySource}
@@ -83,11 +82,6 @@ public @interface NacosPropertySource {
      * The attribute name of {@link NacosPropertySource#properties()}
      */
     String PROPERTIES_ATTRIBUTE_NAME = "properties";
-
-    /**
-     * The attribute name of {@link NacosPropertySource#yaml()}
-     */
-    String YAML_ATTRIBUTE_NAME = "yaml";
 
     /**
      * The name of Nacos {@link PropertySource}
@@ -150,12 +144,6 @@ public @interface NacosPropertySource {
      * @return the name of {@link PropertySource}
      */
     String after() default DEFAULT_STRING_ATTRIBUTE_VALUE;
-
-    /**
-     *
-     * @return the config style is yaml default <code>false</code>
-     */
-    boolean yaml() default DEFAULT_YAML_ATTRIBUTE_NAME;
 
     /**
      * The {@link NacosProperties} attribute, If not specified, it will use

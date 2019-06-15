@@ -41,15 +41,12 @@ public class EventPublishingConfigService implements ConfigService, NacosService
 
     private final Executor executor;
 
-    private final ConfigurableApplicationContext context;
-
     private final Properties properties;
 
     public EventPublishingConfigService(ConfigService configService, Properties properties, ConfigurableApplicationContext context,
                                         Executor executor) {
         this.configService = configService;
         this.properties = properties;
-        this.context = context;
         this.applicationEventPublisher = new DeferredApplicationEventPublisher(context);
         this.executor = executor;
     }

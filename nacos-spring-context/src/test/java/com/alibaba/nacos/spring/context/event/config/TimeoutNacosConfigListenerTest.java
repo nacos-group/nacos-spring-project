@@ -38,7 +38,7 @@ public class TimeoutNacosConfigListenerTest {
 
     private final ConfigService configService = new MockConfigService();
 
-    private String receiveConfig(final long executionTime, long timeout, String content) throws NacosException, InterruptedException {
+    private String receiveConfig(final long executionTime, long timeout, String content) throws NacosException {
 
         final AtomicReference<String> contentHolder = new AtomicReference<String>();
 
@@ -60,7 +60,7 @@ public class TimeoutNacosConfigListenerTest {
 
 
     @Test
-    public void test() throws NacosException, InterruptedException {
+    public void test() throws NacosException {
 
         String content = "Hello,World";
 
@@ -70,7 +70,7 @@ public class TimeoutNacosConfigListenerTest {
     }
 
     @Test
-    public void testOnTimeout() throws NacosException, InterruptedException {
+    public void testOnTimeout() throws NacosException {
 
         String content = "Hello,World";
 

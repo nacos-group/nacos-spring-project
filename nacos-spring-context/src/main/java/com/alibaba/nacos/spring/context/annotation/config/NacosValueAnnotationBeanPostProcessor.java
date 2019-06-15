@@ -29,10 +29,7 @@ import org.springframework.beans.factory.annotation.InjectionMetadata;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.MethodParameter;
-import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.core.env.Environment;
 import org.springframework.util.ReflectionUtils;
-import org.springframework.util.StringValueResolver;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
@@ -123,11 +120,6 @@ public class NacosValueAnnotationBeanPostProcessor extends AnnotationInjectedBea
         return super.postProcessBeforeInitialization(bean, beanName);
     }
 
-    /**
-     * receive {@link NacosConfigReceivedEvent} event to bind or update {@link NacosValue} field
-     *
-     * @param event {@link NacosConfigReceivedEvent}
-     */
     @Override
     public void onApplicationEvent(NacosConfigReceivedEvent event) {
         String content = event.getContent();
@@ -210,7 +202,6 @@ public class NacosValueAnnotationBeanPostProcessor extends AnnotationInjectedBea
                     return;
                 }
 
-                // 将 @NacosValue 以及 target obj 缓存起来
                 NacosValueTarget nacosValueTarget = new NacosValueTarget(bean, beanName, method, field);
                 put2ListMap(placeholderNacosValueTargetMap, placeholder, nacosValueTarget);
             }

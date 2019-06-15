@@ -16,42 +16,22 @@
  */
 package com.alibaba.nacos.spring.context.annotation.config;
 
-import com.alibaba.nacos.api.annotation.NacosInjected;
-import com.alibaba.nacos.api.annotation.NacosProperties;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.exception.NacosException;
-import com.alibaba.nacos.embedded.web.server.EmbeddedNacosHttpServer;
 import com.alibaba.nacos.spring.beans.factory.annotation.AnnotationNacosInjectedBeanPostProcessor;
 import com.alibaba.nacos.spring.beans.factory.annotation.ConfigServiceBeanBuilder;
-import com.alibaba.nacos.spring.context.annotation.EnableNacos;
 import com.alibaba.nacos.spring.core.env.AnnotationNacosPropertySourceBuilder;
 import com.alibaba.nacos.spring.core.env.NacosPropertySourcePostProcessor;
-import com.alibaba.nacos.spring.factory.ApplicationContextHolder;
-import com.alibaba.nacos.spring.test.AbstractNacosHttpServerTestExecutionListener;
-import com.alibaba.nacos.spring.test.TestApplicationHolder;
+import com.alibaba.nacos.spring.test.MockConfigService;
 import com.alibaba.nacos.spring.test.TestConfiguration;
 import org.junit.Assert;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.PropertySource;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
-import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import static com.alibaba.nacos.api.common.Constants.DEFAULT_GROUP;
-import static com.alibaba.nacos.embedded.web.server.NacosConfigHttpHandler.CONTENT_PARAM_NAME;
-import static com.alibaba.nacos.embedded.web.server.NacosConfigHttpHandler.DATA_ID_PARAM_NAME;
-import static com.alibaba.nacos.embedded.web.server.NacosConfigHttpHandler.GROUP_ID_PARAM_NAME;
 import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.DATA_ID;
 import static com.alibaba.nacos.spring.test.TestConfiguration.CONFIG_SERVICE_BEAN_NAME;
 import static org.springframework.core.env.StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME;
@@ -64,14 +44,7 @@ import static org.springframework.core.env.StandardEnvironment.SYSTEM_PROPERTIES
  * @ee NacosPropertySourcePostProcessor
  * @since 0.1.0
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {
-        NacosPropertySourcePostProcessorTest.class
-})
-@TestExecutionListeners({DependencyInjectionTestExecutionListener.class,
-        DirtiesContextTestExecutionListener.class, NacosPropertySourcePostProcessorTest.class})
-@EnableNacos(globalProperties = @NacosProperties(serverAddr = "${server.addr}"))
-public class NacosPropertySourcePostProcessorTest extends AbstractNacosHttpServerTestExecutionListener {
+public class NacosPropertySourcePostProcessorTest {
 
     private static final String TEST_PROPERTY_NAME = "user.name";
 
@@ -111,32 +84,9 @@ public class NacosPropertySourcePostProcessorTest extends AbstractNacosHttpServe
 
     }
 
-    @Override
-    public void init(EmbeddedNacosHttpServer httpServer) {
-        Map<String, String> config = new HashMap<String, String>(1);
-        config.put(DATA_ID_PARAM_NAME, DATA_ID);
-        config.put(GROUP_ID_PARAM_NAME, DEFAULT_GROUP);
-        config.put(CONTENT_PARAM_NAME, TEST_CONTENT);
-        httpServer.initConfig(config);
-    }
-
-    @Override
-    protected String getServerAddressPropertyName() {
-        return "server.addr";
-    }
-
-    @Bean(name = ApplicationContextHolder.BEAN_NAME)
-    public ApplicationContextHolder applicationContextHolder(ApplicationContext applicationContext) {
-        ApplicationContextHolder applicationContextHolder = new ApplicationContextHolder();
-        applicationContextHolder.setApplicationContext(applicationContext);
-        return applicationContextHolder;
-    }
-
-    @NacosInjected
-    private ConfigService configService;
 
     @Test
-    public void testFirstOrder() throws NacosException, InterruptedException {
+    public void testFirstOrder() throws NacosException {
 
         AnnotationConfigApplicationContext context = createContext(DATA_ID, DEFAULT_GROUP, TEST_CONTENT);
 
@@ -167,7 +117,7 @@ public class NacosPropertySourcePostProcessorTest extends AbstractNacosHttpServe
     }
 
     @Test
-    public void testRelativeOrder() throws NacosException, InterruptedException {
+    public void testRelativeOrder() throws NacosException {
 
         AnnotationConfigApplicationContext context = createContext(DATA_ID, DEFAULT_GROUP, TEST_CONTENT);
 
@@ -194,18 +144,20 @@ public class NacosPropertySourcePostProcessorTest extends AbstractNacosHttpServe
         Assert.assertEquals("/My/Path", propertyValue);
     }
 
-    private AnnotationConfigApplicationContext createContext(String dataId, String groupId, String content) throws NacosException, InterruptedException {
+    private AnnotationConfigApplicationContext createContext(String dataId, String groupId, String content) throws NacosException {
         AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
         ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
+
+        ConfigService configService = new MockConfigService();
 
         configService.publishConfig(dataId, groupId, content);
 
         beanFactory.registerSingleton(CONFIG_SERVICE_BEAN_NAME, configService);
 
-        context.register(AnnotationNacosInjectedBeanPostProcessor.class,
+        context.register(TestConfiguration.class, AnnotationNacosInjectedBeanPostProcessor.class,
                 NacosPropertySourcePostProcessor.class, ConfigServiceBeanBuilder.class,
-                AnnotationNacosPropertySourceBuilder.class, TestConfiguration.class, TestApplicationHolder.class);
+                AnnotationNacosPropertySourceBuilder.class);
         return context;
     }
 }

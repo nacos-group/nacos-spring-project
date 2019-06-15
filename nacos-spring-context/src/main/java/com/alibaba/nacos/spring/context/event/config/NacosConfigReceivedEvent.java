@@ -17,7 +17,6 @@
 package com.alibaba.nacos.spring.context.event.config;
 
 import com.alibaba.nacos.api.config.ConfigService;
-import org.springframework.context.ConfigurableApplicationContext;
 
 /**
  * The {@link NacosConfigEvent event} of Nacos Configuration that has been changed.

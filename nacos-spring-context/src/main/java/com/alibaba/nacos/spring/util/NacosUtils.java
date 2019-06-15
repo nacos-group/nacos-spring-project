@@ -51,19 +51,16 @@ import static org.springframework.core.annotation.AnnotationUtils.getAnnotationA
  */
 public abstract class NacosUtils {
 
-    public static final String NACOS_BOOTSTRAP_PROPERTY_APPLICATION = "nacos.bootstrap.property.application";
-
     /**
      * Default value of {@link String} attribute for {@link Annotation}
      */
     public static final String DEFAULT_STRING_ATTRIBUTE_VALUE = "";
 
+
     /**
      * Default value of boolean attribute for {@link Annotation}
      */
     public static final boolean DEFAULT_BOOLEAN_ATTRIBUTE_VALUE = false;
-
-    public static final boolean DEFAULT_YAML_ATTRIBUTE_NAME = false;
 
     /**
      * The separator
@@ -267,25 +264,18 @@ public abstract class NacosUtils {
     }
 
     public static Properties toProperties(String text) {
-        return toProperties(text, false);
-    }
-
-    public static Properties toProperties(String text, boolean isYaml) {
         Properties properties = new Properties();
-        if (isYaml) {
-            properties = YamlUtils.toProperties(text);
-        } else {
-            try {
-                if (StringUtils.hasText(text)) {
-                    properties.load(new StringReader(text));
-                }
-            } catch (IOException e) {
-                if (logger.isErrorEnabled()) {
-                    logger.error(e.getMessage(), e);
-                }
+        try {
+            if (StringUtils.hasText(text)) {
+                properties.load(new StringReader(text));
+            }
+        } catch (IOException e) {
+            if (logger.isErrorEnabled()) {
+                logger.error(e.getMessage(), e);
             }
         }
         return properties;
     }
+
 
 }

@@ -53,15 +53,11 @@ public class NacosConfigurationPropertiesBindingPostProcessor implements BeanPos
 
     private ApplicationEventPublisher applicationEventPublisher;
 
-    /**
-     * applicationContext maybe is AnnotationConfigServletWebServerApplicationContext
-     */
     private ConfigurableApplicationContext applicationContext;
 
     @Override
     public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
 
-        // 是否有 POJO 使用了 NacosConfigurationProperties 注解
         NacosConfigurationProperties nacosConfigurationProperties = findAnnotation(bean.getClass(), NacosConfigurationProperties.class);
 
         if (nacosConfigurationProperties != null) {
@@ -73,17 +69,7 @@ public class NacosConfigurationPropertiesBindingPostProcessor implements BeanPos
 
     private void bind(Object bean, String beanName, NacosConfigurationProperties nacosConfigurationProperties) {
 
-        NacosConfigurationPropertiesBinder binder;
-        try {
-            binder = applicationContext
-                    .getBean(NacosConfigurationPropertiesBinder.BEAN_NAME, NacosConfigurationPropertiesBinder.class);
-            if (binder == null) {
-                binder = new NacosConfigurationPropertiesBinder(applicationContext);
-            }
-
-        } catch (Exception e) {
-            binder = new NacosConfigurationPropertiesBinder(applicationContext);
-        }
+        NacosConfigurationPropertiesBinder binder = new NacosConfigurationPropertiesBinder(applicationContext);
 
         binder.bind(bean, beanName, nacosConfigurationProperties);
 

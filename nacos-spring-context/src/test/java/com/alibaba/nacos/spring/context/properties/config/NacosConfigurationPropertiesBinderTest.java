@@ -53,7 +53,7 @@
 //
 //        final Config config = new Config();
 //
-//        final String BEAN_NAME = "configBean";
+//        final String beanName = "configBean";
 //
 //        ConfigService configService = nacosServiceFactory.createConfigService(new Properties());
 //
@@ -72,7 +72,7 @@
 //                Assert.assertEquals(GROUP_ID, event.getGroupId());
 //                Assert.assertEquals(content.get(), event.getContent());
 //                Assert.assertEquals(config, event.getBean());
-//                Assert.assertEquals(BEAN_NAME, event.getBeanName());
+//                Assert.assertEquals(beanName, event.getBeanName());
 //                Assert.assertEquals(config.getClass().getAnnotation(NacosConfigurationProperties.class), event.getProperties());
 //            }
 //        });
@@ -87,7 +87,7 @@
 //
 //        NacosConfigurationPropertiesBinder binder = new NacosConfigurationPropertiesBinder(configService, applicationEventPublisher);
 //
-//        binder.bind(config, BEAN_NAME);
+//        binder.bind(config, beanName);
 //
 //        Assert.assertEquals(1, config.getId());
 //        Assert.assertEquals("mercyblitz", config.getName());
