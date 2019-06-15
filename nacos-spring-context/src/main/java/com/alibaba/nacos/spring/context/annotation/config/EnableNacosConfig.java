@@ -93,6 +93,7 @@ public @interface EnableNacosConfig {
      */
     String ENCODE_PLACEHOLDER = "${" + CONFIG_PREFIX + ENCODE + ":" + NacosProperties.ENCODE_PLACEHOLDER + "}";
 
+    // wait new nacos-api version
 //    /**
 //     * The placeholder of {@link NacosProperties#CONFIG_LONG_POLL_TIMEOUT configLongPollTimeout}, the value is
 //     * <code>"${nacos.config.configLongPollTimeout:${nacos.configLongPollTimeout:}}"</code>

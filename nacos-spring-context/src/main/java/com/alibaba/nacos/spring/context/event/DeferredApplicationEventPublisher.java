@@ -39,6 +39,7 @@ public class DeferredApplicationEventPublisher implements ApplicationEventPublis
 
     private final ConfigurableApplicationContext context;
 
+    // fix issue #85
     private final ConcurrentLinkedQueue<ApplicationEvent> deferredEvents = new ConcurrentLinkedQueue<ApplicationEvent>();
 
     public DeferredApplicationEventPublisher(ConfigurableApplicationContext context) {
@@ -49,9 +50,14 @@ public class DeferredApplicationEventPublisher implements ApplicationEventPublis
     @Override
     public void publishEvent(ApplicationEvent event) {
 
-        if (context.isRunning()) {
-            context.publishEvent(event);
-        } else {
+        // fix issue #89
+        try {
+            if (context.isRunning()) {
+                context.publishEvent(event);
+            } else {
+                deferredEvents.add(event);
+            }
+        } catch (Exception e) {
             deferredEvents.add(event);
         }
 
