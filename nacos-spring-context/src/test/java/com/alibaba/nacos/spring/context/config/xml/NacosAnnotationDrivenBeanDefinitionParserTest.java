@@ -22,6 +22,7 @@ import com.alibaba.nacos.spring.beans.factory.annotation.AnnotationNacosInjected
 import com.alibaba.nacos.spring.context.annotation.config.NacosConfigListenerMethodProcessor;
 import com.alibaba.nacos.spring.context.properties.config.NacosConfigurationPropertiesBindingPostProcessor;
 import com.alibaba.nacos.spring.core.env.NacosPropertySourcePostProcessor;
+import com.alibaba.nacos.spring.factory.ApplicationContextHolder;
 import com.alibaba.nacos.spring.factory.CacheableEventPublishingNacosServiceFactory;
 import com.alibaba.nacos.spring.factory.NacosServiceFactory;
 import com.alibaba.nacos.spring.util.NacosBeanUtils;
@@ -65,8 +66,8 @@ public class NacosAnnotationDrivenBeanDefinitionParserTest {
     private Properties globalProperties;
 
     @Autowired
-    @Qualifier(CacheableEventPublishingNacosServiceFactory.BEAN_NAME)
-    private NacosServiceFactory nacosServiceFactory;
+    @Qualifier(ApplicationContextHolder.BEAN_NAME)
+    private ApplicationContextHolder contextHolder;
 
     @Autowired
     @Qualifier(AnnotationNacosInjectedBeanPostProcessor.BEAN_NAME)
@@ -90,7 +91,7 @@ public class NacosAnnotationDrivenBeanDefinitionParserTest {
     @Test
     public void test() {
         Assert.assertNotNull(globalProperties);
-        Assert.assertNotNull(nacosServiceFactory);
+        Assert.assertNotNull(contextHolder);
         Assert.assertNotNull(annotationNacosInjectedBeanPostProcessor);
         Assert.assertNotNull(nacosConfigurationPropertiesBindingPostProcessor);
         Assert.assertNotNull(nacosConfigListenerMethodProcessor);

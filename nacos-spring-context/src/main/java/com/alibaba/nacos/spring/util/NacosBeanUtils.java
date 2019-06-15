@@ -16,7 +16,6 @@
  */
 package com.alibaba.nacos.spring.util;
 
-import com.alibaba.nacos.api.naming.NamingMaintainService;
 import com.alibaba.nacos.spring.beans.factory.annotation.AnnotationNacosInjectedBeanPostProcessor;
 import com.alibaba.nacos.spring.beans.factory.annotation.ConfigServiceBeanBuilder;
 import com.alibaba.nacos.spring.beans.factory.annotation.NamingMaintainServiceBeanBuilder;
@@ -239,16 +238,6 @@ public abstract class NacosBeanUtils {
                 ApplicationContextHolder.class);
     }
 
-    /**
-     * Register {@link CacheableEventPublishingNacosServiceFactory NacosServiceFactory}
-     *
-     * @param registry {@link BeanDefinitionRegistry}
-     */
-    public static void registerNacosServiceFactory(BeanDefinitionRegistry registry) {
-        registerInfrastructureBeanIfAbsent(registry, CacheableEventPublishingNacosServiceFactory.BEAN_NAME,
-                CacheableEventPublishingNacosServiceFactory.class);
-    }
-
     public static void registerNacosConfigPropertiesBindingPostProcessor(BeanDefinitionRegistry registry) {
         registerInfrastructureBeanIfAbsent(registry, NacosConfigurationPropertiesBindingPostProcessor.BEAN_NAME,
                 NacosConfigurationPropertiesBindingPostProcessor.class);
@@ -314,8 +303,8 @@ public abstract class NacosBeanUtils {
      * @param registry {@link BeanDefinitionRegistry}
      */
     public static void registerNacosCommonBeans(BeanDefinitionRegistry registry) {
-        // Register NacosServiceFactory Bean
-        registerNacosServiceFactory(registry);
+        // Register ApplicationContextHolder Bean
+        registerApplicationContextHolder(registry);
         // Register AnnotationNacosInjectedBeanPostProcessor Bean
         registerAnnotationNacosInjectedBeanPostProcessor(registry);
     }
@@ -370,8 +359,10 @@ public abstract class NacosBeanUtils {
 
     /**
      * Register Nacos Discovery Beans
+     * Register Nacos Discovery Beans of NamingService and NamingMaintainService
      *
      * @param registry {@link BeanDefinitionRegistry}
+     * @author liaochuntao
      */
     public static void registerNacosDiscoveryBeans(BeanDefinitionRegistry registry) {
         registerNamingServiceBeanBuilder(registry);
@@ -465,7 +456,7 @@ public abstract class NacosBeanUtils {
      * Get {@link NamingServiceBeanBuilder} Bean
      *
      * @param beanFactory {@link BeanFactory}
-     * @return {@link ConfigServiceBeanBuilder} Bean
+     * @return {@link NamingServiceBeanBuilder} Bean
      * @throws NoSuchBeanDefinitionException if there is no such bean definition
      */
     public static NamingServiceBeanBuilder getNamingServiceBeanBuilder(BeanFactory beanFactory) throws NoSuchBeanDefinitionException {
@@ -473,10 +464,10 @@ public abstract class NacosBeanUtils {
     }
 
     /**
-     * Get {@link NamingServiceBeanBuilder} Bean
+     * Get {@link NamingMaintainServiceBeanBuilder} Bean
      *
      * @param beanFactory {@link BeanFactory}
-     * @return {@link ConfigServiceBeanBuilder} Bean
+     * @return {@link NamingMaintainServiceBeanBuilder} Bean
      * @throws NoSuchBeanDefinitionException if there is no such bean definition
      */
     public static NamingMaintainServiceBeanBuilder getNamingMaintainServiceBeanBuilder(BeanFactory beanFactory) throws NoSuchBeanDefinitionException {

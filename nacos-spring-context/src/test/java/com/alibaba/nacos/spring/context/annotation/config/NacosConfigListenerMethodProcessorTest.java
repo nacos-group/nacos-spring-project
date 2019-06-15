@@ -69,9 +69,6 @@ import static org.junit.Assert.assertNull;
 @EnableNacos(globalProperties = @NacosProperties(serverAddr = "${server.addr}"))
 public class NacosConfigListenerMethodProcessorTest extends AbstractNacosHttpServerTestExecutionListener {
 
-    @Autowired
-    private Listeners listeners;
-
     @Bean(name = ApplicationContextHolder.BEAN_NAME)
     public ApplicationContextHolder applicationContextHolder(ApplicationContext applicationContext) {
         ApplicationContextHolder applicationContextHolder = new ApplicationContextHolder();
@@ -79,10 +76,8 @@ public class NacosConfigListenerMethodProcessorTest extends AbstractNacosHttpSer
         return applicationContextHolder;
     }
 
-    @Override
-    protected String getServerAddressPropertyName() {
-        return "server.addr";
-    }
+    @Autowired
+    private Listeners listeners;
 
     @NacosInjected
     private ConfigService configService;
@@ -113,8 +108,11 @@ public class NacosConfigListenerMethodProcessorTest extends AbstractNacosHttpSer
     }
 
     @Test
-    public void testPublishConfig() throws NacosException {
+    public void testPublishConfig() throws NacosException, InterruptedException {
         configService.publishConfig(DATA_ID, DEFAULT_GROUP, "9527");
+
+        Thread.sleep(3000);
+
         assertNull(listeners.getIntegerValue()); // asserts true
         assertEquals(Double.valueOf(9527), listeners.getDoubleValue());   // asserts true
     }
@@ -131,4 +129,8 @@ public class NacosConfigListenerMethodProcessorTest extends AbstractNacosHttpSer
         assertEquals("mercyblitz", user.getName());
     }
 
+    @Override
+    protected String getServerAddressPropertyName() {
+        return "server.addr";
+    }
 }

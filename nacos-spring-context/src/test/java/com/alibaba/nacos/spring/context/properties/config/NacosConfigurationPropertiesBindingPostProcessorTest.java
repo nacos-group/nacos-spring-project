@@ -20,12 +20,9 @@ import com.alibaba.nacos.api.annotation.NacosInjected;
 import com.alibaba.nacos.api.annotation.NacosProperties;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.exception.NacosException;
-import com.alibaba.nacos.spring.beans.factory.annotation.AnnotationNacosInjectedBeanPostProcessor;
-import com.alibaba.nacos.spring.beans.factory.annotation.ConfigServiceBeanBuilder;
 import com.alibaba.nacos.spring.context.annotation.EnableNacos;
 import com.alibaba.nacos.spring.test.AbstractNacosHttpServerTestExecutionListener;
 import com.alibaba.nacos.spring.test.Config;
-import com.alibaba.nacos.spring.test.TestConfiguration;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -68,15 +65,12 @@ public class NacosConfigurationPropertiesBindingPostProcessorTest extends Abstra
         return new Config();
     }
 
-    @Override
-    protected String getServerAddressPropertyName() {
-        return "server.addr";
-    }
-
     @Test
-    public void test() throws NacosException {
+    public void test() throws NacosException, InterruptedException {
 
         configService.publishConfig(DATA_ID, GROUP_ID, TEST_CONFIG);
+
+        Thread.sleep(2000);
 
         Assert.assertEquals(1, config.getId());
         Assert.assertEquals("mercyblitz", config.getName());
@@ -87,6 +81,8 @@ public class NacosConfigurationPropertiesBindingPostProcessorTest extends Abstra
         // Publishing config emits change
         configService.publishConfig(DATA_ID, GROUP_ID, MODIFIED_TEST_CONTEXT);
 
+        Thread.sleep(2000);
+
         Assert.assertEquals(1, config.getId());
         Assert.assertEquals("mercyblitz@gmail.com", config.getName());
         Assert.assertTrue(9527 == config.getValue());
@@ -95,4 +91,8 @@ public class NacosConfigurationPropertiesBindingPostProcessorTest extends Abstra
 
     }
 
+    @Override
+    protected String getServerAddressPropertyName() {
+        return "server.addr";
+    }
 }
