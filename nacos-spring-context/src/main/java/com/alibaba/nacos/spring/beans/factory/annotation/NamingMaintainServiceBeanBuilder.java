@@ -35,7 +35,7 @@ public class NamingMaintainServiceBeanBuilder extends AbstractNacosServiceBeanBu
     public static final String BEAN_NAME = "namingMaintainServiceBeanBuilder";
 
     protected NamingMaintainServiceBeanBuilder() {
-        super(GlobalNacosPropertiesSource.DISCOVERY);
+        super(GlobalNacosPropertiesSource.MAINTAIN);
     }
 
     @Override

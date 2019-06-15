@@ -47,7 +47,12 @@ public enum GlobalNacosPropertiesSource {
     /**
      * Global {@link NacosProperties} for Nacos discovery
      */
-    DISCOVERY(DISCOVERY_GLOBAL_NACOS_PROPERTIES_BEAN_NAME);
+    DISCOVERY(DISCOVERY_GLOBAL_NACOS_PROPERTIES_BEAN_NAME),
+
+    /**
+     * Global {@link NacosProperties} for Nacos maintain
+     */
+    MAINTAIN(DISCOVERY_MAINTAIN_GLOBAL_NACOS_PROPERTIES_BEAN_NAME);
 
 
     private final String beanName;
