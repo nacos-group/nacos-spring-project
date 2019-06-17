@@ -16,6 +16,7 @@
  */
 package com.alibaba.nacos.spring.context.properties.config;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.nacos.api.annotation.NacosInjected;
 import com.alibaba.nacos.api.annotation.NacosProperties;
 import com.alibaba.nacos.api.config.ConfigService;
@@ -23,6 +24,7 @@ import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.spring.context.annotation.EnableNacos;
 import com.alibaba.nacos.spring.test.AbstractNacosHttpServerTestExecutionListener;
 import com.alibaba.nacos.spring.test.Config;
+import com.alibaba.nacos.spring.test.TestOrder;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,6 +35,8 @@ import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
+
+import java.util.HashMap;
 
 import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.DATA_ID;
 import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.GROUP_ID;
@@ -65,6 +69,14 @@ public class NacosConfigurationPropertiesBindingPostProcessorTest extends Abstra
         return new Config();
     }
 
+    @Autowired
+    private TestOrder testOrder;
+
+    @Bean
+    public TestOrder order() {
+        return new TestOrder();
+    }
+
     @Test
     public void test() throws NacosException, InterruptedException {
 
@@ -89,6 +101,27 @@ public class NacosConfigurationPropertiesBindingPostProcessorTest extends Abstra
         Assert.assertEquals(Float.valueOf(1234.5f), config.getFloatData());
         Assert.assertNull(config.getIntData());
 
+    }
+
+    @Test
+    public void test1() throws NacosException, InterruptedException {
+
+        TestOrder order = new TestOrder();
+        order.setAddId("1");
+        order.setAddress("1");
+        HashMap<String, String> map = new HashMap<String, String>();
+        map.put("111", "111");
+        order.setFdOrderFoodId(map);
+        order.setfOrderCost("1");
+        order.setfOrderCreateTime("1");
+        order.setfOrderMailCost("1");
+        order.setfOrderSubPrice("1");
+
+        configService.publishConfig(DATA_ID, GROUP_ID, JSON.toJSONString(order));
+
+        Thread.sleep(2000);
+
+        System.out.println(testOrder);
     }
 
     @Override

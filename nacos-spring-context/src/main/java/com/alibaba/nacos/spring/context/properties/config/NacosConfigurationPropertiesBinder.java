@@ -33,14 +33,18 @@ import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.PropertyValues;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.core.env.Environment;
+import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.validation.DataBinder;
 
 import java.lang.reflect.Field;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.regex.Pattern;
 
 import static com.alibaba.nacos.spring.util.NacosBeanUtils.getConfigServiceBeanBuilder;
 import static com.alibaba.nacos.spring.util.NacosUtils.getContent;
@@ -54,13 +58,15 @@ import static org.springframework.util.StringUtils.hasText;
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
  * @since 0.1.0
  */
-class NacosConfigurationPropertiesBinder {
+public class NacosConfigurationPropertiesBinder {
+
+    public static final String BEAN_NAME = "nacosConfigurationPropertiesBinder";
 
     private static final Logger logger = LoggerFactory.getLogger(NacosConfigurationPropertiesBinder.class);
 
     private final ConfigurableApplicationContext applicationContext;
 
-    private final Environment environment;
+    private final ConfigurableEnvironment environment;
 
     private final ApplicationEventPublisher applicationEventPublisher;
 
@@ -119,7 +125,7 @@ class NacosConfigurationPropertiesBinder {
 
     private void doBind(Object bean, String beanName, String dataId, String groupId,
                         NacosConfigurationProperties properties, String content, ConfigService configService) {
-        PropertyValues propertyValues = resolvePropertyValues(bean, content);
+        PropertyValues propertyValues = resolvePropertyValues(bean, content, properties);
         doBind(bean, properties, propertyValues);
         publishBoundEvent(bean, beanName, dataId, groupId, properties, content, configService);
         publishMetadataEvent(bean, beanName, dataId, groupId, properties);
@@ -167,16 +173,27 @@ class NacosConfigurationPropertiesBinder {
         dataBinder.bind(propertyValues);
     }
 
-    private PropertyValues resolvePropertyValues(Object bean, String content) {
-        final Properties configProperties = toProperties(content);
+    private PropertyValues resolvePropertyValues(Object bean, String content, NacosConfigurationProperties properties) {
+        //TODO wait for nacos-api update to 1.0.2
+        final String type = properties.yaml() ? "yaml" : "properties";
+        final Properties configProperties = toProperties(properties.dataId(), properties.groupId(), content, type);
         final MutablePropertyValues propertyValues = new MutablePropertyValues();
         ReflectionUtils.doWithFields(bean.getClass(), new ReflectionUtils.FieldCallback() {
+
             @Override
             public void doWith(Field field) throws IllegalArgumentException, IllegalAccessException {
                 String propertyName = resolvePropertyName(field);
-                if (hasText(propertyName) && configProperties.containsKey(propertyName)) {
-                    String propertyValue = configProperties.getProperty(propertyName);
-                    propertyValues.add(field.getName(), propertyValue);
+                if (hasText(propertyName)) {
+                    // If it is a map, the data will not be fetched
+                    // fix issue #91
+                    if (configProperties.containsKey(propertyName)) {
+                        String propertyValue = configProperties.getProperty(propertyName);
+                        propertyValues.add(field.getName(), propertyValue);
+                    }
+                    else if (Collection.class.isAssignableFrom(field.getType()) ||
+                            field.getType().isAssignableFrom(Map.class)) {
+                        resolveContainer(propertyName, configProperties, propertyValues);
+                    }
                 }
             }
         });
@@ -191,6 +208,34 @@ class NacosConfigurationPropertiesBinder {
         NacosProperty nacosProperty = getAnnotation(field, NacosProperty.class);
         // If @NacosProperty present ,return its value() , or field name
         return nacosProperty != null ? nacosProperty.value() : field.getName();
+    }
+
+    /**
+     * Simple solutions to support {@link Map}
+     *
+     * @param fieldName property name
+     * @param configProperties config context
+     * @param propertyValues {@link MutablePropertyValues}
+     */
+    private void resolveContainer(String fieldName, Properties configProperties, MutablePropertyValues propertyValues) {
+        String regx1 = fieldName + "\\[(.*)\\]";
+        String regx2 = fieldName + "\\..*";
+        Pattern pattern1 = Pattern.compile(regx1);
+        Pattern pattern2 = Pattern.compile(regx2);
+        Enumeration<String> enumeration = (Enumeration<String>) configProperties.propertyNames();
+        while (enumeration.hasMoreElements()) {
+            String s = enumeration.nextElement();
+            String value = configProperties.getProperty(s);
+            if (pattern1.matcher(s).find()) {
+                propertyValues.add(s, value);
+            } else if (pattern2.matcher(s).find()) {
+                int index = s.indexOf('.');
+                if (index != -1) {
+                    String key = s.substring(index + 1);
+                    propertyValues.add(fieldName + "[" + key + "]", value);
+                }
+            }
+        }
     }
 
 }

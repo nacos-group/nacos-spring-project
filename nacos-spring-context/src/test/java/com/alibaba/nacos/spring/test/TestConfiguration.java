@@ -54,6 +54,7 @@ public class TestConfiguration {
             "name = mercyblitz@gmail.com\n" +
             "value = 9527\n";
 
+
     @Bean(name = GLOBAL_NACOS_PROPERTIES_BEAN_NAME)
     public Properties globalNacosProperties() {
         Properties properties = new Properties();

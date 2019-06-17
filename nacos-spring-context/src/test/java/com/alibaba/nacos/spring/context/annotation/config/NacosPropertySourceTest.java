@@ -20,6 +20,7 @@ import com.alibaba.nacos.api.annotation.NacosInjected;
 import com.alibaba.nacos.api.annotation.NacosProperties;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.config.annotation.NacosValue;
+import com.alibaba.nacos.api.config.listener.Listener;
 import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.embedded.web.server.EmbeddedNacosHttpServer;
 import com.alibaba.nacos.spring.context.annotation.EnableNacos;
@@ -40,6 +41,7 @@ import org.springframework.test.context.support.DirtiesContextTestExecutionListe
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Executor;
 
 import static com.alibaba.nacos.api.common.Constants.DEFAULT_GROUP;
 import static com.alibaba.nacos.embedded.web.server.NacosConfigHttpHandler.CONTENT_PARAM_NAME;
@@ -56,10 +58,10 @@ import static com.alibaba.nacos.embedded.web.server.NacosConfigHttpHandler.GROUP
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
-    NacosPropertySourceTest.class
+        NacosPropertySourceTest.class
 })
 @TestExecutionListeners({DependencyInjectionTestExecutionListener.class,
-    DirtiesContextTestExecutionListener.class, NacosPropertySourceTest.class})
+        DirtiesContextTestExecutionListener.class, NacosPropertySourceTest.class})
 @NacosPropertySource(dataId = NacosPropertySourceTest.DATA_ID, autoRefreshed = true)
 @EnableNacos(globalProperties = @NacosProperties(serverAddr = "${server.addr}"))
 @Component
@@ -87,10 +89,9 @@ public class NacosPropertySourceTest extends AbstractNacosHttpServerTestExecutio
         config.put(DATA_ID_PARAM_NAME, DATA_ID);
         config.put(GROUP_ID_PARAM_NAME, DEFAULT_GROUP);
 
-
         config.put(CONTENT_PARAM_NAME,
-            "app.name=" + APP_NAME + LINE_SEPARATOR + "app.nacosFieldIntValueAutoRefreshed=" + VALUE_1 + LINE_SEPARATOR
-                + "app.nacosMethodIntValueAutoRefreshed=" + VALUE_2);
+                "app.name=" + APP_NAME + LINE_SEPARATOR + "app.nacosFieldIntValueAutoRefreshed=" + VALUE_1 + LINE_SEPARATOR
+                        + "app.nacosMethodIntValueAutoRefreshed=" + VALUE_2);
         httpServer.initConfig(config);
     }
 
@@ -153,6 +154,7 @@ public class NacosPropertySourceTest extends AbstractNacosHttpServerTestExecutio
 
     @Test
     public void testValue() throws NacosException, InterruptedException {
+
         Assert.assertEquals(APP_NAME, app.name);
 
         Assert.assertEquals(APP_NAME, app.nameWithDefaultValue);
@@ -174,10 +176,10 @@ public class NacosPropertySourceTest extends AbstractNacosHttpServerTestExecutio
         Assert.assertEquals(VALUE_2, app.nacosMethodIntValueAutoRefreshed);
 
         configService.publishConfig(DATA_ID, DEFAULT_GROUP,
-            "app.name=" + ANOTHER_APP_NAME + LINE_SEPARATOR + "app.nacosFieldIntValueAutoRefreshed=" + VALUE_3
-                + LINE_SEPARATOR + "app.nacosMethodIntValueAutoRefreshed=" + VALUE_4);
+                "app.name=" + ANOTHER_APP_NAME + LINE_SEPARATOR + "app.nacosFieldIntValueAutoRefreshed=" + VALUE_3
+                        + LINE_SEPARATOR + "app.nacosMethodIntValueAutoRefreshed=" + VALUE_4);
 
-        Thread.sleep(1000);
+        Thread.sleep(2000);
 
         Assert.assertEquals(APP_NAME, app.name);
 

@@ -144,6 +144,8 @@ public abstract class AbstractNacosPropertySourceBuilder<T extends BeanDefinitio
         String name = (String) runtimeAttributes.get(NAME_ATTRIBUTE_NAME);
         String dataId = (String) runtimeAttributes.get(DATA_ID_ATTRIBUTE_NAME);
         String groupId = (String) runtimeAttributes.get(GROUP_ID_ATTRIBUTE_NAME);
+        String type = (String) runtimeAttributes.get(CONFIG_TYPE_ATTRIBUTE_NAME);
+        type = StringUtils.isEmpty(type) ? "properties" : type;
         Map<String, Object> nacosPropertiesAttributes = (Map<String, Object>) runtimeAttributes.get(PROPERTIES_ATTRIBUTE_NAME);
 
         Properties nacosProperties = resolveProperties(nacosPropertiesAttributes, environment, globalNacosProperties);
@@ -163,7 +165,7 @@ public abstract class AbstractNacosPropertySourceBuilder<T extends BeanDefinitio
             name = buildDefaultPropertySourceName(dataId, groupId, nacosProperties);
         }
 
-        NacosPropertySource nacosPropertySource = new NacosPropertySource(name, nacosConfig);
+        NacosPropertySource nacosPropertySource = new NacosPropertySource(dataId, groupId, name, nacosConfig, type);
 
         nacosPropertySource.setBeanName(beanName);
 
@@ -173,6 +175,7 @@ public abstract class AbstractNacosPropertySourceBuilder<T extends BeanDefinitio
         }
         nacosPropertySource.setGroupId(groupId);
         nacosPropertySource.setDataId(dataId);
+        nacosPropertySource.setType(type);
         nacosPropertySource.setProperties(nacosProperties);
 
         initNacosPropertySource(nacosPropertySource, beanDefinition, runtimeAttributes);

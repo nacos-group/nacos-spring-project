@@ -56,6 +56,11 @@ public abstract class NacosUtils {
      */
     public static final String DEFAULT_STRING_ATTRIBUTE_VALUE = "";
 
+    /**
+     * Default value of {@link String} attribute for {@link Annotation}
+     */
+    public static final String DEFAULT_CONFIG_TYPE_VALUE = "properties";
+
 
     /**
      * Default value of boolean attribute for {@link Annotation}
@@ -264,18 +269,28 @@ public abstract class NacosUtils {
     }
 
     public static Properties toProperties(String text) {
-        Properties properties = new Properties();
-        try {
-            if (StringUtils.hasText(text)) {
-                properties.load(new StringReader(text));
-            }
-        } catch (IOException e) {
-            if (logger.isErrorEnabled()) {
-                logger.error(e.getMessage(), e);
-            }
-        }
-        return properties;
+        return toProperties(text, "properties");
     }
 
+    public static Properties toProperties(String text, String type) {
+        return ConfigParseUtils.toProperties(text, type);
+    }
+
+    public static Properties toProperties(String dataId, String group, String text) {
+        return ConfigParseUtils.toProperties(dataId, group, text, "properties");
+    }
+
+    /**
+     * XML configuration parsing to support different schemas
+     *
+     * @param dataId config dataId
+     * @param group config group
+     * @param text config context
+     * @param type config type
+     * @return {@link Properties}
+     */
+    public static Properties toProperties(String dataId, String group, String text, String type) {
+        return ConfigParseUtils.toProperties(dataId, group, text, type);
+    }
 
 }
