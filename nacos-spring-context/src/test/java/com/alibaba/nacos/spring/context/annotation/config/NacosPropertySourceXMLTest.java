@@ -19,18 +19,20 @@
 //import com.alibaba.nacos.api.annotation.NacosInjected;
 //import com.alibaba.nacos.api.annotation.NacosProperties;
 //import com.alibaba.nacos.api.config.ConfigService;
-//import com.alibaba.nacos.api.config.annotation.NacosValue;
+//import com.alibaba.nacos.api.config.annotation.NacosConfigListener;
 //import com.alibaba.nacos.api.exception.NacosException;
 //import com.alibaba.nacos.embedded.web.server.EmbeddedNacosHttpServer;
 //import com.alibaba.nacos.spring.context.annotation.EnableNacos;
+//import com.alibaba.nacos.spring.convert.converter.config.UserNacosConfigConverter;
 //import com.alibaba.nacos.spring.test.AbstractNacosHttpServerTestExecutionListener;
-//import com.alibaba.nacos.spring.test.XmlApp2;
+//import com.alibaba.nacos.spring.test.User;
+//import com.alibaba.nacos.spring.test.XmlApp;
+//import com.alibaba.nacos.spring.test.YamlApp;
 //import org.junit.Assert;
 //import org.junit.Test;
 //import org.junit.runner.RunWith;
 //import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.context.annotation.Bean;
-//import org.springframework.stereotype.Component;
 //import org.springframework.test.context.ContextConfiguration;
 //import org.springframework.test.context.TestExecutionListeners;
 //import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -45,6 +47,7 @@
 //import static com.alibaba.nacos.embedded.web.server.NacosConfigHttpHandler.DATA_ID_PARAM_NAME;
 //import static com.alibaba.nacos.embedded.web.server.NacosConfigHttpHandler.GROUP_ID_PARAM_NAME;
 //import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.GROUP_ID;
+//import static org.junit.Assert.assertEquals;
 //
 ///**
 // * @author <a href="mailto:liaochunyhm@live.com">liaochuntao</a>
@@ -56,10 +59,9 @@
 //})
 //@TestExecutionListeners({DependencyInjectionTestExecutionListener.class,
 //        DirtiesContextTestExecutionListener.class, NacosPropertySourceXMLTest.class})
-//@NacosPropertySource(dataId = XmlApp2.DATA_ID_XML, autoRefreshed = true, type = "xml")
+//@NacosPropertySource(dataId = XmlApp.DATA_ID_XML, autoRefreshed = true, type = "xml")
 //@EnableNacos(globalProperties = @NacosProperties(serverAddr = "${server.addr}"))
 //public class NacosPropertySourceXMLTest extends AbstractNacosHttpServerTestExecutionListener {
-//
 //
 //    private String xml =
 //                    "<xml>" +
@@ -83,12 +85,12 @@
 //                    "</students>" +
 //                    "</xml>";
 //
-//    private final String except = "XmlApp2{students=[Student{name='lct-1', num='1006010022'}, Student{name='lct-3', num='1006010044'}, Student{name='lct-4', num='1006010055'}]}";
+//    private final String except = "XmlApp{students=[Student{name='lct-1', num='1006010022'}, Student{name='lct-3', num='1006010044'}, Student{name='lct-4', num='1006010055'}]}";
 //
 //    @Override
 //    public void init(EmbeddedNacosHttpServer httpServer) {
 //        Map<String, String> config = new HashMap<String, String>(1);
-//        config.put(DATA_ID_PARAM_NAME, XmlApp2.DATA_ID_XML);
+//        config.put(DATA_ID_PARAM_NAME, XmlApp.DATA_ID_XML);
 //        config.put(GROUP_ID_PARAM_NAME, DEFAULT_GROUP);
 //        config.put(CONTENT_PARAM_NAME, xml);
 //
@@ -101,20 +103,20 @@
 //    }
 //
 //    @Bean
-//    public XmlApp2 xmlApp() {
-//        return new XmlApp2();
+//    public XmlApp xmlApp() {
+//        return new XmlApp();
 //    }
 //
 //    @NacosInjected
 //    private ConfigService configService;
 //
 //    @Autowired
-//    private XmlApp2 xmlApp;
+//    private XmlApp xmlApp;
 //
 //    @Test
 //    public void testValue() throws NacosException, InterruptedException {
 //
-//        configService.publishConfig(XmlApp2.DATA_ID_XML, GROUP_ID, xml);
+//        configService.publishConfig(XmlApp.DATA_ID_XML, GROUP_ID, xml);
 //
 //        Thread.sleep(2000);
 //

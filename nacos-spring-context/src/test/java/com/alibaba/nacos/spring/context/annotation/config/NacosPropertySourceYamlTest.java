@@ -23,7 +23,7 @@ import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.embedded.web.server.EmbeddedNacosHttpServer;
 import com.alibaba.nacos.spring.context.annotation.EnableNacos;
 import com.alibaba.nacos.spring.test.AbstractNacosHttpServerTestExecutionListener;
-import com.alibaba.nacos.spring.test.XmlApp2;
+import com.alibaba.nacos.spring.test.YamlApp;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -54,7 +54,7 @@ import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.GROUP_ID;
 })
 @TestExecutionListeners({DependencyInjectionTestExecutionListener.class,
         DirtiesContextTestExecutionListener.class, NacosPropertySourceYamlTest.class})
-@NacosPropertySource(dataId = XmlApp2.DATA_ID_XML, autoRefreshed = true, type = "yaml")
+@NacosPropertySource(dataId = YamlApp.DATA_ID_YAML, autoRefreshed = true, type = "yaml")
 @EnableNacos(globalProperties = @NacosProperties(serverAddr = "${server.addr}"))
 public class NacosPropertySourceYamlTest extends AbstractNacosHttpServerTestExecutionListener {
 
@@ -63,12 +63,12 @@ public class NacosPropertySourceYamlTest extends AbstractNacosHttpServerTestExec
             "    - {name: lct-2,num: 13}\n" +
             "    - {name: lct-3,num: 14}";
 
-    private String except = "XmlApp2{students=[Student{name='lct-1', num='12'}, Student{name='lct-2', num='13'}, Student{name='lct-3', num='14'}]}";
+    private String except = "YamlApp{students=[Student{name='lct-1', num='12'}, Student{name='lct-2', num='13'}, Student{name='lct-3', num='14'}]}";
 
     @Override
     public void init(EmbeddedNacosHttpServer httpServer) {
         Map<String, String> config = new HashMap<String, String>(1);
-        config.put(DATA_ID_PARAM_NAME, XmlApp2.DATA_ID_XML);
+        config.put(DATA_ID_PARAM_NAME, YamlApp.DATA_ID_YAML);
         config.put(GROUP_ID_PARAM_NAME, DEFAULT_GROUP);
         config.put(CONTENT_PARAM_NAME, yaml);
 
@@ -76,15 +76,15 @@ public class NacosPropertySourceYamlTest extends AbstractNacosHttpServerTestExec
     }
 
     @Bean
-    public XmlApp2 xmlApp() {
-        return new XmlApp2();
+    public YamlApp yamlApp() {
+        return new YamlApp();
     }
 
     @NacosInjected
     private ConfigService configService;
 
     @Autowired
-    private XmlApp2 xmlApp;
+    private YamlApp yamlApp;
 
     @Override
     protected String getServerAddressPropertyName() {
@@ -94,13 +94,13 @@ public class NacosPropertySourceYamlTest extends AbstractNacosHttpServerTestExec
     @Test
     public void testValue() throws NacosException, InterruptedException {
 
-        configService.publishConfig(XmlApp2.DATA_ID_XML, GROUP_ID, yaml);
+        configService.publishConfig(YamlApp.DATA_ID_YAML, GROUP_ID, yaml);
 
         Thread.sleep(2000);
 
-        System.out.println(xmlApp.toString());
+        System.out.println(yamlApp.toString());
 
-        Assert.assertEquals(except, xmlApp.toString());
+        Assert.assertEquals(except, yamlApp.toString());
 
     }
 }

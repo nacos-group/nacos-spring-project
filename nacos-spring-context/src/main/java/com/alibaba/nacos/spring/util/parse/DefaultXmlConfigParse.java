@@ -16,7 +16,7 @@
  */
 package com.alibaba.nacos.spring.util.parse;
 
-import com.alibaba.nacos.spring.util.ConfigParse;
+import com.alibaba.nacos.spring.util.AbstractConfigParse;
 import org.springframework.util.StringUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -71,7 +71,7 @@ import java.util.Properties;
  * @author <a href="mailto:liaochunyhm@live.com">liaochuntao</a>
  * @since
  */
-public class DefaultXmlConfigParse implements ConfigParse {
+public class DefaultXmlConfigParse extends AbstractConfigParse {
 
     private DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 
@@ -149,13 +149,4 @@ public class DefaultXmlConfigParse implements ConfigParse {
         return "xml";
     }
 
-    @Override
-    public String dataId() {
-        return null;
-    }
-
-    @Override
-    public String group() {
-        return null;
-    }
 }

@@ -16,6 +16,7 @@
  */
 package com.alibaba.nacos.spring.util.parse;
 
+import com.alibaba.nacos.spring.util.AbstractConfigParse;
 import com.alibaba.nacos.spring.util.ConfigParse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +37,7 @@ import java.util.Set;
  * @author <a href="mailto:liaochunyhm@live.com">liaochuntao</a>
  * @since
  */
-public class DefaultYamlConfigParse implements ConfigParse {
+public class DefaultYamlConfigParse extends AbstractConfigParse {
 
     protected static final Logger logger = LoggerFactory.getLogger(DefaultYamlConfigParse.class);
 
@@ -59,16 +60,6 @@ public class DefaultYamlConfigParse implements ConfigParse {
     @Override
     public String processType() {
         return "yaml";
-    }
-
-    @Override
-    public String dataId() {
-        return null;
-    }
-
-    @Override
-    public String group() {
-        return null;
     }
 
     protected static boolean process(MatchCallback callback, Yaml yaml, String content) {

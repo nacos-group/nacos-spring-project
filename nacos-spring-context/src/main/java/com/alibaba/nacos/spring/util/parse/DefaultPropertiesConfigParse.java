@@ -16,6 +16,7 @@
  */
 package com.alibaba.nacos.spring.util.parse;
 
+import com.alibaba.nacos.spring.util.AbstractConfigParse;
 import com.alibaba.nacos.spring.util.ConfigParse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +30,7 @@ import java.util.Properties;
  * @author <a href="mailto:liaochunyhm@live.com">liaochuntao</a>
  * @since
  */
-public class DefaultPropertiesConfigParse implements ConfigParse {
+public class DefaultPropertiesConfigParse extends AbstractConfigParse {
 
     private static final Logger logger = LoggerFactory.getLogger(DefaultPropertiesConfigParse.class);
 
@@ -53,14 +54,5 @@ public class DefaultPropertiesConfigParse implements ConfigParse {
         return "properties";
     }
 
-    @Override
-    public String dataId() {
-        return null;
-    }
-
-    @Override
-    public String group() {
-        return null;
-    }
 }
 

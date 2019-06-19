@@ -20,7 +20,6 @@ import com.alibaba.nacos.spring.util.parse.DefaultJsonConfigParse;
 import com.alibaba.nacos.spring.util.parse.DefaultPropertiesConfigParse;
 import com.alibaba.nacos.spring.util.parse.DefaultXmlConfigParse;
 import com.alibaba.nacos.spring.util.parse.DefaultYamlConfigParse;
-import org.springframework.util.StringUtils;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -52,8 +51,6 @@ final class ConfigParseUtils {
         DEFAULT_CONFIG_PARSE_MAP.put(yamlConfigParse.processType(), yamlConfigParse);
         DEFAULT_CONFIG_PARSE_MAP.put(xmlConfigParse.processType(), xmlConfigParse);
 
-        DEFAULT_CONFIG_PARSE_MAP = Collections.unmodifiableMap(DEFAULT_CONFIG_PARSE_MAP);
-
         // register customer ConfigParse
         ServiceLoader<ConfigParse> configParses = ServiceLoader.load(ConfigParse.class);
         StringBuilder sb = new StringBuilder();
@@ -61,10 +58,17 @@ final class ConfigParseUtils {
             if (CUSTOMER_CONFIG_PARSE_MAP.containsKey(configParse.processType())) {
                 sb.setLength(0);
                 sb.append(configParse.dataId()).append(LINK_CHAR).append(configParse.group());
-                CUSTOMER_CONFIG_PARSE_MAP.get(configParse.processType()).put(sb.toString(), configParse);
+                if (LINK_CHAR.equals(sb.toString())) {
+                    // If the user does not set the data id and group processed by config parse,
+                    // this type of config is resolved globally by default
+                    DEFAULT_CONFIG_PARSE_MAP.put(configParse.processType(), configParse);
+                } else {
+                    CUSTOMER_CONFIG_PARSE_MAP.get(configParse.processType()).put(sb.toString(), configParse);
+                }
             }
         }
 
+        DEFAULT_CONFIG_PARSE_MAP = Collections.unmodifiableMap(DEFAULT_CONFIG_PARSE_MAP);
         CUSTOMER_CONFIG_PARSE_MAP = Collections.unmodifiableMap(CUSTOMER_CONFIG_PARSE_MAP);
     }
 
@@ -89,13 +93,13 @@ final class ConfigParseUtils {
      * @return {@link Properties}
      */
     static Properties toProperties(final String dataId, final String group, final String context, final String type) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(dataId).append(LINK_CHAR).append(group);
         Properties properties = new Properties();
-        if (CUSTOMER_CONFIG_PARSE_MAP.isEmpty()) {
+        if (CUSTOMER_CONFIG_PARSE_MAP.isEmpty() || LINK_CHAR.equals(sb.toString())) {
             return toProperties(context, type);
         } else {
             if (CUSTOMER_CONFIG_PARSE_MAP.containsKey(type)) {
-                StringBuilder sb = new StringBuilder();
-                sb.append(dataId).append(LINK_CHAR).append(group);
                 ConfigParse configParse = CUSTOMER_CONFIG_PARSE_MAP.get(type).get(sb.toString());
                 if (configParse == null) {
                     throw new NoSuchElementException("This config can't find ConfigParse to parse");

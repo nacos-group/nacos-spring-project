@@ -14,38 +14,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.alibaba.nacos.spring.util.parse;
-
-import com.alibaba.nacos.spring.util.AbstractConfigParse;
-import com.alibaba.nacos.spring.util.ConfigParse;
-
-import java.util.Map;
-import java.util.Properties;
-
-import static com.alibaba.nacos.spring.util.parse.DefaultYamlConfigParse.createYaml;
+package com.alibaba.nacos.spring.util;
 
 /**
+ * The user inherits the AbstraceConfigParse abstract class and adds the implementation class in
+ * META-INF/com.alibaba.nacos.spring.util.ConfigParse to implement the addition of custom parsing rules.
+ * If the dataId and group methods are not overridden, Will override the original parsing rule implementation,
+ * otherwise the user-defined parsing rules will only be applied to specific dataId and group
+ *
  * @author <a href="mailto:liaochunyhm@live.com">liaochuntao</a>
  * @since
  */
-public class DefaultJsonConfigParse extends AbstractConfigParse {
+public abstract class AbstractConfigParse implements ConfigParse {
 
     @Override
-    public Properties parse(String configText) {
-        final Properties result = new Properties();
-        DefaultYamlConfigParse.process(new DefaultYamlConfigParse.MatchCallback() {
-            @Override
-            public void process(Properties properties, Map<String, Object> map) {
-                result.putAll(properties);
-            }
-        }, createYaml(), configText);
-        return result;
+    public String dataId() {
+        return "";
     }
 
     @Override
-    public String processType() {
-        return "json";
+    public String group() {
+        return "";
     }
-
 }
-

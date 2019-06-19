@@ -26,10 +26,10 @@ import static com.alibaba.nacos.api.common.Constants.DEFAULT_GROUP;
  * @author <a href="mailto:liaochunyhm@live.com">liaochuntao</a>
  * @since
  */
-@NacosConfigurationProperties(dataId = "xml_app", groupId = DEFAULT_GROUP, yaml = true, autoRefreshed = true, ignoreNestedProperties = true)
-public class XmlApp2 {
+@NacosConfigurationProperties(dataId = "yaml_app", groupId = DEFAULT_GROUP, yaml = true, autoRefreshed = true, ignoreNestedProperties = true)
+public class YamlApp {
 
-    public static final String DATA_ID_XML = "xml_app";
+    public static final String DATA_ID_YAML = "yaml_app";
 
     private List<Student> students;
 
@@ -43,7 +43,7 @@ public class XmlApp2 {
 
     @Override
     public String toString() {
-        return "XmlApp2{" +
+        return "YamlApp{" +
                 "students=" + students +
                 '}';
     }
