@@ -22,7 +22,7 @@ import com.alibaba.nacos.api.config.annotation.NacosConfigListener;
 import com.alibaba.nacos.samples.spring.NacosConfiguration;
 import com.alibaba.nacos.samples.spring.config.PojoNacosConfigConverter;
 import com.alibaba.nacos.samples.spring.domain.Pojo;
-import org.codehaus.jackson.map.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Configuration;
