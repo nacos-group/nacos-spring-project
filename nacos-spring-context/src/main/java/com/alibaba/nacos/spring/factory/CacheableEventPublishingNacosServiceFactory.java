@@ -41,7 +41,9 @@ import static com.alibaba.nacos.spring.util.NacosUtils.identify;
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
  * @since 0.1.0
  */
-public class CacheableEventPublishingNacosServiceFactory implements NacosServiceFactory, ApplicationContextAware {
+public class CacheableEventPublishingNacosServiceFactory implements NacosServiceFactory {
+
+    private static final CacheableEventPublishingNacosServiceFactory SINGLETON = new CacheableEventPublishingNacosServiceFactory();
 
     private final Map<String, ConfigService> configServicesCache = new LinkedHashMap<String, ConfigService>(2);
 
@@ -72,7 +74,7 @@ public class CacheableEventPublishingNacosServiceFactory implements NacosService
 
     private ConfigService doCreateConfigService(Properties properties) throws NacosException {
         ConfigService configService = NacosFactory.createConfigService(properties);
-        return new EventPublishingConfigService(configService, properties, context, nacosConfigListenerExecutor);
+        return new EventPublishingConfigService(configService, properties, getSingleton().context, getSingleton().nacosConfigListenerExecutor);
     }
 
     @Override
@@ -94,10 +96,10 @@ public class CacheableEventPublishingNacosServiceFactory implements NacosService
         return namingService;
     }
 
-    @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.context = (ConfigurableApplicationContext) applicationContext;
-        this.nacosConfigListenerExecutor = getNacosConfigListenerExecutorIfPresent(applicationContext);
+        this.nacosConfigListenerExecutor = getSingleton().nacosConfigListenerExecutor == null ?
+                getNacosConfigListenerExecutorIfPresent(applicationContext) : getSingleton().nacosConfigListenerExecutor;
     }
 
     @Override
@@ -108,5 +110,9 @@ public class CacheableEventPublishingNacosServiceFactory implements NacosService
     @Override
     public Collection<NamingService> getNamingServices() {
         return namingServicesCache.values();
+    }
+
+    public static CacheableEventPublishingNacosServiceFactory getSingleton() {
+        return SINGLETON;
     }
 }
