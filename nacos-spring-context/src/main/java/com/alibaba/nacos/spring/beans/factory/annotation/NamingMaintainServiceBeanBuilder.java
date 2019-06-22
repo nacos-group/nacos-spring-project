@@ -32,14 +32,15 @@ public class NamingMaintainServiceBeanBuilder extends AbstractNacosServiceBeanBu
     /**
      * The bean name of {@link NamingServiceBeanBuilder}
      */
-    public static final String BEAN_NAME = "mamingMaintainServiceBeanBuilder";
+    public static final String BEAN_NAME = "namingMaintainServiceBeanBuilder";
 
     public NamingMaintainServiceBeanBuilder() {
         super(GlobalNacosPropertiesSource.MAINTAIN);
     }
 
     @Override
-    protected NamingMaintainService createService(NacosServiceFactory nacosServiceFactory, Properties properties) throws NacosException {
-        return null;
+    protected NamingMaintainService createService(NacosServiceFactory nacosServiceFactory, Properties properties)
+            throws NacosException {
+        return nacosServiceFactory.createNamingMaintainService(properties);
     }
 }
