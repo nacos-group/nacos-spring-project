@@ -46,6 +46,8 @@ public class NacosPropertySource extends PropertiesPropertySource {
 
     private String after;
 
+    private String type = "properties";
+
     private Properties properties;
 
     private Map<String, Object> attributesMetadata;
@@ -60,8 +62,8 @@ public class NacosPropertySource extends PropertiesPropertySource {
      * @param name        the name of Nacos {@link PropertySource}
      * @param nacosConfig the Nacos Config with {@link Properties} format
      */
-    public NacosPropertySource(String name, String nacosConfig) {
-        super(name, toProperties(nacosConfig));
+    public NacosPropertySource(String dataId, String groupId, String name, String nacosConfig, String type) {
+        super(name, toProperties(dataId, groupId, nacosConfig, type));
     }
 
     public String getGroupId() {
@@ -110,6 +112,14 @@ public class NacosPropertySource extends PropertiesPropertySource {
 
     public void setAfter(String after) {
         this.after = after;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     public Properties getProperties() {
@@ -175,6 +185,7 @@ public class NacosPropertySource extends PropertiesPropertySource {
         this.first = original.first;
         this.before = original.before;
         this.after = original.after;
+        this.type = original.type;
         this.properties = original.properties;
         this.attributesMetadata = original.attributesMetadata;
         this.origin = original.origin;

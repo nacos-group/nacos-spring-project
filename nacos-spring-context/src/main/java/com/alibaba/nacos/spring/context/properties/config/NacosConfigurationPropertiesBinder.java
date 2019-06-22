@@ -119,7 +119,7 @@ class NacosConfigurationPropertiesBinder {
 
     private void doBind(Object bean, String beanName, String dataId, String groupId,
                         NacosConfigurationProperties properties, String content, ConfigService configService) {
-        PropertyValues propertyValues = resolvePropertyValues(bean, content);
+        PropertyValues propertyValues = resolvePropertyValues(bean, content, properties);
         doBind(bean, properties, propertyValues);
         publishBoundEvent(bean, beanName, dataId, groupId, properties, content, configService);
         publishMetadataEvent(bean, beanName, dataId, groupId, properties);
@@ -167,7 +167,8 @@ class NacosConfigurationPropertiesBinder {
         dataBinder.bind(propertyValues);
     }
 
-    private PropertyValues resolvePropertyValues(Object bean, String content) {
+    private PropertyValues resolvePropertyValues(Object bean, String content, NacosConfigurationProperties properties) {
+        //TODO wait for nacos-api update to 1.0.2
         final Properties configProperties = toProperties(content);
         final MutablePropertyValues propertyValues = new MutablePropertyValues();
         ReflectionUtils.doWithFields(bean.getClass(), new ReflectionUtils.FieldCallback() {

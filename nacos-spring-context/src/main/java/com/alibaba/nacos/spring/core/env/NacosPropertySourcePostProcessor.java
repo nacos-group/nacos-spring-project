@@ -173,6 +173,7 @@ public class NacosPropertySourcePostProcessor implements BeanDefinitionRegistryP
 
         final String dataId = nacosPropertySource.getDataId();
         final String groupId = nacosPropertySource.getGroupId();
+        final String type = nacosPropertySource.getType();
         final Map<String, Object> nacosPropertiesAttributes = nacosPropertySource.getAttributesMetadata();
         final ConfigService configService = configServiceBeanBuilder.build(nacosPropertiesAttributes);
 
@@ -182,7 +183,7 @@ public class NacosPropertySourcePostProcessor implements BeanDefinitionRegistryP
                 @Override
                 public void receiveConfigInfo(String config) {
                     String name = nacosPropertySource.getName();
-                    NacosPropertySource newNacosPropertySource = new NacosPropertySource(name, config);
+                    NacosPropertySource newNacosPropertySource = new NacosPropertySource(dataId, groupId, name, config, type);
                     newNacosPropertySource.copy(nacosPropertySource);
                     MutablePropertySources propertySources = environment.getPropertySources();
                     // replace NacosPropertySource

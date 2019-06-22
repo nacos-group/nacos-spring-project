@@ -50,6 +50,8 @@ class NacosPropertySourceBuilder {
 
     private String groupId;
 
+    private String type;
+
     private Properties properties;
 
     private ConfigurableEnvironment environment;
@@ -75,6 +77,11 @@ class NacosPropertySourceBuilder {
 
     public NacosPropertySourceBuilder properties(Properties properties) {
         this.properties = properties;
+        return this;
+    }
+
+    public NacosPropertySourceBuilder type(String type) {
+        this.type = type;
         return this;
     }
 
@@ -113,7 +120,7 @@ class NacosPropertySourceBuilder {
             return null;
         }
 
-        Properties properties = toProperties(config);
+        Properties properties = toProperties(dataId, groupId, config, type);
 
         if (!StringUtils.hasText(name)) {
             name = buildDefaultPropertySourceName(dataId, groupId, properties);
