@@ -18,6 +18,7 @@ package com.alibaba.nacos.spring.util;
 
 import com.alibaba.nacos.spring.beans.factory.annotation.AnnotationNacosInjectedBeanPostProcessor;
 import com.alibaba.nacos.spring.beans.factory.annotation.ConfigServiceBeanBuilder;
+import com.alibaba.nacos.spring.beans.factory.annotation.NamingMaintainServiceBeanBuilder;
 import com.alibaba.nacos.spring.beans.factory.annotation.NamingServiceBeanBuilder;
 import com.alibaba.nacos.spring.context.annotation.config.NacosConfigListenerMethodProcessor;
 import com.alibaba.nacos.spring.context.annotation.config.NacosValueAnnotationBeanPostProcessor;
@@ -86,6 +87,12 @@ public abstract class NacosBeanUtils {
      */
     public static final String DISCOVERY_GLOBAL_NACOS_PROPERTIES_BEAN_NAME = GLOBAL_NACOS_PROPERTIES_BEAN_NAME +
             "$discovery";
+
+    /**
+     * The bean name of global Nacos {@link Properties} for maintain
+     */
+    public static final String MAINTAIN_GLOBAL_NACOS_PROPERTIES_BEAN_NAME = GLOBAL_NACOS_PROPERTIES_BEAN_NAME +
+            "$maintain";
 
     /**
      * The bean name of {@link Executor} for Nacos Config Listener
@@ -363,6 +370,7 @@ public abstract class NacosBeanUtils {
      */
     public static void registerNacosDiscoveryBeans(BeanDefinitionRegistry registry) {
         registerNamingServiceBeanBuilder(registry);
+        registerNamingMaintainServiceBeanBuilder(registry);
     }
 
     /**
@@ -382,6 +390,10 @@ public abstract class NacosBeanUtils {
 
     private static void registerNamingServiceBeanBuilder(BeanDefinitionRegistry registry) {
         registerInfrastructureBeanIfAbsent(registry, NamingServiceBeanBuilder.BEAN_NAME, NamingServiceBeanBuilder.class);
+    }
+
+    private static void registerNamingMaintainServiceBeanBuilder(BeanDefinitionRegistry registry) {
+        registerInfrastructureBeanIfAbsent(registry, NamingMaintainServiceBeanBuilder.BEAN_NAME, NamingMaintainServiceBeanBuilder.class);
     }
 
     /**
@@ -434,11 +446,22 @@ public abstract class NacosBeanUtils {
      * Get {@link NamingServiceBeanBuilder} Bean
      *
      * @param beanFactory {@link BeanFactory}
-     * @return {@link ConfigServiceBeanBuilder} Bean
+     * @return {@link NamingServiceBeanBuilder} Bean
      * @throws NoSuchBeanDefinitionException if there is no such bean definition
      */
     public static NamingServiceBeanBuilder getNamingServiceBeanBuilder(BeanFactory beanFactory) throws NoSuchBeanDefinitionException {
         return beanFactory.getBean(NamingServiceBeanBuilder.BEAN_NAME, NamingServiceBeanBuilder.class);
+    }
+
+    /**
+     * Get {@link NamingMaintainServiceBeanBuilder} Bean
+     *
+     * @param beanFactory {@link BeanFactory}
+     * @return {@link NamingMaintainServiceBeanBuilder} Bean
+     * @throws NoSuchBeanDefinitionException if there is no such bean definition
+     */
+    public static NamingMaintainServiceBeanBuilder getNamingMaintainServiceBeanBuilder(BeanFactory beanFactory) throws NoSuchBeanDefinitionException {
+        return beanFactory.getBean(NamingMaintainServiceBeanBuilder.BEAN_NAME, NamingMaintainServiceBeanBuilder.class);
     }
 
 }

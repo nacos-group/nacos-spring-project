@@ -18,7 +18,7 @@ package com.alibaba.nacos.samples.spring.config;
 
 import com.alibaba.nacos.api.config.convert.NacosConfigConverter;
 import com.alibaba.nacos.samples.spring.domain.Pojo;
-import org.codehaus.jackson.map.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 
