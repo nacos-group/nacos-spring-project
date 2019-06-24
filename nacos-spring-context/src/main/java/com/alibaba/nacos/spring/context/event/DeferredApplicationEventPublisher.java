@@ -50,12 +50,15 @@ public class DeferredApplicationEventPublisher implements ApplicationEventPublis
     @Override
     public void publishEvent(ApplicationEvent event) {
 
-        if (context.isRunning()) {
-            context.publishEvent(event);
-        } else {
+        try {
+            if (context.isRunning()) {
+                context.publishEvent(event);
+            } else {
+                deferredEvents.add(event);
+            }
+        } catch (Exception ignore) {
             deferredEvents.add(event);
         }
-
     }
 
     @Override
