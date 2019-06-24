@@ -23,6 +23,7 @@ import org.springframework.context.support.AbstractApplicationContext;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * Deferred {@link ApplicationEventPublisher} to resolve {@link #publishEvent(ApplicationEvent)} too early to publish
@@ -38,7 +39,8 @@ public class DeferredApplicationEventPublisher implements ApplicationEventPublis
 
     private final ConfigurableApplicationContext context;
 
-    private final List<ApplicationEvent> deferredEvents = new LinkedList<ApplicationEvent>();
+    // fix issue #85
+    private final ConcurrentLinkedQueue<ApplicationEvent> deferredEvents = new ConcurrentLinkedQueue<ApplicationEvent>();
 
     public DeferredApplicationEventPublisher(ConfigurableApplicationContext context) {
         this.context = context;
