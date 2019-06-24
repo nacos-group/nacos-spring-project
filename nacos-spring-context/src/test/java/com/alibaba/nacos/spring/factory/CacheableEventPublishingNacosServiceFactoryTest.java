@@ -17,9 +17,16 @@
 package com.alibaba.nacos.spring.factory;
 
 import com.alibaba.nacos.api.PropertyKeyConst;
+import com.alibaba.nacos.api.annotation.NacosInjected;
+import com.alibaba.nacos.api.annotation.NacosProperties;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.exception.NacosException;
+import com.alibaba.nacos.api.naming.NamingMaintainService;
 import com.alibaba.nacos.api.naming.NamingService;
+import com.alibaba.nacos.api.naming.pojo.Service;
+import com.alibaba.nacos.spring.context.annotation.EnableNacos;
+import com.alibaba.nacos.spring.context.annotation.config.NacosPropertySourceTest;
+import com.alibaba.nacos.spring.test.AbstractNacosHttpServerTestExecutionListener;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,7 +34,10 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
@@ -46,7 +56,10 @@ import static com.alibaba.nacos.spring.util.NacosBeanUtils.NACOS_CONFIG_LISTENER
         CacheableEventPublishingNacosServiceFactory.class,
         CacheableEventPublishingNacosServiceFactoryTest.class
 })
-public class CacheableEventPublishingNacosServiceFactoryTest {
+@TestExecutionListeners({DependencyInjectionTestExecutionListener.class,
+        DirtiesContextTestExecutionListener.class, CacheableEventPublishingNacosServiceFactoryTest.class})
+@EnableNacos(globalProperties = @NacosProperties(serverAddr = "${server.addr}"))
+public class CacheableEventPublishingNacosServiceFactoryTest extends AbstractNacosHttpServerTestExecutionListener {
 
     @Bean(name = NACOS_CONFIG_LISTENER_EXECUTOR_BEAN_NAME)
     public static ExecutorService executorService() {
@@ -95,4 +108,17 @@ public class CacheableEventPublishingNacosServiceFactoryTest {
         Assert.assertEquals(namingService, nacosServiceFactory.getNamingServices().iterator().next());
     }
 
+    @Test
+    public void testGetNamingMaintainServices() throws NacosException {
+        NamingMaintainService maintainService = nacosServiceFactory.createNamingMaintainService(properties);
+        NamingMaintainService maintainService2 = nacosServiceFactory.createNamingMaintainService(properties);
+        Assert.assertTrue(maintainService == maintainService2);
+        Assert.assertEquals(1, nacosServiceFactory.getNamingMaintainService().size());
+        Assert.assertEquals(maintainService, nacosServiceFactory.getNamingMaintainService().iterator().next());
+    }
+
+    @Override
+    protected String getServerAddressPropertyName() {
+        return "server.addr";
+    }
 }
