@@ -46,11 +46,19 @@ public class TestConfiguration {
             "name = mercyblitz\n" +
             "value = 0.95\n" +
             "intData  = 1234\n" +
-            "float-data = 1234.5";
+            "float-data = 1234.5\n" +
+            "list = 1,2,3,4,5\n" +
+            "map[key-1]=value";
 
     public static final String MODIFIED_TEST_CONTEXT = "id = 1\n" +
             "name = mercyblitz@gmail.com\n" +
-            "value = 9527\n";
+            "value = 9527\n" +
+            "list[0] = 6\n" +
+            "list[1] = 6\n" +
+            "list[2] = 6\n" +
+            "list[3] = 6\n" +
+            "map[key-2]=value\n" +
+            "map[key-3]=value";
 
     @Bean(name = GLOBAL_NACOS_PROPERTIES_BEAN_NAME)
     public Properties globalNacosProperties() {

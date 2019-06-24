@@ -20,6 +20,9 @@ import com.alibaba.nacos.api.config.annotation.NacosConfigurationProperties;
 import com.alibaba.nacos.api.config.annotation.NacosIgnore;
 import com.alibaba.nacos.api.config.annotation.NacosProperty;
 
+import java.util.List;
+import java.util.Map;
+
 import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.DATA_ID;
 import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.GROUP_ID;
 
@@ -31,7 +34,7 @@ import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.GROUP_ID;
  * @since 0.1.0
  */
 @NacosConfigurationProperties(dataId = DATA_ID, groupId = GROUP_ID,
-        autoRefreshed = true)
+        autoRefreshed = true, ignoreNestedProperties = true)
 public class Config {
 
     private int id;
@@ -45,6 +48,10 @@ public class Config {
 
     @NacosProperty("float-data")
     private Float floatData;
+
+    private List list;
+
+    private Map<String, String> map;
 
     public int getId() {
         return id;
@@ -84,5 +91,34 @@ public class Config {
 
     public void setFloatData(Float floatData) {
         this.floatData = floatData;
+    }
+
+    public List getList() {
+        return list;
+    }
+
+    public void setList(List list) {
+        this.list = list;
+    }
+
+    public Map<String, String> getMap() {
+        return map;
+    }
+
+    public void setMap(Map<String, String> map) {
+        this.map = map;
+    }
+
+    @Override
+    public String toString() {
+        return "Config{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", value=" + value +
+                ", intData=" + intData +
+                ", floatData=" + floatData +
+                ", list=" + list +
+                ", map=" + map +
+                '}';
     }
 }
