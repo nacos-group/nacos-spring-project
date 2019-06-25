@@ -42,9 +42,7 @@ public class DefaultPropertiesConfigParse extends AbstractConfigParse {
                 properties.load(new StringReader(configText));
             }
         } catch (IOException e) {
-            if (logger.isErrorEnabled()) {
-                logger.error(e.getMessage(), e);
-            }
+            throw new ConfigParseException(e);
         }
         return properties;
     }

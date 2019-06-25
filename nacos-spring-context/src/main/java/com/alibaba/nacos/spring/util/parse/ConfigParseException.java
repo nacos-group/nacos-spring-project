@@ -20,9 +20,9 @@ package com.alibaba.nacos.spring.util.parse;
  * @author <a href="mailto:liaochunyhm@live.com">liaochuntao</a>
  * @since
  */
-public class ConfigParseException extends RuntimeException {
+class ConfigParseException extends RuntimeException {
 
-    public ConfigParseException(Throwable cause) {
+    ConfigParseException(Throwable cause) {
         super(cause);
     }
 }
