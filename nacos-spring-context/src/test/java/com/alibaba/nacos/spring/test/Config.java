@@ -49,7 +49,7 @@ public class Config {
     @NacosProperty("float-data")
     private Float floatData;
 
-    private List list;
+    private List<Integer> list;
 
     private Map<String, String> map;
 
@@ -93,11 +93,11 @@ public class Config {
         this.floatData = floatData;
     }
 
-    public List getList() {
+    public List<Integer> getList() {
         return list;
     }
 
-    public void setList(List list) {
+    public void setList(List<Integer> list) {
         this.list = list;
     }
 
