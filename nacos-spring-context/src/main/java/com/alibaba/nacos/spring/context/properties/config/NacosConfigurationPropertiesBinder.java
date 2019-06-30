@@ -27,6 +27,8 @@ import com.alibaba.nacos.spring.beans.factory.annotation.ConfigServiceBeanBuilde
 import com.alibaba.nacos.spring.context.event.config.NacosConfigEvent;
 import com.alibaba.nacos.spring.context.event.config.NacosConfigMetadataEvent;
 import com.alibaba.nacos.spring.context.event.config.NacosConfigurationPropertiesBeanBoundEvent;
+import com.alibaba.nacos.spring.util.NacosUtils;
+import com.alibaba.nacos.spring.util.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.MutablePropertyValues;
@@ -39,8 +41,11 @@ import org.springframework.util.ReflectionUtils;
 import org.springframework.validation.DataBinder;
 
 import java.lang.reflect.Field;
+import java.util.Collection;
+import java.util.Enumeration;
 import java.util.Map;
 import java.util.Properties;
+import java.util.regex.Pattern;
 
 import static com.alibaba.nacos.spring.util.NacosBeanUtils.getConfigServiceBeanBuilder;
 import static com.alibaba.nacos.spring.util.NacosUtils.getContent;
@@ -121,7 +126,8 @@ public class NacosConfigurationPropertiesBinder {
 
     private void doBind(Object bean, String beanName, String dataId, String groupId,
                         NacosConfigurationProperties properties, String content, ConfigService configService) {
-        PropertyValues propertyValues = resolvePropertyValues(bean, content, properties);
+        String type = properties.yaml() ? "yaml" : "properties";
+        PropertyValues propertyValues = NacosUtils.resolvePropertyValues(bean, dataId, groupId, content, type);
         doBind(bean, properties, propertyValues);
         publishBoundEvent(bean, beanName, dataId, groupId, properties, content, configService);
         publishMetadataEvent(bean, beanName, dataId, groupId, properties);
@@ -162,38 +168,12 @@ public class NacosConfigurationPropertiesBinder {
 
     private void doBind(Object bean, NacosConfigurationProperties properties,
                         PropertyValues propertyValues) {
+        ObjectUtils.cleanMapOrCollectionField(bean);
         DataBinder dataBinder = new DataBinder(bean);
         dataBinder.setAutoGrowNestedPaths(properties.ignoreNestedProperties());
         dataBinder.setIgnoreInvalidFields(properties.ignoreInvalidFields());
         dataBinder.setIgnoreUnknownFields(properties.ignoreUnknownFields());
         dataBinder.bind(propertyValues);
-    }
-
-    private PropertyValues resolvePropertyValues(Object bean, String content, NacosConfigurationProperties properties) {
-        String type = properties.yaml() ? "yaml" : "properties";
-        final Properties configProperties = toProperties(content, type);
-        final MutablePropertyValues propertyValues = new MutablePropertyValues();
-        ReflectionUtils.doWithFields(bean.getClass(), new ReflectionUtils.FieldCallback() {
-            @Override
-            public void doWith(Field field) throws IllegalArgumentException, IllegalAccessException {
-                String propertyName = resolvePropertyName(field);
-                if (hasText(propertyName) && configProperties.containsKey(propertyName)) {
-                    String propertyValue = configProperties.getProperty(propertyName);
-                    propertyValues.add(field.getName(), propertyValue);
-                }
-            }
-        });
-        return propertyValues;
-    }
-
-    private String resolvePropertyName(Field field) {
-        // Ignore property name if @NacosIgnore present
-        if (getAnnotation(field, NacosIgnore.class) != null) {
-            return null;
-        }
-        NacosProperty nacosProperty = getAnnotation(field, NacosProperty.class);
-        // If @NacosProperty present ,return its value() , or field name
-        return nacosProperty != null ? nacosProperty.value() : field.getName();
     }
 
 }

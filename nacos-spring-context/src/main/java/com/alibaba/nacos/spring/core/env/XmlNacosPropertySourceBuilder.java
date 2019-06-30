@@ -32,6 +32,7 @@ import java.util.Properties;
 import static com.alibaba.nacos.api.common.Constants.DEFAULT_GROUP;
 import static com.alibaba.nacos.spring.context.annotation.config.NacosPropertySource.*;
 import static com.alibaba.nacos.spring.util.NacosUtils.DEFAULT_BOOLEAN_ATTRIBUTE_VALUE;
+import static com.alibaba.nacos.spring.util.NacosUtils.DEFAULT_CONFIG_TYPE_VALUE;
 import static com.alibaba.nacos.spring.util.NacosUtils.DEFAULT_STRING_ATTRIBUTE_VALUE;
 
 /**
@@ -58,6 +59,8 @@ public class XmlNacosPropertySourceBuilder extends
         runtimeAttributes.put(GROUP_ID_ATTRIBUTE_NAME, getAttribute(element, "group-id", DEFAULT_GROUP));
         // PropertySource Name
         runtimeAttributes.put(NAME_ATTRIBUTE_NAME, getAttribute(element, NAME_ATTRIBUTE_NAME, DEFAULT_STRING_ATTRIBUTE_VALUE));
+        // Config type
+        runtimeAttributes.put(CONFIG_TYPE_ATTRIBUTE_NAME, getAttribute(element, CONFIG_TYPE_ATTRIBUTE_NAME, DEFAULT_CONFIG_TYPE_VALUE));
         // TODO support nested properties
         runtimeAttributes.put(PROPERTIES_ATTRIBUTE_NAME, new Properties());
         return new Map[]{runtimeAttributes};
