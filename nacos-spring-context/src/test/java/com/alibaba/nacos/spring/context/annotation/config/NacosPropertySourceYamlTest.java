@@ -98,8 +98,6 @@ public class NacosPropertySourceYamlTest extends AbstractNacosHttpServerTestExec
 
         Thread.sleep(2000);
 
-        System.out.println(yamlApp.toString());
-
         Assert.assertEquals(except, yamlApp.toString());
 
     }

@@ -26,7 +26,7 @@ import static com.alibaba.nacos.api.common.Constants.DEFAULT_GROUP;
  * @author <a href="mailto:liaochunyhm@live.com">liaochuntao</a>
  * @since
  */
-@NacosConfigurationProperties(dataId = "yaml_app", groupId = DEFAULT_GROUP, autoRefreshed = true, ignoreNestedProperties = true)
+@NacosConfigurationProperties(dataId = "yaml_app", autoRefreshed = true, ignoreNestedProperties = true, yaml = true)
 public class YamlApp {
 
     public static final String DATA_ID_YAML = "yaml_app";

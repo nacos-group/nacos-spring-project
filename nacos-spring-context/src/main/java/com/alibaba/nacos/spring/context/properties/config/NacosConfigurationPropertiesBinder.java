@@ -168,8 +168,8 @@ class NacosConfigurationPropertiesBinder {
     }
 
     private PropertyValues resolvePropertyValues(Object bean, String content, NacosConfigurationProperties properties) {
-        //TODO wait for nacos-api update to 1.0.2
-        final Properties configProperties = toProperties(content);
+        String type = properties.yaml() ? "yaml" : "properties";
+        final Properties configProperties = toProperties(content, type);
         final MutablePropertyValues propertyValues = new MutablePropertyValues();
         ReflectionUtils.doWithFields(bean.getClass(), new ReflectionUtils.FieldCallback() {
             @Override
