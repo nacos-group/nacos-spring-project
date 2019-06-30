@@ -69,14 +69,14 @@ import static com.alibaba.nacos.spring.util.NacosBeanUtils.PLACEHOLDER_CONFIGURE
 })
 @TestExecutionListeners({DependencyInjectionTestExecutionListener.class,
         DirtiesContextTestExecutionListener.class, NacosBeanDefinitionRegistrarTest.class})
-@EnableNacos(globalProperties = @NacosProperties(serverAddr = "${serverAddr}"))
+@EnableNacos(globalProperties = @NacosProperties(serverAddr = "${server.addr}"))
 @EnableNacosConfig
 @EnableNacosDiscovery
 public class NacosBeanDefinitionRegistrarTest extends AbstractNacosHttpServerTestExecutionListener {
 
     @Override
     protected String getServerAddressPropertyName() {
-        return "serverAddr";
+        return "server.addr";
     }
 
     @Bean
@@ -94,10 +94,6 @@ public class NacosBeanDefinitionRegistrarTest extends AbstractNacosHttpServerTes
     @Autowired
     @Qualifier(NacosBeanUtils.DISCOVERY_GLOBAL_NACOS_PROPERTIES_BEAN_NAME)
     private Properties discoveryGlobalProperties;
-
-    @Autowired
-    @Qualifier(CacheableEventPublishingNacosServiceFactory.BEAN_NAME)
-    private NacosServiceFactory nacosServiceFactory;
 
     @Autowired
     @Qualifier(AnnotationNacosInjectedBeanPostProcessor.BEAN_NAME)
@@ -142,7 +138,7 @@ public class NacosBeanDefinitionRegistrarTest extends AbstractNacosHttpServerTes
     @NacosInjected
     private ConfigService globalConfigService;
 
-    @NacosInjected(properties = @NacosProperties(serverAddr = "${serverAddr}"))
+    @NacosInjected(properties = @NacosProperties(serverAddr = "${server.addr}"))
     private ConfigService configService;
 
     @NacosInjected
