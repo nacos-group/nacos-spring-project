@@ -77,11 +77,11 @@ public class NacosConfigurationPropertiesBindingPostProcessorTest extends Abstra
 
         Assert.assertEquals(1, config.getId());
         Assert.assertEquals("mercyblitz", config.getName());
-        Assert.assertTrue(0.95 == config.getValue());
+        Assert.assertEquals(0.95, config.getValue(), 0.0);
         Assert.assertEquals(Float.valueOf(1234.5f), config.getFloatData());
         Assert.assertNull(config.getIntData());
-
-        System.out.println(config.toString());
+        Assert.assertArrayEquals(new Object[]{1,2,3,4,5}, config.getList().toArray());
+        Assert.assertEquals("value", config.getMap().get("key-1"));
 
         // Publishing config emits change
         configService.publishConfig(DATA_ID, GROUP_ID, MODIFIED_TEST_CONTEXT);
@@ -90,12 +90,13 @@ public class NacosConfigurationPropertiesBindingPostProcessorTest extends Abstra
 
         Assert.assertEquals(1, config.getId());
         Assert.assertEquals("mercyblitz@gmail.com", config.getName());
-        Assert.assertTrue(9527 == config.getValue());
+        Assert.assertEquals(9527, config.getValue(), 0.0);
         Assert.assertEquals(Float.valueOf(1234.5f), config.getFloatData());
         Assert.assertNull(config.getIntData());
-
-        System.out.println(config.toString());
-
+        Assert.assertArrayEquals(new Object[]{6,6,6,6}, config.getList().toArray());
+        Assert.assertNull(config.getMap().get("key-1"));
+        Assert.assertEquals("value", config.getMap().get("key-2"));
+        Assert.assertEquals("value", config.getMap().get("key-3"));
     }
 
     @Override
