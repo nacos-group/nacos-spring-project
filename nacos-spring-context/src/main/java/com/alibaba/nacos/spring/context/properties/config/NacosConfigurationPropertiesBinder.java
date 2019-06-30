@@ -54,7 +54,9 @@ import static org.springframework.util.StringUtils.hasText;
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
  * @since 0.1.0
  */
-class NacosConfigurationPropertiesBinder {
+public class NacosConfigurationPropertiesBinder {
+
+    public static final String BEAN_NAME = "nacosConfigurationPropertiesBinder";
 
     private static final Logger logger = LoggerFactory.getLogger(NacosConfigurationPropertiesBinder.class);
 
