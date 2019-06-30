@@ -81,6 +81,8 @@ public class NacosConfigurationPropertiesBindingPostProcessorTest extends Abstra
         Assert.assertEquals(Float.valueOf(1234.5f), config.getFloatData());
         Assert.assertNull(config.getIntData());
 
+        System.out.println(config.toString());
+
         // Publishing config emits change
         configService.publishConfig(DATA_ID, GROUP_ID, MODIFIED_TEST_CONTEXT);
 
@@ -91,6 +93,8 @@ public class NacosConfigurationPropertiesBindingPostProcessorTest extends Abstra
         Assert.assertTrue(9527 == config.getValue());
         Assert.assertEquals(Float.valueOf(1234.5f), config.getFloatData());
         Assert.assertNull(config.getIntData());
+
+        System.out.println(config.toString());
 
     }
 
