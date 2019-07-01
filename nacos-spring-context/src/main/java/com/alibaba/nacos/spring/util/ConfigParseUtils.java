@@ -99,6 +99,9 @@ final class ConfigParseUtils {
         Properties properties = new Properties();
         if (CUSTOMER_CONFIG_PARSE_MAP.isEmpty() || LINK_CHAR.equals(sb.toString())) {
             return toProperties(context, type);
+        }
+        if (CUSTOMER_CONFIG_PARSE_MAP.get(type) == null || CUSTOMER_CONFIG_PARSE_MAP.get(type).isEmpty()) {
+            return toProperties(context, type);
         } else {
             if (CUSTOMER_CONFIG_PARSE_MAP.containsKey(type)) {
                 ConfigParse configParse = CUSTOMER_CONFIG_PARSE_MAP.get(type).get(sb.toString());
