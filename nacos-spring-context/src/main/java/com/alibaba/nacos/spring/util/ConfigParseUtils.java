@@ -55,16 +55,17 @@ final class ConfigParseUtils {
         ServiceLoader<ConfigParse> configParses = ServiceLoader.load(ConfigParse.class);
         StringBuilder sb = new StringBuilder();
         for (ConfigParse configParse : configParses) {
-            if (CUSTOMER_CONFIG_PARSE_MAP.containsKey(configParse.processType())) {
-                sb.setLength(0);
-                sb.append(configParse.dataId()).append(LINK_CHAR).append(configParse.group());
-                if (LINK_CHAR.equals(sb.toString())) {
-                    // If the user does not set the data id and group processed by config parse,
-                    // this type of config is resolved globally by default
-                    DEFAULT_CONFIG_PARSE_MAP.put(configParse.processType(), configParse);
-                } else {
-                    CUSTOMER_CONFIG_PARSE_MAP.get(configParse.processType()).put(sb.toString(), configParse);
-                }
+            if (!CUSTOMER_CONFIG_PARSE_MAP.containsKey(configParse.processType())) {
+                CUSTOMER_CONFIG_PARSE_MAP.put(configParse.processType(), new HashMap<String, ConfigParse>(1));
+            }
+            sb.setLength(0);
+            sb.append(configParse.dataId()).append(LINK_CHAR).append(configParse.group());
+            if (LINK_CHAR.equals(sb.toString())) {
+                // If the user does not set the data id and group processed by config parse,
+                // this type of config is resolved globally by default
+                DEFAULT_CONFIG_PARSE_MAP.put(configParse.processType(), configParse);
+            } else {
+                CUSTOMER_CONFIG_PARSE_MAP.get(configParse.processType()).put(sb.toString(), configParse);
             }
         }
 
@@ -86,10 +87,10 @@ final class ConfigParseUtils {
     /**
      * XML configuration parsing to support different schemas
      *
-     * @param dataId config dataId
-     * @param group config group
+     * @param dataId  config dataId
+     * @param group   config group
      * @param context config context
-     * @param type config type
+     * @param type    config type
      * @return {@link Properties}
      */
     static Properties toProperties(final String dataId, final String group, final String context, final String type) {
