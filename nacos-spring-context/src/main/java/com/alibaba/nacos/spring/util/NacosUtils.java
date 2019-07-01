@@ -192,13 +192,14 @@ public abstract class NacosUtils {
                 if (hasText(propertyName)) {
                     // If it is a map, the data will not be fetched
                     // fix issue #91
+                    if (Collection.class.isAssignableFrom(field.getType()) ||
+                            field.getType().isAssignableFrom(Map.class)) {
+                        bindContainer(propertyName, configProperties, propertyValues);
+                        return;
+                    }
                     if (configProperties.containsKey(propertyName)) {
                         String propertyValue = configProperties.getProperty(propertyName);
                         propertyValues.add(field.getName(), propertyValue);
-                    }
-                    else if (Collection.class.isAssignableFrom(field.getType()) ||
-                            field.getType().isAssignableFrom(Map.class)) {
-                        bindContainer(propertyName, configProperties, propertyValues);
                     }
                 }
             }
@@ -315,7 +316,10 @@ public abstract class NacosUtils {
         while (enumeration.hasMoreElements()) {
             String s = enumeration.nextElement();
             String value = configProperties.getProperty(s);
-            if (pattern1.matcher(s).find()) {
+            if (configProperties.containsKey(fieldName)) {
+                bindContainer(fieldName, listToProperties(fieldName, configProperties.getProperty(fieldName)), propertyValues);
+            }
+            else if (pattern1.matcher(s).find()) {
                 propertyValues.add(s, value);
             } else if (pattern2.matcher(s).find()) {
                 int index = s.indexOf('.');
@@ -325,6 +329,17 @@ public abstract class NacosUtils {
                 }
             }
         }
+    }
+
+    private static Properties listToProperties(String fieldName, String content) {
+        String[] splits = content.split(",");
+        int index = 0;
+        Properties properties = new Properties();
+        for (String s : splits) {
+            properties.put(fieldName + "[" + index + "]", s.trim());
+            index ++;
+        }
+        return properties;
     }
 
     private static String resolvePropertyName(Field field) {

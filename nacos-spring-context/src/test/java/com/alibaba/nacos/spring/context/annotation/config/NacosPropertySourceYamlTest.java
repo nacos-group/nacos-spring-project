@@ -19,6 +19,7 @@ package com.alibaba.nacos.spring.context.annotation.config;
 import com.alibaba.nacos.api.annotation.NacosInjected;
 import com.alibaba.nacos.api.annotation.NacosProperties;
 import com.alibaba.nacos.api.config.ConfigService;
+import com.alibaba.nacos.api.config.annotation.NacosValue;
 import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.embedded.web.server.EmbeddedNacosHttpServer;
 import com.alibaba.nacos.spring.context.annotation.EnableNacos;
@@ -28,7 +29,10 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.stereotype.Component;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -56,12 +60,17 @@ import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.GROUP_ID;
         DirtiesContextTestExecutionListener.class, NacosPropertySourceYamlTest.class})
 @NacosPropertySource(dataId = YamlApp.DATA_ID_YAML, autoRefreshed = true, type = "yaml")
 @EnableNacos(globalProperties = @NacosProperties(serverAddr = "${server.addr}"))
+@Component
 public class NacosPropertySourceYamlTest extends AbstractNacosHttpServerTestExecutionListener {
 
     private String yaml = "students:\n" +
             "    - {name: lct-1,num: 12}\n" +
             "    - {name: lct-2,num: 13}\n" +
             "    - {name: lct-3,num: 14}";
+
+    private String configStr = "people:\n" +
+            "  a: 1\n" +
+            "  b: 1";
 
     private String except = "YamlApp{students=[Student{name='lct-1', num='12'}, Student{name='lct-2', num='13'}, Student{name='lct-3', num='14'}]}";
 
@@ -70,9 +79,23 @@ public class NacosPropertySourceYamlTest extends AbstractNacosHttpServerTestExec
         Map<String, String> config = new HashMap<String, String>(1);
         config.put(DATA_ID_PARAM_NAME, YamlApp.DATA_ID_YAML);
         config.put(GROUP_ID_PARAM_NAME, DEFAULT_GROUP);
-        config.put(CONTENT_PARAM_NAME, yaml);
+        config.put(CONTENT_PARAM_NAME, configStr);
 
         httpServer.initConfig(config);
+    }
+
+    private static class App {
+
+        @Value("${people.a}")
+        private String a;
+        @NacosValue("${people.b}")
+        private String b;
+
+    }
+
+    @Bean(name = "myApp")
+    public App app() {
+        return new App();
     }
 
     @Bean
@@ -86,6 +109,10 @@ public class NacosPropertySourceYamlTest extends AbstractNacosHttpServerTestExec
     @Autowired
     private YamlApp yamlApp;
 
+    @Autowired
+    @Qualifier(value = "myApp")
+    private App app;
+
     @Override
     protected String getServerAddressPropertyName() {
         return "server.addr";
@@ -94,7 +121,11 @@ public class NacosPropertySourceYamlTest extends AbstractNacosHttpServerTestExec
     @Test
     public void testValue() throws NacosException, InterruptedException {
 
-        configService.publishConfig(YamlApp.DATA_ID_YAML, GROUP_ID, yaml);
+        Assert.assertEquals("1", app.a);
+        Assert.assertEquals("1", app.b);
+
+
+        configService.publishConfig(YamlApp.DATA_ID_YAML, DEFAULT_GROUP, yaml);
 
         Thread.sleep(2000);
 
