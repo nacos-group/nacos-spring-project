@@ -17,6 +17,14 @@
     <packaging>jar</packaging>
 
     <dependencies>
+
+        <!-- java-->
+        <dependency>
+            <groupId>javax.annotation</groupId>
+            <artifactId>javax.annotation-api</artifactId>
+            <version>${javax.annotation-api.version}</version>
+        </dependency>
+
         <!-- Nacos -->
         <dependency>
             <groupId>com.alibaba.nacos</groupId>
