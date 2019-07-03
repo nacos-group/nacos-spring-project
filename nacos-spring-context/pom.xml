@@ -5,23 +5,38 @@
     <parent>
         <artifactId>nacos-spring-parent</artifactId>
         <groupId>com.alibaba.nacos</groupId>
-        <version>0.2.3-RC1</version>
+        <version>0.3.0-RC1</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.alibaba.nacos</groupId>
     <artifactId>nacos-spring-context</artifactId>
-    <version>0.2.3-RC1</version>
+    <version>0.3.0-RC1</version>
     <name>Alibaba Nacos :: Spring :: Context</name>
     <packaging>jar</packaging>
 
     <dependencies>
+
+        <!-- java-->
+        <dependency>
+            <groupId>javax.annotation</groupId>
+            <artifactId>javax.annotation-api</artifactId>
+            <version>${javax.annotation-api.version}</version>
+        </dependency>
+
         <!-- Nacos -->
         <dependency>
             <groupId>com.alibaba.nacos</groupId>
             <artifactId>nacos-client</artifactId>
             <version>${nacos.version}</version>
+        </dependency>
+
+        <!--yaml-->
+        <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+            <version>${snake.yaml.version}</version>
         </dependency>
 
         <!-- Spring Framework -->

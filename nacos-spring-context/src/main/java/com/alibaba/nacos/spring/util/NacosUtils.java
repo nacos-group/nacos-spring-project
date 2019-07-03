@@ -66,6 +66,10 @@ public abstract class NacosUtils {
      */
     public static final String DEFAULT_STRING_ATTRIBUTE_VALUE = "";
 
+    /**
+     * Default value of {@link String} attribute for {@link Annotation}
+     */
+    public static final String DEFAULT_CONFIG_TYPE_VALUE = "properties";
 
     /**
      * Default value of boolean attribute for {@link Annotation}
@@ -174,8 +178,12 @@ public abstract class NacosUtils {
         return records.isEmpty();
     }
 
-    public static PropertyValues resolvePropertyValues(Object bean, String content) {
-        final Properties configProperties = toProperties(content);
+    public static PropertyValues resolvePropertyValues(Object bean, String content, String type) {
+        return resolvePropertyValues(bean, "", "", content, type);
+    }
+
+    public static PropertyValues resolvePropertyValues(Object bean, String dataId, String groupId, String content, String type) {
+        final Properties configProperties = toProperties(dataId, groupId, content, type);
         final MutablePropertyValues propertyValues = new MutablePropertyValues();
         ReflectionUtils.doWithFields(bean.getClass(), new ReflectionUtils.FieldCallback() {
             @Override
@@ -351,17 +359,28 @@ public abstract class NacosUtils {
     }
 
     public static Properties toProperties(String text) {
-        Properties properties = new Properties();
-        try {
-            if (StringUtils.hasText(text)) {
-                properties.load(new StringReader(text));
-            }
-        } catch (IOException e) {
-            if (logger.isErrorEnabled()) {
-                logger.error(e.getMessage(), e);
-            }
-        }
-        return properties;
+        return toProperties(text, "properties");
+    }
+
+    public static Properties toProperties(String text, String type) {
+        return toProperties("", "", text, type);
+    }
+
+    public static Properties toProperties(String dataId, String group, String text) {
+        return toProperties(dataId, group, text, "properties");
+    }
+
+    /**
+     * XML configuration parsing to support different schemas
+     *
+     * @param dataId config dataId
+     * @param group config group
+     * @param text config context
+     * @param type config type
+     * @return {@link Properties}
+     */
+    public static Properties toProperties(String dataId, String group, String text, String type) {
+        return ConfigParseUtils.toProperties(dataId, group, text, type);
     }
 
 
