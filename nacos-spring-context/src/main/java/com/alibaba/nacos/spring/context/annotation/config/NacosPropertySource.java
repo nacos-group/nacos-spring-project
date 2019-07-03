@@ -27,6 +27,7 @@ import java.util.Map;
 
 import static com.alibaba.nacos.api.common.Constants.DEFAULT_GROUP;
 import static com.alibaba.nacos.spring.util.NacosUtils.DEFAULT_BOOLEAN_ATTRIBUTE_VALUE;
+import static com.alibaba.nacos.spring.util.NacosUtils.DEFAULT_CONFIG_TYPE_VALUE;
 import static com.alibaba.nacos.spring.util.NacosUtils.DEFAULT_STRING_ATTRIBUTE_VALUE;
 
 /**
@@ -82,6 +83,11 @@ public @interface NacosPropertySource {
      * The attribute name of {@link NacosPropertySource#properties()}
      */
     String PROPERTIES_ATTRIBUTE_NAME = "properties";
+
+    /**
+     * The attribute name of {@link NacosPropertySource#type()} ()}
+     */
+    String CONFIG_TYPE_ATTRIBUTE_NAME = "type";
 
     /**
      * The name of Nacos {@link PropertySource}
@@ -144,6 +150,13 @@ public @interface NacosPropertySource {
      * @return the name of {@link PropertySource}
      */
     String after() default DEFAULT_STRING_ATTRIBUTE_VALUE;
+
+    /**
+     * The type of config
+     *
+     * @return the type of config
+     */
+    String type() default DEFAULT_CONFIG_TYPE_VALUE;
 
     /**
      * The {@link NacosProperties} attribute, If not specified, it will use

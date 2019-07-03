@@ -126,7 +126,8 @@ public class NacosConfigurationPropertiesBinder {
 
     private void doBind(Object bean, String beanName, String dataId, String groupId,
                         NacosConfigurationProperties properties, String content, ConfigService configService) {
-        PropertyValues propertyValues = NacosUtils.resolvePropertyValues(bean, content);
+        String type = properties.yaml() ? "yaml" : "properties";
+        PropertyValues propertyValues = NacosUtils.resolvePropertyValues(bean, dataId, groupId, content, type);
         doBind(bean, properties, propertyValues);
         publishBoundEvent(bean, beanName, dataId, groupId, properties, content, configService);
         publishMetadataEvent(bean, beanName, dataId, groupId, properties);
