@@ -9,8 +9,7 @@ notifications:
 language: java
 
 jdk:
-  - openjdk10
-  - openjdk9
+  - openjdk11
   - openjdk8
 
 script:
