@@ -78,8 +78,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <!-- Compiler settings properties -->
-        <maven.compiler.source>1.6</maven.compiler.source>
-        <maven.compiler.target>1.6</maven.compiler.target>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
         <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
         <!-- Exclude all generated code -->
         <sonar.jacoco.itReportPath>${project.basedir}/../test/target/jacoco-it.exec</sonar.jacoco.itReportPath>
@@ -87,7 +87,7 @@
         <!-- Nacos -->
         <nacos.version>1.0.1</nacos.version>
         <!-- Spring -->
-        <spring.framework.version>3.2.18.RELEASE</spring.framework.version>
+        <spring.framework.version>5.1.8.RELEASE</spring.framework.version>
         <!--snake-yaml-->
         <snake.yaml.version>1.19</snake.yaml.version>
         <!-- Servlet -->
@@ -199,6 +199,49 @@
             </distributionManagement>
 
         </profile>
+
+        <profile>
+            <id>spring-3.2</id>
+            <properties>
+                <spring.framework.version>3.2.18.RELEASE</spring.framework.version>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>spring-4.0</id>
+            <properties>
+                <spring.framework.version>4.0.9.RELEASE</spring.framework.version>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>spring-4.1</id>
+            <properties>
+                <spring.framework.version>4.1.9.RELEASE</spring.framework.version>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>spring-4.2</id>
+            <properties>
+                <spring.framework.version>4.2.9.RELEASE</spring.framework.version>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>spring-4.3</id>
+            <properties>
+                <spring.framework.version>4.3.24.RELEASE</spring.framework.version>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>spring-5.0</id>
+            <properties>
+                <spring.framework.version>5.0.9.RELEASE</spring.framework.version>
+            </properties>
+        </profile>
+
     </profiles>
 
     <build>
