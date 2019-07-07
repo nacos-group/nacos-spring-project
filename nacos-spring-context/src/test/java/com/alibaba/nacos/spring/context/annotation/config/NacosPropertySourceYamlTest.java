@@ -51,7 +51,7 @@ import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.GROUP_ID;
 
 /**
  * @author <a href="mailto:liaochunyhm@live.com">liaochuntao</a>
- * @since
+ * @since 0.3.0
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {

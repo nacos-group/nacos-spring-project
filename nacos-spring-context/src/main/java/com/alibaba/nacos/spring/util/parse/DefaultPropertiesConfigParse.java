@@ -29,7 +29,7 @@ import java.util.Properties;
 
 /**
  * @author <a href="mailto:liaochunyhm@live.com">liaochuntao</a>
- * @since
+ * @since 0.3.0
  */
 public class DefaultPropertiesConfigParse extends AbstractConfigParse {
 

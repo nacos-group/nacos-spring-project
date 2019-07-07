@@ -70,7 +70,7 @@ import java.util.Properties;
  * Just support xml config like this
  *
  * @author <a href="mailto:liaochunyhm@live.com">liaochuntao</a>
- * @since
+ * @since 0.3.0
  */
 public class DefaultXmlConfigParse extends AbstractConfigParse {
 

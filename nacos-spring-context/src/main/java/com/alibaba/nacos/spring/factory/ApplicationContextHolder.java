@@ -23,7 +23,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 
 /**
  * @author <a href="mailto:liaochunyhm@live.com">liaochuntao</a>
- * @since
+ * @since 0.3.0
  */
 public class ApplicationContextHolder implements ApplicationContextAware {
 

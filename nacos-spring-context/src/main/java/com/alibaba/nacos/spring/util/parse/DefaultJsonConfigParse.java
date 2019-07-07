@@ -27,7 +27,7 @@ import static com.alibaba.nacos.spring.util.parse.DefaultYamlConfigParse.createY
 
 /**
  * @author <a href="mailto:liaochunyhm@live.com">liaochuntao</a>
- * @since
+ * @since 0.3.0
  */
 public class DefaultJsonConfigParse extends AbstractConfigParse {
 
