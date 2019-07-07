@@ -17,6 +17,7 @@
 package com.alibaba.nacos.spring.context.event.config;
 
 import com.alibaba.nacos.api.config.ConfigService;
+import com.alibaba.nacos.api.config.ConfigType;
 import com.alibaba.nacos.api.config.listener.Listener;
 import org.springframework.context.ApplicationEventPublisher;
 
@@ -33,7 +34,7 @@ import java.util.concurrent.Executor;
  * @see Listener
  * @since 0.1.0
  */
-final class DelegatingEventPublishingListener implements Listener {
+public final class DelegatingEventPublishingListener implements Listener {
 
     private final ConfigService configService;
 
@@ -43,6 +44,8 @@ final class DelegatingEventPublishingListener implements Listener {
 
     private final ApplicationEventPublisher applicationEventPublisher;
 
+    private final String configType;
+
     private final Executor executor;
 
     private final Listener delegate;
@@ -50,9 +53,16 @@ final class DelegatingEventPublishingListener implements Listener {
     DelegatingEventPublishingListener(ConfigService configService, String dataId, String groupId,
                                       ApplicationEventPublisher applicationEventPublisher,
                                       Executor executor, Listener delegate) {
+        this(configService, dataId, groupId, ConfigType.PROPERTIES.getType(), applicationEventPublisher, executor, delegate);
+    }
+
+    DelegatingEventPublishingListener(ConfigService configService, String dataId, String groupId, String configType,
+                                      ApplicationEventPublisher applicationEventPublisher,
+                                      Executor executor, Listener delegate) {
         this.configService = configService;
         this.dataId = dataId;
         this.groupId = groupId;
+        this.configType = configType;
         this.applicationEventPublisher = applicationEventPublisher;
         this.executor = executor;
         this.delegate = delegate;
@@ -79,7 +89,7 @@ final class DelegatingEventPublishingListener implements Listener {
     }
 
     private void publishEvent(String content) {
-        NacosConfigReceivedEvent event = new NacosConfigReceivedEvent(configService, dataId, groupId, content);
+        NacosConfigReceivedEvent event = new NacosConfigReceivedEvent(configService, dataId, groupId, content, configType);
         applicationEventPublisher.publishEvent(event);
     }
 

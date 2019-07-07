@@ -88,6 +88,7 @@ public class NacosConfigListenerMethodProcessor extends AnnotationListenerMethod
 
         String dataId = listener.dataId();
         String groupId = listener.groupId();
+        String type = listener.type().getType();
         long timeout = listener.timeout();
 
         Assert.isTrue(StringUtils.hasText(dataId), "dataId must have content");
@@ -193,12 +194,12 @@ public class NacosConfigListenerMethodProcessor extends AnnotationListenerMethod
 
         NacosConfigConverter configConverter = null;
 
-        if (NacosConfigConverter.class.equals(converterClass)) { // Use default implementation
-
+        // Use default implementation
+        if (NacosConfigConverter.class.equals(converterClass)) {
             configConverter = new DefaultNacosConfigConverter(targetType, conversionService);
 
-        } else { // Use customized implementation
-
+        } else {
+            // Use customized implementation
             configConverter = (NacosConfigConverter) instantiateClass(converterClass);
 
         }

@@ -16,6 +16,7 @@
  */
 package com.alibaba.nacos.spring.core.env;
 
+import com.alibaba.nacos.api.config.ConfigType;
 import com.alibaba.nacos.spring.context.event.DeferredApplicationEventPublisher;
 import com.alibaba.nacos.spring.context.event.config.NacosConfigMetadataEvent;
 import com.alibaba.nacos.spring.util.config.NacosConfigLoader;

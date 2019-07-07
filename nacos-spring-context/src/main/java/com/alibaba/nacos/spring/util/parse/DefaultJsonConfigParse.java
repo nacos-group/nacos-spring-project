@@ -16,6 +16,7 @@
  */
 package com.alibaba.nacos.spring.util.parse;
 
+import com.alibaba.nacos.api.config.ConfigType;
 import com.alibaba.nacos.spring.util.AbstractConfigParse;
 import com.alibaba.nacos.spring.util.ConfigParse;
 
@@ -44,7 +45,7 @@ public class DefaultJsonConfigParse extends AbstractConfigParse {
 
     @Override
     public String processType() {
-        return "json";
+        return ConfigType.JSON.getType();
     }
 
 }

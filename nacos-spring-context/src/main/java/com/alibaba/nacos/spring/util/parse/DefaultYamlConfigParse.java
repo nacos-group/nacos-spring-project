@@ -16,6 +16,7 @@
  */
 package com.alibaba.nacos.spring.util.parse;
 
+import com.alibaba.nacos.api.config.ConfigType;
 import com.alibaba.nacos.spring.util.AbstractConfigParse;
 import com.alibaba.nacos.spring.util.ConfigParse;
 import org.slf4j.Logger;
@@ -59,7 +60,7 @@ public class DefaultYamlConfigParse extends AbstractConfigParse {
 
     @Override
     public String processType() {
-        return "yaml";
+        return ConfigType.YAML.getType();
     }
 
     protected static boolean process(MatchCallback callback, Yaml yaml, String content) {

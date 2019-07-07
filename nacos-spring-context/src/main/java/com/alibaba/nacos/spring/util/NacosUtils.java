@@ -179,22 +179,23 @@ public abstract class NacosUtils {
     }
 
     public static PropertyValues resolvePropertyValues(Object bean, String content, String type) {
-        return resolvePropertyValues(bean, "", "", content, type);
+        return resolvePropertyValues(bean, "", "", "", content, type);
     }
 
-    public static PropertyValues resolvePropertyValues(Object bean, String dataId, String groupId, String content, String type) {
+    public static PropertyValues resolvePropertyValues(Object bean, final String prefix, String dataId, String groupId, String content, String type) {
         final Properties configProperties = toProperties(dataId, groupId, content, type);
         final MutablePropertyValues propertyValues = new MutablePropertyValues();
         ReflectionUtils.doWithFields(bean.getClass(), new ReflectionUtils.FieldCallback() {
             @Override
             public void doWith(Field field) throws IllegalArgumentException, IllegalAccessException {
                 String propertyName = NacosUtils.resolvePropertyName(field);
+                propertyName = StringUtils.isEmpty(prefix) ? propertyName : prefix + "." + propertyName;
                 if (hasText(propertyName)) {
                     // If it is a map, the data will not be fetched
                     // fix issue #91
                     if (Collection.class.isAssignableFrom(field.getType()) ||
                             field.getType().isAssignableFrom(Map.class)) {
-                        bindContainer(propertyName, configProperties, propertyValues);
+                        bindContainer(prefix, propertyName, configProperties, propertyValues);
                         return;
                     }
                     if (configProperties.containsKey(propertyName)) {
@@ -307,7 +308,7 @@ public abstract class NacosUtils {
      * @param configProperties config context
      * @param propertyValues {@link MutablePropertyValues}
      */
-    private static void bindContainer(String fieldName, Properties configProperties, MutablePropertyValues propertyValues) {
+    private static void bindContainer(String prefix, String fieldName, Properties configProperties, MutablePropertyValues propertyValues) {
         String regx1 = fieldName + "\\[(.*)\\]";
         String regx2 = fieldName + "\\..*";
         Pattern pattern1 = Pattern.compile(regx1);
@@ -315,17 +316,18 @@ public abstract class NacosUtils {
         Enumeration<String> enumeration = (Enumeration<String>) configProperties.propertyNames();
         while (enumeration.hasMoreElements()) {
             String s = enumeration.nextElement();
+            String name = StringUtils.isEmpty(prefix) ? s : s.replace(prefix + ".", "");
             String value = configProperties.getProperty(s);
             if (configProperties.containsKey(fieldName)) {
-                bindContainer(fieldName, listToProperties(fieldName, configProperties.getProperty(fieldName)), propertyValues);
+                bindContainer(prefix, fieldName, listToProperties(fieldName, configProperties.getProperty(fieldName)), propertyValues);
             }
             else if (pattern1.matcher(s).find()) {
-                propertyValues.add(s, value);
+                propertyValues.add(name, value);
             } else if (pattern2.matcher(s).find()) {
                 int index = s.indexOf('.');
                 if (index != -1) {
                     String key = s.substring(index + 1);
-                    propertyValues.add(fieldName + "[" + key + "]", value);
+                    propertyValues.add(name + "[" + key + "]", value);
                 }
             }
         }
@@ -380,6 +382,7 @@ public abstract class NacosUtils {
      * @return {@link Properties}
      */
     public static Properties toProperties(String dataId, String group, String text, String type) {
+        type = type.toLowerCase();
         return ConfigParseUtils.toProperties(dataId, group, text, type);
     }
 

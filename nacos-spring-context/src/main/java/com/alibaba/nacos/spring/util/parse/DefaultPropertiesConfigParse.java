@@ -16,6 +16,7 @@
  */
 package com.alibaba.nacos.spring.util.parse;
 
+import com.alibaba.nacos.api.config.ConfigType;
 import com.alibaba.nacos.spring.util.AbstractConfigParse;
 import com.alibaba.nacos.spring.util.ConfigParse;
 import org.slf4j.Logger;
@@ -49,7 +50,7 @@ public class DefaultPropertiesConfigParse extends AbstractConfigParse {
 
     @Override
     public String processType() {
-        return "properties";
+        return ConfigType.PROPERTIES.getType();
     }
 
 }
