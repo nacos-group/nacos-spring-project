@@ -18,12 +18,15 @@ package com.alibaba.nacos.spring.context.properties.config;
 
 import com.alibaba.nacos.api.annotation.NacosProperties;
 import com.alibaba.nacos.api.config.ConfigService;
+import com.alibaba.nacos.api.config.ConfigType;
 import com.alibaba.nacos.api.config.annotation.NacosConfigurationProperties;
 import com.alibaba.nacos.api.config.annotation.NacosIgnore;
 import com.alibaba.nacos.api.config.annotation.NacosProperty;
 import com.alibaba.nacos.api.config.listener.AbstractListener;
+import com.alibaba.nacos.api.config.listener.Listener;
 import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.spring.beans.factory.annotation.ConfigServiceBeanBuilder;
+import com.alibaba.nacos.spring.context.event.config.EventPublishingConfigService;
 import com.alibaba.nacos.spring.context.event.config.NacosConfigEvent;
 import com.alibaba.nacos.spring.context.event.config.NacosConfigMetadataEvent;
 import com.alibaba.nacos.spring.context.event.config.NacosConfigurationPropertiesBeanBoundEvent;
@@ -99,17 +102,26 @@ public class NacosConfigurationPropertiesBinder {
 
         final String groupId = properties.groupId();
 
+        String type = properties.type().getType();
+        type = properties.yaml() ? ConfigType.YAML.getType() : type;
+
         final ConfigService configService = configServiceBeanBuilder.build(properties.properties());
 
-        if (properties.autoRefreshed()) { // Add a Listener if auto-refreshed
+        // Add a Listener if auto-refreshed
+        if (properties.autoRefreshed()) {
 
+            Listener listener = new AbstractListener() {
+                @Override
+                public void receiveConfigInfo(String config) {
+                    doBind(bean, beanName, dataId, groupId, properties, config, configService);
+                }
+            };
             try {
-                configService.addListener(dataId, groupId, new AbstractListener() {
-                    @Override
-                    public void receiveConfigInfo(String config) {
-                        doBind(bean, beanName, dataId, groupId, properties, config, configService);
-                    }
-                });
+                if (configService instanceof EventPublishingConfigService) {
+                    ((EventPublishingConfigService) configService).addListener(dataId, groupId, type, listener);
+                } else {
+                    configService.addListener(dataId, groupId, listener);
+                }
             } catch (NacosException e) {
                 if (logger.isErrorEnabled()) {
                     logger.error(e.getMessage(), e);
@@ -126,8 +138,12 @@ public class NacosConfigurationPropertiesBinder {
 
     private void doBind(Object bean, String beanName, String dataId, String groupId,
                         NacosConfigurationProperties properties, String content, ConfigService configService) {
-        String type = properties.yaml() ? "yaml" : "properties";
-        PropertyValues propertyValues = NacosUtils.resolvePropertyValues(bean, dataId, groupId, content, type);
+        String type = properties.type().getType();
+        String prefix = properties.prefix();
+        if (properties.yaml()) {
+            type = ConfigType.YAML.getType();
+        }
+        PropertyValues propertyValues = NacosUtils.resolvePropertyValues(bean, prefix, dataId, groupId, content, type);
         doBind(bean, properties, propertyValues);
         publishBoundEvent(bean, beanName, dataId, groupId, properties, content, configService);
         publishMetadataEvent(bean, beanName, dataId, groupId, properties);

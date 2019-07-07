@@ -28,7 +28,7 @@ import java.util.Properties;
 
 /**
  * @author <a href="mailto:liaochunyhm@live.com">liaochuntao</a>
- * @since
+ * @since 0.3.0
  */
 class DelegatingNamingMaintainService implements NamingMaintainService, NacosServiceMetaData {
 

@@ -23,7 +23,7 @@ package com.alibaba.nacos.spring.util;
  * otherwise the user-defined parsing rules will only be applied to specific dataId and group
  *
  * @author <a href="mailto:liaochunyhm@live.com">liaochuntao</a>
- * @since
+ * @since 0.3.0
  */
 public abstract class AbstractConfigParse implements ConfigParse {
 

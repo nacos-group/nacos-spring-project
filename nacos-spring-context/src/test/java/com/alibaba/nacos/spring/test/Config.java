@@ -33,7 +33,7 @@ import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.GROUP_ID;
  * @see NacosConfigurationProperties
  * @since 0.1.0
  */
-@NacosConfigurationProperties(dataId = DATA_ID, groupId = GROUP_ID,
+@NacosConfigurationProperties(prefix = "test", dataId = DATA_ID, groupId = GROUP_ID,
         autoRefreshed = true, ignoreNestedProperties = true)
 public class Config {
 

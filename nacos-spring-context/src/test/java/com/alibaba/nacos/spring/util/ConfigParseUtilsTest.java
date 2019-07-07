@@ -94,7 +94,7 @@ public class ConfigParseUtilsTest {
                 "</xmlSign>";
         Assert.assertEquals(0, ConfigParseUtils.toProperties(dataId, group, xmlConfig, "xml").size());
         Assert.assertEquals(1, atomicInteger.get());
-        Properties properties = ConfigParseUtils.toProperties(xmlConfig, "xml");
+        Properties properties = ConfigParseUtils.toProperties(xmlConfig, "XML");
         Assert.assertTrue(0 != properties.size());
         System.out.println(ConfigParse.class.isAssignableFrom(CustomerParse.class));
         System.out.println(properties);

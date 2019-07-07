@@ -16,6 +16,7 @@
  */
 package com.alibaba.nacos.spring.util.parse;
 
+import com.alibaba.nacos.api.config.ConfigType;
 import com.alibaba.nacos.spring.util.AbstractConfigParse;
 import org.springframework.util.StringUtils;
 import org.w3c.dom.Document;
@@ -69,7 +70,7 @@ import java.util.Properties;
  * Just support xml config like this
  *
  * @author <a href="mailto:liaochunyhm@live.com">liaochuntao</a>
- * @since
+ * @since 0.3.0
  */
 public class DefaultXmlConfigParse extends AbstractConfigParse {
 
@@ -83,8 +84,7 @@ public class DefaultXmlConfigParse extends AbstractConfigParse {
             Element root = document.getDocumentElement();
             Map<String, Object> map = new LinkedHashMap<String, Object>(8);
             recursionXmlToMap(map, root);
-            String xmlSign = root.getNodeName();
-            mapToProperties("", properties, map.get(xmlSign));
+            mapToProperties("", properties, map);
         } catch (Exception e) {
             throw new ConfigParseException(e);
         }
@@ -146,7 +146,7 @@ public class DefaultXmlConfigParse extends AbstractConfigParse {
 
     @Override
     public String processType() {
-        return "xml";
+        return ConfigType.XML.getType();
     }
 
 }

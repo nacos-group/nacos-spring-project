@@ -98,6 +98,11 @@ class DelegatingNamingService implements NamingService, NacosServiceMetaData {
     }
 
     @Override
+    public void deregisterInstance(String serviceName, Instance instance) throws NacosException {
+        delegate.registerInstance(serviceName, instance);
+    }
+
+    @Override
     public void deregisterInstance(String serviceName, String groupName, Instance instance) throws NacosException {
         delegate.deregisterInstance(serviceName, groupName, instance);
     }
