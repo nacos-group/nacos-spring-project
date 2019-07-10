@@ -116,7 +116,7 @@ public class NacosConfigurationPropertiesBinder {
                     doBind(bean, beanName, dataId, groupId, properties, config, configService);
                 }
             };
-            try {
+            try {//
                 if (configService instanceof EventPublishingConfigService) {
                     ((EventPublishingConfigService) configService).addListener(dataId, groupId, type, listener);
                 } else {

@@ -319,6 +319,7 @@ public abstract class NacosUtils {
             String name = StringUtils.isEmpty(prefix) ? s : s.replace(prefix + ".", "");
             String value = configProperties.getProperty(s);
             if (configProperties.containsKey(fieldName)) {
+                // for example: list=1,2,3,4,5 will be into here
                 bindContainer(prefix, fieldName, listToProperties(fieldName, configProperties.getProperty(fieldName)), propertyValues);
             }
             else if (pattern1.matcher(s).find()) {
@@ -333,6 +334,13 @@ public abstract class NacosUtils {
         }
     }
 
+    /**
+     * convert list=1,2,3,4 to list[0]=1, list[1]=2, list[2]=3, list[3]=4
+     *
+     * @param fieldName fieldName
+     * @param content content
+     * @return {@link Properties}
+     */
     private static Properties listToProperties(String fieldName, String content) {
         String[] splits = content.split(",");
         int index = 0;

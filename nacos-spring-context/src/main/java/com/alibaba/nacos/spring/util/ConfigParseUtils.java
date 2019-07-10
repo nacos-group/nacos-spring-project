@@ -116,7 +116,7 @@ final class ConfigParseUtils {
                 properties.putAll(configParse.parse(context));
                 return properties;
             } else {
-                throw new UnsupportedOperationException("Parsing is not yet supported for this type profile");
+                throw new UnsupportedOperationException("Parsing is not yet supported for this type profile : " + type);
             }
         }
     }
