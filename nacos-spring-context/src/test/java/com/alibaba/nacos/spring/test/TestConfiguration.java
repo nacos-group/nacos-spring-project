@@ -44,23 +44,23 @@ public class TestConfiguration {
      */
     public static final String CONFIG_SERVICE_BEAN_NAME = "configService";
 
-    public static final String TEST_CONFIG = "id = 1\n" +
-            "name = mercyblitz\n" +
-            "value = 0.95\n" +
-            "intData  = 1234\n" +
-            "float-data = 1234.5\n" +
-            "list = 1,2,3,4,5\n" +
-            "map[key-1]=value";
+    public static final String TEST_CONFIG = "test.id = 1\n" +
+            "test.name = mercyblitz\n" +
+            "test.value = 0.95\n" +
+            "test.intData  = 1234\n" +
+            "test.float-data = 1234.5\n" +
+            "test.list = 1,2,3,4,5\n" +
+            "test.map[key-1]=value";
 
     public static final String MODIFIED_TEST_CONTEXT = "id = 1\n" +
-            "name = mercyblitz@gmail.com\n" +
-            "value = 9527\n" +
-            "list[0] = 6\n" +
-            "list[1] = 6\n" +
-            "list[2] = 6\n" +
-            "list[3] = 6\n" +
-            "map[key-2]=value\n" +
-            "map[key-3]=value";
+            "test.name = mercyblitz@gmail.com\n" +
+            "test.value = 9527\n" +
+            "test.list[0] = 6\n" +
+            "test.list[1] = 6\n" +
+            "test.list[2] = 6\n" +
+            "test.list[3] = 6\n" +
+            "test.map[key-2]=value\n" +
+            "test.map[key-3]=value";
 
 
     @Bean(name = GLOBAL_NACOS_PROPERTIES_BEAN_NAME)

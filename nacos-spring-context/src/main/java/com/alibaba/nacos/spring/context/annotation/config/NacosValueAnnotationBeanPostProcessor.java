@@ -124,7 +124,7 @@ public class NacosValueAnnotationBeanPostProcessor extends AnnotationInjectedBea
     public void onApplicationEvent(NacosConfigReceivedEvent event) {
         String content = event.getContent();
         if (content != null) {
-            Properties configProperties = toProperties(content);
+            Properties configProperties = toProperties(event.getDataId(), event.getGroupId(), content, event.getType());
 
             for (Object key : configProperties.keySet()) {
                 String propertyKey = (String)key;

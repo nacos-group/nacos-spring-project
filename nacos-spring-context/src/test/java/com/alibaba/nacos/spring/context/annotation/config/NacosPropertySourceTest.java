@@ -61,7 +61,10 @@ import static com.alibaba.nacos.embedded.web.server.NacosConfigHttpHandler.GROUP
 @TestExecutionListeners({DependencyInjectionTestExecutionListener.class,
     DirtiesContextTestExecutionListener.class, NacosPropertySourceTest.class})
 @NacosPropertySource(dataId = NacosPropertySourceTest.DATA_ID, autoRefreshed = true)
-@EnableNacos(globalProperties = @NacosProperties(serverAddr = "${server.addr}"))
+@EnableNacos(globalProperties = @NacosProperties(serverAddr = "${server.addr}", enableRemoteSyncConfig = "true",
+        maxRetry = "5",
+        configRetryTime = "2600",
+        configLongPollTimeout = "26000"))
 @Component
 public class NacosPropertySourceTest extends AbstractNacosHttpServerTestExecutionListener {
 

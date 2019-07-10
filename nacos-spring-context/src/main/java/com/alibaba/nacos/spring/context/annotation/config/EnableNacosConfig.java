@@ -94,6 +94,29 @@ public @interface EnableNacosConfig {
     String ENCODE_PLACEHOLDER = "${" + CONFIG_PREFIX + ENCODE + ":" + NacosProperties.ENCODE_PLACEHOLDER + "}";
 
     /**
+     * The placeholder of {@link NacosProperties#CONFIG_LONG_POLL_TIMEOUT configLongPollTimeout},
+     * the value is <code>"${nacos.configLongPollTimeout:}"</code>
+     */
+    String CONFIG_LONG_POLL_TIMEOUT_PLACEHOLDER = "${" + CONFIG_PREFIX + PREFIX + NacosProperties.CONFIG_LONG_POLL_TIMEOUT_PLACEHOLDER + "}";
+
+    /**
+     * The placeholder of {@link NacosProperties#CONFIG_RETRY_TIME configRetryTime},
+     * the value is <code>"${nacos.configRetryTime:}"</code>
+     */
+    String CONFIG_RETRY_TIME_PLACEHOLDER = "${" + CONFIG_PREFIX + PREFIX + NacosProperties.CONFIG_RETRY_TIME_PLACEHOLDER + "}";
+
+    /**
+     * The placeholder of {@link NacosProperties#MAX_RETRY maxRetry}, the value is <code>"${nacos.maxRetry:}"</code>
+     */
+    String MAX_RETRY_PLACEHOLDER = "${" + CONFIG_PREFIX + PREFIX + NacosProperties.MAX_RETRY_PLACEHOLDER + "}";
+
+    /**
+     * The placeholder of {@link NacosProperties#ENABLE_REMOTE_SYNC_CONFIG_PLACEHOLDER enableRemoteSyncConfig}
+     * the value is <code>"${nacos.enableRemoteSyncConfig:}"</code>
+     */
+//    String ENABLE_REMOTE_SYNC_CONFIG_PLACEHOLDER = "${" + CONFIG_PREFIX + ENCODE + ":" + NacosProperties.ENABLE_REMOTE_SYNC_CONFIG_PLACEHOLDER + "}";
+
+    /**
      * Global {@link NacosProperties Nacos Properties}
      *
      * @return required
@@ -110,6 +133,10 @@ public @interface EnableNacosConfig {
                     serverAddr = SERVER_ADDR_PLACEHOLDER,
                     contextPath = CONTEXT_PATH_PLACEHOLDER,
                     clusterName = CLUSTER_NAME_PLACEHOLDER,
-                    encode = ENCODE_PLACEHOLDER
+                    encode = ENCODE_PLACEHOLDER,
+                    configLongPollTimeout = CONFIG_LONG_POLL_TIMEOUT_PLACEHOLDER,
+                    configRetryTime = CONFIG_RETRY_TIME_PLACEHOLDER,
+                    maxRetry = MAX_RETRY_PLACEHOLDER
+//                    enableRemoteSyncConfig = ENABLE_REMOTE_SYNC_CONFIG_PLACEHOLDER
             );
 }
