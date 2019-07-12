@@ -18,6 +18,7 @@ package com.alibaba.nacos.samples.spring.webmvc;
 
 import com.alibaba.nacos.api.annotation.NacosInjected;
 import com.alibaba.nacos.api.config.ConfigService;
+import com.alibaba.nacos.api.config.annotation.NacosValue;
 import com.alibaba.nacos.api.exception.NacosException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,8 +38,10 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
  * @since 0.1.0
  */
 @Controller
-@RequestMapping("/nacos/config/service")
 public class ConfigServiceController {
+
+    @NacosValue(value = "${people.enable:false}", autoRefreshed = true)
+    private String enable;
 
     @NacosInjected
     private ConfigService configService;
@@ -47,6 +50,12 @@ public class ConfigServiceController {
     @ResponseBody
     public String get(@RequestParam String dataId, @RequestParam(defaultValue = DEFAULT_GROUP) String groupId) throws NacosException {
         return configService.getConfig(dataId, groupId, TimeUnit.SECONDS.toMillis(1));
+    }
+
+    @RequestMapping()
+    @ResponseBody
+    public String value() {
+        return enable;
     }
 
     @RequestMapping(value = "/publish", method = POST)

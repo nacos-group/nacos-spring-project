@@ -16,6 +16,7 @@
  */
 package com.alibaba.nacos.spring.test;
 
+import com.alibaba.nacos.api.config.ConfigType;
 import com.alibaba.nacos.api.config.annotation.NacosConfigurationProperties;
 
 import java.util.List;
@@ -26,7 +27,7 @@ import static com.alibaba.nacos.api.common.Constants.DEFAULT_GROUP;
  * @author <a href="mailto:liaochunyhm@live.com">liaochuntao</a>
  * @since 0.3.0
  */
-@NacosConfigurationProperties(dataId = "yaml_app", autoRefreshed = true, ignoreNestedProperties = true, yaml = true)
+@NacosConfigurationProperties(dataId = "yaml_app", autoRefreshed = true, ignoreNestedProperties = true, type = ConfigType.YAML)
 public class YamlApp {
 
     public static final String DATA_ID_YAML = "yaml_app";
