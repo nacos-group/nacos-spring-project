@@ -24,7 +24,6 @@ import com.alibaba.nacos.spring.beans.factory.annotation.ConfigServiceBeanBuilde
 import com.alibaba.nacos.spring.context.annotation.config.NacosPropertySources;
 import com.alibaba.nacos.spring.context.config.xml.NacosPropertySourceXmlBeanDefinition;
 
-import com.alibaba.nacos.spring.context.event.config.DelegatingEventPublishingListener;
 import com.alibaba.nacos.spring.context.event.config.EventPublishingConfigService;
 import com.alibaba.nacos.spring.factory.NacosServiceFactory;
 import com.alibaba.spring.util.BeanUtils;
