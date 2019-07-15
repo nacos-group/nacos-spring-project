@@ -76,7 +76,7 @@ public class NacosConfigurationPropertiesBinder {
 
     private final ConfigServiceBeanBuilder configServiceBeanBuilder;
 
-    NacosConfigurationPropertiesBinder(ConfigurableApplicationContext applicationContext) {
+    protected NacosConfigurationPropertiesBinder(ConfigurableApplicationContext applicationContext) {
         Assert.notNull(applicationContext, "ConfigurableApplicationContext must not be null!");
         this.applicationContext = applicationContext;
         this.environment = applicationContext.getEnvironment();
@@ -136,7 +136,7 @@ public class NacosConfigurationPropertiesBinder {
         }
     }
 
-    private void doBind(Object bean, String beanName, String dataId, String groupId,
+    protected void doBind(Object bean, String beanName, String dataId, String groupId,
                         NacosConfigurationProperties properties, String content, ConfigService configService) {
         String type = properties.type().getType();
         String prefix = properties.prefix();
@@ -149,7 +149,7 @@ public class NacosConfigurationPropertiesBinder {
         publishMetadataEvent(bean, beanName, dataId, groupId, properties);
     }
 
-    private void publishMetadataEvent(Object bean, String beanName, String dataId, String groupId,
+    protected void publishMetadataEvent(Object bean, String beanName, String dataId, String groupId,
                                       NacosConfigurationProperties properties) {
 
         NacosProperties nacosProperties = properties.properties();
@@ -175,7 +175,7 @@ public class NacosConfigurationPropertiesBinder {
         applicationEventPublisher.publishEvent(metadataEvent);
     }
 
-    private void publishBoundEvent(Object bean, String beanName, String dataId, String groupId,
+    protected void publishBoundEvent(Object bean, String beanName, String dataId, String groupId,
                                    NacosConfigurationProperties properties, String content, ConfigService configService) {
         NacosConfigEvent event = new NacosConfigurationPropertiesBeanBoundEvent(configService, dataId, groupId, bean,
                 beanName, properties, content);
