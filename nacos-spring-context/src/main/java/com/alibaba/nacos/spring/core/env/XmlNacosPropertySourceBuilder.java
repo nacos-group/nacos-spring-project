@@ -62,10 +62,16 @@ public class XmlNacosPropertySourceBuilder extends
         runtimeAttributes.put(NAME_ATTRIBUTE_NAME, getAttribute(element, NAME_ATTRIBUTE_NAME, DEFAULT_STRING_ATTRIBUTE_VALUE));
         // Config type
         String type = getAttribute(element, CONFIG_TYPE_ATTRIBUTE_NAME, DEFAULT_CONFIG_TYPE_VALUE);
-        runtimeAttributes.put(CONFIG_TYPE_ATTRIBUTE_NAME, ConfigType.valueOf(type.toUpperCase()));
-        // TODO support nested properties
-        runtimeAttributes.put(PROPERTIES_ATTRIBUTE_NAME, new Properties());
-        return new Map[]{runtimeAttributes};
+
+        try {
+            runtimeAttributes.put(CONFIG_TYPE_ATTRIBUTE_NAME, ConfigType.valueOf(type.toUpperCase()));
+            // TODO support nested properties
+            runtimeAttributes.put(PROPERTIES_ATTRIBUTE_NAME, new Properties());
+            return new Map[]{runtimeAttributes};
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Now the config type just support [properties, json, yaml, xml, text, html]");
+        }
+
     }
 
     @Override
