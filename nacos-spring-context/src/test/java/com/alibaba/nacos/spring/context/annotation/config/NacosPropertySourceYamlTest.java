@@ -59,7 +59,11 @@ import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.GROUP_ID;
 })
 @TestExecutionListeners({DependencyInjectionTestExecutionListener.class,
         DirtiesContextTestExecutionListener.class, NacosPropertySourceYamlTest.class})
-@NacosPropertySource(dataId = YamlApp.DATA_ID_YAML, autoRefreshed = true, type = "yaml")
+
+@NacosPropertySources(value = {
+        @NacosPropertySource(dataId = YamlApp.DATA_ID_YAML + "_not_exist", autoRefreshed = true, type = "yaml"),
+        @NacosPropertySource(dataId = YamlApp.DATA_ID_YAML, autoRefreshed = true, type = "yaml")
+})
 @EnableNacos(globalProperties = @NacosProperties(serverAddr = "${server.addr}"))
 @Component
 public class NacosPropertySourceYamlTest extends AbstractNacosHttpServerTestExecutionListener {
