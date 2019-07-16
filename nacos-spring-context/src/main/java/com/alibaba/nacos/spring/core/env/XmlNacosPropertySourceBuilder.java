@@ -16,6 +16,7 @@
  */
 package com.alibaba.nacos.spring.core.env;
 
+import com.alibaba.nacos.api.config.ConfigType;
 import com.alibaba.nacos.spring.context.config.xml.NacosPropertySourceXmlBeanDefinition;
 import com.alibaba.nacos.spring.context.event.config.NacosConfigMetadataEvent;
 import org.springframework.beans.factory.xml.XmlReaderContext;
@@ -60,7 +61,8 @@ public class XmlNacosPropertySourceBuilder extends
         // PropertySource Name
         runtimeAttributes.put(NAME_ATTRIBUTE_NAME, getAttribute(element, NAME_ATTRIBUTE_NAME, DEFAULT_STRING_ATTRIBUTE_VALUE));
         // Config type
-        runtimeAttributes.put(CONFIG_TYPE_ATTRIBUTE_NAME, getAttribute(element, CONFIG_TYPE_ATTRIBUTE_NAME, DEFAULT_CONFIG_TYPE_VALUE));
+        String type = getAttribute(element, CONFIG_TYPE_ATTRIBUTE_NAME, DEFAULT_CONFIG_TYPE_VALUE);
+        runtimeAttributes.put(CONFIG_TYPE_ATTRIBUTE_NAME, ConfigType.valueOf(type.toUpperCase()));
         // TODO support nested properties
         runtimeAttributes.put(PROPERTIES_ATTRIBUTE_NAME, new Properties());
         return new Map[]{runtimeAttributes};
