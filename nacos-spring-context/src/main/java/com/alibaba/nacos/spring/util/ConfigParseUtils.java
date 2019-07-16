@@ -75,6 +75,11 @@ final class ConfigParseUtils {
     }
 
     static Properties toProperties(final String context, String type) {
+
+        if (context == null) {
+            return new Properties();
+        }
+
         type = type.toLowerCase();
         Properties properties = new Properties();
         if (DEFAULT_CONFIG_PARSE_MAP.containsKey(type)) {
@@ -96,6 +101,11 @@ final class ConfigParseUtils {
      * @return {@link Properties}
      */
     static Properties toProperties(final String dataId, final String group, final String context, final String type) {
+
+        if (context == null) {
+            return new Properties();
+        }
+
         StringBuilder sb = new StringBuilder();
         sb.append(dataId).append(LINK_CHAR).append(group);
         Properties properties = new Properties();
