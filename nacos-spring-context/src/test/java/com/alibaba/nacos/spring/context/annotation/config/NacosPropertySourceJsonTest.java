@@ -57,7 +57,7 @@ import static com.alibaba.nacos.embedded.web.server.NacosConfigHttpHandler.GROUP
 })
 @TestExecutionListeners({DependencyInjectionTestExecutionListener.class,
         DirtiesContextTestExecutionListener.class, NacosPropertySourceJsonTest.class})
-@NacosPropertySource(dataId = NacosPropertySourceJsonTest.DATA_ID, autoRefreshed = true, type = "json")
+@NacosPropertySource(dataId = NacosPropertySourceJsonTest.DATA_ID, autoRefreshed = true, type = ConfigType.JSON)
 @EnableNacos(globalProperties = @NacosProperties(serverAddr = "${server.addr}"))
 @Component
 public class NacosPropertySourceJsonTest extends AbstractNacosHttpServerTestExecutionListener {
