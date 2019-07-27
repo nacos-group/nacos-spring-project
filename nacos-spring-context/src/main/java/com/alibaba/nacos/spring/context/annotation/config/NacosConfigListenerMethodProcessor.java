@@ -27,6 +27,7 @@ import com.alibaba.nacos.spring.context.event.config.NacosConfigMetadataEvent;
 import com.alibaba.nacos.spring.context.event.config.TimeoutNacosConfigListener;
 import com.alibaba.nacos.spring.convert.converter.config.DefaultNacosConfigConverter;
 import com.alibaba.nacos.spring.factory.NacosServiceFactory;
+import com.alibaba.nacos.spring.util.NacosUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.context.*;
@@ -86,9 +87,9 @@ public class NacosConfigListenerMethodProcessor extends AnnotationListenerMethod
                                          final NacosConfigListener listener, final Method method,
                                          ApplicationContext applicationContext) {
 
-        String dataId = listener.dataId();
-        String groupId = listener.groupId();
-        String type = listener.type().getType();
+        final String dataId = NacosUtils.readFromEnvironment(listener.dataId(), environment);
+        final String groupId = NacosUtils.readFromEnvironment(listener.groupId(), environment);
+        final String type = StringUtils.isEmpty(NacosUtils.readTypeFromDataId(dataId)) ? listener.type().getType() : NacosUtils.readTypeFromDataId(dataId);
         long timeout = listener.timeout();
 
         Assert.isTrue(StringUtils.hasText(dataId), "dataId must have content");

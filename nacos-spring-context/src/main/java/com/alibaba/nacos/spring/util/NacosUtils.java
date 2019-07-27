@@ -178,6 +178,20 @@ public abstract class NacosUtils {
         return records.isEmpty();
     }
 
+    public static String readTypeFromDataId(String dataId) {
+        int index = dataId.lastIndexOf(".");
+        return index != -1 ? dataId.substring(index) : "";
+    }
+
+    public static String readFromEnvironment(String label, Environment environment) {
+        boolean isPlaceHolder = label.startsWith("${") && label.endsWith("}");
+        if (isPlaceHolder) {
+            label = label.replace("${", "").replace("}", "");
+            return environment.getProperty(label);
+        }
+        return label;
+    }
+
     public static PropertyValues resolvePropertyValues(Object bean, String content, String type) {
         return resolvePropertyValues(bean, "", "", "", content, type);
     }
