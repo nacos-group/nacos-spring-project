@@ -105,7 +105,7 @@ public class NacosConfigListenerMethodProcessor extends AnnotationListenerMethod
                 @Override
                 protected void onReceived(String config) {
                     Class<?> targetType = method.getParameterTypes()[0];
-                    NacosConfigConverter configConverter = determineNacosConfigConverter(targetType, listener);
+                    NacosConfigConverter configConverter = determineNacosConfigConverter(targetType, listener, type);
                     Object parameterValue = configConverter.convert(config);
                     // Execute target method
                     ReflectionUtils.invokeMethod(method, bean, parameterValue);
@@ -176,7 +176,7 @@ public class NacosConfigListenerMethodProcessor extends AnnotationListenerMethod
 
         Class<?> targetType = parameterTypes[0];
 
-        NacosConfigConverter configConverter = determineNacosConfigConverter(targetType, listener);
+        NacosConfigConverter configConverter = determineNacosConfigConverter(targetType, listener, listener.type().getType());
 
         if (!configConverter.canConvert(targetType)) {
             if (logger.isWarnEnabled()) {
@@ -189,7 +189,7 @@ public class NacosConfigListenerMethodProcessor extends AnnotationListenerMethod
         return true;
     }
 
-    private NacosConfigConverter determineNacosConfigConverter(Class<?> targetType, NacosConfigListener listener) {
+    private NacosConfigConverter determineNacosConfigConverter(Class<?> targetType, NacosConfigListener listener, String type) {
 
         Class<?> converterClass = listener.converter();
 
@@ -197,7 +197,7 @@ public class NacosConfigListenerMethodProcessor extends AnnotationListenerMethod
 
         // Use default implementation
         if (NacosConfigConverter.class.equals(converterClass)) {
-            configConverter = new DefaultNacosConfigConverter(targetType, conversionService);
+            configConverter = new DefaultNacosConfigConverter(targetType, conversionService, type);
 
         } else {
             // Use customized implementation

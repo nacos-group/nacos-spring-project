@@ -179,6 +179,9 @@ public abstract class NacosUtils {
     }
 
     public static String readTypeFromDataId(String dataId) {
+        if (StringUtils.isEmpty(dataId)) {
+            return dataId;
+        }
         int index = dataId.lastIndexOf(".");
         return index != -1 ? dataId.substring(index) : "";
     }
