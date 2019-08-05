@@ -183,7 +183,7 @@ public abstract class NacosUtils {
             return dataId;
         }
         int index = dataId.lastIndexOf(".");
-        return index != -1 ? dataId.substring(index) : "";
+        return index != -1 ? dataId.substring(index + 1) : "";
     }
 
     public static String readFromEnvironment(String label, Environment environment) {

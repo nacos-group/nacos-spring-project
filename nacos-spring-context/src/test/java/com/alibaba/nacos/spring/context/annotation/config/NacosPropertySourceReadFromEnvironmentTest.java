@@ -25,6 +25,7 @@ import com.alibaba.nacos.embedded.web.server.EmbeddedNacosHttpServer;
 import com.alibaba.nacos.spring.context.annotation.EnableNacos;
 import com.alibaba.nacos.spring.test.AbstractNacosHttpServerTestExecutionListener;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -70,7 +71,7 @@ public class NacosPropertySourceReadFromEnvironmentTest extends AbstractNacosHtt
 
     public static final String ENV_DATA_ID = "${data-id}";
 
-    public static final String DATA_ID = "app";
+    public static final String DATA_ID = "app.properties";
 
     private static final String APP_NAME = "Nacos-Spring";
 
@@ -93,6 +94,11 @@ public class NacosPropertySourceReadFromEnvironmentTest extends AbstractNacosHtt
                 "app.name=" + APP_NAME + LINE_SEPARATOR + "app.nacosFieldIntValueAutoRefreshed=" + VALUE_1 + LINE_SEPARATOR
                         + "app.nacosMethodIntValueAutoRefreshed=" + VALUE_2);
         httpServer.initConfig(config);
+    }
+
+    @BeforeClass
+    public static void init() {
+        System.setProperty("data-id", "app.properties");
     }
 
     @Override
