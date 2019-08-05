@@ -27,6 +27,7 @@ import com.alibaba.nacos.spring.context.event.config.NacosConfigMetadataEvent;
 import com.alibaba.nacos.spring.context.event.config.TimeoutNacosConfigListener;
 import com.alibaba.nacos.spring.convert.converter.config.DefaultNacosConfigConverter;
 import com.alibaba.nacos.spring.factory.NacosServiceFactory;
+import com.alibaba.nacos.spring.util.NacosUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.context.*;
@@ -86,9 +87,9 @@ public class NacosConfigListenerMethodProcessor extends AnnotationListenerMethod
                                          final NacosConfigListener listener, final Method method,
                                          ApplicationContext applicationContext) {
 
-        String dataId = listener.dataId();
-        String groupId = listener.groupId();
-        String type = listener.type().getType();
+        final String dataId = NacosUtils.readFromEnvironment(listener.dataId(), environment);
+        final String groupId = NacosUtils.readFromEnvironment(listener.groupId(), environment);
+        final String type = StringUtils.isEmpty(NacosUtils.readTypeFromDataId(dataId)) ? listener.type().getType() : NacosUtils.readTypeFromDataId(dataId);
         long timeout = listener.timeout();
 
         Assert.isTrue(StringUtils.hasText(dataId), "dataId must have content");
@@ -104,7 +105,7 @@ public class NacosConfigListenerMethodProcessor extends AnnotationListenerMethod
                 @Override
                 protected void onReceived(String config) {
                     Class<?> targetType = method.getParameterTypes()[0];
-                    NacosConfigConverter configConverter = determineNacosConfigConverter(targetType, listener);
+                    NacosConfigConverter configConverter = determineNacosConfigConverter(targetType, listener, type);
                     Object parameterValue = configConverter.convert(config);
                     // Execute target method
                     ReflectionUtils.invokeMethod(method, bean, parameterValue);
@@ -175,7 +176,7 @@ public class NacosConfigListenerMethodProcessor extends AnnotationListenerMethod
 
         Class<?> targetType = parameterTypes[0];
 
-        NacosConfigConverter configConverter = determineNacosConfigConverter(targetType, listener);
+        NacosConfigConverter configConverter = determineNacosConfigConverter(targetType, listener, listener.type().getType());
 
         if (!configConverter.canConvert(targetType)) {
             if (logger.isWarnEnabled()) {
@@ -188,7 +189,7 @@ public class NacosConfigListenerMethodProcessor extends AnnotationListenerMethod
         return true;
     }
 
-    private NacosConfigConverter determineNacosConfigConverter(Class<?> targetType, NacosConfigListener listener) {
+    private NacosConfigConverter determineNacosConfigConverter(Class<?> targetType, NacosConfigListener listener, String type) {
 
         Class<?> converterClass = listener.converter();
 
@@ -196,7 +197,7 @@ public class NacosConfigListenerMethodProcessor extends AnnotationListenerMethod
 
         // Use default implementation
         if (NacosConfigConverter.class.equals(converterClass)) {
-            configConverter = new DefaultNacosConfigConverter(targetType, conversionService);
+            configConverter = new DefaultNacosConfigConverter(targetType, conversionService, type);
 
         } else {
             // Use customized implementation

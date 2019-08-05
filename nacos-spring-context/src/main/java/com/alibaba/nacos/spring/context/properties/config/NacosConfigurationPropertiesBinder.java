@@ -32,6 +32,7 @@ import com.alibaba.nacos.spring.context.event.config.NacosConfigMetadataEvent;
 import com.alibaba.nacos.spring.context.event.config.NacosConfigurationPropertiesBeanBoundEvent;
 import com.alibaba.nacos.spring.util.NacosUtils;
 import com.alibaba.nacos.spring.util.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.MutablePropertyValues;
@@ -98,12 +99,11 @@ public class NacosConfigurationPropertiesBinder {
 
         Assert.notNull(properties, "NacosConfigurationProperties must not be null!");
 
-        final String dataId = properties.dataId();
-
-        final String groupId = properties.groupId();
-
-        String type = properties.type().getType();
-        type = properties.yaml() ? ConfigType.YAML.getType() : type;
+        // support read data-id and group-id from spring environment
+        final String dataId = NacosUtils.readFromEnvironment(properties.dataId(), environment);
+        final String groupId = NacosUtils.readFromEnvironment(properties.groupId(), environment);
+        String fileType = NacosUtils.readTypeFromDataId(dataId);
+        final String type = StringUtils.isEmpty(fileType) ? (properties.yaml() ? ConfigType.YAML.getType() : properties.type().getType()) : fileType;
 
         final ConfigService configService = configServiceBeanBuilder.build(properties.properties());
 
@@ -113,7 +113,7 @@ public class NacosConfigurationPropertiesBinder {
             Listener listener = new AbstractListener() {
                 @Override
                 public void receiveConfigInfo(String config) {
-                    doBind(bean, beanName, dataId, groupId, properties, config, configService);
+                    doBind(bean, beanName, dataId, groupId, type, properties, config, configService);
                 }
             };
             try {//
@@ -132,17 +132,13 @@ public class NacosConfigurationPropertiesBinder {
         String content = getContent(configService, dataId, groupId);
 
         if (hasText(content)) {
-            doBind(bean, beanName, dataId, groupId, properties, content, configService);
+            doBind(bean, beanName, dataId, groupId, type, properties, content, configService);
         }
     }
 
-    protected void doBind(Object bean, String beanName, String dataId, String groupId,
+    protected void doBind(Object bean, String beanName, String dataId, String groupId, String type,
                         NacosConfigurationProperties properties, String content, ConfigService configService) {
-        String type = properties.type().getType();
-        String prefix = properties.prefix();
-        if (properties.yaml()) {
-            type = ConfigType.YAML.getType();
-        }
+        final String prefix = properties.prefix();
         PropertyValues propertyValues = NacosUtils.resolvePropertyValues(bean, prefix, dataId, groupId, content, type);
         doBind(bean, properties, propertyValues);
         publishBoundEvent(bean, beanName, dataId, groupId, properties, content, configService);
