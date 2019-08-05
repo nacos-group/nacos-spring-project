@@ -98,7 +98,7 @@ The following table shows the dependencies and compatabilities of Nacos Spring P
 | Java           | 1.6+         |
 | Spring Context | 3.2+         |
 | [Alibaba Spring Context Support](https://github.com/alibaba/spring-context-support) | 1.0.1+ |
-| [Alibaba Nacos](https://github.com/alibaba/nacos) | 0.2.1+ |
+| [Alibaba Nacos](https://github.com/alibaba/nacos) | 1.1.1+ |
 
 
 
@@ -123,7 +123,7 @@ Complete the following steps to enable Nacos for your Spring project.
 	        <dependency>
 	            <groupId>com.alibaba.nacos</groupId>
 	            <artifactId>nacos-spring-context</artifactId>
-	            <version>0.2.3-RC1</version>
+	            <version>0.3.1</version>
 	        </dependency>
 	        
 	        ...
