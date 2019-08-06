@@ -12,7 +12,7 @@
 
     <groupId>com.alibaba.nacos</groupId>
     <artifactId>nacos-spring-context</artifactId>
-    <version>0.3.1</version>
+    <version>0.3.2</version>
     <name>Alibaba Nacos :: Spring :: Context</name>
     <packaging>jar</packaging>
 
