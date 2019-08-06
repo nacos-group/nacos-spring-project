@@ -84,7 +84,7 @@ public class NacosConfigHttpHandler implements HttpHandler {
                             if (longPolling == null) {
                                 continue;
                             }
-                            if (new Date().getTime() - longPolling.date.getTime() > (maxWaitInSecond * 1000L)) {
+                            if (System.currentTimeMillis() - longPolling.date.getTime() > (maxWaitInSecond * 1000L)) {
                                 try {
                                     write(longPolling.httpExchange, "");
                                 } catch (IOException e) {
