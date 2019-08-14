@@ -79,8 +79,9 @@ final class ConfigParseUtils {
         if (context == null) {
             return new Properties();
         }
-
+        // Again the type lowercase, ensure the search
         type = type.toLowerCase();
+
         Properties properties = new Properties();
         if (DEFAULT_CONFIG_PARSE_MAP.containsKey(type)) {
             ConfigParse configParse = DEFAULT_CONFIG_PARSE_MAP.get(type);
@@ -100,26 +101,32 @@ final class ConfigParseUtils {
      * @param type    config type
      * @return {@link Properties}
      */
-    static Properties toProperties(final String dataId, final String group, final String context, final String type) {
+    static Properties toProperties(final String dataId, final String group, final String context, String type) {
 
         if (context == null) {
             return new Properties();
         }
+        // Again the type lowercase, ensure the search
+        type = type.toLowerCase();
 
-        StringBuilder sb = new StringBuilder();
-        sb.append(dataId).append(LINK_CHAR).append(group);
+        String configParseKey = new StringBuilder()
+                .append(dataId)
+                .append(LINK_CHAR)
+                .append(group)
+                .toString();
         Properties properties = new Properties();
-        if (CUSTOMER_CONFIG_PARSE_MAP.isEmpty() || LINK_CHAR.equals(sb.toString())) {
+
+        if (CUSTOMER_CONFIG_PARSE_MAP.isEmpty() || LINK_CHAR.equals(configParseKey)) {
             return toProperties(context, type);
         }
         if (CUSTOMER_CONFIG_PARSE_MAP.get(type) == null || CUSTOMER_CONFIG_PARSE_MAP.get(type).isEmpty()) {
             return toProperties(context, type);
         }
-        if (CUSTOMER_CONFIG_PARSE_MAP.get(type).get(sb.toString()) == null) {
+        if (CUSTOMER_CONFIG_PARSE_MAP.get(type).get(configParseKey) == null) {
             return toProperties(context, type);
         } else {
             if (CUSTOMER_CONFIG_PARSE_MAP.containsKey(type)) {
-                ConfigParse configParse = CUSTOMER_CONFIG_PARSE_MAP.get(type).get(sb.toString());
+                ConfigParse configParse = CUSTOMER_CONFIG_PARSE_MAP.get(type).get(configParseKey);
                 if (configParse == null) {
                     throw new NoSuchElementException("This config can't find ConfigParse to parse");
                 }
