@@ -38,10 +38,15 @@ public abstract class AbstractNacosHttpServerTestExecutionListener extends Abstr
 
     @Override
     public void beforeTestClass(TestContext testContext) throws Exception {
+        initEnvironment(testContext);
         httpServer = new EmbeddedNacosHttpServer();
         init(httpServer);
         System.setProperty(getServerAddressPropertyName(), "127.0.0.1:" + httpServer.getPort());
         httpServer.start(true);
+    }
+
+    public void initEnvironment(TestContext testContext) {
+
     }
 
     @Override

@@ -46,7 +46,7 @@ public class NacosPropertySource extends PropertiesPropertySource {
 
     private String after;
 
-    private String type = "properties";
+    private String type;
 
     private Properties properties;
 

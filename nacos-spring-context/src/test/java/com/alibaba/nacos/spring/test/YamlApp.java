@@ -27,10 +27,10 @@ import static com.alibaba.nacos.api.common.Constants.DEFAULT_GROUP;
  * @author <a href="mailto:liaochunyhm@live.com">liaochuntao</a>
  * @since 0.3.0
  */
-@NacosConfigurationProperties(dataId = "yaml_app", autoRefreshed = true, ignoreNestedProperties = true, type = ConfigType.YAML)
+@NacosConfigurationProperties(dataId = "yaml_app.yaml", autoRefreshed = true, ignoreNestedProperties = true, type = ConfigType.YAML)
 public class YamlApp {
 
-    public static final String DATA_ID_YAML = "yaml_app";
+    public static final String DATA_ID_YAML = "yaml_app.yaml";
 
     private List<Student> students;
 

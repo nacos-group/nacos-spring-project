@@ -19,6 +19,7 @@ package com.alibaba.nacos.spring.core.env;
 import com.alibaba.nacos.api.config.ConfigType;
 import com.alibaba.nacos.spring.context.event.DeferredApplicationEventPublisher;
 import com.alibaba.nacos.spring.context.event.config.NacosConfigMetadataEvent;
+import com.alibaba.nacos.spring.util.NacosUtils;
 import com.alibaba.nacos.spring.util.config.NacosConfigLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -146,6 +147,10 @@ public abstract class AbstractNacosPropertySourceBuilder<T extends BeanDefinitio
         String dataId = (String) runtimeAttributes.get(DATA_ID_ATTRIBUTE_NAME);
         String groupId = (String) runtimeAttributes.get(GROUP_ID_ATTRIBUTE_NAME);
         String type = ((ConfigType) runtimeAttributes.get(CONFIG_TYPE_ATTRIBUTE_NAME)).getType();
+
+        dataId = NacosUtils.readFromEnvironment(dataId, environment);
+        groupId = NacosUtils.readFromEnvironment(groupId, environment);
+        type = StringUtils.isEmpty(NacosUtils.readTypeFromDataId(dataId)) ? type : NacosUtils.readTypeFromDataId(dataId);
         Map<String, Object> nacosPropertiesAttributes = (Map<String, Object>) runtimeAttributes.get(PROPERTIES_ATTRIBUTE_NAME);
 
         Properties nacosProperties = resolveProperties(nacosPropertiesAttributes, environment, globalNacosProperties);
