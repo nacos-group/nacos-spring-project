@@ -61,8 +61,8 @@ import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.GROUP_ID;
         DirtiesContextTestExecutionListener.class, NacosPropertySourceYamlTest.class})
 
 @NacosPropertySources(value = {
-        @NacosPropertySource(dataId = YamlApp.DATA_ID_YAML + "_not_exist", autoRefreshed = true, type = ConfigType.YAML),
-        @NacosPropertySource(dataId = YamlApp.DATA_ID_YAML, autoRefreshed = true, type = ConfigType.YAML)
+        @NacosPropertySource(dataId = YamlApp.DATA_ID_YAML + "_not_exist.yaml", autoRefreshed = true),
+        @NacosPropertySource(dataId = YamlApp.DATA_ID_YAML + ".yml", autoRefreshed = true)
 })
 @EnableNacos(globalProperties = @NacosProperties(serverAddr = "${server.addr}"))
 @Component
@@ -82,7 +82,7 @@ public class NacosPropertySourceYamlTest extends AbstractNacosHttpServerTestExec
     @Override
     public void init(EmbeddedNacosHttpServer httpServer) {
         Map<String, String> config = new HashMap<String, String>(1);
-        config.put(DATA_ID_PARAM_NAME, YamlApp.DATA_ID_YAML);
+        config.put(DATA_ID_PARAM_NAME, YamlApp.DATA_ID_YAML + ".yml");
         config.put(GROUP_ID_PARAM_NAME, DEFAULT_GROUP);
         config.put(CONTENT_PARAM_NAME, configStr);
 
@@ -130,7 +130,7 @@ public class NacosPropertySourceYamlTest extends AbstractNacosHttpServerTestExec
         Assert.assertEquals("1", app.b);
 
 
-        configService.publishConfig(YamlApp.DATA_ID_YAML, DEFAULT_GROUP, yaml);
+        configService.publishConfig(YamlApp.DATA_ID_YAML + ".yml", DEFAULT_GROUP, yaml);
 
         Thread.sleep(2000);
 

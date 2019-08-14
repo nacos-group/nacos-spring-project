@@ -408,6 +408,9 @@ public abstract class NacosUtils {
      */
     public static Properties toProperties(String dataId, String group, String text, String type) {
         type = type.toLowerCase();
+        if ("yml".equalsIgnoreCase(type)) {
+            type = "yaml";
+        }
         return ConfigParseUtils.toProperties(dataId, group, text, type);
     }
 
