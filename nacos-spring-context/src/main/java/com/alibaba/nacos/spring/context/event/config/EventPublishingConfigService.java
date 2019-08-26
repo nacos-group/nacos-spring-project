@@ -24,6 +24,7 @@ import com.alibaba.nacos.spring.metadata.NacosServiceMetaData;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ConfigurableApplicationContext;
 
+import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.Executor;
 
@@ -64,10 +65,30 @@ public class EventPublishingConfigService implements ConfigService, NacosService
     }
 
     @Override
-    public void addListener(String dataId, String group, Listener listener) throws NacosException {
+    public String getConfigAndSignListener(String dataId, String group, long timeoutMs, Listener listener) throws NacosException {
         Listener listenerAdapter = new DelegatingEventPublishingListener(configService, dataId, group, applicationEventPublisher, executor, listener);
-        configService.addListener(dataId, group, listenerAdapter);
+        return configService.getConfigAndSignListener(dataId, group, timeoutMs, listenerAdapter);
+    }
+
+    /**
+     * Implementation of the new version of support for multiple configuration file type resolution
+     *
+     * @param dataId dataId
+     * @param group group
+     * @param type config's type
+     * @param listener listener
+     * @throws NacosException
+     */
+    public void addListener(String dataId, String group, String type, Listener listener) throws NacosException {
+        Listener listenerAdapter = new DelegatingEventPublishingListener(configService, dataId, group, type, applicationEventPublisher, executor, listener);
+        addListener(dataId, group, listenerAdapter);
+    }
+
+    @Override
+    public void addListener(String dataId, String group, Listener listener) throws NacosException {
+        configService.addListener(dataId, group, listener);
         publishEvent(new NacosConfigListenerRegisteredEvent(configService, dataId, group, listener, true));
+
     }
 
     @Override

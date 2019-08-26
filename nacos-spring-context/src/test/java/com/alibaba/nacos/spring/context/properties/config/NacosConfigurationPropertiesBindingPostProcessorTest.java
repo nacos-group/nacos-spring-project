@@ -73,7 +73,7 @@ public class NacosConfigurationPropertiesBindingPostProcessorTest extends Abstra
 
         configService.publishConfig(DATA_ID, GROUP_ID, TEST_CONFIG);
 
-        Thread.sleep(2000);
+        Thread.sleep(4000);
 
         Assert.assertEquals(1, config.getId());
         Assert.assertEquals("mercyblitz", config.getName());

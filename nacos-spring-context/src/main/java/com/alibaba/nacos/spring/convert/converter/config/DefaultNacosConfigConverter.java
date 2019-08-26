@@ -32,13 +32,16 @@ public class DefaultNacosConfigConverter<T> implements NacosConfigConverter<T> {
 
     private final ConversionService conversionService;
 
+    private final String type;
+
     public DefaultNacosConfigConverter(Class<T> targetType) {
-        this(targetType, new DefaultFormattingConversionService());
+        this(targetType, new DefaultFormattingConversionService(), "properties");
     }
 
-    public DefaultNacosConfigConverter(Class<T> targetType, ConversionService conversionService) {
+    public DefaultNacosConfigConverter(Class<T> targetType, ConversionService conversionService, String type) {
         this.targetType = targetType;
         this.conversionService = conversionService;
+        this.type = type;
     }
 
     @Override

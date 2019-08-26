@@ -20,6 +20,7 @@ import com.alibaba.nacos.api.PropertyKeyConst;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.api.naming.NamingService;
+import com.alibaba.nacos.api.naming.pojo.Instance;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -64,7 +65,7 @@ public class CacheableNacosInjectedFactoryTest {
     @Before
     public void init() {
         properties.setProperty(PropertyKeyConst.NAMESPACE, "nc");
-        properties.setProperty(PropertyKeyConst.SERVER_ADDR, "127.0.0.1");
+        properties.setProperty(PropertyKeyConst.SERVER_ADDR, "127.0.0.1:8848");
         properties.setProperty(PropertyKeyConst.ACCESS_KEY, "a");
         properties.setProperty(PropertyKeyConst.SECRET_KEY, "s");
 
@@ -83,7 +84,7 @@ public class CacheableNacosInjectedFactoryTest {
     }
 
     @Test
-    public void testCreateNamingService() throws NacosException {
+    public void testCreateNamingService() throws NacosException, InterruptedException {
         NamingService namingService = nacosServiceFactory.createNamingService(properties);
         NamingService namingService2 = nacosServiceFactory.createNamingService(properties2);
         // throws java.lang.AssertionError

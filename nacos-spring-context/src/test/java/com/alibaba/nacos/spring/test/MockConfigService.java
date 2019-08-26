@@ -51,6 +51,11 @@ public class MockConfigService implements ConfigService {
     }
 
     @Override
+    public String getConfigAndSignListener(String dataId, String group, long timeoutMs, Listener listener) throws NacosException {
+        return null;
+    }
+
+    @Override
     public void addListener(String dataId, String group, Listener listener) throws NacosException {
         String key = createKey(dataId, group);
         List<Listener> listeners = listenersCache.get(key);

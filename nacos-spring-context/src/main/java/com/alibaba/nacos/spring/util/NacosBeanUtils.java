@@ -117,7 +117,10 @@ public abstract class NacosBeanUtils {
         }
         // Register Singleton Object if possible
         if (beanRegistry != null) {
-            beanRegistry.registerSingleton(beanName, singletonObject);
+            // Determine in advance whether injected with beans
+            if (!beanRegistry.containsSingleton(beanName)) {
+                beanRegistry.registerSingleton(beanName, singletonObject);
+            }
         }
     }
 

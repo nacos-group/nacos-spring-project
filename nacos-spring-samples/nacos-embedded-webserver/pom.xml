@@ -5,7 +5,7 @@
     <parent>
         <artifactId>nacos-spring-parent</artifactId>
         <groupId>com.alibaba.nacos</groupId>
-        <version>0.3.0-RC1</version>
+        <version>0.3.3</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>

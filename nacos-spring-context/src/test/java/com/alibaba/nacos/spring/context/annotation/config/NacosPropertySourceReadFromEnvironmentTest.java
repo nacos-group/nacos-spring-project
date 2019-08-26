@@ -25,12 +25,14 @@ import com.alibaba.nacos.embedded.web.server.EmbeddedNacosHttpServer;
 import com.alibaba.nacos.spring.context.annotation.EnableNacos;
 import com.alibaba.nacos.spring.test.AbstractNacosHttpServerTestExecutionListener;
 import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
-import org.springframework.core.env.Environment;
+import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.stereotype.Component;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
@@ -47,30 +49,29 @@ import static com.alibaba.nacos.embedded.web.server.NacosConfigHttpHandler.DATA_
 import static com.alibaba.nacos.embedded.web.server.NacosConfigHttpHandler.GROUP_ID_PARAM_NAME;
 
 /**
- * {@link NacosPropertySource} {@link Value} Test
- *
- * @author <a href="mailto:huangxiaoyu1018@gmail.com">hxy1991</a>
- * @see NacosPropertySource
- * @see Value
- * @since 0.1.0
+ * @author <a href="mailto:liaochunyhm@live.com">liaochuntao</a>
+ * @since
  */
+@Ignore
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
-    NacosPropertySourceTest.class
+        NacosPropertySourceReadFromEnvironmentTest.class
 })
 @TestExecutionListeners({DependencyInjectionTestExecutionListener.class,
-    DirtiesContextTestExecutionListener.class, NacosPropertySourceTest.class})
-@NacosPropertySource(dataId = NacosPropertySourceTest.DATA_ID, autoRefreshed = true)
+        DirtiesContextTestExecutionListener.class, NacosPropertySourceReadFromEnvironmentTest.class})
+@NacosPropertySource(dataId = NacosPropertySourceReadFromEnvironmentTest.ENV_DATA_ID, autoRefreshed = true)
 @EnableNacos(globalProperties = @NacosProperties(serverAddr = "${server.addr}", enableRemoteSyncConfig = "true",
         maxRetry = "5",
         configRetryTime = "2600",
         configLongPollTimeout = "26000"))
 @Component
-public class NacosPropertySourceTest extends AbstractNacosHttpServerTestExecutionListener {
+public class NacosPropertySourceReadFromEnvironmentTest extends AbstractNacosHttpServerTestExecutionListener {
 
     private static final String LINE_SEPARATOR = System.getProperty("line.separator");
 
-    public static final String DATA_ID = "app";
+    public static final String ENV_DATA_ID = "${data-id}";
+
+    public static final String DATA_ID = "app.properties";
 
     private static final String APP_NAME = "Nacos-Spring";
 
@@ -89,12 +90,15 @@ public class NacosPropertySourceTest extends AbstractNacosHttpServerTestExecutio
         Map<String, String> config = new HashMap<String, String>(1);
         config.put(DATA_ID_PARAM_NAME, DATA_ID);
         config.put(GROUP_ID_PARAM_NAME, DEFAULT_GROUP);
-
-
         config.put(CONTENT_PARAM_NAME,
-            "app.name=" + APP_NAME + LINE_SEPARATOR + "app.nacosFieldIntValueAutoRefreshed=" + VALUE_1 + LINE_SEPARATOR
-                + "app.nacosMethodIntValueAutoRefreshed=" + VALUE_2);
+                "app.name=" + APP_NAME + LINE_SEPARATOR + "app.nacosFieldIntValueAutoRefreshed=" + VALUE_1 + LINE_SEPARATOR
+                        + "app.nacosMethodIntValueAutoRefreshed=" + VALUE_2);
         httpServer.initConfig(config);
+    }
+
+    @BeforeClass
+    public static void init() {
+        System.setProperty("data-id", "app.properties");
     }
 
     @Override
@@ -152,7 +156,7 @@ public class NacosPropertySourceTest extends AbstractNacosHttpServerTestExecutio
     private App app;
 
     @Autowired
-    private Environment environment;
+    private ConfigurableEnvironment environment;
 
     @Test
     public void testValue() throws NacosException, InterruptedException {
@@ -177,8 +181,8 @@ public class NacosPropertySourceTest extends AbstractNacosHttpServerTestExecutio
         Assert.assertEquals(VALUE_2, app.nacosMethodIntValueAutoRefreshed);
 
         configService.publishConfig(DATA_ID, DEFAULT_GROUP,
-            "app.name=" + ANOTHER_APP_NAME + LINE_SEPARATOR + "app.nacosFieldIntValueAutoRefreshed=" + VALUE_3
-                + LINE_SEPARATOR + "app.nacosMethodIntValueAutoRefreshed=" + VALUE_4);
+                "app.name=" + ANOTHER_APP_NAME + LINE_SEPARATOR + "app.nacosFieldIntValueAutoRefreshed=" + VALUE_3
+                        + LINE_SEPARATOR + "app.nacosMethodIntValueAutoRefreshed=" + VALUE_4);
 
         Thread.sleep(1000);
 

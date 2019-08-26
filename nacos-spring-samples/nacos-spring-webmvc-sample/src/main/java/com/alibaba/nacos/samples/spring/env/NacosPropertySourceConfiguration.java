@@ -41,7 +41,7 @@ import static org.springframework.core.env.StandardEnvironment.SYSTEM_PROPERTIES
  * @since 0.1.0
  */
 @Configuration
-@NacosPropertySource(name = "first", dataId = FIRST_DATA_ID, first = true) // First PropertySource
+@NacosPropertySource(name = "first", dataId = FIRST_DATA_ID, first = true, autoRefreshed = true) // First PropertySource
 @NacosPropertySources({
         @NacosPropertySource(name = "before-os-env", dataId = BEFORE_OS_ENV_DATA_ID, before = SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME),
         @NacosPropertySource(name = "after-system-properties", dataId = AFTER_SYS_PROP_DATA_ID, after = SYSTEM_PROPERTIES_PROPERTY_SOURCE_NAME)

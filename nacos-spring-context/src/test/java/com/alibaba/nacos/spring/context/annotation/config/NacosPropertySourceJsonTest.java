@@ -25,7 +25,6 @@ import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.embedded.web.server.EmbeddedNacosHttpServer;
 import com.alibaba.nacos.spring.context.annotation.EnableNacos;
 import com.alibaba.nacos.spring.test.AbstractNacosHttpServerTestExecutionListener;
-import com.alibaba.nacos.spring.test.YamlApp;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -47,94 +46,102 @@ import static com.alibaba.nacos.api.common.Constants.DEFAULT_GROUP;
 import static com.alibaba.nacos.embedded.web.server.NacosConfigHttpHandler.CONTENT_PARAM_NAME;
 import static com.alibaba.nacos.embedded.web.server.NacosConfigHttpHandler.DATA_ID_PARAM_NAME;
 import static com.alibaba.nacos.embedded.web.server.NacosConfigHttpHandler.GROUP_ID_PARAM_NAME;
-import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.GROUP_ID;
 
 /**
  * @author <a href="mailto:liaochunyhm@live.com">liaochuntao</a>
- * @since 0.3.0
+ * @since
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
-        NacosPropertySourceYamlTest.class
+        NacosPropertySourceJsonTest.class
 })
 @TestExecutionListeners({DependencyInjectionTestExecutionListener.class,
-        DirtiesContextTestExecutionListener.class, NacosPropertySourceYamlTest.class})
-
-@NacosPropertySources(value = {
-        @NacosPropertySource(dataId = YamlApp.DATA_ID_YAML + "_not_exist.yaml", autoRefreshed = true),
-        @NacosPropertySource(dataId = YamlApp.DATA_ID_YAML + ".yml", autoRefreshed = true)
-})
+        DirtiesContextTestExecutionListener.class, NacosPropertySourceJsonTest.class})
+@NacosPropertySource(dataId = NacosPropertySourceJsonTest.DATA_ID, autoRefreshed = true, type = ConfigType.JSON)
 @EnableNacos(globalProperties = @NacosProperties(serverAddr = "${server.addr}"))
 @Component
-public class NacosPropertySourceYamlTest extends AbstractNacosHttpServerTestExecutionListener {
+public class NacosPropertySourceJsonTest extends AbstractNacosHttpServerTestExecutionListener {
 
-    private String yaml = "students:\n" +
-            "    - {name: lct-1,num: 12}\n" +
-            "    - {name: lct-2,num: 13}\n" +
-            "    - {name: lct-3,num: 14}";
-
-    private String configStr = "people:\n" +
-            "  a: 1\n" +
-            "  b: 1";
-
-    private String except = "YamlApp{students=[Student{name='lct-1', num='12'}, Student{name='lct-2', num='13'}, Student{name='lct-3', num='14'}]}";
-
-    @Override
-    public void init(EmbeddedNacosHttpServer httpServer) {
-        Map<String, String> config = new HashMap<String, String>(1);
-        config.put(DATA_ID_PARAM_NAME, YamlApp.DATA_ID_YAML + ".yml");
-        config.put(GROUP_ID_PARAM_NAME, DEFAULT_GROUP);
-        config.put(CONTENT_PARAM_NAME, configStr);
-
-        httpServer.initConfig(config);
-    }
-
-    private static class App {
-
-        @Value("${people.a}")
-        private String a;
-        @NacosValue("${people.b}")
-        private String b;
-
-    }
-
-    @Bean(name = "myApp")
-    public App app() {
-        return new App();
-    }
-
-    @Bean
-    public YamlApp yamlApp() {
-        return new YamlApp();
-    }
-
-    @NacosInjected
-    private ConfigService configService;
-
-    @Autowired
-    private YamlApp yamlApp;
-
-    @Autowired
-    @Qualifier(value = "myApp")
-    private App app;
+    public static final String DATA_ID = "data_json";
 
     @Override
     protected String getServerAddressPropertyName() {
         return "server.addr";
     }
 
+    private String configStr = "{\n" +
+            "    \"people\":{\n" +
+            "        \"a\":\"liaochuntao\",\n" +
+            "        \"b\":\"this is test\"\n" +
+            "    }\n" +
+            "}";
+
+    private String newConfigStr = "{\n" +
+            "    \"people\":{\n" +
+            "        \"a\":\"liaochuntao\",\n" +
+            "        \"b\":\"refresh this is test\"\n" +
+            "    }\n" +
+            "}";
+
+    @Override
+    public void init(EmbeddedNacosHttpServer httpServer) {
+        Map<String, String> config = new HashMap<String, String>(1);
+        config.put(DATA_ID_PARAM_NAME, DATA_ID);
+        config.put(GROUP_ID_PARAM_NAME, DEFAULT_GROUP);
+        config.put(CONTENT_PARAM_NAME, configStr);
+
+        httpServer.initConfig(config);
+    }
+
+    @NacosInjected
+    private ConfigService configService;
+
+    public static class App {
+
+        @Value("${people.a}")
+        private String a;
+        @NacosValue(value = "${people.b}", autoRefreshed = true)
+        private String b;
+
+        public String getA() {
+            return a;
+        }
+
+        public void setA(String a) {
+            this.a = a;
+        }
+
+        public String getB() {
+            return b;
+        }
+
+        public void setB(String b) {
+            this.b = b;
+        }
+    }
+
+    @Bean
+    public App app() {
+        return new App();
+    }
+
+    @Autowired
+    private App app;
+
     @Test
     public void testValue() throws NacosException, InterruptedException {
 
-        Assert.assertEquals("1", app.a);
-        Assert.assertEquals("1", app.b);
+        Assert.assertEquals("liaochuntao", app.a);
+        Assert.assertEquals("this is test", app.b);
 
-
-        configService.publishConfig(YamlApp.DATA_ID_YAML + ".yml", DEFAULT_GROUP, yaml);
+        configService.publishConfig(DATA_ID, DEFAULT_GROUP, newConfigStr);
 
         Thread.sleep(2000);
 
-        Assert.assertEquals(except, yamlApp.toString());
+        Assert.assertEquals("liaochuntao", app.a);
+        Assert.assertEquals("refresh this is test", app.b);
+
 
     }
+
 }

@@ -18,17 +18,21 @@ package com.alibaba.nacos.spring.context.properties.config;
 
 import com.alibaba.nacos.api.annotation.NacosProperties;
 import com.alibaba.nacos.api.config.ConfigService;
+import com.alibaba.nacos.api.config.ConfigType;
 import com.alibaba.nacos.api.config.annotation.NacosConfigurationProperties;
 import com.alibaba.nacos.api.config.annotation.NacosIgnore;
 import com.alibaba.nacos.api.config.annotation.NacosProperty;
 import com.alibaba.nacos.api.config.listener.AbstractListener;
+import com.alibaba.nacos.api.config.listener.Listener;
 import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.spring.beans.factory.annotation.ConfigServiceBeanBuilder;
+import com.alibaba.nacos.spring.context.event.config.EventPublishingConfigService;
 import com.alibaba.nacos.spring.context.event.config.NacosConfigEvent;
 import com.alibaba.nacos.spring.context.event.config.NacosConfigMetadataEvent;
 import com.alibaba.nacos.spring.context.event.config.NacosConfigurationPropertiesBeanBoundEvent;
 import com.alibaba.nacos.spring.util.NacosUtils;
 import com.alibaba.nacos.spring.util.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.MutablePropertyValues;
@@ -73,7 +77,7 @@ public class NacosConfigurationPropertiesBinder {
 
     private final ConfigServiceBeanBuilder configServiceBeanBuilder;
 
-    NacosConfigurationPropertiesBinder(ConfigurableApplicationContext applicationContext) {
+    protected NacosConfigurationPropertiesBinder(ConfigurableApplicationContext applicationContext) {
         Assert.notNull(applicationContext, "ConfigurableApplicationContext must not be null!");
         this.applicationContext = applicationContext;
         this.environment = applicationContext.getEnvironment();
@@ -95,21 +99,29 @@ public class NacosConfigurationPropertiesBinder {
 
         Assert.notNull(properties, "NacosConfigurationProperties must not be null!");
 
-        final String dataId = properties.dataId();
-
-        final String groupId = properties.groupId();
+        // support read data-id and group-id from spring environment
+        final String dataId = NacosUtils.readFromEnvironment(properties.dataId(), environment);
+        final String groupId = NacosUtils.readFromEnvironment(properties.groupId(), environment);
+        String fileType = NacosUtils.readTypeFromDataId(dataId);
+        final String type = StringUtils.isEmpty(fileType) ? (properties.yaml() ? ConfigType.YAML.getType() : properties.type().getType()) : fileType;
 
         final ConfigService configService = configServiceBeanBuilder.build(properties.properties());
 
-        if (properties.autoRefreshed()) { // Add a Listener if auto-refreshed
+        // Add a Listener if auto-refreshed
+        if (properties.autoRefreshed()) {
 
-            try {
-                configService.addListener(dataId, groupId, new AbstractListener() {
-                    @Override
-                    public void receiveConfigInfo(String config) {
-                        doBind(bean, beanName, dataId, groupId, properties, config, configService);
-                    }
-                });
+            Listener listener = new AbstractListener() {
+                @Override
+                public void receiveConfigInfo(String config) {
+                    doBind(bean, beanName, dataId, groupId, type, properties, config, configService);
+                }
+            };
+            try {//
+                if (configService instanceof EventPublishingConfigService) {
+                    ((EventPublishingConfigService) configService).addListener(dataId, groupId, type, listener);
+                } else {
+                    configService.addListener(dataId, groupId, listener);
+                }
             } catch (NacosException e) {
                 if (logger.isErrorEnabled()) {
                     logger.error(e.getMessage(), e);
@@ -120,20 +132,20 @@ public class NacosConfigurationPropertiesBinder {
         String content = getContent(configService, dataId, groupId);
 
         if (hasText(content)) {
-            doBind(bean, beanName, dataId, groupId, properties, content, configService);
+            doBind(bean, beanName, dataId, groupId, type, properties, content, configService);
         }
     }
 
-    private void doBind(Object bean, String beanName, String dataId, String groupId,
+    protected void doBind(Object bean, String beanName, String dataId, String groupId, String type,
                         NacosConfigurationProperties properties, String content, ConfigService configService) {
-        String type = properties.yaml() ? "yaml" : "properties";
-        PropertyValues propertyValues = NacosUtils.resolvePropertyValues(bean, dataId, groupId, content, type);
+        final String prefix = properties.prefix();
+        PropertyValues propertyValues = NacosUtils.resolvePropertyValues(bean, prefix, dataId, groupId, content, type);
         doBind(bean, properties, propertyValues);
         publishBoundEvent(bean, beanName, dataId, groupId, properties, content, configService);
         publishMetadataEvent(bean, beanName, dataId, groupId, properties);
     }
 
-    private void publishMetadataEvent(Object bean, String beanName, String dataId, String groupId,
+    protected void publishMetadataEvent(Object bean, String beanName, String dataId, String groupId,
                                       NacosConfigurationProperties properties) {
 
         NacosProperties nacosProperties = properties.properties();
@@ -159,7 +171,7 @@ public class NacosConfigurationPropertiesBinder {
         applicationEventPublisher.publishEvent(metadataEvent);
     }
 
-    private void publishBoundEvent(Object bean, String beanName, String dataId, String groupId,
+    protected void publishBoundEvent(Object bean, String beanName, String dataId, String groupId,
                                    NacosConfigurationProperties properties, String content, ConfigService configService) {
         NacosConfigEvent event = new NacosConfigurationPropertiesBeanBoundEvent(configService, dataId, groupId, bean,
                 beanName, properties, content);
