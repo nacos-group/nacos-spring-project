@@ -140,8 +140,6 @@ public class NacosPropertySourceJsonTest extends AbstractNacosHttpServerTestExec
 
         Assert.assertEquals("liaochuntao", app.a);
         Assert.assertEquals("refresh this is test", app.b);
-
-
     }
 
 }
