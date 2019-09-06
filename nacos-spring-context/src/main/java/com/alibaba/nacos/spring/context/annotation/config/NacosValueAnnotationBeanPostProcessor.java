@@ -135,7 +135,7 @@ public class NacosValueAnnotationBeanPostProcessor extends AnnotationInjectedBea
     public void onApplicationEvent(NacosConfigReceivedEvent event) {
         // In to this event receiver, the environment has been updated the
         // latest configuration information, pull directly from the environment
-
+        // fix issue #142
         for (Map.Entry<String, List<NacosValueTarget>> entry : placeholderNacosValueTargetMap.entrySet()) {
             String key = environment.resolvePlaceholders(entry.getKey());
             String newValue = environment.getProperty(key);
