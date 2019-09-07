@@ -84,8 +84,8 @@ public final class DelegatingEventPublishingListener implements Listener {
      */
     @Override
     public void receiveConfigInfo(String content) {
-        publishEvent(content);
         onReceived(content);
+        publishEvent(content);
     }
 
     private void publishEvent(String content) {
