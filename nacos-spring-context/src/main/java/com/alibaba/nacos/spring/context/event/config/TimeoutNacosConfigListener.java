@@ -32,9 +32,9 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public abstract class TimeoutNacosConfigListener extends AbstractListener {
 
-    static AtomicInteger id = new AtomicInteger(0);
+    private static AtomicInteger id = new AtomicInteger(0);
 
-    static ExecutorService executorService = Executors.newScheduledThreadPool(8, new ThreadFactory() {
+    private static ExecutorService executorService = Executors.newScheduledThreadPool(8, new ThreadFactory() {
         @Override
         public Thread newThread(Runnable r) {
             Thread t = new Thread(r);
@@ -75,10 +75,8 @@ public abstract class TimeoutNacosConfigListener extends AbstractListener {
             throw new RuntimeException(e);
         } catch (TimeoutException e) {
             future.cancel(true);
-            if (logger.isWarnEnabled()) {
-                logger.warn("Listening on Nacos Config exceeds timeout {} ms " +
-                        "[dataId : {}, groupId : {}, data : {}]", timeout, dataId, groupId, content);
-            }
+            logger.warn("Listening on Nacos Config exceeds timeout {} ms " +
+                    "[dataId : {}, groupId : {}, data : {}]", timeout, dataId, groupId, content);
         }
     }
 

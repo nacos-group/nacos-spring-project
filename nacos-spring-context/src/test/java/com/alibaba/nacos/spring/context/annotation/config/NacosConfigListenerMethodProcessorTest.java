@@ -63,7 +63,6 @@ import static org.junit.Assert.assertNull;
         AnnotationNacosInjectedBeanPostProcessor.class,
         NacosConfigListenerMethodProcessor.class,
         NacosConfigListenerMethodProcessorTest.class,
-
 })
 @TestExecutionListeners({DependencyInjectionTestExecutionListener.class,
         DirtiesContextTestExecutionListener.class, NacosConfigListenerMethodProcessorTest.class})
