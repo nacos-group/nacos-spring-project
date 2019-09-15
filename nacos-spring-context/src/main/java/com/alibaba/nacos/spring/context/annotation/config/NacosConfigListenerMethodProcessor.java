@@ -99,7 +99,6 @@ public class NacosConfigListenerMethodProcessor extends AnnotationListenerMethod
         ConfigService configService = configServiceBeanBuilder.build(listener.properties());
 
         try {
-
             configService.addListener(dataId, groupId, new TimeoutNacosConfigListener(dataId, groupId, timeout) {
 
                 @Override
@@ -112,9 +111,7 @@ public class NacosConfigListenerMethodProcessor extends AnnotationListenerMethod
                 }
             });
         } catch (NacosException e) {
-            if (logger.isErrorEnabled()) {
-                logger.error("ConfigService can't add Listener for dataId : " + dataId + " , groupId : " + groupId, e);
-            }
+            logger.error("ConfigService can't add Listener for dataId : " + dataId + " , groupId : " + groupId, e);
         }
 
         publishMetadataEvent(beanName, bean, beanClass, dataId, groupId, listener, method);
