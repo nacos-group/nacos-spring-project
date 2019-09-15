@@ -187,12 +187,7 @@ public abstract class NacosUtils {
     }
 
     public static String readFromEnvironment(String label, Environment environment) {
-        boolean isPlaceHolder = label.startsWith("${") && label.endsWith("}");
-        if (isPlaceHolder) {
-            label = label.replace("${", "").replace("}", "");
-            return environment.getProperty(label);
-        }
-        return label;
+        return environment.resolvePlaceholders(label);
     }
 
     public static PropertyValues resolvePropertyValues(Object bean, String content, String type) {

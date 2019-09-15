@@ -88,7 +88,6 @@ public class EventPublishingConfigService implements ConfigService, NacosService
     public void addListener(String dataId, String group, Listener listener) throws NacosException {
         configService.addListener(dataId, group, listener);
         publishEvent(new NacosConfigListenerRegisteredEvent(configService, dataId, group, listener, true));
-
     }
 
     @Override

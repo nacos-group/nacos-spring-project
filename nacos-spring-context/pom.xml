@@ -5,14 +5,14 @@
     <parent>
         <artifactId>nacos-spring-parent</artifactId>
         <groupId>com.alibaba.nacos</groupId>
-        <version>0.3.3</version>
+        <version>0.3.4</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.alibaba.nacos</groupId>
     <artifactId>nacos-spring-context</artifactId>
-    <version>0.3.3</version>
+    <version>0.3.4</version>
     <name>Alibaba Nacos :: Spring :: Context</name>
     <packaging>jar</packaging>
 
