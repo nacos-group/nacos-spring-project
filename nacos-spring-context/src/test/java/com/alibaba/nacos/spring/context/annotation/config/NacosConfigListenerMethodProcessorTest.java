@@ -62,7 +62,7 @@ import static org.junit.Assert.assertNull;
         ConfigServiceBeanBuilder.class,
         AnnotationNacosInjectedBeanPostProcessor.class,
         NacosConfigListenerMethodProcessor.class,
-        NacosConfigListenerMethodProcessorTest.class,
+        NacosConfigListenerMethodProcessorTest.class
 })
 @TestExecutionListeners({DependencyInjectionTestExecutionListener.class,
         DirtiesContextTestExecutionListener.class, NacosConfigListenerMethodProcessorTest.class})
@@ -86,6 +86,8 @@ public class NacosConfigListenerMethodProcessorTest extends AbstractNacosHttpSer
 
     @NacosInjected
     private ConfigService configService;
+
+    private volatile boolean received = false;
 
     @PostConstruct
     public void initListener() throws NacosException {
@@ -124,14 +126,20 @@ public class NacosConfigListenerMethodProcessorTest extends AbstractNacosHttpSer
 
 
     @Test
-    public void testPublishUser() throws NacosException {
+    public void testPublishUser() throws NacosException, InterruptedException {
         configService.publishConfig("user", DEFAULT_GROUP, "{\"id\":1,\"name\":\"mercyblitz\"}");
+        int cnt = 3;
+        while (cnt >= 0 && !received) {
+            Thread.sleep(1000);
+            cnt --;
+        }
     }
 
     @NacosConfigListener(dataId = "user", converter = UserNacosConfigConverter.class)
     public void onUser(User user) {
         assertEquals(Long.valueOf(1L), user.getId());
         assertEquals("mercyblitz", user.getName());
+        received = true;
     }
 
 }
