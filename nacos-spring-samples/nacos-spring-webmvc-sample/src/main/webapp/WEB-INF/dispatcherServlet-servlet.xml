@@ -19,5 +19,7 @@
 
     <context:component-scan base-package="com.alibaba.nacos.samples.spring"/>
 
+    <context:property-placeholder location="/WEB-INF/config.properties" />
+
 
 </beans>

@@ -32,6 +32,7 @@ import com.alibaba.nacos.spring.factory.CacheableEventPublishingNacosServiceFact
 import com.alibaba.nacos.spring.factory.NacosServiceFactory;
 import com.alibaba.spring.util.BeanUtils;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -100,6 +101,15 @@ public abstract class NacosBeanUtils {
      */
     public static final String NACOS_CONFIG_LISTENER_EXECUTOR_BEAN_NAME = "nacosConfigListenerExecutor";
 
+    /**
+     * the ignoreResourceNotFound property for propertySourcesPlaceholderConfigurer
+     */
+    public static final String IGNORE_RESOURCE_NOT_FOUND = "ignoreResourceNotFound";
+
+    /**
+     * the ignoreUnresolvablePlaceholders property for propertySourcesPlaceholderConfigurer
+     */
+    public static final String  IGNORE_UNRESOLVABLE_PLACEHOLDERS = "ignoreUnresolvablePlaceholders";
     /**
      * Register an object to be Singleton Bean
      *
@@ -194,10 +204,25 @@ public abstract class NacosBeanUtils {
      * Register {@link PropertySourcesPlaceholderConfigurer} Bean
      *
      * @param registry {@link BeanDefinitionRegistry}
+     * @param beanFactory {@link BeanFactory}
      */
-    public static void registerPropertySourcesPlaceholderConfigurer(BeanDefinitionRegistry registry) {
+    public static void registerPropertySourcesPlaceholderConfigurer(BeanDefinitionRegistry registry,BeanFactory beanFactory) {
         registerInfrastructureBeanIfAbsent(registry, PLACEHOLDER_CONFIGURER_BEAN_NAME,
                 PropertySourcesPlaceholderConfigurer.class);
+
+        /* If you can't guarantee your old project properties file and config items are complete ，
+        please setIgnoreUnresolvablePlaceholders setIgnoreResourceNotFound is true 。
+        if not,you may not be able to start the spring container and your application */
+
+        boolean ignoreResourceNotFound = Boolean.parseBoolean(System.getProperty(IGNORE_RESOURCE_NOT_FOUND));
+        boolean ignoreUnresolvablePlaceholders = Boolean.parseBoolean(System.getProperty(IGNORE_UNRESOLVABLE_PLACEHOLDERS));
+        if (ignoreResourceNotFound || ignoreUnresolvablePlaceholders) {
+            PropertySourcesPlaceholderConfigurer configurer = (PropertySourcesPlaceholderConfigurer) beanFactory.getBean(NacosBeanUtils.PLACEHOLDER_CONFIGURER_BEAN_NAME);
+            if(configurer!=null) {
+                configurer.setIgnoreResourceNotFound(ignoreResourceNotFound);
+                configurer.setIgnoreUnresolvablePlaceholders(ignoreUnresolvablePlaceholders);
+            }
+        }
     }
 
 
@@ -318,10 +343,11 @@ public abstract class NacosBeanUtils {
      *
      * @param registry    {@link BeanDefinitionRegistry}
      * @param environment {@link Environment}
+     * @param beanFactory {@link BeanFactory}
      */
-    public static void registerNacosConfigBeans(BeanDefinitionRegistry registry, Environment environment) {
+    public static void registerNacosConfigBeans(BeanDefinitionRegistry registry, Environment environment,BeanFactory beanFactory) {
         // Register PropertySourcesPlaceholderConfigurer Bean
-        registerPropertySourcesPlaceholderConfigurer(registry);
+        registerPropertySourcesPlaceholderConfigurer(registry,beanFactory);
 
         registerNacosConfigPropertiesBindingPostProcessor(registry);
 
