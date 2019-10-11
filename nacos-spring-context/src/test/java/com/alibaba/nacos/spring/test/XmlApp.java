@@ -21,30 +21,30 @@ import com.alibaba.nacos.api.config.annotation.NacosConfigurationProperties;
 
 import java.util.List;
 
-import static com.alibaba.nacos.api.common.Constants.DEFAULT_GROUP;
+import static com.alibaba.nacos.spring.test.XmlApp.DATA_ID_XML;
 
 /**
  * @author <a href="mailto:liaochunyhm@live.com">liaochuntao</a>
- * @since 0.3.0
+ * @since
  */
-@NacosConfigurationProperties(dataId = "yaml_app.yml", autoRefreshed = true, ignoreNestedProperties = true, type = ConfigType.YAML)
-public class YamlApp {
+@NacosConfigurationProperties(dataId = DATA_ID_XML, autoRefreshed = true, ignoreNestedProperties = true, type = ConfigType.XML)
+public class XmlApp {
 
-    public static final String DATA_ID_YAML = "yaml_app";
+    public static final String DATA_ID_XML = "xml_app";
 
     private List<Student> students;
 
-    public List<Student> getStudents() {
+    public List<XmlApp.Student> getStudents() {
         return students;
     }
 
-    public void setStudents(List<Student> students) {
+    public void setStudents(List<XmlApp.Student> students) {
         this.students = students;
     }
 
     @Override
     public String toString() {
-        return "YamlApp{" +
+        return "XmlApp{" +
                 "students=" + students +
                 '}';
     }
@@ -80,3 +80,4 @@ public class YamlApp {
     }
 
 }
+

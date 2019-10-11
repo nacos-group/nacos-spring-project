@@ -18,6 +18,7 @@ package com.alibaba.nacos.spring.context.annotation.config;
 
 import com.alibaba.nacos.api.annotation.NacosProperties;
 import com.alibaba.nacos.api.common.Constants;
+import com.alibaba.nacos.api.config.ConfigType;
 import com.alibaba.nacos.spring.context.annotation.EnableNacos;
 import com.alibaba.nacos.spring.util.NacosUtils;
 import org.springframework.core.env.PropertySource;
@@ -156,7 +157,7 @@ public @interface NacosPropertySource {
      *
      * @return the type of config
      */
-    String type() default DEFAULT_CONFIG_TYPE_VALUE;
+    ConfigType type() default ConfigType.PROPERTIES;
 
     /**
      * The {@link NacosProperties} attribute, If not specified, it will use

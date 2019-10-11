@@ -16,6 +16,7 @@
  */
 package com.alibaba.nacos.spring.util.parse;
 
+import com.alibaba.nacos.api.config.ConfigType;
 import com.alibaba.nacos.spring.util.AbstractConfigParse;
 import com.alibaba.nacos.spring.util.ConfigParse;
 import org.slf4j.Logger;
@@ -35,7 +36,7 @@ import java.util.Set;
 
 /**
  * @author <a href="mailto:liaochunyhm@live.com">liaochuntao</a>
- * @since
+ * @since 0.3.0
  */
 public class DefaultYamlConfigParse extends AbstractConfigParse {
 
@@ -59,7 +60,7 @@ public class DefaultYamlConfigParse extends AbstractConfigParse {
 
     @Override
     public String processType() {
-        return "yaml";
+        return ConfigType.YAML.getType();
     }
 
     protected static boolean process(MatchCallback callback, Yaml yaml, String content) {
@@ -117,7 +118,7 @@ public class DefaultYamlConfigParse extends AbstractConfigParse {
     }
 
     protected static Map<String, Object> getFlattenedMap(Map<String, Object> source) {
-        Map<String, Object> result = new LinkedHashMap();
+        Map<String, Object> result = new LinkedHashMap<String, Object>();
         buildFlattenedMap(result, source, null);
         return result;
     }

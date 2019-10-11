@@ -23,7 +23,7 @@ import org.springframework.context.annotation.Configuration;
 
 /**
  * @author <a href="mailto:liaochunyhm@live.com">liaochuntao</a>
- * @since
+ *
  */
 @Configuration
 public class TestApplicationHolder {

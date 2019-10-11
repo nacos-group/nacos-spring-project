@@ -22,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Timeout {@link Listener Nacos Config Listener}
@@ -30,6 +31,18 @@ import java.util.concurrent.*;
  * @since 0.1.0
  */
 public abstract class TimeoutNacosConfigListener extends AbstractListener {
+
+    private static AtomicInteger id = new AtomicInteger(0);
+
+    private static ExecutorService executorService = Executors.newScheduledThreadPool(8, new ThreadFactory() {
+        @Override
+        public Thread newThread(Runnable r) {
+            Thread t = new Thread(r);
+            t.setDaemon(true);
+            t.setName("com.alibaba.nacos.spring.configListener-" + id.incrementAndGet());
+            return t;
+        }
+    });
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -45,17 +58,14 @@ public abstract class TimeoutNacosConfigListener extends AbstractListener {
         this.timeout = timeout;
     }
 
-    public final void receiveConfigInfo(final String content) {
-
-        ExecutorService executorService = Executors.newSingleThreadExecutor();
-
+    @Override
+    public void receiveConfigInfo(final String content) {
         Future future = executorService.submit(new Runnable() {
             @Override
             public void run() {
                 onReceived(content);
             }
         });
-
         try {
             future.get(timeout, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
@@ -65,12 +75,8 @@ public abstract class TimeoutNacosConfigListener extends AbstractListener {
             throw new RuntimeException(e);
         } catch (TimeoutException e) {
             future.cancel(true);
-            if (logger.isWarnEnabled()) {
-                logger.warn("Listening on Nacos Config exceeds timeout {} ms " +
-                        "[dataId : {}, groupId : {}, data : {}]", timeout, dataId, groupId, content);
-            }
-        } finally {
-            executorService.shutdown();
+            logger.warn("Listening on Nacos Config exceeds timeout {} ms " +
+                    "[dataId : {}, groupId : {}, data : {}]", timeout, dataId, groupId, content);
         }
     }
 

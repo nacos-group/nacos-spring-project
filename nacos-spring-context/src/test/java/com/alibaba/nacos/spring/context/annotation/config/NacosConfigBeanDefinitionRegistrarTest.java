@@ -38,7 +38,10 @@ import static com.alibaba.nacos.spring.util.NacosBeanUtils.CONFIG_GLOBAL_NACOS_P
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = NacosConfigBeanDefinitionRegistrarTest.class)
-@EnableNacosConfig(globalProperties = @NacosProperties)
+@EnableNacosConfig(globalProperties = @NacosProperties(enableRemoteSyncConfig = "true",
+        maxRetry = "5",
+        configRetryTime = "2600",
+        configLongPollTimeout = "26000"))
 @Component
 public class NacosConfigBeanDefinitionRegistrarTest {
 

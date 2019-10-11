@@ -18,11 +18,13 @@ package com.alibaba.nacos.spring.core.env;
 
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.config.listener.AbstractListener;
+import com.alibaba.nacos.api.config.listener.Listener;
 import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.spring.beans.factory.annotation.ConfigServiceBeanBuilder;
 import com.alibaba.nacos.spring.context.annotation.config.NacosPropertySources;
 import com.alibaba.nacos.spring.context.config.xml.NacosPropertySourceXmlBeanDefinition;
 
+import com.alibaba.nacos.spring.context.event.config.EventPublishingConfigService;
 import com.alibaba.nacos.spring.factory.NacosServiceFactory;
 import com.alibaba.spring.util.BeanUtils;
 import org.springframework.beans.BeansException;
@@ -185,9 +187,9 @@ public class NacosPropertySourcePostProcessor implements BeanDefinitionRegistryP
 
         try {
 
-            final ConfigService configService = nacosServiceFactory.createConfigService(properties);
+            ConfigService configService = nacosServiceFactory.createConfigService(properties);
 
-            configService.addListener(dataId, groupId, new AbstractListener() {
+            Listener listener = new AbstractListener() {
 
                 @Override
                 public void receiveConfigInfo(String config) {
@@ -198,7 +200,14 @@ public class NacosPropertySourcePostProcessor implements BeanDefinitionRegistryP
                     // replace NacosPropertySource
                     propertySources.replace(name, newNacosPropertySource);
                 }
-            });
+            };
+
+            if (configService instanceof EventPublishingConfigService) {
+                ((EventPublishingConfigService) configService).addListener(dataId, groupId, type, listener);
+            } else {
+                configService.addListener(dataId, groupId, listener);
+            }
+
         } catch (NacosException e) {
             throw new RuntimeException("ConfigService can't add Listener with properties : " + properties, e);
         }

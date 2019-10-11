@@ -20,18 +20,15 @@ import com.alibaba.nacos.api.annotation.NacosInjected;
 import com.alibaba.nacos.api.annotation.NacosProperties;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.config.ConfigType;
-import com.alibaba.nacos.api.config.annotation.NacosValue;
 import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.embedded.web.server.EmbeddedNacosHttpServer;
 import com.alibaba.nacos.spring.context.annotation.EnableNacos;
 import com.alibaba.nacos.spring.test.AbstractNacosHttpServerTestExecutionListener;
-import com.alibaba.nacos.spring.test.YamlApp;
+import com.alibaba.nacos.spring.test.XmlApp;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 import org.springframework.test.context.ContextConfiguration;
@@ -51,90 +48,74 @@ import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.GROUP_ID;
 
 /**
  * @author <a href="mailto:liaochunyhm@live.com">liaochuntao</a>
- * @since 0.3.0
+ * @since
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
-        NacosPropertySourceYamlTest.class
+        NacosPropertySourceXmlTest.class
 })
 @TestExecutionListeners({DependencyInjectionTestExecutionListener.class,
-        DirtiesContextTestExecutionListener.class, NacosPropertySourceYamlTest.class})
-
-@NacosPropertySources(value = {
-        @NacosPropertySource(dataId = YamlApp.DATA_ID_YAML + "_not_exist.yaml", autoRefreshed = true),
-        @NacosPropertySource(dataId = YamlApp.DATA_ID_YAML + ".yml", autoRefreshed = true)
-})
+        DirtiesContextTestExecutionListener.class, NacosPropertySourceXmlTest.class})
 @EnableNacos(globalProperties = @NacosProperties(serverAddr = "${server.addr}"))
 @Component
-public class NacosPropertySourceYamlTest extends AbstractNacosHttpServerTestExecutionListener {
-
-    private String yaml = "students:\n" +
-            "    - {name: lct-1,num: 12}\n" +
-            "    - {name: lct-2,num: 13}\n" +
-            "    - {name: lct-3,num: 14}";
-
-    private String configStr = "people:\n" +
-            "  a: 1\n" +
-            "  b: 1";
-
-    private String except = "YamlApp{students=[Student{name='lct-1', num='12'}, Student{name='lct-2', num='13'}, Student{name='lct-3', num='14'}]}";
-
-    @Override
-    public void init(EmbeddedNacosHttpServer httpServer) {
-        Map<String, String> config = new HashMap<String, String>(1);
-        config.put(DATA_ID_PARAM_NAME, YamlApp.DATA_ID_YAML + ".yml");
-        config.put(GROUP_ID_PARAM_NAME, DEFAULT_GROUP);
-        config.put(CONTENT_PARAM_NAME, configStr);
-
-        httpServer.initConfig(config);
-    }
-
-    private static class App {
-
-        @Value("${people.a}")
-        private String a;
-        @NacosValue("${people.b}")
-        private String b;
-
-    }
-
-    @Bean(name = "myApp")
-    public App app() {
-        return new App();
-    }
-
-    @Bean
-    public YamlApp yamlApp() {
-        return new YamlApp();
-    }
-
-    @NacosInjected
-    private ConfigService configService;
-
-    @Autowired
-    private YamlApp yamlApp;
-
-    @Autowired
-    @Qualifier(value = "myApp")
-    private App app;
+public class NacosPropertySourceXmlTest extends AbstractNacosHttpServerTestExecutionListener {
 
     @Override
     protected String getServerAddressPropertyName() {
         return "server.addr";
     }
 
+    private String xml =
+                    "<students>" +
+                    "<student>" +
+                    "<name>lct-1</name>" +
+                    "<num>1006010022</num>" +
+                    "</student>" +
+                    "<student>" +
+                    "<name>lct-2</name>" +
+                    "<num>1006010033</num>" +
+                    "</student>" +
+                    "<student>" +
+                    "<name>lct-3</name>" +
+                    "<num>1006010044</num>" +
+                    "</student>" +
+                    "<student>" +
+                    "<name>lct-4</name>" +
+                    "<num>1006010055</num>" +
+                    "</student>" +
+                    "</students>";
+
+    private final String except = "XmlApp{students=[Student{name='lct-1', num='1006010022'}, Student{name='lct-3', num='1006010044'}, Student{name='lct-4', num='1006010055'}]}";
+
+    @Override
+    public void init(EmbeddedNacosHttpServer httpServer) {
+        Map<String, String> config = new HashMap<String, String>(1);
+        config.put(DATA_ID_PARAM_NAME, XmlApp.DATA_ID_XML);
+        config.put(GROUP_ID_PARAM_NAME, DEFAULT_GROUP);
+        config.put(CONTENT_PARAM_NAME, xml);
+
+        httpServer.initConfig(config);
+    }
+
+    @Bean
+    public XmlApp xmlApp() {
+        return new XmlApp();
+    }
+
+    @NacosInjected
+    private ConfigService configService;
+
+    @Autowired
+    private XmlApp xmlApp;
+
     @Test
     public void testValue() throws NacosException, InterruptedException {
 
-        Assert.assertEquals("1", app.a);
-        Assert.assertEquals("1", app.b);
-
-
-        configService.publishConfig(YamlApp.DATA_ID_YAML + ".yml", DEFAULT_GROUP, yaml);
+        configService.publishConfig(XmlApp.DATA_ID_XML, DEFAULT_GROUP, xml);
 
         Thread.sleep(2000);
 
-        Assert.assertEquals(except, yamlApp.toString());
-
+        Assert.assertEquals(except, xmlApp.toString());
     }
+
 }

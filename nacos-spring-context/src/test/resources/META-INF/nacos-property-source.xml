@@ -8,7 +8,7 @@
         http://nacos.io/schema/nacos
         http://nacos.io/schema/nacos.xsd">
 
-    <nacos:property-source data-id="user" auto-refreshed="true" />
+    <nacos:property-source data-id="user" auto-refreshed="true" type="properties" />
 
     <bean name="user" class="com.alibaba.nacos.spring.test.User">
         <property name="id" value="${id}"/>
