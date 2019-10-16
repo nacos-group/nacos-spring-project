@@ -44,6 +44,7 @@ import static com.alibaba.nacos.spring.util.NacosUtils.identify;
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
  * @since 0.1.0
  */
+@SuppressWarnings("unchecked")
 public class CacheableEventPublishingNacosServiceFactory implements NacosServiceFactory {
 
     private static final CacheableEventPublishingNacosServiceFactory SINGLETON = new CacheableEventPublishingNacosServiceFactory();
@@ -56,9 +57,9 @@ public class CacheableEventPublishingNacosServiceFactory implements NacosService
 
     private final LinkedList<DeferServiceHolder> deferServiceCache = new LinkedList<DeferServiceHolder>();
 
-    private ConfigurableApplicationContext context;
+    private volatile ConfigurableApplicationContext context;
 
-    private ExecutorService nacosConfigListenerExecutor;
+    private volatile ExecutorService nacosConfigListenerExecutor;
 
     private Map<ServiceType, AbstractCreateWorker> createWorkerManager = new HashMap<ServiceType, AbstractCreateWorker>(3);
 
@@ -101,7 +102,9 @@ public class CacheableEventPublishingNacosServiceFactory implements NacosService
         return service;
     }
 
-    public void publishDeferService() throws NacosException {
+    @SuppressWarnings("unchecked")
+    public void publishDeferService(ApplicationContext context) throws NacosException {
+        setApplicationContext(context);
         for (DeferServiceHolder holder : deferServiceCache) {
             final Object o = holder.getHolder();
             final Properties properties = holder.getProperties();
@@ -177,11 +180,11 @@ public class CacheableEventPublishingNacosServiceFactory implements NacosService
             this.properties = properties;
         }
 
-        public Object getHolder() {
+        Object getHolder() {
             return holder;
         }
 
-        public void setHolder(Object holder) {
+        void setHolder(Object holder) {
             this.holder = holder;
         }
 
@@ -194,7 +197,7 @@ public class CacheableEventPublishingNacosServiceFactory implements NacosService
         }
     }
 
-    abstract class AbstractCreateWorker<T> {
+    abstract static class AbstractCreateWorker<T> {
 
         AbstractCreateWorker() {
         }
@@ -202,8 +205,8 @@ public class CacheableEventPublishingNacosServiceFactory implements NacosService
         /**
          * To perform the corresponding create and logic object cache
          *
-         * @param properties
-         * @param service
+         * @param properties Set the parameters
+         * @param service    nacos service {ConfigService | NamingService | NamingMaintainService}
          * @return T service
          * @throws NacosException
          */

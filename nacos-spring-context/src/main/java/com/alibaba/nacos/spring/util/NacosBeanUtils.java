@@ -22,6 +22,7 @@ import com.alibaba.nacos.spring.beans.factory.annotation.NamingMaintainServiceBe
 import com.alibaba.nacos.spring.beans.factory.annotation.NamingServiceBeanBuilder;
 import com.alibaba.nacos.spring.context.annotation.config.NacosConfigListenerMethodProcessor;
 import com.alibaba.nacos.spring.context.annotation.config.NacosValueAnnotationBeanPostProcessor;
+import com.alibaba.nacos.spring.context.annotation.config.SpringValueAnnotationBeanPostProcessor;
 import com.alibaba.nacos.spring.context.event.LoggingNacosConfigMetadataEventListener;
 import com.alibaba.nacos.spring.context.properties.config.NacosConfigurationPropertiesBindingPostProcessor;
 import com.alibaba.nacos.spring.core.env.AnnotationNacosPropertySourceBuilder;
@@ -326,6 +327,11 @@ public abstract class NacosBeanUtils {
                 NacosValueAnnotationBeanPostProcessor.class);
     }
 
+    public static void registerSpringValueAnnotationBeanPostProcessor(BeanDefinitionRegistry registry) {
+        registerInfrastructureBeanIfAbsent(registry, SpringValueAnnotationBeanPostProcessor.BEAN_NAME,
+                SpringValueAnnotationBeanPostProcessor.class);
+    }
+
     /**
      * Register Nacos Common Beans
      *
@@ -360,6 +366,8 @@ public abstract class NacosBeanUtils {
         registerNacosConfigListenerExecutor(registry, environment);
 
         registerNacosValueAnnotationBeanPostProcessor(registry);
+
+        registerSpringValueAnnotationBeanPostProcessor(registry);
 
         registerConfigServiceBeanBuilder(registry);
 
