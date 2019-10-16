@@ -47,6 +47,7 @@ public class NacosDiscoveryBeanDefinitionRegistrar implements ImportBeanDefiniti
                 importingClassMetadata.getAnnotationAttributes(EnableNacosDiscovery.class.getName()));
         // Register Global Nacos Properties Bean
         registerGlobalNacosProperties(attributes, registry, environment, DISCOVERY_GLOBAL_NACOS_PROPERTIES_BEAN_NAME);
+        registerGlobalNacosProperties(attributes, registry, environment, MAINTAIN_GLOBAL_NACOS_PROPERTIES_BEAN_NAME);
         // Register Nacos Common Beans
         registerNacosCommonBeans(registry);
         // Register Nacos Discovery Beans
