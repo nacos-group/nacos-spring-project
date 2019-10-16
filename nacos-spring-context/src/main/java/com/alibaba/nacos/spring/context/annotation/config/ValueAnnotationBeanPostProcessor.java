@@ -43,6 +43,8 @@ import java.util.Map;
 import static org.springframework.core.annotation.AnnotationUtils.getAnnotation;
 
 /**
+ * Abstract @*Value annotation injection and refresh
+ *
  * @author <a href="mailto:liaochunyhm@live.com">liaochuntao</a>
  * @since 0.3.4
  */
