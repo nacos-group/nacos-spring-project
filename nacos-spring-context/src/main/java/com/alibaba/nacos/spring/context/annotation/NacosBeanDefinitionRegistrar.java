@@ -74,7 +74,7 @@ public class NacosBeanDefinitionRegistrar implements ImportBeanDefinitionRegistr
 
     public void registerNacosAnnotationBeans(BeanDefinitionRegistry registry) {
         registerNacosCommonBeans(registry);
-        registerNacosConfigBeans(registry, environment);
+        registerNacosConfigBeans(registry, environment,beanFactory);
         registerNacosDiscoveryBeans(registry);
     }
 

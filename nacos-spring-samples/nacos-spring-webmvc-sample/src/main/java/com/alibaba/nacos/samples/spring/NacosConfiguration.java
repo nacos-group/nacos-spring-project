@@ -35,6 +35,7 @@ import javax.annotation.PostConstruct;
 @EnableNacos(
         globalProperties =
         @NacosProperties(serverAddr = "${nacos.server-addr}",
+                namespace = "${nacos.config.namespace}",
                 enableRemoteSyncConfig = "true",
                 maxRetry = "5",
                 configRetryTime = "4000",
