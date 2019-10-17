@@ -16,16 +16,16 @@
  */
 package com.alibaba.nacos.spring.util.parse;
 
-import com.alibaba.nacos.api.config.ConfigType;
-import com.alibaba.nacos.spring.util.AbstractConfigParse;
-import com.alibaba.nacos.spring.util.ConfigParse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.util.StringUtils;
-
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.Properties;
+
+import com.alibaba.nacos.api.config.ConfigType;
+import com.alibaba.nacos.spring.util.AbstractConfigParse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import org.springframework.util.StringUtils;
 
 /**
  * @author <a href="mailto:liaochunyhm@live.com">liaochuntao</a>
@@ -33,25 +33,26 @@ import java.util.Properties;
  */
 public class DefaultPropertiesConfigParse extends AbstractConfigParse {
 
-    private static final Logger logger = LoggerFactory.getLogger(DefaultPropertiesConfigParse.class);
+	private static final Logger logger = LoggerFactory
+			.getLogger(DefaultPropertiesConfigParse.class);
 
-    @Override
-    public Properties parse(String configText) {
-        Properties properties = new Properties();
-        try {
-            if (StringUtils.hasText(configText)) {
-                properties.load(new StringReader(configText));
-            }
-        } catch (IOException e) {
-            throw new ConfigParseException(e);
-        }
-        return properties;
-    }
+	@Override
+	public Properties parse(String configText) {
+		Properties properties = new Properties();
+		try {
+			if (StringUtils.hasText(configText)) {
+				properties.load(new StringReader(configText));
+			}
+		}
+		catch (IOException e) {
+			throw new ConfigParseException(e);
+		}
+		return properties;
+	}
 
-    @Override
-    public String processType() {
-        return ConfigType.PROPERTIES.getType();
-    }
+	@Override
+	public String processType() {
+		return ConfigType.PROPERTIES.getType();
+	}
 
 }
-

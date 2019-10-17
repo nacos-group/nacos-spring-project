@@ -28,10 +28,13 @@ import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
  */
 public class NacosNamespaceHandler extends NamespaceHandlerSupport {
 
-    @Override
-    public void init() {
-        registerBeanDefinitionParser("annotation-driven", new NacosAnnotationDrivenBeanDefinitionParser());
-        registerBeanDefinitionParser("global-properties", new GlobalNacosPropertiesBeanDefinitionParser());
-        registerBeanDefinitionParser("property-source", new NacosPropertySourceBeanDefinitionParser());
-    }
+	@Override
+	public void init() {
+		registerBeanDefinitionParser("annotation-driven",
+				new NacosAnnotationDrivenBeanDefinitionParser());
+		registerBeanDefinitionParser("global-properties",
+				new GlobalNacosPropertiesBeanDefinitionParser());
+		registerBeanDefinitionParser("property-source",
+				new NacosPropertySourceBeanDefinitionParser());
+	}
 }

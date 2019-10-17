@@ -16,13 +16,18 @@
  */
 package com.alibaba.nacos.spring.context.annotation;
 
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
 import com.alibaba.nacos.api.annotation.NacosInjected;
 import com.alibaba.nacos.api.annotation.NacosProperties;
 import com.alibaba.nacos.api.config.annotation.NacosConfigListener;
 import com.alibaba.nacos.api.config.annotation.NacosConfigurationProperties;
-import org.springframework.context.annotation.Import;
 
-import java.lang.annotation.*;
+import org.springframework.context.annotation.Import;
 
 /**
  * Annotation for enabling Nacos features.
@@ -31,19 +36,19 @@ import java.lang.annotation.*;
  * @see NacosBeanDefinitionRegistrar
  * @since 0.1.0
  */
-@Target({ElementType.TYPE, ElementType.ANNOTATION_TYPE})
+@Target({ ElementType.TYPE, ElementType.ANNOTATION_TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Import(NacosBeanDefinitionRegistrar.class)
 public @interface EnableNacos {
 
-    /**
-     * Global {@link NacosProperties Nacos Properties}
-     *
-     * @return required
-     * @see NacosInjected#properties()
-     * @see NacosConfigListener#properties()
-     * @see NacosConfigurationProperties#properties()
-     */
-    NacosProperties globalProperties();
+	/**
+	 * Global {@link NacosProperties Nacos Properties}
+	 *
+	 * @return required
+	 * @see NacosInjected#properties()
+	 * @see NacosConfigListener#properties()
+	 * @see NacosConfigurationProperties#properties()
+	 */
+	NacosProperties globalProperties();
 }

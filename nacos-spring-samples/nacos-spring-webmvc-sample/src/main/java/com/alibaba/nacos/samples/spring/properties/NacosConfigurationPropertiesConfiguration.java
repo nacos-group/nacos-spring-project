@@ -16,17 +16,18 @@
  */
 package com.alibaba.nacos.samples.spring.properties;
 
+import javax.annotation.PostConstruct;
+
 import com.alibaba.nacos.api.annotation.NacosInjected;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.config.annotation.NacosConfigurationProperties;
 import com.alibaba.nacos.samples.spring.domain.Pojo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import javax.annotation.PostConstruct;
 
 import static com.alibaba.nacos.api.common.Constants.DEFAULT_GROUP;
 import static com.alibaba.nacos.samples.spring.domain.Pojo.DATA_ID;
@@ -40,30 +41,31 @@ import static com.alibaba.nacos.samples.spring.domain.Pojo.DATA_ID;
 @Configuration
 public class NacosConfigurationPropertiesConfiguration {
 
-    private static final Logger logger = LoggerFactory.getLogger(NacosConfigurationPropertiesConfiguration.class);
+	private static final Logger logger = LoggerFactory
+			.getLogger(NacosConfigurationPropertiesConfiguration.class);
 
-    @Bean
-    public Pojo pojo() {
-        return new Pojo();
-    }
+	@Bean
+	public Pojo pojo() {
+		return new Pojo();
+	}
 
-    @NacosInjected
-    private ConfigService configService;
+	@NacosInjected
+	private ConfigService configService;
 
-    @Autowired
-    private Pojo pojo;
+	@Autowired
+	private Pojo pojo;
 
-    @PostConstruct
-    public void init() throws Exception {
-        logger.info("pojo = {}", pojo);
-        configService.publishConfig(DATA_ID, DEFAULT_GROUP, "id = 1");
-        configService.publishConfig(DATA_ID, DEFAULT_GROUP, "name = mercyblitz");
-        configService.publishConfig(DATA_ID, DEFAULT_GROUP, "desc = description");
-        configService.publishConfig(DATA_ID, DEFAULT_GROUP, "ignored = true");
-        logger.info("pojo.id = {}", pojo.getId());                   // 1
-        logger.info("pojo.name = {}", pojo.getName());               // mercyblitz
-        logger.info("pojo.description = {}", pojo.getDescription()); // description
-        logger.info("pojo.ignored = {}", pojo.isIgnored());          // false
-    }
+	@PostConstruct
+	public void init() throws Exception {
+		logger.info("pojo = {}", pojo);
+		configService.publishConfig(DATA_ID, DEFAULT_GROUP, "id = 1");
+		configService.publishConfig(DATA_ID, DEFAULT_GROUP, "name = mercyblitz");
+		configService.publishConfig(DATA_ID, DEFAULT_GROUP, "desc = description");
+		configService.publishConfig(DATA_ID, DEFAULT_GROUP, "ignored = true");
+		logger.info("pojo.id = {}", pojo.getId()); // 1
+		logger.info("pojo.name = {}", pojo.getName()); // mercyblitz
+		logger.info("pojo.description = {}", pojo.getDescription()); // description
+		logger.info("pojo.ignored = {}", pojo.isIgnored()); // false
+	}
 
 }

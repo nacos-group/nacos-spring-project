@@ -16,22 +16,21 @@
  */
 package com.alibaba.nacos.spring.util;
 
+import java.util.Properties;
+
 import com.alibaba.nacos.spring.factory.ApplicationContextHolder;
-import com.alibaba.nacos.spring.factory.CacheableEventPublishingNacosServiceFactory;
-import com.alibaba.nacos.spring.factory.NacosServiceFactory;
 import com.alibaba.nacos.spring.test.TestApplicationHolder;
 import com.alibaba.nacos.spring.test.TestConfiguration;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import java.util.Properties;
 
 import static com.alibaba.nacos.spring.util.NacosBeanUtils.GLOBAL_NACOS_PROPERTIES_BEAN_NAME;
 import static com.alibaba.nacos.spring.util.NacosBeanUtils.isBeanDefinitionPresent;
@@ -43,34 +42,37 @@ import static com.alibaba.nacos.spring.util.NacosBeanUtils.isBeanDefinitionPrese
  * @since 0.1.0
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {TestConfiguration.class, TestApplicationHolder.class})
+@ContextConfiguration(classes = { TestConfiguration.class, TestApplicationHolder.class })
 public class NacosBeanUtilsTest {
 
-    @Autowired
-    private BeanFactory beanFactory;
+	@Autowired
+	private BeanFactory beanFactory;
 
-    @Autowired
-    @Qualifier(GLOBAL_NACOS_PROPERTIES_BEAN_NAME)
-    private Properties globalProperties;
+	@Autowired
+	@Qualifier(GLOBAL_NACOS_PROPERTIES_BEAN_NAME)
+	private Properties globalProperties;
 
-    @Autowired
-    private ApplicationContextHolder contextHolder;
+	@Autowired
+	private ApplicationContextHolder contextHolder;
 
-    @Test
-    public void testBeans() {
+	@Test
+	public void testBeans() {
 
-        Assert.assertEquals(globalProperties, NacosBeanUtils.getGlobalPropertiesBean(beanFactory));
-        Assert.assertEquals(contextHolder, NacosBeanUtils.getApplicationContextHolder(beanFactory));
+		Assert.assertEquals(globalProperties,
+				NacosBeanUtils.getGlobalPropertiesBean(beanFactory));
+		Assert.assertEquals(contextHolder,
+				NacosBeanUtils.getApplicationContextHolder(beanFactory));
 
-    }
+	}
 
-    @Test
-    public void testIsBeanDefinitionPresent() {
+	@Test
+	public void testIsBeanDefinitionPresent() {
 
-        BeanDefinitionRegistry registry = (BeanDefinitionRegistry) beanFactory;
+		BeanDefinitionRegistry registry = (BeanDefinitionRegistry) beanFactory;
 
-        Assert.assertTrue(isBeanDefinitionPresent(registry, GLOBAL_NACOS_PROPERTIES_BEAN_NAME, Properties.class));
+		Assert.assertTrue(isBeanDefinitionPresent(registry,
+				GLOBAL_NACOS_PROPERTIES_BEAN_NAME, Properties.class));
 
-    }
+	}
 
 }

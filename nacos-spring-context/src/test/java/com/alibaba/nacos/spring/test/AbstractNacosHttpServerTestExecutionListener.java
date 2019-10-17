@@ -18,6 +18,7 @@ package com.alibaba.nacos.spring.test;
 
 import com.alibaba.nacos.api.annotation.NacosProperties;
 import com.alibaba.nacos.embedded.web.server.EmbeddedNacosHttpServer;
+
 import org.springframework.test.context.TestContext;
 import org.springframework.test.context.TestExecutionListener;
 import org.springframework.test.context.support.AbstractTestExecutionListener;
@@ -28,48 +29,51 @@ import org.springframework.test.context.support.AbstractTestExecutionListener;
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
  * @since 0.1.0
  */
-public abstract class AbstractNacosHttpServerTestExecutionListener extends AbstractTestExecutionListener {
+public abstract class AbstractNacosHttpServerTestExecutionListener
+		extends AbstractTestExecutionListener {
 
-    private EmbeddedNacosHttpServer httpServer;
+	private EmbeddedNacosHttpServer httpServer;
 
-    static {
-        System.setProperty("nacos.standalone", "true");
-    }
+	static {
+		System.setProperty("nacos.standalone", "true");
+	}
 
-    @Override
-    public void beforeTestClass(TestContext testContext) throws Exception {
-        initEnvironment(testContext);
-        httpServer = new EmbeddedNacosHttpServer();
-        init(httpServer);
-        System.setProperty(getServerAddressPropertyName(), "127.0.0.1:" + httpServer.getPort());
-        httpServer.start(true);
-    }
+	@Override
+	public void beforeTestClass(TestContext testContext) throws Exception {
+		initEnvironment(testContext);
+		httpServer = new EmbeddedNacosHttpServer();
+		init(httpServer);
+		System.setProperty(getServerAddressPropertyName(),
+				"127.0.0.1:" + httpServer.getPort());
+		httpServer.start(true);
+	}
 
-    public void initEnvironment(TestContext testContext) {
+	public void initEnvironment(TestContext testContext) {
 
-    }
+	}
 
-    @Override
-    public final void afterTestClass(TestContext testContext) throws Exception {
-        httpServer.stop();
-        System.getProperties().remove(getServerAddressPropertyName());
-    }
+	@Override
+	public final void afterTestClass(TestContext testContext) throws Exception {
+		httpServer.stop();
+		System.getProperties().remove(getServerAddressPropertyName());
+	}
 
-    /**
-     * Initialize before test , this method just will be invoked once in current test case.
-     *
-     * @param server {@link EmbeddedNacosHttpServer}
-     */
-    protected void init(EmbeddedNacosHttpServer server) {
+	/**
+	 * Initialize before test , this method just will be invoked once in current test
+	 * case.
+	 *
+	 * @param server {@link EmbeddedNacosHttpServer}
+	 */
+	protected void init(EmbeddedNacosHttpServer server) {
 
-    }
+	}
 
-    /**
-     * The property name of Nacos HTTP Server Address
-     *
-     * @return non-null
-     * @see NacosProperties#serverAddr()
-     */
-    protected abstract String getServerAddressPropertyName();
+	/**
+	 * The property name of Nacos HTTP Server Address
+	 *
+	 * @return non-null
+	 * @see NacosProperties#serverAddr()
+	 */
+	protected abstract String getServerAddressPropertyName();
 
 }

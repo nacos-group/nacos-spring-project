@@ -28,6 +28,7 @@ import com.alibaba.nacos.spring.test.TestConfiguration;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.ContextConfiguration;
@@ -36,7 +37,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 
-import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.*;
+import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.CONTENT;
+import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.DATA_ID;
+import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.GROUP_ID;
 
 /**
  * {@link AnnotationNacosInjectedBeanPostProcessor} Test
@@ -45,61 +48,60 @@ import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.*;
  * @since 0.1.0
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {
-        TestConfiguration.class,
-        ConfigServiceBeanBuilder.class,
-        NamingServiceBeanBuilder.class,
-        AnnotationNacosInjectedBeanPostProcessor.class,
-        AnnotationNacosInjectedBeanPostProcessorTest.class
-})
-@TestExecutionListeners({DependencyInjectionTestExecutionListener.class,
-        DirtiesContextTestExecutionListener.class, AnnotationNacosInjectedBeanPostProcessorTest.class})
+@ContextConfiguration(classes = { TestConfiguration.class, ConfigServiceBeanBuilder.class,
+		NamingServiceBeanBuilder.class, AnnotationNacosInjectedBeanPostProcessor.class,
+		AnnotationNacosInjectedBeanPostProcessorTest.class })
+@TestExecutionListeners({ DependencyInjectionTestExecutionListener.class,
+		DirtiesContextTestExecutionListener.class,
+		AnnotationNacosInjectedBeanPostProcessorTest.class })
 @EnableNacos(globalProperties = @NacosProperties(serverAddr = "${server.addr}"))
-public class AnnotationNacosInjectedBeanPostProcessorTest extends AbstractNacosHttpServerTestExecutionListener {
+public class AnnotationNacosInjectedBeanPostProcessorTest
+		extends AbstractNacosHttpServerTestExecutionListener {
 
-    @Bean(name = ApplicationContextHolder.BEAN_NAME)
-    public ApplicationContextHolder applicationContextHolder(ApplicationContext applicationContext) {
-        ApplicationContextHolder applicationContextHolder = new ApplicationContextHolder();
-        applicationContextHolder.setApplicationContext(applicationContext);
-        return applicationContextHolder;
-    }
+	@Bean(name = ApplicationContextHolder.BEAN_NAME)
+	public ApplicationContextHolder applicationContextHolder(
+			ApplicationContext applicationContext) {
+		ApplicationContextHolder applicationContextHolder = new ApplicationContextHolder();
+		applicationContextHolder.setApplicationContext(applicationContext);
+		return applicationContextHolder;
+	}
 
-    @Override
-    protected String getServerAddressPropertyName() {
-        return "server.addr";
-    }
+	@Override
+	protected String getServerAddressPropertyName() {
+		return "server.addr";
+	}
 
-    @NacosInjected
-    private ConfigService configService;
+	@NacosInjected
+	private ConfigService configService;
 
-    @NacosInjected(properties = @NacosProperties(encode = "UTF-8"))
-    private ConfigService configService2;
+	@NacosInjected(properties = @NacosProperties(encode = "UTF-8"))
+	private ConfigService configService2;
 
-    @NacosInjected(properties = @NacosProperties(encode = "GBK"))
-    private ConfigService configService3;
+	@NacosInjected(properties = @NacosProperties(encode = "GBK"))
+	private ConfigService configService3;
 
-    @NacosInjected
-    private NamingService namingService;
+	@NacosInjected
+	private NamingService namingService;
 
-    @NacosInjected(properties = @NacosProperties(encode = "UTF-8"))
-    private NamingService namingService2;
+	@NacosInjected(properties = @NacosProperties(encode = "UTF-8"))
+	private NamingService namingService2;
 
-    @NacosInjected(properties = @NacosProperties(encode = "GBK"))
-    private NamingService namingService3;
+	@NacosInjected(properties = @NacosProperties(encode = "GBK"))
+	private NamingService namingService3;
 
-    @Test
-    public void testInjection() {
+	@Test
+	public void testInjection() {
 
-        Assert.assertEquals(configService, configService2);
-        Assert.assertNotEquals(configService2, configService3);
+		Assert.assertEquals(configService, configService2);
+		Assert.assertNotEquals(configService2, configService3);
 
-        Assert.assertEquals(namingService, namingService2);
-        Assert.assertNotEquals(namingService2, namingService3);
-    }
+		Assert.assertEquals(namingService, namingService2);
+		Assert.assertNotEquals(namingService2, namingService3);
+	}
 
-    @Test
-    public void test() throws NacosException {
-        configService.publishConfig(DATA_ID, GROUP_ID, CONTENT);
-        Assert.assertEquals(CONTENT, configService.getConfig(DATA_ID, GROUP_ID, 5000));
-    }
+	@Test
+	public void test() throws NacosException {
+		configService.publishConfig(DATA_ID, GROUP_ID, CONTENT);
+		Assert.assertEquals(CONTENT, configService.getConfig(DATA_ID, GROUP_ID, 5000));
+	}
 }

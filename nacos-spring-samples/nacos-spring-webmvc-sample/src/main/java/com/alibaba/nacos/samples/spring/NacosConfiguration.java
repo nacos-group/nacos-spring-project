@@ -16,14 +16,15 @@
  */
 package com.alibaba.nacos.samples.spring;
 
+import javax.annotation.PostConstruct;
+
 import com.alibaba.nacos.api.annotation.NacosInjected;
 import com.alibaba.nacos.api.annotation.NacosProperties;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.naming.NamingService;
 import com.alibaba.nacos.spring.context.annotation.EnableNacos;
-import org.springframework.context.annotation.Configuration;
 
-import javax.annotation.PostConstruct;
+import org.springframework.context.annotation.Configuration;
 
 /**
  * Nacos {@link Configuration}
@@ -32,37 +33,28 @@ import javax.annotation.PostConstruct;
  * @since 0.1.0
  */
 @Configuration
-@EnableNacos(
-        globalProperties =
-        @NacosProperties(serverAddr = "${nacos.server-addr}",
-                namespace = "${nacos.config.namespace}",
-                enableRemoteSyncConfig = "true",
-                maxRetry = "5",
-                configRetryTime = "4000",
-                configLongPollTimeout = "26000")
-)
+@EnableNacos(globalProperties = @NacosProperties(serverAddr = "${nacos.server-addr}", enableRemoteSyncConfig = "true", maxRetry = "5", configRetryTime = "4000", configLongPollTimeout = "26000"))
 public class NacosConfiguration {
 
-    /**
-     * The data id for {@link System#currentTimeMillis()}
-     */
-    public static final String CURRENT_TIME_DATA_ID = "time-data-id";
+	/**
+	 * The data id for {@link System#currentTimeMillis()}
+	 */
+	public static final String CURRENT_TIME_DATA_ID = "time-data-id";
 
-    @NacosInjected
-    private NamingService namingService;
+	@NacosInjected
+	private NamingService namingService;
 
-    @NacosInjected(properties = @NacosProperties(encode = "UTF-8"))
-    private NamingService namingServiceUTF8;
+	@NacosInjected(properties = @NacosProperties(encode = "UTF-8"))
+	private NamingService namingServiceUTF8;
 
-    @NacosInjected
-    private ConfigService configService;
+	@NacosInjected
+	private ConfigService configService;
 
-
-    @PostConstruct
-    public void init() {
-        if (namingService != namingServiceUTF8) {
-            throw new RuntimeException("Why?");
-        }
-    }
+	@PostConstruct
+	public void init() {
+		if (namingService != namingServiceUTF8) {
+			throw new RuntimeException("Why?");
+		}
+	}
 
 }

@@ -16,15 +16,16 @@
  */
 package com.alibaba.nacos.samples.spring.listener;
 
+import javax.annotation.PostConstruct;
+
 import com.alibaba.nacos.api.annotation.NacosInjected;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.config.annotation.NacosConfigListener;
 import com.alibaba.nacos.samples.spring.NacosConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Configuration;
 
-import javax.annotation.PostConstruct;
+import org.springframework.context.annotation.Configuration;
 
 import static com.alibaba.nacos.api.common.Constants.DEFAULT_GROUP;
 import static com.alibaba.nacos.samples.spring.NacosConfiguration.CURRENT_TIME_DATA_ID;
@@ -39,28 +40,29 @@ import static com.alibaba.nacos.samples.spring.NacosConfiguration.CURRENT_TIME_D
 @Configuration
 public class TimeoutNacosConfigListener {
 
-    private static final Logger logger = LoggerFactory.getLogger(TimeoutNacosConfigListener.class);
+	private static final Logger logger = LoggerFactory
+			.getLogger(TimeoutNacosConfigListener.class);
 
-    public static final String TEST_DATA_ID = "timeout-data-id";
+	public static final String TEST_DATA_ID = "timeout-data-id";
 
-    @NacosInjected
-    private ConfigService configService;
+	@NacosInjected
+	private ConfigService configService;
 
-    @PostConstruct
-    public void init() throws Exception {
-        configService.publishConfig(TEST_DATA_ID, DEFAULT_GROUP, "Hello,World");
-    }
+	@PostConstruct
+	public void init() throws Exception {
+		configService.publishConfig(TEST_DATA_ID, DEFAULT_GROUP, "Hello,World");
+	}
 
-    @NacosConfigListener(dataId = CURRENT_TIME_DATA_ID, timeout = 100)
-    public void onReceivedWithTimeout(String value) throws InterruptedException {
-        Thread.sleep(200);
-        logger.info("onReceivedWithTimeout(String) : {}", value); // Never executes
-    }
+	@NacosConfigListener(dataId = CURRENT_TIME_DATA_ID, timeout = 100)
+	public void onReceivedWithTimeout(String value) throws InterruptedException {
+		Thread.sleep(200);
+		logger.info("onReceivedWithTimeout(String) : {}", value); // Never executes
+	}
 
-    @NacosConfigListener(dataId = CURRENT_TIME_DATA_ID, timeout = 100)
-    public void onReceivedWithoutTimeout(String value) throws InterruptedException {
-        Thread.sleep(50);
-        logger.info("onReceivedWithoutTimeout(String) : {}", value);
-    }
+	@NacosConfigListener(dataId = CURRENT_TIME_DATA_ID, timeout = 100)
+	public void onReceivedWithoutTimeout(String value) throws InterruptedException {
+		Thread.sleep(50);
+		logger.info("onReceivedWithoutTimeout(String) : {}", value);
+	}
 
 }

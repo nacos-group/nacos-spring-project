@@ -16,16 +16,6 @@
  */
 package com.alibaba.nacos.spring.factory;
 
-import com.alibaba.nacos.api.NacosFactory;
-import com.alibaba.nacos.api.config.ConfigService;
-import com.alibaba.nacos.api.exception.NacosException;
-import com.alibaba.nacos.api.naming.NamingMaintainService;
-import com.alibaba.nacos.api.naming.NamingService;
-import com.alibaba.nacos.spring.context.event.config.EventPublishingConfigService;
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ConfigurableApplicationContext;
-
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -34,6 +24,17 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
+
+import com.alibaba.nacos.api.NacosFactory;
+import com.alibaba.nacos.api.config.ConfigService;
+import com.alibaba.nacos.api.exception.NacosException;
+import com.alibaba.nacos.api.naming.NamingMaintainService;
+import com.alibaba.nacos.api.naming.NamingService;
+import com.alibaba.nacos.spring.context.event.config.EventPublishingConfigService;
+
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 
 import static com.alibaba.nacos.spring.util.NacosBeanUtils.getNacosConfigListenerExecutorIfPresent;
 import static com.alibaba.nacos.spring.util.NacosUtils.identify;
@@ -44,235 +45,263 @@ import static com.alibaba.nacos.spring.util.NacosUtils.identify;
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
  * @since 0.1.0
  */
+@SuppressWarnings("unchecked")
 public class CacheableEventPublishingNacosServiceFactory implements NacosServiceFactory {
 
-    private static final CacheableEventPublishingNacosServiceFactory SINGLETON = new CacheableEventPublishingNacosServiceFactory();
+	private static final CacheableEventPublishingNacosServiceFactory SINGLETON = new CacheableEventPublishingNacosServiceFactory();
 
-    private final Map<String, ConfigService> configServicesCache = new LinkedHashMap<String, ConfigService>(2);
+	private final Map<String, ConfigService> configServicesCache = new LinkedHashMap<String, ConfigService>(
+			2);
 
-    private final Map<String, NamingService> namingServicesCache = new LinkedHashMap<String, NamingService>(2);
+	private final Map<String, NamingService> namingServicesCache = new LinkedHashMap<String, NamingService>(
+			2);
 
-    private final Map<String, NamingMaintainService> maintainServiceCache = new LinkedHashMap<String, NamingMaintainService>(2);
+	private final Map<String, NamingMaintainService> maintainServiceCache = new LinkedHashMap<String, NamingMaintainService>(
+			2);
 
-    private final LinkedList<DeferServiceHolder> deferServiceCache = new LinkedList<DeferServiceHolder>();
+	private final LinkedList<DeferServiceHolder> deferServiceCache = new LinkedList<DeferServiceHolder>();
 
-    private ConfigurableApplicationContext context;
+	private volatile ConfigurableApplicationContext context;
 
-    private ExecutorService nacosConfigListenerExecutor;
+	private volatile ExecutorService nacosConfigListenerExecutor;
 
-    private Map<ServiceType, AbstractCreateWorker> createWorkerManager = new HashMap<ServiceType, AbstractCreateWorker>(3);
+	private Map<ServiceType, AbstractCreateWorker> createWorkerManager = new HashMap<ServiceType, AbstractCreateWorker>(
+			3);
 
-    public CacheableEventPublishingNacosServiceFactory() {
-        createWorkerManager.put(ServiceType.CONFIG, new ConfigCreateWorker());
-        createWorkerManager.put(ServiceType.NAMING, new NamingCreateWorker());
-        createWorkerManager.put(ServiceType.MAINTAIN, new MaintainCreateWorker());
-        createWorkerManager = Collections.unmodifiableMap(createWorkerManager);
-    }
+	public CacheableEventPublishingNacosServiceFactory() {
+		createWorkerManager.put(ServiceType.CONFIG, new ConfigCreateWorker());
+		createWorkerManager.put(ServiceType.NAMING, new NamingCreateWorker());
+		createWorkerManager.put(ServiceType.MAINTAIN, new MaintainCreateWorker());
+		createWorkerManager = Collections.unmodifiableMap(createWorkerManager);
+	}
 
-    @Override
-    public ConfigService createConfigService(Properties properties) throws NacosException {
-        Properties copy = new Properties();
-        copy.putAll(properties);
-        return (ConfigService) createWorkerManager.get(ServiceType.CONFIG).run(copy, null);
-    }
+	@Override
+	public ConfigService createConfigService(Properties properties)
+			throws NacosException {
+		Properties copy = new Properties();
+		copy.putAll(properties);
+		return (ConfigService) createWorkerManager.get(ServiceType.CONFIG).run(copy,
+				null);
+	}
 
-    @Override
-    public NamingService createNamingService(Properties properties) throws NacosException {
-        Properties copy = new Properties();
-        copy.putAll(properties);
-        return (NamingService) createWorkerManager.get(ServiceType.NAMING).run(copy, null);
-    }
+	@Override
+	public NamingService createNamingService(Properties properties)
+			throws NacosException {
+		Properties copy = new Properties();
+		copy.putAll(properties);
+		return (NamingService) createWorkerManager.get(ServiceType.NAMING).run(copy,
+				null);
+	}
 
-    @Override
-    public NamingMaintainService createNamingMaintainService(Properties properties) throws NacosException {
-        Properties copy = new Properties();
-        copy.putAll(properties);
-        return (NamingMaintainService) createWorkerManager.get(ServiceType.MAINTAIN).run(copy, null);
-    }
+	@Override
+	public NamingMaintainService createNamingMaintainService(Properties properties)
+			throws NacosException {
+		Properties copy = new Properties();
+		copy.putAll(properties);
+		return (NamingMaintainService) createWorkerManager.get(ServiceType.MAINTAIN)
+				.run(copy, null);
+	}
 
-    // Exist some cases need to create the ConfigService | NamingService | NamingMaintainService
-    // before loading the Context object, lazy loading
+	// Exist some cases need to create the ConfigService | NamingService |
+	// NamingMaintainService
+	// before loading the Context object, lazy loading
 
-    public <T> T deferCreateService(T service, Properties properties) {
-        DeferServiceHolder serviceHolder = new DeferServiceHolder();
-        serviceHolder.setHolder(service);
-        serviceHolder.setProperties(properties);
-        deferServiceCache.add(serviceHolder);
-        return service;
-    }
+	public <T> T deferCreateService(T service, Properties properties) {
+		DeferServiceHolder serviceHolder = new DeferServiceHolder();
+		serviceHolder.setHolder(service);
+		serviceHolder.setProperties(properties);
+		deferServiceCache.add(serviceHolder);
+		return service;
+	}
 
-    public void publishDeferService() throws NacosException {
-        for (DeferServiceHolder holder : deferServiceCache) {
-            final Object o = holder.getHolder();
-            final Properties properties = holder.getProperties();
-            if (o instanceof ConfigService) {
-                ConfigService configService = (ConfigService) o;
-                createWorkerManager.get(ServiceType.CONFIG).run(properties, configService);
-            } else if (o instanceof NamingService) {
-                NamingService namingService = (NamingService) o;
-                createWorkerManager.get(ServiceType.NAMING).run(properties, namingService);
-            } else if (o instanceof NamingMaintainService) {
-                NamingMaintainService maintainService = (NamingMaintainService) o;
-                createWorkerManager.get(ServiceType.MAINTAIN).run(properties, maintainService);
-            }
-        }
-        deferServiceCache.clear();
-    }
+	@SuppressWarnings("unchecked")
+	public void publishDeferService(ApplicationContext context) throws NacosException {
+		setApplicationContext(context);
+		for (DeferServiceHolder holder : deferServiceCache) {
+			final Object o = holder.getHolder();
+			final Properties properties = holder.getProperties();
+			if (o instanceof ConfigService) {
+				ConfigService configService = (ConfigService) o;
+				createWorkerManager.get(ServiceType.CONFIG).run(properties,
+						configService);
+			}
+			else if (o instanceof NamingService) {
+				NamingService namingService = (NamingService) o;
+				createWorkerManager.get(ServiceType.NAMING).run(properties,
+						namingService);
+			}
+			else if (o instanceof NamingMaintainService) {
+				NamingMaintainService maintainService = (NamingMaintainService) o;
+				createWorkerManager.get(ServiceType.MAINTAIN).run(properties,
+						maintainService);
+			}
+		}
+		deferServiceCache.clear();
+	}
 
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        this.context = (ConfigurableApplicationContext) applicationContext;
-        this.nacosConfigListenerExecutor = getSingleton().nacosConfigListenerExecutor == null ?
-                getNacosConfigListenerExecutorIfPresent(applicationContext) : getSingleton().nacosConfigListenerExecutor;
-    }
+	public void setApplicationContext(ApplicationContext applicationContext)
+			throws BeansException {
+		this.context = (ConfigurableApplicationContext) applicationContext;
+		this.nacosConfigListenerExecutor = getSingleton().nacosConfigListenerExecutor == null
+				? getNacosConfigListenerExecutorIfPresent(applicationContext)
+				: getSingleton().nacosConfigListenerExecutor;
+	}
 
-    @Override
-    public Collection<ConfigService> getConfigServices() {
-        return configServicesCache.values();
-    }
+	@Override
+	public Collection<ConfigService> getConfigServices() {
+		return configServicesCache.values();
+	}
 
-    @Override
-    public Collection<NamingService> getNamingServices() {
-        return namingServicesCache.values();
-    }
+	@Override
+	public Collection<NamingService> getNamingServices() {
+		return namingServicesCache.values();
+	}
 
-    @Override
-    public Collection<NamingMaintainService> getNamingMaintainService() {
-        return maintainServiceCache.values();
-    }
+	@Override
+	public Collection<NamingMaintainService> getNamingMaintainService() {
+		return maintainServiceCache.values();
+	}
 
-    public static CacheableEventPublishingNacosServiceFactory getSingleton() {
-        return SINGLETON;
-    }
+	public static CacheableEventPublishingNacosServiceFactory getSingleton() {
+		return SINGLETON;
+	}
 
-    private static enum ServiceType {
+	private static enum ServiceType {
 
-        /**
-         * Config
-         */
-        CONFIG,
+		/**
+		 * Config
+		 */
+		CONFIG,
 
-        /**
-         * Naming
-         */
-        NAMING,
+		/**
+		 * Naming
+		 */
+		NAMING,
 
-        /**
-         * Maintain
-         */
-        MAINTAIN
+		/**
+		 * Maintain
+		 */
+		MAINTAIN
 
-    }
+	}
 
-    static class DeferServiceHolder {
+	static class DeferServiceHolder {
 
-        private Properties properties;
-        private Object holder;
-        private ServiceType type;
+		private Properties properties;
+		private Object holder;
+		private ServiceType type;
 
-        public Properties getProperties() {
-            return properties;
-        }
+		public Properties getProperties() {
+			return properties;
+		}
 
-        public void setProperties(Properties properties) {
-            this.properties = properties;
-        }
+		public void setProperties(Properties properties) {
+			this.properties = properties;
+		}
 
-        public Object getHolder() {
-            return holder;
-        }
+		Object getHolder() {
+			return holder;
+		}
 
-        public void setHolder(Object holder) {
-            this.holder = holder;
-        }
+		void setHolder(Object holder) {
+			this.holder = holder;
+		}
 
-        public ServiceType getType() {
-            return type;
-        }
+		public ServiceType getType() {
+			return type;
+		}
 
-        public void setType(ServiceType type) {
-            this.type = type;
-        }
-    }
+		public void setType(ServiceType type) {
+			this.type = type;
+		}
+	}
 
-    abstract class AbstractCreateWorker<T> {
+	abstract static class AbstractCreateWorker<T> {
 
-        AbstractCreateWorker() {
-        }
+		AbstractCreateWorker() {
+		}
 
-        /**
-         * To perform the corresponding create and logic object cache
-         *
-         * @param properties
-         * @param service
-         * @return T service
-         * @throws NacosException
-         */
-        public abstract T run(Properties properties, T service) throws NacosException;
+		/**
+		 * To perform the corresponding create and logic object cache
+		 *
+		 * @param properties Set the parameters
+		 * @param service nacos service {ConfigService | NamingService |
+		 *     NamingMaintainService}
+		 * @return T service
+		 * @throws NacosException
+		 */
+		public abstract T run(Properties properties, T service) throws NacosException;
 
-    }
+	}
 
-    class ConfigCreateWorker extends AbstractCreateWorker<ConfigService> {
+	class ConfigCreateWorker extends AbstractCreateWorker<ConfigService> {
 
-        ConfigCreateWorker() {
-        }
+		ConfigCreateWorker() {
+		}
 
-        @Override
-        public ConfigService run(Properties properties, ConfigService service) throws NacosException {
-            String cacheKey = identify(properties);
-            ConfigService configService = configServicesCache.get(cacheKey);
+		@Override
+		public ConfigService run(Properties properties, ConfigService service)
+				throws NacosException {
+			String cacheKey = identify(properties);
+			ConfigService configService = configServicesCache.get(cacheKey);
 
-            if (configService == null) {
-                if (service == null) {
-                    service = NacosFactory.createConfigService(properties);
-                }
-                configService = new EventPublishingConfigService(service, properties, getSingleton().context,
-                        getSingleton().nacosConfigListenerExecutor);
-                configServicesCache.put(cacheKey, configService);
-            }
-            return configService;
-        }
-    }
+			if (configService == null) {
+				if (service == null) {
+					service = NacosFactory.createConfigService(properties);
+				}
+				configService = new EventPublishingConfigService(service, properties,
+						getSingleton().context,
+						getSingleton().nacosConfigListenerExecutor);
+				configServicesCache.put(cacheKey, configService);
+			}
+			return configService;
+		}
+	}
 
-    class NamingCreateWorker extends AbstractCreateWorker<NamingService> {
+	class NamingCreateWorker extends AbstractCreateWorker<NamingService> {
 
-        NamingCreateWorker() {
-        }
+		NamingCreateWorker() {
+		}
 
-        @Override
-        public NamingService run(Properties properties, NamingService service) throws NacosException {
-            String cacheKey = identify(properties);
-            NamingService namingService = namingServicesCache.get(cacheKey);
+		@Override
+		public NamingService run(Properties properties, NamingService service)
+				throws NacosException {
+			String cacheKey = identify(properties);
+			NamingService namingService = namingServicesCache.get(cacheKey);
 
-            if (namingService == null) {
-                if (service == null) {
-                    service = NacosFactory.createNamingService(properties);
-                }
-                namingService = new DelegatingNamingService(service, properties);
-                namingServicesCache.put(cacheKey, namingService);
-            }
-            return namingService;
-        }
-    }
+			if (namingService == null) {
+				if (service == null) {
+					service = NacosFactory.createNamingService(properties);
+				}
+				namingService = new DelegatingNamingService(service, properties);
+				namingServicesCache.put(cacheKey, namingService);
+			}
+			return namingService;
+		}
+	}
 
-    class MaintainCreateWorker extends AbstractCreateWorker<NamingMaintainService> {
+	class MaintainCreateWorker extends AbstractCreateWorker<NamingMaintainService> {
 
-        MaintainCreateWorker() {
-        }
+		MaintainCreateWorker() {
+		}
 
-        @Override
-        public NamingMaintainService run(Properties properties, NamingMaintainService service) throws NacosException {
-            String cacheKey = identify(properties);
-            NamingMaintainService namingMaintainService = maintainServiceCache.get(cacheKey);
+		@Override
+		public NamingMaintainService run(Properties properties,
+				NamingMaintainService service) throws NacosException {
+			String cacheKey = identify(properties);
+			NamingMaintainService namingMaintainService = maintainServiceCache
+					.get(cacheKey);
 
-            if (namingMaintainService == null) {
-                if (service == null) {
-                    service = NacosFactory.createMaintainService(properties);
-                }
-                namingMaintainService = new DelegatingNamingMaintainService(service, properties);
-                maintainServiceCache.put(cacheKey, namingMaintainService);
-            }
-            return namingMaintainService;
-        }
-    }
+			if (namingMaintainService == null) {
+				if (service == null) {
+					service = NacosFactory.createMaintainService(properties);
+				}
+				namingMaintainService = new DelegatingNamingMaintainService(service,
+						properties);
+				maintainServiceCache.put(cacheKey, namingMaintainService);
+			}
+			return namingMaintainService;
+		}
+	}
 
 }

@@ -27,16 +27,17 @@ import org.springframework.context.ConfigurableApplicationContext;
  */
 public class ApplicationContextHolder implements ApplicationContextAware {
 
-    public static final String BEAN_NAME = "nacosApplicationContextHolder";
+	public static final String BEAN_NAME = "nacosApplicationContextHolder";
 
-    private ConfigurableApplicationContext context;
+	private ConfigurableApplicationContext context;
 
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        context = (ConfigurableApplicationContext) applicationContext;
-    }
+	@Override
+	public void setApplicationContext(ApplicationContext applicationContext)
+			throws BeansException {
+		context = (ConfigurableApplicationContext) applicationContext;
+	}
 
-    public ConfigurableApplicationContext getApplicationContext() {
-        return context;
-    }
+	public ConfigurableApplicationContext getApplicationContext() {
+		return context;
+	}
 }

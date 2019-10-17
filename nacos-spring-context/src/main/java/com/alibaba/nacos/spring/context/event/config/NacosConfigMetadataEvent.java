@@ -16,18 +16,19 @@
  */
 package com.alibaba.nacos.spring.context.event.config;
 
-import com.alibaba.nacos.api.config.annotation.NacosConfigListener;
-import com.alibaba.nacos.api.config.annotation.NacosConfigurationProperties;
-import com.alibaba.nacos.spring.context.annotation.config.NacosPropertySource;
-import org.springframework.context.ApplicationEvent;
-import org.springframework.core.io.Resource;
-import org.w3c.dom.Element;
-
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.Properties;
+
+import com.alibaba.nacos.api.config.annotation.NacosConfigListener;
+import com.alibaba.nacos.api.config.annotation.NacosConfigurationProperties;
+import com.alibaba.nacos.spring.context.annotation.config.NacosPropertySource;
+import org.w3c.dom.Element;
+
+import org.springframework.context.ApplicationEvent;
+import org.springframework.core.io.Resource;
 
 /**
  * Nacos Config Meta-Data {@link NacosConfigEvent event}
@@ -37,129 +38,131 @@ import java.util.Properties;
  */
 public class NacosConfigMetadataEvent extends ApplicationEvent {
 
-    private String dataId;
+	private String dataId;
 
-    private String groupId;
+	private String groupId;
 
-    private String beanName;
+	private String beanName;
 
-    private Object bean;
+	private Object bean;
 
-    private Class<?> beanType;
+	private Class<?> beanType;
 
-    private AnnotatedElement annotatedElement;
+	private AnnotatedElement annotatedElement;
 
-    private Resource xmlResource;
+	private Resource xmlResource;
 
-    private Properties nacosProperties;
+	private Properties nacosProperties;
 
-    private Map<String, Object> nacosPropertiesAttributes;
+	private Map<String, Object> nacosPropertiesAttributes;
 
-    /**
-     * Create a new ApplicationEvent.
-     *
-     * @param source maybe {@link Annotation} or {@link Element XML element}
-     * @see NacosConfigListener
-     * @see NacosConfigurationProperties
-     * @see NacosPropertySource
-     * @see Element
-     */
-    public NacosConfigMetadataEvent(Object source) {
-        super(source);
-    }
+	/**
+	 * Create a new ApplicationEvent.
+	 *
+	 * @param source maybe {@link Annotation} or {@link Element XML element}
+	 * @see NacosConfigListener
+	 * @see NacosConfigurationProperties
+	 * @see NacosPropertySource
+	 * @see Element
+	 */
+	public NacosConfigMetadataEvent(Object source) {
+		super(source);
+	}
 
-    public String getDataId() {
-        return dataId;
-    }
+	public String getDataId() {
+		return dataId;
+	}
 
-    public void setDataId(String dataId) {
-        this.dataId = dataId;
-    }
+	public void setDataId(String dataId) {
+		this.dataId = dataId;
+	}
 
-    public String getGroupId() {
-        return groupId;
-    }
+	public String getGroupId() {
+		return groupId;
+	}
 
-    public void setGroupId(String groupId) {
-        this.groupId = groupId;
-    }
+	public void setGroupId(String groupId) {
+		this.groupId = groupId;
+	}
 
-    public String getBeanName() {
-        return beanName;
-    }
+	public String getBeanName() {
+		return beanName;
+	}
 
-    public void setBeanName(String beanName) {
-        this.beanName = beanName;
-    }
+	public void setBeanName(String beanName) {
+		this.beanName = beanName;
+	}
 
-    public Object getBean() {
-        return bean;
-    }
+	public Object getBean() {
+		return bean;
+	}
 
-    public void setBean(Object bean) {
-        this.bean = bean;
-    }
+	public void setBean(Object bean) {
+		this.bean = bean;
+	}
 
-    public Class<?> getBeanType() {
-        return beanType;
-    }
+	public Class<?> getBeanType() {
+		return beanType;
+	}
 
-    public void setBeanType(Class<?> beanType) {
-        this.beanType = beanType;
-    }
+	public void setBeanType(Class<?> beanType) {
+		this.beanType = beanType;
+	}
 
-    /**
-     * {@link AnnotatedElement} maybe {@link Class}, {@link Method}
-     *
-     * @return maybe <code>null</code> if source from XML configuration
-     * @see NacosConfigListener
-     * @see NacosConfigurationProperties
-     * @see NacosPropertySource
-     */
-    public AnnotatedElement getAnnotatedElement() {
-        return annotatedElement;
-    }
+	/**
+	 * {@link AnnotatedElement} maybe {@link Class}, {@link Method}
+	 *
+	 * @return maybe <code>null</code> if source from XML configuration
+	 * @see NacosConfigListener
+	 * @see NacosConfigurationProperties
+	 * @see NacosPropertySource
+	 */
+	public AnnotatedElement getAnnotatedElement() {
+		return annotatedElement;
+	}
 
-    public void setAnnotatedElement(AnnotatedElement annotatedElement) {
-        this.annotatedElement = annotatedElement;
-    }
+	public void setAnnotatedElement(AnnotatedElement annotatedElement) {
+		this.annotatedElement = annotatedElement;
+	}
 
-    /**
-     * {@link Resource} for XML configuration
-     *
-     * @return maybe <code>null</code> if Annotated by somewhere
-     */
-    public Resource getXmlResource() {
-        return xmlResource;
-    }
+	/**
+	 * {@link Resource} for XML configuration
+	 *
+	 * @return maybe <code>null</code> if Annotated by somewhere
+	 */
+	public Resource getXmlResource() {
+		return xmlResource;
+	}
 
-    public void setXmlResource(Resource xmlResource) {
-        this.xmlResource = xmlResource;
-    }
+	public void setXmlResource(Resource xmlResource) {
+		this.xmlResource = xmlResource;
+	}
 
-    /**
-     * Actual effective Nacos {@link Properties}
-     *
-     * @return non-null
-     */
-    public Properties getNacosProperties() {
-        return nacosProperties;
-    }
+	/**
+	 * Actual effective Nacos {@link Properties}
+	 *
+	 * @return non-null
+	 */
+	public Properties getNacosProperties() {
+		return nacosProperties;
+	}
 
-    public void setNacosProperties(Properties nacosProperties) {
-        this.nacosProperties = nacosProperties;
-    }
+	public void setNacosProperties(Properties nacosProperties) {
+		this.nacosProperties = nacosProperties;
+	}
 
-    /**
-     * Nacos {@link Properties}'s attributes that may come frome {@link Annotation} or {@link Element XML element}
-     *
-     * @return non-null
-     */
-    public Map<String, Object> getNacosPropertiesAttributes() {
-        return nacosPropertiesAttributes;
-    }
+	/**
+	 * Nacos {@link Properties}'s attributes that may come frome {@link Annotation} or
+	 * {@link Element XML element}
+	 *
+	 * @return non-null
+	 */
+	public Map<String, Object> getNacosPropertiesAttributes() {
+		return nacosPropertiesAttributes;
+	}
 
-    public void setNacosPropertiesAttributes(Map<String, Object> nacosPropertiesAttributes) {
-        this.nacosPropertiesAttributes = nacosPropertiesAttributes;
-    }
+	public void setNacosPropertiesAttributes(
+			Map<String, Object> nacosPropertiesAttributes) {
+		this.nacosPropertiesAttributes = nacosPropertiesAttributes;
+	}
 }

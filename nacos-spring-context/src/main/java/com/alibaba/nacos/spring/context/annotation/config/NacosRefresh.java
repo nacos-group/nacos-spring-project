@@ -14,15 +14,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.alibaba.nacos.spring.util.parse;
+package com.alibaba.nacos.spring.context.annotation.config;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * @author <a href="mailto:liaochunyhm@live.com">liaochuntao</a>
- * @since 0.3.0
+ * @since 0.3.5
  */
-class ConfigParseException extends RuntimeException {
-
-	ConfigParseException(Throwable cause) {
-		super(cause);
-	}
+@Target({ ElementType.TYPE, ElementType.ANNOTATION_TYPE })
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface NacosRefresh {
 }

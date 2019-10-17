@@ -16,12 +16,17 @@
  */
 package com.alibaba.nacos.spring.util;
 
-import com.alibaba.nacos.api.config.annotation.NacosIgnore;
-import org.springframework.util.ReflectionUtils;
-
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Map;
+
+import com.alibaba.nacos.api.config.annotation.NacosIgnore;
+
+import org.springframework.beans.TypeConverter;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.core.MethodParameter;
+import org.springframework.util.ReflectionUtils;
 
 /**
  * @author <a href="mailto:liaochunyhm@live.com">liaochuntao</a>
@@ -29,21 +34,50 @@ import java.util.Map;
  */
 public abstract class ObjectUtils {
 
-    public static void cleanMapOrCollectionField(final Object bean) {
-        ReflectionUtils.doWithFields(bean.getClass(), new ReflectionUtils.FieldCallback() {
+	public static void cleanMapOrCollectionField(final Object bean) {
+		ReflectionUtils.doWithFields(bean.getClass(),
+				new ReflectionUtils.FieldCallback() {
 
-            @Override
-            public void doWith(Field field) throws IllegalArgumentException, IllegalAccessException {
-                field.setAccessible(true);
-                if (field.isAnnotationPresent(NacosIgnore.class)) {
-                    return;
-                }
-                Class<?> type = field.getType();
-                if (type.isAssignableFrom(Map.class) || Collection.class.isAssignableFrom(type)) {
-                    field.set(bean, null);
-                }
-            }
-        });
-    }
+					@Override
+					public void doWith(Field field)
+							throws IllegalArgumentException, IllegalAccessException {
+						field.setAccessible(true);
+						if (field.isAnnotationPresent(NacosIgnore.class)) {
+							return;
+						}
+						Class<?> type = field.getType();
+						if (type.isAssignableFrom(Map.class)
+								|| Collection.class.isAssignableFrom(type)) {
+							field.set(bean, null);
+						}
+					}
+				});
+	}
+
+	public static Object convertIfNecessary(ConfigurableListableBeanFactory beanFactory,
+			Field field, Object value) {
+		TypeConverter converter = beanFactory.getTypeConverter();
+		return converter.convertIfNecessary(value, field.getType(), field);
+	}
+
+	public static Object convertIfNecessary(ConfigurableListableBeanFactory beanFactory,
+			Method method, Object value) {
+		Class<?>[] paramTypes = method.getParameterTypes();
+		Object[] arguments = new Object[paramTypes.length];
+
+		TypeConverter converter = beanFactory.getTypeConverter();
+
+		if (arguments.length == 1) {
+			return converter.convertIfNecessary(value, paramTypes[0],
+					new MethodParameter(method, 0));
+		}
+
+		for (int i = 0; i < arguments.length; i++) {
+			arguments[i] = converter.convertIfNecessary(value, paramTypes[i],
+					new MethodParameter(method, i));
+		}
+
+		return arguments;
+	}
 
 }

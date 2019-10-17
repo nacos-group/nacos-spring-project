@@ -18,6 +18,7 @@ package com.alibaba.nacos.spring.context.annotation.discovery;
 
 import com.alibaba.nacos.spring.context.annotation.config.EnableNacosConfig;
 import com.alibaba.nacos.spring.util.NacosBeanUtils;
+
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
@@ -26,36 +27,46 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertyResolver;
 import org.springframework.core.type.AnnotationMetadata;
 
-import static com.alibaba.nacos.spring.util.NacosBeanUtils.*;
+import static com.alibaba.nacos.spring.util.NacosBeanUtils.DISCOVERY_GLOBAL_NACOS_PROPERTIES_BEAN_NAME;
+import static com.alibaba.nacos.spring.util.NacosBeanUtils.MAINTAIN_GLOBAL_NACOS_PROPERTIES_BEAN_NAME;
+import static com.alibaba.nacos.spring.util.NacosBeanUtils.registerGlobalNacosProperties;
+import static com.alibaba.nacos.spring.util.NacosBeanUtils.registerNacosCommonBeans;
+import static com.alibaba.nacos.spring.util.NacosBeanUtils.registerNacosDiscoveryBeans;
 
 /**
  * Nacos Discovery {@link ImportBeanDefinitionRegistrar BeanDefinition Registrar}
  *
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
  * @see EnableNacosConfig
- * @see NacosBeanUtils#registerGlobalNacosProperties(AnnotationAttributes, BeanDefinitionRegistry, PropertyResolver, String)
+ * @see NacosBeanUtils#registerGlobalNacosProperties(AnnotationAttributes,
+ * BeanDefinitionRegistry, PropertyResolver, String)
  * @see NacosBeanUtils#registerNacosCommonBeans(BeanDefinitionRegistry)
  * @since 0.1.0
  */
-public class NacosDiscoveryBeanDefinitionRegistrar implements ImportBeanDefinitionRegistrar, EnvironmentAware {
+public class NacosDiscoveryBeanDefinitionRegistrar
+		implements ImportBeanDefinitionRegistrar, EnvironmentAware {
 
-    private Environment environment;
+	private Environment environment;
 
-    @Override
-    public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
-        AnnotationAttributes attributes = AnnotationAttributes.fromMap(
-                importingClassMetadata.getAnnotationAttributes(EnableNacosDiscovery.class.getName()));
-        // Register Global Nacos Properties Bean
-        registerGlobalNacosProperties(attributes, registry, environment, DISCOVERY_GLOBAL_NACOS_PROPERTIES_BEAN_NAME);
-        registerGlobalNacosProperties(attributes, registry, environment, MAINTAIN_GLOBAL_NACOS_PROPERTIES_BEAN_NAME);
-        // Register Nacos Common Beans
-        registerNacosCommonBeans(registry);
-        // Register Nacos Discovery Beans
-        registerNacosDiscoveryBeans(registry);
-    }
+	@Override
+	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata,
+			BeanDefinitionRegistry registry) {
+		AnnotationAttributes attributes = AnnotationAttributes
+				.fromMap(importingClassMetadata
+						.getAnnotationAttributes(EnableNacosDiscovery.class.getName()));
+		// Register Global Nacos Properties Bean
+		registerGlobalNacosProperties(attributes, registry, environment,
+				DISCOVERY_GLOBAL_NACOS_PROPERTIES_BEAN_NAME);
+		registerGlobalNacosProperties(attributes, registry, environment,
+				MAINTAIN_GLOBAL_NACOS_PROPERTIES_BEAN_NAME);
+		// Register Nacos Common Beans
+		registerNacosCommonBeans(registry);
+		// Register Nacos Discovery Beans
+		registerNacosDiscoveryBeans(registry);
+	}
 
-    @Override
-    public void setEnvironment(Environment environment) {
-        this.environment = environment;
-    }
+	@Override
+	public void setEnvironment(Environment environment) {
+		this.environment = environment;
+	}
 }

@@ -16,16 +16,16 @@
  */
 package com.alibaba.nacos.embedded.web.server;
 
-import com.alibaba.nacos.api.common.Constants;
-import com.alibaba.nacos.client.utils.ParamUtil;
-import com.sun.net.httpserver.HttpServer;
-
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+
+import com.alibaba.nacos.api.common.Constants;
+import com.alibaba.nacos.client.utils.ParamUtil;
+import com.sun.net.httpserver.HttpServer;
 
 /**
  * Embedded Nacos HTTP Server
@@ -35,81 +35,87 @@ import java.util.concurrent.Future;
  */
 public class EmbeddedNacosHttpServer {
 
-    private final HttpServer httpServer;
+	private final HttpServer httpServer;
 
-    private final int port;
+	private final int port;
 
-    private final String path = "/" + ParamUtil.getDefaultContextPath() + Constants.CONFIG_CONTROLLER_PATH;
+	private final String path = "/" + ParamUtil.getDefaultContextPath()
+			+ Constants.CONFIG_CONTROLLER_PATH;
 
-    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
+	private final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
-    private Future future;
+	private Future future;
 
-    private NacosConfigHttpHandler nacosConfigHttpHandler;
+	private NacosConfigHttpHandler nacosConfigHttpHandler;
 
-    public EmbeddedNacosHttpServer() throws IOException {
-        this.httpServer = HttpServer.create(new InetSocketAddress(0), 0);
-        this.port = httpServer.getAddress().getPort();
-        this.nacosConfigHttpHandler = new NacosConfigHttpHandler();
-    }
+	public EmbeddedNacosHttpServer() throws IOException {
+		this.httpServer = HttpServer.create(new InetSocketAddress(0), 0);
+		this.port = httpServer.getAddress().getPort();
+		this.nacosConfigHttpHandler = new NacosConfigHttpHandler();
+	}
 
-    public EmbeddedNacosHttpServer(int port) throws IOException {
-        this.httpServer = HttpServer.create(new InetSocketAddress(port), 0);
-        this.port = port;
-    }
+	public EmbeddedNacosHttpServer(int port) throws IOException {
+		this.httpServer = HttpServer.create(new InetSocketAddress(port), 0);
+		this.port = port;
+	}
 
-    public int getPort() {
-        return port;
-    }
+	public int getPort() {
+		return port;
+	}
 
-    public void initConfig(Map<String, String> map) {
-        nacosConfigHttpHandler.cacheConfig(map);
-    }
+	public void initConfig(Map<String, String> map) {
+		nacosConfigHttpHandler.cacheConfig(map);
+	}
 
-    public EmbeddedNacosHttpServer start(boolean blocking) {
+	public EmbeddedNacosHttpServer start(boolean blocking) {
 
-        httpServer.createContext(path, nacosConfigHttpHandler);
+		httpServer.createContext(path, nacosConfigHttpHandler);
 
-        nacosConfigHttpHandler.init();
+		nacosConfigHttpHandler.init();
 
-        if (blocking) {
-            startServer();
-        } else {
-            future = executorService.submit(new Runnable() {
-                @Override
-                public void run() {
-                    startServer();
-                }
-            });
-        }
+		if (blocking) {
+			startServer();
+		}
+		else {
+			future = executorService.submit(new Runnable() {
+				@Override
+				public void run() {
+					startServer();
+				}
+			});
+		}
 
-        return this;
-    }
+		return this;
+	}
 
-    private void startServer() {
-        httpServer.start();
-        String threadName = Thread.currentThread().getName();
-        System.out.printf("[%s] Embedded Nacos HTTP Server(port : %d) is starting...%n", threadName, port);
-        System.out.printf("[%s] Embedded Nacos HTTP Server mapped request URI : %s...%n", threadName, path);
-    }
+	private void startServer() {
+		httpServer.start();
+		String threadName = Thread.currentThread().getName();
+		System.out.printf("[%s] Embedded Nacos HTTP Server(port : %d) is starting...%n",
+				threadName, port);
+		System.out.printf("[%s] Embedded Nacos HTTP Server mapped request URI : %s...%n",
+				threadName, path);
+	}
 
-    public EmbeddedNacosHttpServer stop() {
-        String threadName = Thread.currentThread().getName();
-        System.out.printf("[%s] Embedded Nacos HTTP Server(port : %d) is stopping...%n", threadName, port);
+	public EmbeddedNacosHttpServer stop() {
+		String threadName = Thread.currentThread().getName();
+		System.out.printf("[%s] Embedded Nacos HTTP Server(port : %d) is stopping...%n",
+				threadName, port);
 
-        if (future != null) {
-            if (!future.isDone()) {
-                future.cancel(true);
-            }
-            executorService.shutdown();
-        }
+		if (future != null) {
+			if (!future.isDone()) {
+				future.cancel(true);
+			}
+			executorService.shutdown();
+		}
 
-        httpServer.stop(0);
+		httpServer.stop(0);
 
-        nacosConfigHttpHandler.destroy();
+		nacosConfigHttpHandler.destroy();
 
-        System.out.printf("[%s] Embedded Nacos HTTP Server(port : %d) is stopped.%n", threadName, port);
+		System.out.printf("[%s] Embedded Nacos HTTP Server(port : %d) is stopped.%n",
+				threadName, port);
 
-        return this;
-    }
+		return this;
+	}
 }

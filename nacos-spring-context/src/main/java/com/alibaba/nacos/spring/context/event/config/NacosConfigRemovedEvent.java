@@ -26,19 +26,21 @@ import com.alibaba.nacos.api.config.ConfigService;
  */
 public class NacosConfigRemovedEvent extends NacosConfigEvent {
 
-    private final boolean removed;
+	private final boolean removed;
 
-    public NacosConfigRemovedEvent(ConfigService configService, String dataId, String groupId, boolean removed) {
-        super(configService, dataId, groupId);
-        this.removed = removed;
-    }
+	public NacosConfigRemovedEvent(ConfigService configService, String dataId,
+			String groupId, boolean removed) {
+		super(configService, dataId, groupId);
+		this.removed = removed;
+	}
 
-    /**
-     * Is removed or not from {@link ConfigService#removeConfig(String, String)} method executing result.
-     *
-     * @return if removed , return <code>true</code>
-     */
-    public boolean isRemoved() {
-        return removed;
-    }
+	/**
+	 * Is removed or not from {@link ConfigService#removeConfig(String, String)} method
+	 * executing result.
+	 *
+	 * @return if removed , return <code>true</code>
+	 */
+	public boolean isRemoved() {
+		return removed;
+	}
 }

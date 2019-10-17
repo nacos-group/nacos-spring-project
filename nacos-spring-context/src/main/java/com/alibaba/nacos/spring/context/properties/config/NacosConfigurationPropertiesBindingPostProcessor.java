@@ -16,8 +16,11 @@
  */
 package com.alibaba.nacos.spring.context.properties.config;
 
+import java.util.Properties;
+
 import com.alibaba.nacos.api.config.annotation.NacosConfigurationProperties;
 import com.alibaba.nacos.spring.factory.NacosServiceFactory;
+
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.ApplicationContext;
@@ -25,8 +28,6 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.Environment;
-
-import java.util.Properties;
 
 import static org.springframework.core.annotation.AnnotationUtils.findAnnotation;
 
@@ -38,61 +39,68 @@ import static org.springframework.core.annotation.AnnotationUtils.findAnnotation
  * @see BeanPostProcessor
  * @since 0.1.0
  */
-public class NacosConfigurationPropertiesBindingPostProcessor implements BeanPostProcessor, ApplicationContextAware {
+public class NacosConfigurationPropertiesBindingPostProcessor
+		implements BeanPostProcessor, ApplicationContextAware {
 
-    /**
-     * The name of {@link NacosConfigurationPropertiesBindingPostProcessor} Bean
-     */
-    public static final String BEAN_NAME = "nacosConfigurationPropertiesBindingPostProcessor";
+	/**
+	 * The name of {@link NacosConfigurationPropertiesBindingPostProcessor} Bean
+	 */
+	public static final String BEAN_NAME = "nacosConfigurationPropertiesBindingPostProcessor";
 
-    private Properties globalNacosProperties;
+	private Properties globalNacosProperties;
 
-    private NacosServiceFactory nacosServiceFactory;
+	private NacosServiceFactory nacosServiceFactory;
 
-    private Environment environment;
+	private Environment environment;
 
-    private ApplicationEventPublisher applicationEventPublisher;
+	private ApplicationEventPublisher applicationEventPublisher;
 
-    private ConfigurableApplicationContext applicationContext;
+	private ConfigurableApplicationContext applicationContext;
 
-    @Override
-    public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
+	@Override
+	public Object postProcessBeforeInitialization(Object bean, String beanName)
+			throws BeansException {
 
-        NacosConfigurationProperties nacosConfigurationProperties = findAnnotation(bean.getClass(), NacosConfigurationProperties.class);
+		NacosConfigurationProperties nacosConfigurationProperties = findAnnotation(
+				bean.getClass(), NacosConfigurationProperties.class);
 
-        if (nacosConfigurationProperties != null) {
-            bind(bean, beanName, nacosConfigurationProperties);
-        }
+		if (nacosConfigurationProperties != null) {
+			bind(bean, beanName, nacosConfigurationProperties);
+		}
 
-        return bean;
-    }
+		return bean;
+	}
 
-    private void bind(Object bean, String beanName, NacosConfigurationProperties nacosConfigurationProperties) {
+	private void bind(Object bean, String beanName,
+			NacosConfigurationProperties nacosConfigurationProperties) {
 
-        NacosConfigurationPropertiesBinder binder;
-        try {
-            binder = applicationContext
-                    .getBean(NacosConfigurationPropertiesBinder.BEAN_NAME, NacosConfigurationPropertiesBinder.class);
-            if (binder == null) {
-                binder = new NacosConfigurationPropertiesBinder(applicationContext);
-            }
+		NacosConfigurationPropertiesBinder binder;
+		try {
+			binder = applicationContext.getBean(
+					NacosConfigurationPropertiesBinder.BEAN_NAME,
+					NacosConfigurationPropertiesBinder.class);
+			if (binder == null) {
+				binder = new NacosConfigurationPropertiesBinder(applicationContext);
+			}
 
-        } catch (Exception e) {
-            binder = new NacosConfigurationPropertiesBinder(applicationContext);
-        }
+		}
+		catch (Exception e) {
+			binder = new NacosConfigurationPropertiesBinder(applicationContext);
+		}
 
-        binder.bind(bean, beanName, nacosConfigurationProperties);
+		binder.bind(bean, beanName, nacosConfigurationProperties);
 
-    }
+	}
 
+	@Override
+	public Object postProcessAfterInitialization(Object bean, String beanName)
+			throws BeansException {
+		return bean;
+	}
 
-    @Override
-    public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-        return bean;
-    }
-
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        this.applicationContext = (ConfigurableApplicationContext) applicationContext;
-    }
+	@Override
+	public void setApplicationContext(ApplicationContext applicationContext)
+			throws BeansException {
+		this.applicationContext = (ConfigurableApplicationContext) applicationContext;
+	}
 }
