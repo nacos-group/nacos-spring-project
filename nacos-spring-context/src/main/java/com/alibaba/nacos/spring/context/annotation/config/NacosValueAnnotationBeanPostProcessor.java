@@ -18,6 +18,7 @@ package com.alibaba.nacos.spring.context.annotation.config;
 
 import com.alibaba.nacos.api.config.annotation.NacosValue;
 import com.alibaba.nacos.client.config.utils.MD5;
+import com.alibaba.nacos.spring.context.event.config.FieldChangedEvent;
 import com.alibaba.nacos.spring.context.event.config.NacosConfigReceivedEvent;
 import com.alibaba.spring.beans.factory.annotation.AnnotationInjectedBeanPostProcessor;
 import org.slf4j.Logger;
@@ -28,6 +29,8 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.annotation.InjectionMetadata;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.MethodParameter;
@@ -56,7 +59,7 @@ import static org.springframework.core.annotation.AnnotationUtils.getAnnotation;
  * @since 0.1.0
  */
 public class NacosValueAnnotationBeanPostProcessor extends AnnotationInjectedBeanPostProcessor<NacosValue>
-        implements BeanFactoryAware, EnvironmentAware, ApplicationListener<NacosConfigReceivedEvent> {
+        implements BeanFactoryAware, EnvironmentAware, ApplicationListener<NacosConfigReceivedEvent>, ApplicationEventPublisherAware {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -80,6 +83,13 @@ public class NacosValueAnnotationBeanPostProcessor extends AnnotationInjectedBea
     private ConfigurableListableBeanFactory beanFactory;
 
     private Environment environment;
+
+    private ApplicationEventPublisher applicationEventPublisher;
+
+    @Override
+    public void setApplicationEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
+        this.applicationEventPublisher = applicationEventPublisher;
+    }
 
     @Override
     protected Object doGetInjectedBean(NacosValue annotation, Object bean, String beanName, Class<?> injectedType,
@@ -136,6 +146,7 @@ public class NacosValueAnnotationBeanPostProcessor extends AnnotationInjectedBea
         // In to this event receiver, the environment has been updated the
         // latest configuration information, pull directly from the environment
         // fix issue #142
+        Map<String, String> changedProperties = new HashMap<String, String>();
         for (Map.Entry<String, List<NacosValueTarget>> entry : placeholderNacosValueTargetMap.entrySet()) {
             String key = environment.resolvePlaceholders(entry.getKey());
             String newValue = environment.getProperty(key);
@@ -150,10 +161,20 @@ public class NacosValueAnnotationBeanPostProcessor extends AnnotationInjectedBea
                     target.updateLastMD5(md5String);
                     if (target.method == null) {
                         setField(target, newValue);
+                        //if the properties value has changed,put the key and newValue in map
+                        changedProperties.put(key, newValue);
                     } else {
                         setMethod(target, newValue);
                     }
                 }
+            }
+        }
+
+        if (!changedProperties.isEmpty()) {
+            //publish new event , take the changed properties map
+            FieldChangedEvent fieldChangedEvent = new FieldChangedEvent(this, changedProperties);
+            if (applicationEventPublisher != null) {
+                applicationEventPublisher.publishEvent(fieldChangedEvent);
             }
         }
     }
@@ -288,6 +309,7 @@ public class NacosValueAnnotationBeanPostProcessor extends AnnotationInjectedBea
                 logger.debug("Update value of the {}" + " (field) in {} (bean) with {}",
                         fieldName, nacosValueTarget.beanName, propertyValue);
             }
+
         } catch (Throwable e) {
             if (logger.isErrorEnabled()) {
                 logger.error(
