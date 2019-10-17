@@ -17,37 +17,16 @@
 package com.alibaba.nacos.spring.context.annotation.config;
 
 import com.alibaba.nacos.api.config.annotation.NacosValue;
-import com.alibaba.nacos.client.config.utils.MD5;
-import com.alibaba.nacos.spring.context.event.config.NacosConfigReceivedEvent;
 import com.alibaba.nacos.spring.util.ObjectUtils;
-import com.alibaba.spring.beans.factory.annotation.AnnotationInjectedBeanPostProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.TypeConverter;
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.annotation.InjectionMetadata;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.context.ApplicationListener;
-import org.springframework.context.EnvironmentAware;
-import org.springframework.core.MethodParameter;
-import org.springframework.core.env.Environment;
-import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-
-import static com.alibaba.nacos.spring.util.NacosUtils.toProperties;
-import static org.springframework.core.annotation.AnnotationUtils.getAnnotation;
 
 /**
  * {@link org.springframework.beans.factory.config.BeanPostProcessor} implementation
@@ -88,20 +67,6 @@ public class NacosValueAnnotationBeanPostProcessor extends ValueAnnotationBeanPo
                                                  Class<?> injectedType,
                                                  InjectionMetadata.InjectedElement injectedElement) {
         return bean.getClass().getName() + annotation;
-    }
-
-    @Override
-    public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
-        if (!(beanFactory instanceof ConfigurableListableBeanFactory)) {
-            throw new IllegalArgumentException(
-                    "NacosValueAnnotationBeanPostProcessor requires a ConfigurableListableBeanFactory");
-        }
-        this.beanFactory = (ConfigurableListableBeanFactory) beanFactory;
-    }
-
-    @Override
-    public void setEnvironment(Environment environment) {
-        this.environment = environment;
     }
 
     @Override

@@ -68,6 +68,10 @@ public abstract class ValueAnnotationBeanPostProcessor<A extends Annotation> ext
 
     @Override
     public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+        if (!(beanFactory instanceof ConfigurableListableBeanFactory)) {
+            throw new IllegalArgumentException(
+                    "ValueAnnotationBeanPostProcessor requires a ConfigurableListableBeanFactory");
+        }
         this.beanFactory = (ConfigurableListableBeanFactory) beanFactory;
     }
 
@@ -187,10 +191,10 @@ public abstract class ValueAnnotationBeanPostProcessor<A extends Annotation> ext
             if (newValue == null) {
                 continue;
             }
-            List<ValueAnnotationBeanPostProcessor.NacosValueTarget> beanPropertyList = entry.getValue();
+            List<NacosValueTarget> beanPropertyList = entry.getValue();
             for (NacosValueTarget target : beanPropertyList) {
                 String md5String = MD5.getInstance().getMD5String(newValue);
-                if (target.change(md5String)) {
+                if (isChange(md5String, target)) {
                     target.updateLastMD5(md5String);
                     if (target.getMethod() == null) {
                         setField(target, newValue);
@@ -264,9 +268,9 @@ public abstract class ValueAnnotationBeanPostProcessor<A extends Annotation> ext
             this.lastMD5 = newMD5;
         }
 
-        protected boolean change(String newMd5) {
-            return StringUtils.isEmpty(lastMD5) || !newMd5.equals(lastMD5);
-        }
+    }
 
+    protected static boolean isChange(String newMd5, NacosValueTarget target) {
+        return StringUtils.isEmpty(target.lastMD5) || !newMd5.equals(target.lastMD5);
     }
 }
