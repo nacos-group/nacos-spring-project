@@ -16,17 +16,18 @@
  */
 package com.alibaba.nacos.spring.context.annotation.config;
 
+import java.util.Properties;
+
 import com.alibaba.nacos.api.annotation.NacosProperties;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import java.util.Properties;
 
 import static com.alibaba.nacos.spring.util.NacosBeanUtils.CONFIG_GLOBAL_NACOS_PROPERTIES_BEAN_NAME;
 
@@ -38,23 +39,20 @@ import static com.alibaba.nacos.spring.util.NacosBeanUtils.CONFIG_GLOBAL_NACOS_P
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = NacosConfigBeanDefinitionRegistrarTest.class)
-@EnableNacosConfig(globalProperties = @NacosProperties(enableRemoteSyncConfig = "true",
-        maxRetry = "5",
-        configRetryTime = "2600",
-        configLongPollTimeout = "26000"))
+@EnableNacosConfig(globalProperties = @NacosProperties(enableRemoteSyncConfig = "true", maxRetry = "5", configRetryTime = "2600", configLongPollTimeout = "26000"))
 @Component
 public class NacosConfigBeanDefinitionRegistrarTest {
 
-    @Autowired
-    private BeanFactory beanFactory;
+	@Autowired
+	private BeanFactory beanFactory;
 
-    @Autowired
-    @Qualifier(CONFIG_GLOBAL_NACOS_PROPERTIES_BEAN_NAME)
-    private Properties properties;
+	@Autowired
+	@Qualifier(CONFIG_GLOBAL_NACOS_PROPERTIES_BEAN_NAME)
+	private Properties properties;
 
-    @Test
-    public void testRegisterBeanDefinitions() {
+	@Test
+	public void testRegisterBeanDefinitions() {
 
-    }
+	}
 
 }

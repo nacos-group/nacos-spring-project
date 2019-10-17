@@ -16,14 +16,14 @@
  */
 package com.alibaba.nacos.spring.factory;
 
+import java.util.Collection;
+import java.util.Properties;
+
 import com.alibaba.nacos.api.NacosFactory;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.api.naming.NamingMaintainService;
 import com.alibaba.nacos.api.naming.NamingService;
-
-import java.util.Collection;
-import java.util.Properties;
 
 /**
  * Nacos Service Factory
@@ -34,60 +34,61 @@ import java.util.Properties;
  */
 public interface NacosServiceFactory {
 
-    /**
-     * The bean name of {@link NacosServiceFactory}
-     */
-    String BEAN_NAME = "nacosServiceFactory";
+	/**
+	 * The bean name of {@link NacosServiceFactory}
+	 */
+	String BEAN_NAME = "nacosServiceFactory";
 
-    /**
-     * Create {@link ConfigService} instance
-     *
-     * @param properties init param
-     * @return a {@link ConfigService} instance
-     * @throws NacosException If creation is failed.
-     * @see NacosFactory#createConfigService(Properties)
-     */
-    ConfigService createConfigService(Properties properties) throws NacosException;
+	/**
+	 * Create {@link ConfigService} instance
+	 *
+	 * @param properties init param
+	 * @return a {@link ConfigService} instance
+	 * @throws NacosException If creation is failed.
+	 * @see NacosFactory#createConfigService(Properties)
+	 */
+	ConfigService createConfigService(Properties properties) throws NacosException;
 
-    /**
-     * Create {@link NamingService} instance
-     *
-     * @param properties init param
-     * @return a {@link NamingService} instance
-     * @throws NacosException If creation is failed.
-     * @see NacosFactory#createNamingService(Properties)
-     */
-    NamingService createNamingService(Properties properties) throws NacosException;
+	/**
+	 * Create {@link NamingService} instance
+	 *
+	 * @param properties init param
+	 * @return a {@link NamingService} instance
+	 * @throws NacosException If creation is failed.
+	 * @see NacosFactory#createNamingService(Properties)
+	 */
+	NamingService createNamingService(Properties properties) throws NacosException;
 
-    /**
-     * Create {@link NamingMaintainService} instance
-     *
-     * @param properties init param
-     * @return a {@link NamingMaintainService} instance
-     * @throws NacosException If creation is failed.
-     * @see NacosFactory#createNamingService(Properties)
-     */
-    NamingMaintainService createNamingMaintainService(Properties properties) throws NacosException;
+	/**
+	 * Create {@link NamingMaintainService} instance
+	 *
+	 * @param properties init param
+	 * @return a {@link NamingMaintainService} instance
+	 * @throws NacosException If creation is failed.
+	 * @see NacosFactory#createNamingService(Properties)
+	 */
+	NamingMaintainService createNamingMaintainService(Properties properties)
+			throws NacosException;
 
-    /**
-     * Get all instances of {@link ConfigService}
-     *
-     * @return read-only {@link Collection}
-     */
-    Collection<ConfigService> getConfigServices();
+	/**
+	 * Get all instances of {@link ConfigService}
+	 *
+	 * @return read-only {@link Collection}
+	 */
+	Collection<ConfigService> getConfigServices();
 
-    /**
-     * Get all instances of {@link NamingService}
-     *
-     * @return read-only {@link Collection}
-     */
-    Collection<NamingService> getNamingServices();
+	/**
+	 * Get all instances of {@link NamingService}
+	 *
+	 * @return read-only {@link Collection}
+	 */
+	Collection<NamingService> getNamingServices();
 
-    /**
-     * Get all instances of {@link NamingMaintainService}
-     *
-     * @return read-only {@link Collection}
-     */
-    Collection<NamingMaintainService> getNamingMaintainService();
+	/**
+	 * Get all instances of {@link NamingMaintainService}
+	 *
+	 * @return read-only {@link Collection}
+	 */
+	Collection<NamingMaintainService> getNamingMaintainService();
 
 }

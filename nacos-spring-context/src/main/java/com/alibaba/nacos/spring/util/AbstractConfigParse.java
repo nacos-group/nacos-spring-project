@@ -17,23 +17,24 @@
 package com.alibaba.nacos.spring.util;
 
 /**
- * The user inherits the AbstraceConfigParse abstract class and adds the implementation class in
- * META-INF/com.alibaba.nacos.spring.util.ConfigParse to implement the addition of custom parsing rules.
- * If the dataId and group methods are not overridden, Will override the original parsing rule implementation,
- * otherwise the user-defined parsing rules will only be applied to specific dataId and group
+ * The user inherits the AbstraceConfigParse abstract class and adds the implementation
+ * class in META-INF/com.alibaba.nacos.spring.util.ConfigParse to implement the addition
+ * of custom parsing rules. If the dataId and group methods are not overridden, Will
+ * override the original parsing rule implementation, otherwise the user-defined parsing
+ * rules will only be applied to specific dataId and group
  *
  * @author <a href="mailto:liaochunyhm@live.com">liaochuntao</a>
  * @since 0.3.0
  */
 public abstract class AbstractConfigParse implements ConfigParse {
 
-    @Override
-    public String dataId() {
-        return "";
-    }
+	@Override
+	public String dataId() {
+		return "";
+	}
 
-    @Override
-    public String group() {
-        return "";
-    }
+	@Override
+	public String group() {
+		return "";
+	}
 }

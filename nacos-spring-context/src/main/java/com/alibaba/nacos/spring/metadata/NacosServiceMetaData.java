@@ -16,11 +16,11 @@
  */
 package com.alibaba.nacos.spring.metadata;
 
+import java.util.Properties;
+
 import com.alibaba.nacos.api.annotation.NacosProperties;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.naming.NamingService;
-
-import java.util.Properties;
 
 /**
  * An interface exposes the Meta-Data of Nacos Service
@@ -33,11 +33,11 @@ import java.util.Properties;
  */
 public interface NacosServiceMetaData {
 
-    /**
-     * Get the {@link Properties} for Nacos Service
-     *
-     * @return non-null
-     * @see NacosProperties
-     */
-    Properties getProperties();
+	/**
+	 * Get the {@link Properties} for Nacos Service
+	 *
+	 * @return non-null
+	 * @see NacosProperties
+	 */
+	Properties getProperties();
 }

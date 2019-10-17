@@ -16,11 +16,11 @@
  */
 package com.alibaba.nacos.samples.spring.config;
 
+import java.io.IOException;
+
 import com.alibaba.nacos.api.config.convert.NacosConfigConverter;
 import com.alibaba.nacos.samples.spring.domain.Pojo;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.io.IOException;
 
 /**
  * {@link Pojo} Jackson {@link NacosConfigConverter}
@@ -30,19 +30,20 @@ import java.io.IOException;
  */
 public class PojoNacosConfigConverter implements NacosConfigConverter<Pojo> {
 
-    private ObjectMapper objectMapper = new ObjectMapper();
+	private ObjectMapper objectMapper = new ObjectMapper();
 
-    @Override
-    public boolean canConvert(Class<Pojo> targetType) {
-        return objectMapper.canSerialize(targetType);
-    }
+	@Override
+	public boolean canConvert(Class<Pojo> targetType) {
+		return objectMapper.canSerialize(targetType);
+	}
 
-    @Override
-    public Pojo convert(String config) {
-        try {
-            return objectMapper.readValue(config, Pojo.class);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
+	@Override
+	public Pojo convert(String config) {
+		try {
+			return objectMapper.readValue(config, Pojo.class);
+		}
+		catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
 }

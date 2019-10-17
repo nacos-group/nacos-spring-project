@@ -16,13 +16,17 @@
  */
 package com.alibaba.nacos.spring.util;
 
-import com.alibaba.nacos.api.annotation.NacosProperties;
-import org.springframework.beans.factory.BeanFactory;
-
 import java.util.Map;
 import java.util.Properties;
 
-import static com.alibaba.nacos.spring.util.NacosBeanUtils.*;
+import com.alibaba.nacos.api.annotation.NacosProperties;
+
+import org.springframework.beans.factory.BeanFactory;
+
+import static com.alibaba.nacos.spring.util.NacosBeanUtils.CONFIG_GLOBAL_NACOS_PROPERTIES_BEAN_NAME;
+import static com.alibaba.nacos.spring.util.NacosBeanUtils.DISCOVERY_GLOBAL_NACOS_PROPERTIES_BEAN_NAME;
+import static com.alibaba.nacos.spring.util.NacosBeanUtils.GLOBAL_NACOS_PROPERTIES_BEAN_NAME;
+import static com.alibaba.nacos.spring.util.NacosBeanUtils.MAINTAIN_GLOBAL_NACOS_PROPERTIES_BEAN_NAME;
 import static com.alibaba.nacos.spring.util.NacosUtils.merge;
 import static java.util.Collections.emptyMap;
 
@@ -34,54 +38,54 @@ import static java.util.Collections.emptyMap;
  */
 public enum GlobalNacosPropertiesSource {
 
-    /**
-     * Default Global {@link NacosProperties}
-     */
-    DEFAULT(GLOBAL_NACOS_PROPERTIES_BEAN_NAME),
+	/**
+	 * Default Global {@link NacosProperties}
+	 */
+	DEFAULT(GLOBAL_NACOS_PROPERTIES_BEAN_NAME),
 
-    /**
-     * Global {@link NacosProperties} for Nacos Config
-     */
-    CONFIG(CONFIG_GLOBAL_NACOS_PROPERTIES_BEAN_NAME),
+	/**
+	 * Global {@link NacosProperties} for Nacos Config
+	 */
+	CONFIG(CONFIG_GLOBAL_NACOS_PROPERTIES_BEAN_NAME),
 
-    /**
-     * Global {@link NacosProperties} for Nacos discovery
-     */
-    DISCOVERY(DISCOVERY_GLOBAL_NACOS_PROPERTIES_BEAN_NAME),
+	/**
+	 * Global {@link NacosProperties} for Nacos discovery
+	 */
+	DISCOVERY(DISCOVERY_GLOBAL_NACOS_PROPERTIES_BEAN_NAME),
 
-    /**
-     * Global {@link NacosProperties} for Nacos maintain
-     */
-    MAINTAIN(MAINTAIN_GLOBAL_NACOS_PROPERTIES_BEAN_NAME);
+	/**
+	 * Global {@link NacosProperties} for Nacos maintain
+	 */
+	MAINTAIN(MAINTAIN_GLOBAL_NACOS_PROPERTIES_BEAN_NAME);
 
+	private final String beanName;
 
-    private final String beanName;
+	GlobalNacosPropertiesSource(String beanName) {
+		this.beanName = beanName;
+	}
 
-    GlobalNacosPropertiesSource(String beanName) {
-        this.beanName = beanName;
-    }
+	/**
+	 * Get Merged {@link Properties} from {@link BeanFactory}
+	 *
+	 * @param beanFactory {@link BeanFactory}
+	 * @return Global {@link Properties} Bean
+	 */
+	public Properties getMergedGlobalProperties(BeanFactory beanFactory) {
+		Properties currentProperties = getProperties(beanFactory, beanName);
+		Properties globalProperties = getProperties(beanFactory,
+				GLOBAL_NACOS_PROPERTIES_BEAN_NAME);
+		// merge
+		merge(globalProperties, currentProperties);
+		return globalProperties;
+	}
 
-    /**
-     * Get Merged {@link Properties} from {@link BeanFactory}
-     *
-     * @param beanFactory {@link BeanFactory}
-     * @return Global {@link Properties} Bean
-     */
-    public Properties getMergedGlobalProperties(BeanFactory beanFactory) {
-        Properties currentProperties = getProperties(beanFactory, beanName);
-        Properties globalProperties = getProperties(beanFactory, GLOBAL_NACOS_PROPERTIES_BEAN_NAME);
-        // merge
-        merge(globalProperties, currentProperties);
-        return globalProperties;
-    }
-
-
-    private Properties getProperties(BeanFactory beanFactory, String beanName) {
-        Properties properties = new Properties();
-        // If Bean is absent , source will be empty.
-        Map<?, ?> propertiesSource = beanFactory.containsBean(beanName) ?
-                beanFactory.getBean(beanName, Properties.class) : emptyMap();
-        properties.putAll(propertiesSource);
-        return properties;
-    }
+	private Properties getProperties(BeanFactory beanFactory, String beanName) {
+		Properties properties = new Properties();
+		// If Bean is absent , source will be empty.
+		Map<?, ?> propertiesSource = beanFactory.containsBean(beanName)
+				? beanFactory.getBean(beanName, Properties.class)
+				: emptyMap();
+		properties.putAll(propertiesSource);
+		return properties;
+	}
 }

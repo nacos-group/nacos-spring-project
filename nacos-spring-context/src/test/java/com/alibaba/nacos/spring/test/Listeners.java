@@ -17,6 +17,7 @@
 package com.alibaba.nacos.spring.test;
 
 import com.alibaba.nacos.api.config.annotation.NacosConfigListener;
+
 import org.springframework.context.annotation.Configuration;
 
 import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.DATA_ID;
@@ -30,27 +31,27 @@ import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.DATA_ID;
 @Configuration
 public class Listeners {
 
-    private Integer integerValue;
+	private Integer integerValue;
 
-    private Double doubleValue;
+	private Double doubleValue;
 
-    @NacosConfigListener(dataId = DATA_ID, timeout = 50)
-    public void onInteger(Integer value) throws Exception {
-        Thread.sleep(100); // timeout of execution
-        this.integerValue = value;
-    }
+	@NacosConfigListener(dataId = DATA_ID, timeout = 50)
+	public void onInteger(Integer value) throws Exception {
+		Thread.sleep(100); // timeout of execution
+		this.integerValue = value;
+	}
 
-    @NacosConfigListener(dataId = DATA_ID, timeout = 200)
-    public void onDouble(Double value) throws Exception {
-        Thread.sleep(100); // normal execution
-        this.doubleValue = value;
-    }
+	@NacosConfigListener(dataId = DATA_ID, timeout = 200)
+	public void onDouble(Double value) throws Exception {
+		Thread.sleep(100); // normal execution
+		this.doubleValue = value;
+	}
 
-    public Integer getIntegerValue() {
-        return integerValue;
-    }
+	public Integer getIntegerValue() {
+		return integerValue;
+	}
 
-    public Double getDoubleValue() {
-        return doubleValue;
-    }
+	public Double getDoubleValue() {
+		return doubleValue;
+	}
 }

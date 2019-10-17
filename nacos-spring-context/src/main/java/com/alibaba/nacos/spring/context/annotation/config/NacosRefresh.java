@@ -26,7 +26,7 @@ import java.lang.annotation.Target;
  * @author <a href="mailto:liaochunyhm@live.com">liaochuntao</a>
  * @since 0.3.5
  */
-@Target({ElementType.TYPE, ElementType.ANNOTATION_TYPE})
+@Target({ ElementType.TYPE, ElementType.ANNOTATION_TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface NacosRefresh {

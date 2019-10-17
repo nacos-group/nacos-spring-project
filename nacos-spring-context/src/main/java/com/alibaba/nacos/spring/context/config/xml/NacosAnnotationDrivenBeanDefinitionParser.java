@@ -17,15 +17,17 @@
 package com.alibaba.nacos.spring.context.config.xml;
 
 import com.alibaba.nacos.spring.context.annotation.NacosBeanDefinitionRegistrar;
+import org.w3c.dom.Element;
+
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.xml.BeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.core.env.Environment;
-import org.w3c.dom.Element;
 
 /**
- * Nacos Annotation Driven {@link BeanDefinitionParser} for XML element &lt;nacos:annotation-driven/&gt;
+ * Nacos Annotation Driven {@link BeanDefinitionParser} for XML element
+ * &lt;nacos:annotation-driven/&gt;
  *
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
  * @see BeanDefinitionParser
@@ -33,16 +35,17 @@ import org.w3c.dom.Element;
  */
 public class NacosAnnotationDrivenBeanDefinitionParser implements BeanDefinitionParser {
 
-    @Override
-    public BeanDefinition parse(Element element, ParserContext parserContext) {
-        // Get Environment
-        Environment environment = parserContext.getDelegate().getReaderContext().getReader().getEnvironment();
-        // Get BeanDefinitionRegistry
-        BeanDefinitionRegistry registry = parserContext.getRegistry();
-        // Register Nacos Annotation Beans
-        NacosBeanDefinitionRegistrar registrar = new NacosBeanDefinitionRegistrar();
-        registrar.setEnvironment(environment);
-        registrar.registerNacosAnnotationBeans(registry);
-        return null;
-    }
+	@Override
+	public BeanDefinition parse(Element element, ParserContext parserContext) {
+		// Get Environment
+		Environment environment = parserContext.getDelegate().getReaderContext()
+				.getReader().getEnvironment();
+		// Get BeanDefinitionRegistry
+		BeanDefinitionRegistry registry = parserContext.getRegistry();
+		// Register Nacos Annotation Beans
+		NacosBeanDefinitionRegistrar registrar = new NacosBeanDefinitionRegistrar();
+		registrar.setEnvironment(environment);
+		registrar.registerNacosAnnotationBeans(registry);
+		return null;
+	}
 }

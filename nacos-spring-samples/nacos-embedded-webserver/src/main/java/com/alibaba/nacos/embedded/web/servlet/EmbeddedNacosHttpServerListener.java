@@ -16,11 +16,12 @@
  */
 package com.alibaba.nacos.embedded.web.servlet;
 
-import com.alibaba.nacos.embedded.web.server.EmbeddedNacosHttpServer;
+import java.io.IOException;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
-import java.io.IOException;
+
+import com.alibaba.nacos.embedded.web.server.EmbeddedNacosHttpServer;
 
 /**
  * {@link EmbeddedNacosHttpServer} {@link ServletContextListener Listener}
@@ -30,28 +31,29 @@ import java.io.IOException;
  */
 public class EmbeddedNacosHttpServerListener implements ServletContextListener {
 
-    private static final String SERVER_ADDRESS_PROPERTY_NAME = "nacos.server-addr";
+	private static final String SERVER_ADDRESS_PROPERTY_NAME = "nacos.server-addr";
 
-    private EmbeddedNacosHttpServer httpServer;
+	private EmbeddedNacosHttpServer httpServer;
 
+	@Override
+	public void contextInitialized(ServletContextEvent servletContextEvent) {
+		try {
+			if (!System.getProperties().containsKey(SERVER_ADDRESS_PROPERTY_NAME)) {
+				httpServer = new EmbeddedNacosHttpServer();
+				httpServer.start(false);
+				System.setProperty(SERVER_ADDRESS_PROPERTY_NAME,
+						"127.0.0.1:" + httpServer.getPort());
+			}
+		}
+		catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
 
-    @Override
-    public void contextInitialized(ServletContextEvent servletContextEvent) {
-        try {
-            if (!System.getProperties().containsKey(SERVER_ADDRESS_PROPERTY_NAME)) {
-                httpServer = new EmbeddedNacosHttpServer();
-                httpServer.start(false);
-                System.setProperty(SERVER_ADDRESS_PROPERTY_NAME, "127.0.0.1:" + httpServer.getPort());
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
-    public void contextDestroyed(ServletContextEvent servletContextEvent) {
-        if (httpServer != null) {
-            httpServer.stop();
-        }
-    }
+	@Override
+	public void contextDestroyed(ServletContextEvent servletContextEvent) {
+		if (httpServer != null) {
+			httpServer.stop();
+		}
+	}
 }

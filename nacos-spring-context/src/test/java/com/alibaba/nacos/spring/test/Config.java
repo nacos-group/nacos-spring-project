@@ -16,12 +16,12 @@
  */
 package com.alibaba.nacos.spring.test;
 
+import java.util.List;
+import java.util.Map;
+
 import com.alibaba.nacos.api.config.annotation.NacosConfigurationProperties;
 import com.alibaba.nacos.api.config.annotation.NacosIgnore;
 import com.alibaba.nacos.api.config.annotation.NacosProperty;
-
-import java.util.List;
-import java.util.Map;
 
 import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.DATA_ID;
 import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.GROUP_ID;
@@ -33,92 +33,85 @@ import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.GROUP_ID;
  * @see NacosConfigurationProperties
  * @since 0.1.0
  */
-@NacosConfigurationProperties(prefix = "test", dataId = DATA_ID, groupId = GROUP_ID,
-        autoRefreshed = true, ignoreNestedProperties = true)
+@NacosConfigurationProperties(prefix = "test", dataId = DATA_ID, groupId = GROUP_ID, autoRefreshed = true, ignoreNestedProperties = true)
 public class Config {
 
-    private int id;
+	private int id;
 
-    private String name;
+	private String name;
 
-    private double value;
+	private double value;
 
-    @NacosIgnore
-    private Integer intData;
+	@NacosIgnore
+	private Integer intData;
 
-    @NacosProperty("float-data")
-    private Float floatData;
+	@NacosProperty("float-data")
+	private Float floatData;
 
-    private List<Integer> list;
+	private List<Integer> list;
 
-    private Map<String, String> map;
+	private Map<String, String> map;
 
-    public int getId() {
-        return id;
-    }
+	public int getId() {
+		return id;
+	}
 
-    public void setId(int id) {
-        this.id = id;
-    }
+	public void setId(int id) {
+		this.id = id;
+	}
 
-    public String getName() {
-        return name;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public double getValue() {
-        return value;
-    }
+	public double getValue() {
+		return value;
+	}
 
-    public void setValue(double value) {
-        this.value = value;
-    }
+	public void setValue(double value) {
+		this.value = value;
+	}
 
-    public Integer getIntData() {
-        return intData;
-    }
+	public Integer getIntData() {
+		return intData;
+	}
 
-    public void setIntData(Integer intData) {
-        this.intData = intData;
-    }
+	public void setIntData(Integer intData) {
+		this.intData = intData;
+	}
 
-    public Float getFloatData() {
-        return floatData;
-    }
+	public Float getFloatData() {
+		return floatData;
+	}
 
-    public void setFloatData(Float floatData) {
-        this.floatData = floatData;
-    }
+	public void setFloatData(Float floatData) {
+		this.floatData = floatData;
+	}
 
-    public List<Integer> getList() {
-        return list;
-    }
+	public List<Integer> getList() {
+		return list;
+	}
 
-    public void setList(List<Integer> list) {
-        this.list = list;
-    }
+	public void setList(List<Integer> list) {
+		this.list = list;
+	}
 
-    public Map<String, String> getMap() {
-        return map;
-    }
+	public Map<String, String> getMap() {
+		return map;
+	}
 
-    public void setMap(Map<String, String> map) {
-        this.map = map;
-    }
+	public void setMap(Map<String, String> map) {
+		this.map = map;
+	}
 
-    @Override
-    public String toString() {
-        return "Config{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", value=" + value +
-                ", intData=" + intData +
-                ", floatData=" + floatData +
-                ", list=" + list +
-                ", map=" + map +
-                '}';
-    }
+	@Override
+	public String toString() {
+		return "Config{" + "id=" + id + ", name='" + name + '\'' + ", value=" + value
+				+ ", intData=" + intData + ", floatData=" + floatData + ", list=" + list
+				+ ", map=" + map + '}';
+	}
 }

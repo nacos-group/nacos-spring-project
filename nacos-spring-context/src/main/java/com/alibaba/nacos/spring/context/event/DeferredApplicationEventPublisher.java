@@ -16,70 +16,77 @@
  */
 package com.alibaba.nacos.spring.context.event;
 
-import org.springframework.context.*;
+import java.util.Iterator;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationEvent;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.support.AbstractApplicationContext;
 
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.concurrent.ConcurrentLinkedQueue;
-
 /**
- * Deferred {@link ApplicationEventPublisher} to resolve {@link #publishEvent(ApplicationEvent)} too early to publish
- * {@link ApplicationEvent} when {@link AbstractApplicationContext#initApplicationEventMulticaster()
- * Spring ApplicationContexts' ApplicationEventMulticaster} is not ready, thus current class will hold
- * all early {@link ApplicationEvent events} temporary until {@link ConfigurableApplicationContext#isRunning() Spring
- * ApplicationContext is active}, and then those {@link ApplicationEvent events} will be replayed.
+ * Deferred {@link ApplicationEventPublisher} to resolve
+ * {@link #publishEvent(ApplicationEvent)} too early to publish {@link ApplicationEvent}
+ * when {@link AbstractApplicationContext#initApplicationEventMulticaster() Spring
+ * ApplicationContexts' ApplicationEventMulticaster} is not ready, thus current class will
+ * hold all early {@link ApplicationEvent events} temporary until
+ * {@link ConfigurableApplicationContext#isRunning() Spring ApplicationContext is active},
+ * and then those {@link ApplicationEvent events} will be replayed.
  *
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
  * @since 0.1.0
  */
-public class DeferredApplicationEventPublisher implements ApplicationEventPublisher, ApplicationListener<ContextRefreshedEvent> {
+public class DeferredApplicationEventPublisher
+		implements ApplicationEventPublisher, ApplicationListener<ContextRefreshedEvent> {
 
-    private final ConfigurableApplicationContext context;
+	private final ConfigurableApplicationContext context;
 
-    // fix issue #85
-    private final ConcurrentLinkedQueue<ApplicationEvent> deferredEvents = new ConcurrentLinkedQueue<ApplicationEvent>();
+	// fix issue #85
+	private final ConcurrentLinkedQueue<ApplicationEvent> deferredEvents = new ConcurrentLinkedQueue<ApplicationEvent>();
 
-    public DeferredApplicationEventPublisher(ConfigurableApplicationContext context) {
-        this.context = context;
-        this.context.addApplicationListener(this);
-    }
+	public DeferredApplicationEventPublisher(ConfigurableApplicationContext context) {
+		this.context = context;
+		this.context.addApplicationListener(this);
+	}
 
-    @Override
-    public void publishEvent(ApplicationEvent event) {
+	@Override
+	public void publishEvent(ApplicationEvent event) {
 
-        try {
-            if (context.isRunning()) {
-                context.publishEvent(event);
-            } else {
-                deferredEvents.add(event);
-            }
-        } catch (Exception ignore) {
-            deferredEvents.add(event);
-        }
-    }
+		try {
+			if (context.isRunning()) {
+				context.publishEvent(event);
+			}
+			else {
+				deferredEvents.add(event);
+			}
+		}
+		catch (Exception ignore) {
+			deferredEvents.add(event);
+		}
+	}
 
-    @Override
-    public void onApplicationEvent(ContextRefreshedEvent event) {
+	@Override
+	public void onApplicationEvent(ContextRefreshedEvent event) {
 
-        ApplicationContext currentContext = event.getApplicationContext();
+		ApplicationContext currentContext = event.getApplicationContext();
 
-        if (!currentContext.equals(context)) {
-            // prevent multiple event multi-casts in hierarchical contexts
-            return;
-        }
+		if (!currentContext.equals(context)) {
+			// prevent multiple event multi-casts in hierarchical contexts
+			return;
+		}
 
-        replayDeferredEvents();
-    }
+		replayDeferredEvents();
+	}
 
-    private void replayDeferredEvents() {
-        Iterator<ApplicationEvent> iterator = deferredEvents.iterator();
-        while (iterator.hasNext()) {
-            ApplicationEvent event = iterator.next();
-            publishEvent(event);
-            iterator.remove(); // remove if published
-        }
-    }
+	private void replayDeferredEvents() {
+		Iterator<ApplicationEvent> iterator = deferredEvents.iterator();
+		while (iterator.hasNext()) {
+			ApplicationEvent event = iterator.next();
+			publishEvent(event);
+			iterator.remove(); // remove if published
+		}
+	}
 }

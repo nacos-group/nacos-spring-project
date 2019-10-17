@@ -16,14 +16,14 @@
  */
 package com.alibaba.nacos.spring.context.event.config;
 
+import java.util.concurrent.atomic.AtomicReference;
+
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.config.listener.Listener;
 import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.spring.test.MockConfigService;
 import org.junit.Assert;
 import org.junit.Test;
-
-import java.util.concurrent.atomic.AtomicReference;
 
 import static com.alibaba.nacos.spring.context.annotation.config.NacosPropertySourceTest.DATA_ID;
 import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.GROUP_ID;
@@ -36,62 +36,61 @@ import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.GROUP_ID;
  */
 public class TimeoutNacosConfigListenerTest {
 
-    private final ConfigService configService = new MockConfigService();
+	private final ConfigService configService = new MockConfigService();
 
-    private String receiveConfig(final long executionTime, long timeout, String content) throws NacosException {
+	private String receiveConfig(final long executionTime, long timeout, String content)
+			throws NacosException {
 
-        final AtomicReference<String> contentHolder = new AtomicReference<String>();
+		final AtomicReference<String> contentHolder = new AtomicReference<String>();
 
-        Listener listener = new TimeoutNacosConfigListener(DATA_ID, GROUP_ID, timeout) {
-            @Override
-            protected void onReceived(String config) {
-                doWait(executionTime);
-                contentHolder.set(config);
-                System.out.printf("[%s] %s \n", Thread.currentThread().getName(), config);
-            }
-        };
+		Listener listener = new TimeoutNacosConfigListener(DATA_ID, GROUP_ID, timeout) {
+			@Override
+			protected void onReceived(String config) {
+				doWait(executionTime);
+				contentHolder.set(config);
+				System.out.printf("[%s] %s \n", Thread.currentThread().getName(), config);
+			}
+		};
 
-        configService.addListener(DATA_ID, GROUP_ID, listener);
+		configService.addListener(DATA_ID, GROUP_ID, listener);
 
-        configService.publishConfig(DATA_ID, GROUP_ID, content);
+		configService.publishConfig(DATA_ID, GROUP_ID, content);
 
-        return contentHolder.get();
-    }
+		return contentHolder.get();
+	}
 
+	@Test
+	public void test() throws NacosException {
 
-    @Test
-    public void test() throws NacosException {
+		String content = "Hello,World";
 
-        String content = "Hello,World";
+		String receivedConfig = receiveConfig(20, 50, content);
 
-        String receivedConfig = receiveConfig(20, 50, content);
+		Assert.assertEquals(content, receivedConfig);
+	}
 
-        Assert.assertEquals(content, receivedConfig);
-    }
+	@Test
+	public void testOnTimeout() throws NacosException {
 
-    @Test
-    public void testOnTimeout() throws NacosException {
+		String content = "Hello,World";
 
-        String content = "Hello,World";
+		String receivedConfig = receiveConfig(100, 50, content);
 
-        String receivedConfig = receiveConfig(100, 50, content);
+		Assert.assertNull(receivedConfig);
 
-        Assert.assertNull(receivedConfig);
+	}
 
-    }
+	private static void doWait(long millis) {
 
-    private static void doWait(long millis) {
+		long startTime = System.currentTimeMillis();
 
-        long startTime = System.currentTimeMillis();
+		while (true) {
+			long costTime = System.currentTimeMillis() - startTime;
+			if (costTime > millis) {
+				break;
+			}
 
-        while (true) {
-            long costTime = System.currentTimeMillis() - startTime;
-            if (costTime > millis) {
-                break;
-            }
-
-        }
-    }
-
+		}
+	}
 
 }
