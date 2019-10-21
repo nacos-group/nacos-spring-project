@@ -16,7 +16,11 @@
  */
 package com.alibaba.nacos.spring.context.annotation.config;
 
-import java.lang.annotation.*;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * Multiple {@link NacosPropertySource @NacosPropertySource} annotations.
@@ -24,15 +28,15 @@ import java.lang.annotation.*;
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
  * @since 0.1.0
  */
-@Target({ElementType.TYPE})
+@Target({ ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface NacosPropertySources {
 
-    /**
-     * Multiple {@link NacosPropertySource @NacosPropertySource}
-     *
-     * @return {@link NacosPropertySource @NacosPropertySource} array
-     */
-    NacosPropertySource[] value();
+	/**
+	 * Multiple {@link NacosPropertySource @NacosPropertySource}
+	 *
+	 * @return {@link NacosPropertySource @NacosPropertySource} array
+	 */
+	NacosPropertySource[] value();
 }

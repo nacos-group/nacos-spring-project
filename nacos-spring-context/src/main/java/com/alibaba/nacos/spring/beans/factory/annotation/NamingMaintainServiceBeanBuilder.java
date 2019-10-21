@@ -16,31 +16,32 @@
  */
 package com.alibaba.nacos.spring.beans.factory.annotation;
 
+import java.util.Properties;
+
 import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.api.naming.NamingMaintainService;
 import com.alibaba.nacos.spring.factory.NacosServiceFactory;
 import com.alibaba.nacos.spring.util.GlobalNacosPropertiesSource;
 
-import java.util.Properties;
-
 /**
  * @author <a href="mailto:liaochunyhm@live.com">liaochuntao</a>
  * @since
  */
-public class NamingMaintainServiceBeanBuilder extends AbstractNacosServiceBeanBuilder<NamingMaintainService> {
+public class NamingMaintainServiceBeanBuilder
+		extends AbstractNacosServiceBeanBuilder<NamingMaintainService> {
 
-    /**
-     * The bean name of {@link NamingServiceBeanBuilder}
-     */
-    public static final String BEAN_NAME = "namingMaintainServiceBeanBuilder";
+	/**
+	 * The bean name of {@link NamingServiceBeanBuilder}
+	 */
+	public static final String BEAN_NAME = "namingMaintainServiceBeanBuilder";
 
-    public NamingMaintainServiceBeanBuilder() {
-        super(GlobalNacosPropertiesSource.MAINTAIN);
-    }
+	public NamingMaintainServiceBeanBuilder() {
+		super(GlobalNacosPropertiesSource.MAINTAIN);
+	}
 
-    @Override
-    protected NamingMaintainService createService(NacosServiceFactory nacosServiceFactory, Properties properties)
-            throws NacosException {
-        return nacosServiceFactory.createNamingMaintainService(properties);
-    }
+	@Override
+	protected NamingMaintainService createService(NacosServiceFactory nacosServiceFactory,
+			Properties properties) throws NacosException {
+		return nacosServiceFactory.createNamingMaintainService(properties);
+	}
 }

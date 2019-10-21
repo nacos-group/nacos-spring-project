@@ -41,39 +41,45 @@ import static org.springframework.core.annotation.AnnotationAttributes.fromMap;
  *
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
  * @see EnableNacosConfig
- * @see NacosBeanUtils#registerGlobalNacosProperties(AnnotationAttributes, BeanDefinitionRegistry, PropertyResolver, String)
+ * @see NacosBeanUtils#registerGlobalNacosProperties(AnnotationAttributes,
+ * BeanDefinitionRegistry, PropertyResolver, String)
  * @see NacosBeanUtils#registerNacosCommonBeans(BeanDefinitionRegistry)
- * @see NacosBeanUtils#registerNacosConfigBeans(BeanDefinitionRegistry, Environment)
+ * @see NacosBeanUtils#registerNacosConfigBeans(BeanDefinitionRegistry,
+ * Environment,BeanFactory)
  * @since 0.1.0
  */
-public class NacosConfigBeanDefinitionRegistrar implements ImportBeanDefinitionRegistrar, EnvironmentAware,
-        BeanFactoryAware {
+public class NacosConfigBeanDefinitionRegistrar
+		implements ImportBeanDefinitionRegistrar, EnvironmentAware, BeanFactoryAware {
 
-    private Environment environment;
+	private Environment environment;
 
-    private BeanFactory beanFactory;
+	private BeanFactory beanFactory;
 
-    @Override
-    public void registerBeanDefinitions(AnnotationMetadata metadata, BeanDefinitionRegistry registry) {
-        AnnotationAttributes attributes = fromMap(metadata.getAnnotationAttributes(EnableNacosConfig.class.getName()));
-        // Register Global Nacos Properties Bean
-        registerGlobalNacosProperties(attributes, registry, environment, CONFIG_GLOBAL_NACOS_PROPERTIES_BEAN_NAME);
-        // Register Nacos Common Beans
-        registerNacosCommonBeans(registry);
-        // Register Nacos Config Beans
-        registerNacosConfigBeans(registry, environment);
-        // Invoke NacosPropertySourcePostProcessor immediately
-        // in order to enhance the precedence of @NacosPropertySource process
-        invokeNacosPropertySourcePostProcessor(beanFactory);
-    }
+	@Override
+	public void registerBeanDefinitions(AnnotationMetadata metadata,
+			BeanDefinitionRegistry registry) {
+		AnnotationAttributes attributes = fromMap(
+				metadata.getAnnotationAttributes(EnableNacosConfig.class.getName()));
+		// Register Global Nacos Properties Bean
+		registerGlobalNacosProperties(attributes, registry, environment,
+				CONFIG_GLOBAL_NACOS_PROPERTIES_BEAN_NAME);
+		// Register Nacos Common Beans
+		registerNacosCommonBeans(registry);
+		// Register Nacos Config Beans
+		registerNacosConfigBeans(registry, environment, beanFactory);
+		// Invoke NacosPropertySourcePostProcessor immediately
+		// in order to enhance the precedence of @NacosPropertySource process
 
-    @Override
-    public void setEnvironment(Environment environment) {
-        this.environment = environment;
-    }
+		invokeNacosPropertySourcePostProcessor(beanFactory);
+	}
 
-    @Override
-    public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
-        this.beanFactory = beanFactory;
-    }
+	@Override
+	public void setEnvironment(Environment environment) {
+		this.environment = environment;
+	}
+
+	@Override
+	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+		this.beanFactory = beanFactory;
+	}
 }

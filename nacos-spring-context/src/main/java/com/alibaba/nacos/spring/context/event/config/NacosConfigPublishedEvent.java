@@ -26,32 +26,34 @@ import com.alibaba.nacos.api.config.ConfigService;
  */
 public class NacosConfigPublishedEvent extends NacosConfigEvent {
 
-    private final String content;
+	private final String content;
 
-    private final boolean published;
+	private final boolean published;
 
-    public NacosConfigPublishedEvent(ConfigService configService, String dataId, String groupId, String content,
-                                     boolean published) {
-        super(configService, dataId, groupId);
-        this.content = content;
-        this.published = published;
-    }
+	public NacosConfigPublishedEvent(ConfigService configService, String dataId,
+			String groupId, String content, boolean published) {
+		super(configService, dataId, groupId);
+		this.content = content;
+		this.published = published;
+	}
 
-    /**
-     * Get Content of published Nacos Configuration
-     *
-     * @return content
-     */
-    public String getContent() {
-        return content;
-    }
+	/**
+	 * Get Content of published Nacos Configuration
+	 *
+	 * @return content
+	 */
+	public String getContent() {
+		return content;
+	}
 
-    /**
-     * Is published or not from {@link ConfigService#publishConfig(String, String, String)} method executing result.
-     *
-     * @return if published , return <code>true</code>
-     */
-    public boolean isPublished() {
-        return published;
-    }
+	/**
+	 * Is published or not from
+	 * {@link ConfigService#publishConfig(String, String, String)} method executing
+	 * result.
+	 *
+	 * @return if published , return <code>true</code>
+	 */
+	public boolean isPublished() {
+		return published;
+	}
 }

@@ -16,6 +16,8 @@
  */
 package com.alibaba.nacos.spring.context.annotation.config;
 
+import javax.annotation.PostConstruct;
+
 import com.alibaba.nacos.api.annotation.NacosInjected;
 import com.alibaba.nacos.api.annotation.NacosProperties;
 import com.alibaba.nacos.api.config.ConfigService;
@@ -33,6 +35,7 @@ import com.alibaba.nacos.spring.test.TestConfiguration;
 import com.alibaba.nacos.spring.test.User;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -41,8 +44,6 @@ import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
-
-import javax.annotation.PostConstruct;
 
 import static com.alibaba.nacos.api.common.Constants.DEFAULT_GROUP;
 import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.DATA_ID;
@@ -56,90 +57,89 @@ import static org.junit.Assert.assertNull;
  * @since 0.1.0
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {
-        TestConfiguration.class,
-        Listeners.class,
-        ConfigServiceBeanBuilder.class,
-        AnnotationNacosInjectedBeanPostProcessor.class,
-        NacosConfigListenerMethodProcessor.class,
-        NacosConfigListenerMethodProcessorTest.class
-})
-@TestExecutionListeners({DependencyInjectionTestExecutionListener.class,
-        DirtiesContextTestExecutionListener.class, NacosConfigListenerMethodProcessorTest.class})
+@ContextConfiguration(classes = { TestConfiguration.class, Listeners.class,
+		ConfigServiceBeanBuilder.class, AnnotationNacosInjectedBeanPostProcessor.class,
+		NacosConfigListenerMethodProcessor.class,
+		NacosConfigListenerMethodProcessorTest.class })
+@TestExecutionListeners({ DependencyInjectionTestExecutionListener.class,
+		DirtiesContextTestExecutionListener.class,
+		NacosConfigListenerMethodProcessorTest.class })
 @EnableNacos(globalProperties = @NacosProperties(serverAddr = "${server.addr}"))
-public class NacosConfigListenerMethodProcessorTest extends AbstractNacosHttpServerTestExecutionListener {
+public class NacosConfigListenerMethodProcessorTest
+		extends AbstractNacosHttpServerTestExecutionListener {
 
-    @Bean(name = ApplicationContextHolder.BEAN_NAME)
-    public ApplicationContextHolder applicationContextHolder(ApplicationContext applicationContext) {
-        ApplicationContextHolder applicationContextHolder = new ApplicationContextHolder();
-        applicationContextHolder.setApplicationContext(applicationContext);
-        return applicationContextHolder;
-    }
+	@Bean(name = ApplicationContextHolder.BEAN_NAME)
+	public ApplicationContextHolder applicationContextHolder(
+			ApplicationContext applicationContext) {
+		ApplicationContextHolder applicationContextHolder = new ApplicationContextHolder();
+		applicationContextHolder.setApplicationContext(applicationContext);
+		return applicationContextHolder;
+	}
 
-    @Override
-    protected String getServerAddressPropertyName() {
-        return "server.addr";
-    }
+	@Override
+	protected String getServerAddressPropertyName() {
+		return "server.addr";
+	}
 
-    @Autowired
-    private Listeners listeners;
+	@Autowired
+	private Listeners listeners;
 
-    @NacosInjected
-    private ConfigService configService;
+	@NacosInjected
+	private ConfigService configService;
 
-    private volatile boolean received = false;
+	private volatile boolean received = false;
 
-    @PostConstruct
-    public void initListener() throws NacosException {
-        configService.addListener(DATA_ID, DEFAULT_GROUP, new AbstractListener() {
-            @Override
-            public void receiveConfigInfo(String config) {
-                assertEquals("9527", config); // asserts true
-            }
-        });
-    }
+	@PostConstruct
+	public void initListener() throws NacosException {
+		configService.addListener(DATA_ID, DEFAULT_GROUP, new AbstractListener() {
+			@Override
+			public void receiveConfigInfo(String config) {
+				assertEquals("9527", config); // asserts true
+			}
+		});
+	}
 
-    @NacosConfigListener(dataId = DATA_ID)
-    public void onMessage(String config) {
-        assertEquals("9527", config); // asserts true
-    }
+	@NacosConfigListener(dataId = DATA_ID)
+	public void onMessage(String config) {
+		assertEquals("9527", config); // asserts true
+	}
 
-    @NacosConfigListener(dataId = DATA_ID)
-    public void onInteger(Integer value) {
-        assertEquals(Integer.valueOf(9527), value); // asserts true
-    }
+	@NacosConfigListener(dataId = DATA_ID)
+	public void onInteger(Integer value) {
+		assertEquals(Integer.valueOf(9527), value); // asserts true
+	}
 
-    @NacosConfigListener(dataId = DATA_ID)
-    public void onInt(int value) {
-        assertEquals(9527, value); // asserts true
-    }
+	@NacosConfigListener(dataId = DATA_ID)
+	public void onInt(int value) {
+		assertEquals(9527, value); // asserts true
+	}
 
-    @Test
-    public void testPublishConfig() throws NacosException, InterruptedException {
-        configService.publishConfig(DATA_ID, DEFAULT_GROUP, "9527");
+	@Test
+	public void testPublishConfig() throws NacosException, InterruptedException {
+		configService.publishConfig(DATA_ID, DEFAULT_GROUP, "9527");
 
-        Thread.sleep(3000);
+		Thread.sleep(3000);
 
-        assertNull(listeners.getIntegerValue()); // asserts true
-        assertEquals(Double.valueOf(9527), listeners.getDoubleValue());   // asserts true
-    }
+		assertNull(listeners.getIntegerValue()); // asserts true
+		assertEquals(Double.valueOf(9527), listeners.getDoubleValue()); // asserts true
+	}
 
+	@Test
+	public void testPublishUser() throws NacosException, InterruptedException {
+		configService.publishConfig("user", DEFAULT_GROUP,
+				"{\"id\":1,\"name\":\"mercyblitz\"}");
+		int cnt = 3;
+		while (cnt >= 0 && !received) {
+			Thread.sleep(1000);
+			cnt--;
+		}
+	}
 
-    @Test
-    public void testPublishUser() throws NacosException, InterruptedException {
-        configService.publishConfig("user", DEFAULT_GROUP, "{\"id\":1,\"name\":\"mercyblitz\"}");
-        int cnt = 3;
-        while (cnt >= 0 && !received) {
-            Thread.sleep(1000);
-            cnt --;
-        }
-    }
-
-    @NacosConfigListener(dataId = "user", converter = UserNacosConfigConverter.class)
-    public void onUser(User user) {
-        assertEquals(Long.valueOf(1L), user.getId());
-        assertEquals("mercyblitz", user.getName());
-        received = true;
-    }
+	@NacosConfigListener(dataId = "user", converter = UserNacosConfigConverter.class)
+	public void onUser(User user) {
+		assertEquals(Long.valueOf(1L), user.getId());
+		assertEquals("mercyblitz", user.getName());
+		received = true;
+	}
 
 }

@@ -16,6 +16,8 @@
  */
 package com.alibaba.nacos.samples.spring.event;
 
+import javax.annotation.PostConstruct;
+
 import com.alibaba.nacos.api.annotation.NacosInjected;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.config.listener.AbstractListener;
@@ -26,11 +28,10 @@ import com.alibaba.nacos.spring.context.event.config.NacosConfigReceivedEvent;
 import com.alibaba.nacos.spring.context.event.config.NacosConfigRemovedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import javax.annotation.PostConstruct;
 
 import static com.alibaba.nacos.api.common.Constants.DATAID;
 import static com.alibaba.nacos.api.common.Constants.DEFAULT_GROUP;
@@ -44,64 +45,74 @@ import static com.alibaba.nacos.api.common.Constants.DEFAULT_GROUP;
 @Configuration
 public class NacosEventListenerConfiguration {
 
-    private static final Logger logger = LoggerFactory.getLogger(NacosEventListenerConfiguration.class);
+	private static final Logger logger = LoggerFactory
+			.getLogger(NacosEventListenerConfiguration.class);
 
-    private static final String DATA_ID = "event-data-id";
+	private static final String DATA_ID = "event-data-id";
 
-    @NacosInjected
-    private ConfigService configService;
+	@NacosInjected
+	private ConfigService configService;
 
-    @PostConstruct
-    public void init() throws NacosException {
-        // for NacosConfigReceivedEvent
-        configService.publishConfig(DATA_ID, DEFAULT_GROUP, "Hello,World");
+	@PostConstruct
+	public void init() throws NacosException {
+		// for NacosConfigReceivedEvent
+		configService.publishConfig(DATA_ID, DEFAULT_GROUP, "Hello,World");
 
-        // for NacosConfigRemovedEvent
-        configService.removeConfig(DATA_ID, DEFAULT_GROUP);
+		// for NacosConfigRemovedEvent
+		configService.removeConfig(DATA_ID, DEFAULT_GROUP);
 
-        Listener listener = new AbstractListener() {
-            @Override
-            public void receiveConfigInfo(String configInfo) {
-            }
-        };
+		Listener listener = new AbstractListener() {
+			@Override
+			public void receiveConfigInfo(String configInfo) {
+			}
+		};
 
-        // for NacosConfigListenerRegisteredEvent(true)
-        configService.addListener(DATAID, DEFAULT_GROUP, listener);
+		// for NacosConfigListenerRegisteredEvent(true)
+		configService.addListener(DATAID, DEFAULT_GROUP, listener);
 
-        // for NacosConfigListenerRegisteredEvent(false)
-        configService.removeListener(DATAID, DEFAULT_GROUP, listener);
-    }
+		// for NacosConfigListenerRegisteredEvent(false)
+		configService.removeListener(DATAID, DEFAULT_GROUP, listener);
+	}
 
-    @Bean
-    public ApplicationListener<NacosConfigReceivedEvent> nacosConfigReceivedEventListener() {
-        return new ApplicationListener<NacosConfigReceivedEvent>() {
-            @Override
-            public void onApplicationEvent(NacosConfigReceivedEvent event) {
-                logger.info("Listening on NacosConfigReceivedEvent -  dataId : {} , groupId : {} , " + "content : {} , "
-                        + "source : {}", event.getDataId(), event.getGroupId(), event.getContent(), event.getSource());
-            }
-        };
-    }
+	@Bean
+	public ApplicationListener<NacosConfigReceivedEvent> nacosConfigReceivedEventListener() {
+		return new ApplicationListener<NacosConfigReceivedEvent>() {
+			@Override
+			public void onApplicationEvent(NacosConfigReceivedEvent event) {
+				logger.info(
+						"Listening on NacosConfigReceivedEvent -  dataId : {} , groupId : {} , "
+								+ "content : {} , " + "source : {}",
+						event.getDataId(), event.getGroupId(), event.getContent(),
+						event.getSource());
+			}
+		};
+	}
 
-    @Bean
-    public ApplicationListener<NacosConfigRemovedEvent> nacosConfigRemovedEventListener() {
-        return new ApplicationListener<NacosConfigRemovedEvent>() {
-            @Override
-            public void onApplicationEvent(NacosConfigRemovedEvent event) {
-                logger.info("Listening on NacosConfigRemovedEvent -  dataId : {} , groupId : {} , " + "removed : {} , "
-                        + "source : {}", event.getDataId(), event.getGroupId(), event.isRemoved(), event.getSource());
-            }
-        };
-    }
+	@Bean
+	public ApplicationListener<NacosConfigRemovedEvent> nacosConfigRemovedEventListener() {
+		return new ApplicationListener<NacosConfigRemovedEvent>() {
+			@Override
+			public void onApplicationEvent(NacosConfigRemovedEvent event) {
+				logger.info(
+						"Listening on NacosConfigRemovedEvent -  dataId : {} , groupId : {} , "
+								+ "removed : {} , " + "source : {}",
+						event.getDataId(), event.getGroupId(), event.isRemoved(),
+						event.getSource());
+			}
+		};
+	}
 
-    @Bean
-    public ApplicationListener<NacosConfigListenerRegisteredEvent> nacosConfigListenerRegisteredEventListener() {
-        return new ApplicationListener<NacosConfigListenerRegisteredEvent>() {
-            @Override
-            public void onApplicationEvent(NacosConfigListenerRegisteredEvent event) {
-                logger.info("Listening on NacosConfigListenerRegisteredEvent -  dataId : {} , groupId : {} , " + "registered : {} , "
-                        + "source : {}", event.getDataId(), event.getGroupId(), event.isRegistered(), event.getSource());
-            }
-        };
-    }
+	@Bean
+	public ApplicationListener<NacosConfigListenerRegisteredEvent> nacosConfigListenerRegisteredEventListener() {
+		return new ApplicationListener<NacosConfigListenerRegisteredEvent>() {
+			@Override
+			public void onApplicationEvent(NacosConfigListenerRegisteredEvent event) {
+				logger.info(
+						"Listening on NacosConfigListenerRegisteredEvent -  dataId : {} , groupId : {} , "
+								+ "registered : {} , " + "source : {}",
+						event.getDataId(), event.getGroupId(), event.isRegistered(),
+						event.getSource());
+			}
+		};
+	}
 }

@@ -19,6 +19,7 @@ package com.alibaba.nacos.spring.context.event;
 import com.alibaba.nacos.spring.context.event.config.NacosConfigMetadataEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import org.springframework.context.ApplicationListener;
 
 /**
@@ -27,44 +28,30 @@ import org.springframework.context.ApplicationListener;
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
  * @since 0.1.0
  */
-public class LoggingNacosConfigMetadataEventListener implements ApplicationListener<NacosConfigMetadataEvent> {
+public class LoggingNacosConfigMetadataEventListener
+		implements ApplicationListener<NacosConfigMetadataEvent> {
 
-    /**
-     * The bean name of {@link LoggingNacosConfigMetadataEventListener}
-     */
-    public static final String BEAN_NAME = "loggingNacosConfigMetadataEventListener";
+	/**
+	 * The bean name of {@link LoggingNacosConfigMetadataEventListener}
+	 */
+	public static final String BEAN_NAME = "loggingNacosConfigMetadataEventListener";
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final static String LOGGING_MESSAGE = "Nacos Config Metadata : " +
-            "dataId='{}'" +
-            ", groupId='{}'" +
-            ", beanName='{}'" +
-            ", bean='{}'" +
-            ", beanType='{}'" +
-            ", annotatedElement='{}'" +
-            ", xmlResource='{}'" +
-            ", nacosProperties='{}'" +
-            ", nacosPropertiesAttributes='{}'" +
-            ", source='{}'" +
-            ", timestamp='{}'";
+	private final static String LOGGING_MESSAGE = "Nacos Config Metadata : "
+			+ "dataId='{}'" + ", groupId='{}'" + ", beanName='{}'" + ", bean='{}'"
+			+ ", beanType='{}'" + ", annotatedElement='{}'" + ", xmlResource='{}'"
+			+ ", nacosProperties='{}'" + ", nacosPropertiesAttributes='{}'"
+			+ ", source='{}'" + ", timestamp='{}'";
 
-    @Override
-    public void onApplicationEvent(NacosConfigMetadataEvent event) {
-        if (logger.isInfoEnabled()) {
-            logger.info(LOGGING_MESSAGE,
-                    event.getDataId(),
-                    event.getGroupId(),
-                    event.getBeanName(),
-                    event.getBean(),
-                    event.getBeanType(),
-                    event.getAnnotatedElement(),
-                    event.getXmlResource(),
-                    event.getNacosProperties(),
-                    event.getNacosPropertiesAttributes(),
-                    event.getSource(),
-                    event.getTimestamp()
-            );
-        }
-    }
+	@Override
+	public void onApplicationEvent(NacosConfigMetadataEvent event) {
+		if (logger.isInfoEnabled()) {
+			logger.info(LOGGING_MESSAGE, event.getDataId(), event.getGroupId(),
+					event.getBeanName(), event.getBean(), event.getBeanType(),
+					event.getAnnotatedElement(), event.getXmlResource(),
+					event.getNacosProperties(), event.getNacosPropertiesAttributes(),
+					event.getSource(), event.getTimestamp());
+		}
+	}
 }
