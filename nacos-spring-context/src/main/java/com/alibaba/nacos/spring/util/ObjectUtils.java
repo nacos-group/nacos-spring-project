@@ -32,7 +32,10 @@ import org.springframework.util.ReflectionUtils;
  * @author <a href="mailto:liaochunyhm@live.com">liaochuntao</a>
  * @since 0.3.0
  */
-public abstract class ObjectUtils {
+public final class ObjectUtils {
+
+	private ObjectUtils() {
+	}
 
 	public static void cleanMapOrCollectionField(final Object bean) {
 		ReflectionUtils.doWithFields(bean.getClass(),
