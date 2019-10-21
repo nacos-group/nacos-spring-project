@@ -48,7 +48,7 @@ import static com.alibaba.nacos.spring.util.NacosUtils.identify;
 @SuppressWarnings("unchecked")
 public class CacheableEventPublishingNacosServiceFactory implements NacosServiceFactory {
 
-	private static final CacheableEventPublishingNacosServiceFactory SINGLETON = new CacheableEventPublishingNacosServiceFactory();
+	private static volatile CacheableEventPublishingNacosServiceFactory SINGLETON = new CacheableEventPublishingNacosServiceFactory();
 
 	private final Map<String, ConfigService> configServicesCache = new LinkedHashMap<String, ConfigService>(
 			2);
@@ -61,9 +61,9 @@ public class CacheableEventPublishingNacosServiceFactory implements NacosService
 
 	private final LinkedList<DeferServiceHolder> deferServiceCache = new LinkedList<DeferServiceHolder>();
 
-	private volatile ConfigurableApplicationContext context;
+	private ConfigurableApplicationContext context;
 
-	private volatile ExecutorService nacosConfigListenerExecutor;
+	private ExecutorService nacosConfigListenerExecutor;
 
 	private Map<ServiceType, AbstractCreateWorker> createWorkerManager = new HashMap<ServiceType, AbstractCreateWorker>(
 			3);

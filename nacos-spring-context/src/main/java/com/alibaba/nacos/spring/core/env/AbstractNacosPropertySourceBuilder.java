@@ -57,7 +57,6 @@ import static com.alibaba.nacos.spring.util.NacosUtils.buildDefaultPropertySourc
 import static com.alibaba.nacos.spring.util.NacosUtils.resolveProperties;
 import static com.alibaba.spring.util.ClassUtils.resolveGenericType;
 import static java.lang.String.format;
-import static java.lang.String.valueOf;
 import static org.springframework.util.ClassUtils.resolveClassName;
 
 /**
@@ -185,7 +184,7 @@ public abstract class AbstractNacosPropertySourceBuilder<T extends BeanDefinitio
 			if (logger.isWarnEnabled()) {
 				logger.warn(format(
 						"There is no content for NacosPropertySource from dataId[%s] , groupId[%s] , properties[%s].",
-						dataId, groupId, valueOf(nacosPropertiesAttributes)));
+						dataId, groupId, nacosPropertiesAttributes));
 			}
 		}
 
