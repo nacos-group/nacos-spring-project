@@ -42,10 +42,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
 
-import static com.alibaba.nacos.spring.util.NacosUtils.toProperties;
 import static org.springframework.core.annotation.AnnotationUtils.getAnnotation;
 
 /**
