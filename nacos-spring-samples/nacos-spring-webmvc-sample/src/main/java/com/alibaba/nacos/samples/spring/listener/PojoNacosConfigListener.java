@@ -16,6 +16,10 @@
  */
 package com.alibaba.nacos.samples.spring.listener;
 
+import java.util.Date;
+
+import javax.annotation.PostConstruct;
+
 import com.alibaba.nacos.api.annotation.NacosInjected;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.config.annotation.NacosConfigListener;
@@ -25,10 +29,8 @@ import com.alibaba.nacos.samples.spring.domain.Pojo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Configuration;
 
-import javax.annotation.PostConstruct;
-import java.util.Date;
+import org.springframework.context.annotation.Configuration;
 
 import static com.alibaba.nacos.api.common.Constants.DEFAULT_GROUP;
 import static com.alibaba.nacos.samples.spring.NacosConfiguration.CURRENT_TIME_DATA_ID;
@@ -43,30 +45,31 @@ import static com.alibaba.nacos.samples.spring.NacosConfiguration.CURRENT_TIME_D
 @Configuration
 public class PojoNacosConfigListener {
 
-    public static final String POJO_DATA_ID = "pojo-data-id";
+	public static final String POJO_DATA_ID = "pojo-data-id";
 
-    private static final Logger logger = LoggerFactory.getLogger(PojoNacosConfigListener.class);
+	private static final Logger logger = LoggerFactory
+			.getLogger(PojoNacosConfigListener.class);
 
-    private Pojo pojo = new Pojo();
+	private Pojo pojo = new Pojo();
 
-    @NacosInjected
-    private ConfigService configService;
+	@NacosInjected
+	private ConfigService configService;
 
-    @PostConstruct
-    public void init() throws Exception {
-        // Initialize
-        pojo.setId(1L);
-        pojo.setName("mercyblitz");
-        pojo.setCreated(new Date());
-        // Serialization
-        ObjectMapper objectMapper = new ObjectMapper();
-        String content = objectMapper.writeValueAsString(pojo);
-        // Publish
-        configService.publishConfig(POJO_DATA_ID, DEFAULT_GROUP, content);
-    }
+	@PostConstruct
+	public void init() throws Exception {
+		// Initialize
+		pojo.setId(1L);
+		pojo.setName("mercyblitz");
+		pojo.setCreated(new Date());
+		// Serialization
+		ObjectMapper objectMapper = new ObjectMapper();
+		String content = objectMapper.writeValueAsString(pojo);
+		// Publish
+		configService.publishConfig(POJO_DATA_ID, DEFAULT_GROUP, content);
+	}
 
-    @NacosConfigListener(dataId = CURRENT_TIME_DATA_ID, converter = PojoNacosConfigConverter.class)
-    public void onReceived(Pojo value) throws InterruptedException {
-        logger.info("onReceived(Pojo) : {}", value);
-    }
+	@NacosConfigListener(dataId = CURRENT_TIME_DATA_ID, converter = PojoNacosConfigConverter.class)
+	public void onReceived(Pojo value) throws InterruptedException {
+		logger.info("onReceived(Pojo) : {}", value);
+	}
 }

@@ -26,25 +26,27 @@ import com.alibaba.nacos.api.config.ConfigService;
  */
 public class NacosConfigReceivedEvent extends NacosConfigEvent {
 
-    private final String content;
-    private final String type;
+	private final String content;
+	private final String type;
 
-    public NacosConfigReceivedEvent(ConfigService configService, String dataId, String groupId, String content, String type) {
-        super(configService, dataId, groupId);
-        this.content = content;
-        this.type = type;
-    }
+	public NacosConfigReceivedEvent(ConfigService configService, String dataId,
+			String groupId, String content, String type) {
+		super(configService, dataId, groupId);
+		this.content = content;
+		this.type = type;
+	}
 
-    /**
-     * Get Content of published Nacos Configuration
-     *
-     * @return content
-     */
-    public String getContent() {
-        return content;
-    }
+	/**
+	 * Get Content of published Nacos Configuration
+	 *
+	 * @return content
+	 */
+	public String getContent() {
+		return content;
+	}
 
-    public String getType() {
-        return type;
-    }
+	public String getType() {
+		return type;
+	}
+
 }

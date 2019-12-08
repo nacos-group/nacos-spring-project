@@ -16,13 +16,14 @@
  */
 package com.alibaba.nacos.spring.util;
 
+import java.lang.reflect.Field;
+
 import com.alibaba.nacos.api.annotation.NacosInjected;
 import com.alibaba.nacos.api.annotation.NacosProperties;
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.util.ReflectionUtils;
 
-import java.lang.reflect.Field;
+import org.springframework.util.ReflectionUtils;
 
 /**
  * {@link NacosUtils} Test
@@ -32,28 +33,28 @@ import java.lang.reflect.Field;
  */
 public class NacosUtilsTest {
 
-    @NacosInjected
-    private Object object = new Object();
+	@NacosInjected
+	private Object object = new Object();
 
-    @NacosInjected(properties = @NacosProperties(serverAddr = "test"))
-    private Object object2 = new Object();
+	@NacosInjected(properties = @NacosProperties(serverAddr = "test"))
+	private Object object2 = new Object();
 
-    @Test
-    public void testIsDefault() {
+	@Test
+	public void testIsDefault() {
 
-        testIsDefault("object", true);
-        testIsDefault("object2", false);
-    }
+		testIsDefault("object", true);
+		testIsDefault("object2", false);
+	}
 
-    private void testIsDefault(String fieldName, boolean expectedValue) {
+	private void testIsDefault(String fieldName, boolean expectedValue) {
 
-        Field objectField = ReflectionUtils.findField(getClass(), fieldName);
+		Field objectField = ReflectionUtils.findField(getClass(), fieldName);
 
-        NacosInjected nacosInjected = objectField.getAnnotation(NacosInjected.class);
+		NacosInjected nacosInjected = objectField.getAnnotation(NacosInjected.class);
 
-        NacosProperties nacosProperties = nacosInjected.properties();
+		NacosProperties nacosProperties = nacosInjected.properties();
 
-        Assert.assertEquals(expectedValue, NacosUtils.isDefault(nacosProperties));
+		Assert.assertEquals(expectedValue, NacosUtils.isDefault(nacosProperties));
 
-    }
+	}
 }

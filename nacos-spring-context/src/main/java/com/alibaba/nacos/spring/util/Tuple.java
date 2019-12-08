@@ -14,15 +14,48 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.alibaba.nacos.spring.util.parse;
+package com.alibaba.nacos.spring.util;
 
 /**
  * @author <a href="mailto:liaochunyhm@live.com">liaochuntao</a>
- * @since 0.3.0
+ * @since 0.0.1
  */
-class ConfigParseException extends RuntimeException {
+public class Tuple<A, B> {
 
-	ConfigParseException(Throwable cause) {
-		super(cause);
+	private static final Tuple empty = new Tuple();
+
+	private A first;
+	private B second;
+
+	private Tuple() {
+	}
+
+	;
+
+	public static <A, B> Tuple<A, B> empty() {
+		return empty;
+	}
+
+	public static <A, B> Tuple<A, B> of(A first, B second) {
+		Tuple<A, B> tuple = new Tuple<A, B>();
+		tuple.setFirst(first);
+		tuple.setSecond(second);
+		return tuple;
+	}
+
+	public A getFirst() {
+		return first;
+	}
+
+	public void setFirst(A first) {
+		this.first = first;
+	}
+
+	public B getSecond() {
+		return second;
+	}
+
+	public void setSecond(B second) {
+		this.second = second;
 	}
 }

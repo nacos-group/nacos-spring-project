@@ -20,6 +20,7 @@ import com.alibaba.nacos.api.annotation.NacosProperties;
 import com.alibaba.nacos.spring.context.annotation.EnableNacos;
 import org.junit.Assert;
 import org.junit.Test;
+
 import org.springframework.mock.env.MockEnvironment;
 
 /**
@@ -31,107 +32,113 @@ import org.springframework.mock.env.MockEnvironment;
  */
 public class NacosPropertiesTest {
 
-    @EnableNacos(globalProperties = @NacosProperties)
-    private static class NacosPropertiesDefaultValues {
-    }
+	@EnableNacos(globalProperties = @NacosProperties)
+	private static class NacosPropertiesDefaultValues {
+	}
 
-    @EnableNacos(
-            globalProperties =
-            @NacosProperties(
-                    endpoint = "e",
-                    namespace = "n",
-                    accessKey = "a",
-                    secretKey = "s",
-                    serverAddr = "127.0.0.1",
-                    contextPath = "/",
-                    clusterName = "c",
-                    encode = "GBK"
-            )
-    )
-    private static class NacosPropertiesValues {
-    }
+	@EnableNacos(globalProperties = @NacosProperties(endpoint = "e", namespace = "n", accessKey = "a", secretKey = "s", serverAddr = "127.0.0.1", contextPath = "/", clusterName = "c", encode = "GBK"))
+	private static class NacosPropertiesValues {
+	}
 
-    @Test
-    public void testConstants() {
-        Assert.assertEquals("nacos.", NacosProperties.PREFIX);
-        Assert.assertEquals("endpoint", NacosProperties.ENDPOINT);
-        Assert.assertEquals("namespace", NacosProperties.NAMESPACE);
-        Assert.assertEquals("access-key", NacosProperties.ACCESS_KEY);
-        Assert.assertEquals("secret-key", NacosProperties.SECRET_KEY);
-        Assert.assertEquals("server-addr", NacosProperties.SERVER_ADDR);
-        Assert.assertEquals("context-path", NacosProperties.CONTEXT_PATH);
-        Assert.assertEquals("cluster-name", NacosProperties.CLUSTER_NAME);
-        Assert.assertEquals("encode", NacosProperties.ENCODE);
-    }
+	@Test
+	public void testConstants() {
+		Assert.assertEquals("nacos.", NacosProperties.PREFIX);
+		Assert.assertEquals("endpoint", NacosProperties.ENDPOINT);
+		Assert.assertEquals("namespace", NacosProperties.NAMESPACE);
+		Assert.assertEquals("access-key", NacosProperties.ACCESS_KEY);
+		Assert.assertEquals("secret-key", NacosProperties.SECRET_KEY);
+		Assert.assertEquals("server-addr", NacosProperties.SERVER_ADDR);
+		Assert.assertEquals("context-path", NacosProperties.CONTEXT_PATH);
+		Assert.assertEquals("cluster-name", NacosProperties.CLUSTER_NAME);
+		Assert.assertEquals("encode", NacosProperties.ENCODE);
+	}
 
-    @Test
-    public void testAttributeDefaultValues() {
-        NacosProperties nacosProperties = getDefaultNacosProperties();
-        Assert.assertEquals("${nacos.endpoint:}", nacosProperties.endpoint());
-        Assert.assertEquals("${nacos.namespace:}", nacosProperties.namespace());
-        Assert.assertEquals("${nacos.access-key:}", nacosProperties.accessKey());
-        Assert.assertEquals("${nacos.secret-key:}", nacosProperties.secretKey());
-        Assert.assertEquals("${nacos.server-addr:}", nacosProperties.serverAddr());
-        Assert.assertEquals("${nacos.context-path:}", nacosProperties.contextPath());
-        Assert.assertEquals("${nacos.cluster-name:}", nacosProperties.clusterName());
-        Assert.assertEquals("${nacos.encode:UTF-8}", nacosProperties.encode());
-    }
+	@Test
+	public void testAttributeDefaultValues() {
+		NacosProperties nacosProperties = getDefaultNacosProperties();
+		Assert.assertEquals("${nacos.endpoint:}", nacosProperties.endpoint());
+		Assert.assertEquals("${nacos.namespace:}", nacosProperties.namespace());
+		Assert.assertEquals("${nacos.access-key:}", nacosProperties.accessKey());
+		Assert.assertEquals("${nacos.secret-key:}", nacosProperties.secretKey());
+		Assert.assertEquals("${nacos.server-addr:}", nacosProperties.serverAddr());
+		Assert.assertEquals("${nacos.context-path:}", nacosProperties.contextPath());
+		Assert.assertEquals("${nacos.cluster-name:}", nacosProperties.clusterName());
+		Assert.assertEquals("${nacos.encode:UTF-8}", nacosProperties.encode());
+	}
 
-    @Test
-    public void testAttributeValues() {
-        EnableNacos enableNacos = NacosPropertiesValues.class.getAnnotation(EnableNacos.class);
-        NacosProperties nacosProperties = enableNacos.globalProperties();
-        Assert.assertEquals("e", nacosProperties.endpoint());
-        Assert.assertEquals("n", nacosProperties.namespace());
-        Assert.assertEquals("a", nacosProperties.accessKey());
-        Assert.assertEquals("s", nacosProperties.secretKey());
-        Assert.assertEquals("127.0.0.1", nacosProperties.serverAddr());
-        Assert.assertEquals("/", nacosProperties.contextPath());
-        Assert.assertEquals("c", nacosProperties.clusterName());
-        Assert.assertEquals("GBK", nacosProperties.encode());
-    }
+	@Test
+	public void testAttributeValues() {
+		EnableNacos enableNacos = NacosPropertiesValues.class
+				.getAnnotation(EnableNacos.class);
+		NacosProperties nacosProperties = enableNacos.globalProperties();
+		Assert.assertEquals("e", nacosProperties.endpoint());
+		Assert.assertEquals("n", nacosProperties.namespace());
+		Assert.assertEquals("a", nacosProperties.accessKey());
+		Assert.assertEquals("s", nacosProperties.secretKey());
+		Assert.assertEquals("127.0.0.1", nacosProperties.serverAddr());
+		Assert.assertEquals("/", nacosProperties.contextPath());
+		Assert.assertEquals("c", nacosProperties.clusterName());
+		Assert.assertEquals("GBK", nacosProperties.encode());
+	}
 
-    @Test
-    public void testAttributeResolvedDefaultValues() {
-        NacosProperties nacosProperties = getDefaultNacosProperties();
-        MockEnvironment environment = new MockEnvironment();
-        Assert.assertEquals("", environment.resolvePlaceholders(nacosProperties.endpoint()));
-        Assert.assertEquals("", environment.resolvePlaceholders(nacosProperties.namespace()));
-        Assert.assertEquals("", environment.resolvePlaceholders(nacosProperties.accessKey()));
-        Assert.assertEquals("", environment.resolvePlaceholders(nacosProperties.secretKey()));
-        Assert.assertEquals("", environment.resolvePlaceholders(nacosProperties.serverAddr()));
-        Assert.assertEquals("", environment.resolvePlaceholders(nacosProperties.contextPath()));
-        Assert.assertEquals("", environment.resolvePlaceholders(nacosProperties.clusterName()));
-        Assert.assertEquals("UTF-8", environment.resolvePlaceholders(nacosProperties.encode()));
-    }
+	@Test
+	public void testAttributeResolvedDefaultValues() {
+		NacosProperties nacosProperties = getDefaultNacosProperties();
+		MockEnvironment environment = new MockEnvironment();
+		Assert.assertEquals("",
+				environment.resolvePlaceholders(nacosProperties.endpoint()));
+		Assert.assertEquals("",
+				environment.resolvePlaceholders(nacosProperties.namespace()));
+		Assert.assertEquals("",
+				environment.resolvePlaceholders(nacosProperties.accessKey()));
+		Assert.assertEquals("",
+				environment.resolvePlaceholders(nacosProperties.secretKey()));
+		Assert.assertEquals("",
+				environment.resolvePlaceholders(nacosProperties.serverAddr()));
+		Assert.assertEquals("",
+				environment.resolvePlaceholders(nacosProperties.contextPath()));
+		Assert.assertEquals("",
+				environment.resolvePlaceholders(nacosProperties.clusterName()));
+		Assert.assertEquals("UTF-8",
+				environment.resolvePlaceholders(nacosProperties.encode()));
+	}
 
-    @Test
-    public void testAttributeResolvedPropertyValues() {
-        NacosProperties nacosProperties = getDefaultNacosProperties();
-        MockEnvironment environment = new MockEnvironment();
-        environment.setProperty("nacos.endpoint", "e");
-        environment.setProperty("nacos.namespace", "n");
-        environment.setProperty("nacos.access-key", "a");
-        environment.setProperty("nacos.secret-key", "s");
-        environment.setProperty("nacos.server-addr", "127.0.0.1");
-        environment.setProperty("nacos.context-path", "/");
-        environment.setProperty("nacos.cluster-name", "c");
-        environment.setProperty("nacos.encode", "GBK");
+	@Test
+	public void testAttributeResolvedPropertyValues() {
+		NacosProperties nacosProperties = getDefaultNacosProperties();
+		MockEnvironment environment = new MockEnvironment();
+		environment.setProperty("nacos.endpoint", "e");
+		environment.setProperty("nacos.namespace", "n");
+		environment.setProperty("nacos.access-key", "a");
+		environment.setProperty("nacos.secret-key", "s");
+		environment.setProperty("nacos.server-addr", "127.0.0.1");
+		environment.setProperty("nacos.context-path", "/");
+		environment.setProperty("nacos.cluster-name", "c");
+		environment.setProperty("nacos.encode", "GBK");
 
-        Assert.assertEquals("e", environment.resolvePlaceholders(nacosProperties.endpoint()));
-        Assert.assertEquals("n", environment.resolvePlaceholders(nacosProperties.namespace()));
-        Assert.assertEquals("a", environment.resolvePlaceholders(nacosProperties.accessKey()));
-        Assert.assertEquals("s", environment.resolvePlaceholders(nacosProperties.secretKey()));
-        Assert.assertEquals("127.0.0.1", environment.resolvePlaceholders(nacosProperties.serverAddr()));
-        Assert.assertEquals("/", environment.resolvePlaceholders(nacosProperties.contextPath()));
-        Assert.assertEquals("c", environment.resolvePlaceholders(nacosProperties.clusterName()));
-        Assert.assertEquals("GBK", environment.resolvePlaceholders(nacosProperties.encode()));
-    }
+		Assert.assertEquals("e",
+				environment.resolvePlaceholders(nacosProperties.endpoint()));
+		Assert.assertEquals("n",
+				environment.resolvePlaceholders(nacosProperties.namespace()));
+		Assert.assertEquals("a",
+				environment.resolvePlaceholders(nacosProperties.accessKey()));
+		Assert.assertEquals("s",
+				environment.resolvePlaceholders(nacosProperties.secretKey()));
+		Assert.assertEquals("127.0.0.1",
+				environment.resolvePlaceholders(nacosProperties.serverAddr()));
+		Assert.assertEquals("/",
+				environment.resolvePlaceholders(nacosProperties.contextPath()));
+		Assert.assertEquals("c",
+				environment.resolvePlaceholders(nacosProperties.clusterName()));
+		Assert.assertEquals("GBK",
+				environment.resolvePlaceholders(nacosProperties.encode()));
+	}
 
-    private NacosProperties getDefaultNacosProperties() {
-        EnableNacos enableNacos = NacosPropertiesDefaultValues.class.getAnnotation(EnableNacos.class);
-        NacosProperties nacosProperties = enableNacos.globalProperties();
-        return nacosProperties;
-    }
+	private NacosProperties getDefaultNacosProperties() {
+		EnableNacos enableNacos = NacosPropertiesDefaultValues.class
+				.getAnnotation(EnableNacos.class);
+		NacosProperties nacosProperties = enableNacos.globalProperties();
+		return nacosProperties;
+	}
 
 }

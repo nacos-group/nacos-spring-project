@@ -16,6 +16,9 @@
  */
 package com.alibaba.nacos.spring.context.annotation;
 
+import java.util.Properties;
+import java.util.concurrent.ExecutorService;
+
 import com.alibaba.nacos.api.annotation.NacosInjected;
 import com.alibaba.nacos.api.annotation.NacosProperties;
 import com.alibaba.nacos.api.config.ConfigService;
@@ -30,14 +33,13 @@ import com.alibaba.nacos.spring.context.annotation.discovery.EnableNacosDiscover
 import com.alibaba.nacos.spring.context.properties.config.NacosConfigurationPropertiesBindingPostProcessor;
 import com.alibaba.nacos.spring.core.env.AnnotationNacosPropertySourceBuilder;
 import com.alibaba.nacos.spring.core.env.NacosPropertySourcePostProcessor;
-import com.alibaba.nacos.spring.factory.CacheableEventPublishingNacosServiceFactory;
-import com.alibaba.nacos.spring.factory.NacosServiceFactory;
 import com.alibaba.nacos.spring.test.AbstractNacosHttpServerTestExecutionListener;
 import com.alibaba.nacos.spring.test.Config;
 import com.alibaba.nacos.spring.util.NacosBeanUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -48,9 +50,6 @@ import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
-
-import java.util.Properties;
-import java.util.concurrent.ExecutorService;
 
 import static com.alibaba.nacos.api.common.Constants.DEFAULT_GROUP;
 import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.DATA_ID;
@@ -64,97 +63,97 @@ import static com.alibaba.nacos.spring.util.NacosBeanUtils.PLACEHOLDER_CONFIGURE
  * @since 0.1.0
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {
-        NacosBeanDefinitionRegistrarTest.class,
-})
-@TestExecutionListeners({DependencyInjectionTestExecutionListener.class,
-        DirtiesContextTestExecutionListener.class, NacosBeanDefinitionRegistrarTest.class})
+@ContextConfiguration(classes = { NacosBeanDefinitionRegistrarTest.class, })
+@TestExecutionListeners({ DependencyInjectionTestExecutionListener.class,
+		DirtiesContextTestExecutionListener.class,
+		NacosBeanDefinitionRegistrarTest.class })
 @EnableNacos(globalProperties = @NacosProperties(serverAddr = "${server.addr}"))
 @EnableNacosConfig
 @EnableNacosDiscovery
-public class NacosBeanDefinitionRegistrarTest extends AbstractNacosHttpServerTestExecutionListener {
+public class NacosBeanDefinitionRegistrarTest
+		extends AbstractNacosHttpServerTestExecutionListener {
 
-    @Override
-    protected String getServerAddressPropertyName() {
-        return "server.addr";
-    }
+	@Override
+	protected String getServerAddressPropertyName() {
+		return "server.addr";
+	}
 
-    @Bean
-    public Config config() {
-        return new Config();
-    }
+	@Bean
+	public Config config() {
+		return new Config();
+	}
 
-    @Autowired
-    @Qualifier(NacosBeanUtils.GLOBAL_NACOS_PROPERTIES_BEAN_NAME)
-    private Properties globalProperties;
+	@Autowired
+	@Qualifier(NacosBeanUtils.GLOBAL_NACOS_PROPERTIES_BEAN_NAME)
+	private Properties globalProperties;
 
-    @Autowired
-    @Qualifier(NacosBeanUtils.CONFIG_GLOBAL_NACOS_PROPERTIES_BEAN_NAME)
-    private Properties configGlobalProperties;
-    @Autowired
-    @Qualifier(NacosBeanUtils.DISCOVERY_GLOBAL_NACOS_PROPERTIES_BEAN_NAME)
-    private Properties discoveryGlobalProperties;
+	@Autowired
+	@Qualifier(NacosBeanUtils.CONFIG_GLOBAL_NACOS_PROPERTIES_BEAN_NAME)
+	private Properties configGlobalProperties;
+	@Autowired
+	@Qualifier(NacosBeanUtils.DISCOVERY_GLOBAL_NACOS_PROPERTIES_BEAN_NAME)
+	private Properties discoveryGlobalProperties;
 
-    @Autowired
-    @Qualifier(AnnotationNacosInjectedBeanPostProcessor.BEAN_NAME)
-    private AnnotationNacosInjectedBeanPostProcessor annotationNacosInjectedBeanPostProcessor;
+	@Autowired
+	@Qualifier(AnnotationNacosInjectedBeanPostProcessor.BEAN_NAME)
+	private AnnotationNacosInjectedBeanPostProcessor annotationNacosInjectedBeanPostProcessor;
 
-    @Autowired
-    @Qualifier(PLACEHOLDER_CONFIGURER_BEAN_NAME)
-    private PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer;
+	@Autowired
+	@Qualifier(PLACEHOLDER_CONFIGURER_BEAN_NAME)
+	private PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer;
 
-    @Autowired
-    @Qualifier(NacosConfigurationPropertiesBindingPostProcessor.BEAN_NAME)
-    private NacosConfigurationPropertiesBindingPostProcessor nacosConfigurationPropertiesBindingPostProcessor;
+	@Autowired
+	@Qualifier(NacosConfigurationPropertiesBindingPostProcessor.BEAN_NAME)
+	private NacosConfigurationPropertiesBindingPostProcessor nacosConfigurationPropertiesBindingPostProcessor;
 
-    @Autowired
-    @Qualifier(NacosConfigListenerMethodProcessor.BEAN_NAME)
-    private NacosConfigListenerMethodProcessor nacosConfigListenerMethodProcessor;
+	@Autowired
+	@Qualifier(NacosConfigListenerMethodProcessor.BEAN_NAME)
+	private NacosConfigListenerMethodProcessor nacosConfigListenerMethodProcessor;
 
-    @Autowired
-    @Qualifier(NacosPropertySourcePostProcessor.BEAN_NAME)
-    private NacosPropertySourcePostProcessor nacosPropertySourcePostProcessor;
+	@Autowired
+	@Qualifier(NacosPropertySourcePostProcessor.BEAN_NAME)
+	private NacosPropertySourcePostProcessor nacosPropertySourcePostProcessor;
 
-    @Autowired
-    @Qualifier(AnnotationNacosPropertySourceBuilder.BEAN_NAME)
-    private AnnotationNacosPropertySourceBuilder annotationNacosPropertySourceBuilder;
+	@Autowired
+	@Qualifier(AnnotationNacosPropertySourceBuilder.BEAN_NAME)
+	private AnnotationNacosPropertySourceBuilder annotationNacosPropertySourceBuilder;
 
-    @Autowired
-    @Qualifier(NacosValueAnnotationBeanPostProcessor.BEAN_NAME)
-    private NacosValueAnnotationBeanPostProcessor nacosValueAnnotationBeanPostProcessor;
+	@Autowired
+	@Qualifier(NacosValueAnnotationBeanPostProcessor.BEAN_NAME)
+	private NacosValueAnnotationBeanPostProcessor nacosValueAnnotationBeanPostProcessor;
 
-    @Autowired
-    @Qualifier(ConfigServiceBeanBuilder.BEAN_NAME)
-    private ConfigServiceBeanBuilder configServiceBeanBuilder;
+	@Autowired
+	@Qualifier(ConfigServiceBeanBuilder.BEAN_NAME)
+	private ConfigServiceBeanBuilder configServiceBeanBuilder;
 
-    @Autowired
-    @Qualifier(NACOS_CONFIG_LISTENER_EXECUTOR_BEAN_NAME)
-    private ExecutorService nacosConfigListenerExecutor;
+	@Autowired
+	@Qualifier(NACOS_CONFIG_LISTENER_EXECUTOR_BEAN_NAME)
+	private ExecutorService nacosConfigListenerExecutor;
 
-    @Autowired
-    @Qualifier(NamingServiceBeanBuilder.BEAN_NAME)
-    private NamingServiceBeanBuilder namingServiceBeanBuilder;
+	@Autowired
+	@Qualifier(NamingServiceBeanBuilder.BEAN_NAME)
+	private NamingServiceBeanBuilder namingServiceBeanBuilder;
 
-    @NacosInjected
-    private ConfigService globalConfigService;
+	@NacosInjected
+	private ConfigService globalConfigService;
 
-    @NacosInjected(properties = @NacosProperties(serverAddr = "${server.addr}"))
-    private ConfigService configService;
+	@NacosInjected(properties = @NacosProperties(serverAddr = "${server.addr}"))
+	private ConfigService configService;
 
-    @NacosInjected
-    private NamingService namingService;
+	@NacosInjected
+	private NamingService namingService;
 
-    @Autowired
-    private Config config;
+	@Autowired
+	private Config config;
 
-    @Value("${user.home:${user.dir}}")
-    private String dir;
+	@Value("${user.home:${user.dir}}")
+	private String dir;
 
-    @Test
-    public void testGetConfig() throws Exception {
-        configService.publishConfig(DATA_ID, DEFAULT_GROUP, "9527");
-        Assert.assertEquals("9527", configService.getConfig(DATA_ID, DEFAULT_GROUP, 5000));
-    }
-
+	@Test
+	public void testGetConfig() throws Exception {
+		configService.publishConfig(DATA_ID, DEFAULT_GROUP, "9527");
+		Assert.assertEquals("9527",
+				configService.getConfig(DATA_ID, DEFAULT_GROUP, 5000));
+	}
 
 }

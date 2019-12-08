@@ -16,14 +16,26 @@
  */
 package com.alibaba.nacos.spring.context.annotation.discovery;
 
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
 import com.alibaba.nacos.api.annotation.NacosInjected;
 import com.alibaba.nacos.api.annotation.NacosProperties;
 import com.alibaba.nacos.spring.context.annotation.NacosBeanDefinitionRegistrar;
+
 import org.springframework.context.annotation.Import;
 
-import java.lang.annotation.*;
-
-import static com.alibaba.nacos.api.annotation.NacosProperties.*;
+import static com.alibaba.nacos.api.annotation.NacosProperties.ACCESS_KEY;
+import static com.alibaba.nacos.api.annotation.NacosProperties.CLUSTER_NAME;
+import static com.alibaba.nacos.api.annotation.NacosProperties.CONTEXT_PATH;
+import static com.alibaba.nacos.api.annotation.NacosProperties.ENCODE;
+import static com.alibaba.nacos.api.annotation.NacosProperties.ENDPOINT;
+import static com.alibaba.nacos.api.annotation.NacosProperties.NAMESPACE;
+import static com.alibaba.nacos.api.annotation.NacosProperties.SECRET_KEY;
+import static com.alibaba.nacos.api.annotation.NacosProperties.SERVER_ADDR;
 
 /**
  * Annotation for enabling Nacos discovery features.
@@ -32,81 +44,78 @@ import static com.alibaba.nacos.api.annotation.NacosProperties.*;
  * @see NacosBeanDefinitionRegistrar
  * @since 0.1.0
  */
-@Target({ElementType.TYPE, ElementType.ANNOTATION_TYPE})
+@Target({ ElementType.TYPE, ElementType.ANNOTATION_TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Import(NacosDiscoveryBeanDefinitionRegistrar.class)
 public @interface EnableNacosDiscovery {
 
-    /**
-     * The prefix of property name of Nacos discovery
-     */
-    String DISCOVERY_PREFIX = NacosProperties.PREFIX + "discovery.";
+	/**
+	 * The prefix of property name of Nacos discovery
+	 */
+	String DISCOVERY_PREFIX = NacosProperties.PREFIX + "discovery.";
 
-    /**
-     * The placeholder of endpoint, the value is
-     * <code>"${nacos.discovery.endpoint:${nacos.endpoint:}}"</code>
-     */
-    String ENDPOINT_PLACEHOLDER = "${" + DISCOVERY_PREFIX + ENDPOINT + ":" + NacosProperties.ENDPOINT_PLACEHOLDER + "}";
+	/**
+	 * The placeholder of endpoint, the value is
+	 * <code>"${nacos.discovery.endpoint:${nacos.endpoint:}}"</code>
+	 */
+	String ENDPOINT_PLACEHOLDER = "${" + DISCOVERY_PREFIX + ENDPOINT + ":"
+			+ NacosProperties.ENDPOINT_PLACEHOLDER + "}";
 
-    /**
-     * The placeholder of endpoint, the value is
-     * <code>"${nacos.discovery.namespace:${nacos.namespace:}}"</code>
-     */
-    String NAMESPACE_PLACEHOLDER = "${" + DISCOVERY_PREFIX + NAMESPACE + ":" + NacosProperties.NAMESPACE_PLACEHOLDER + "}";
+	/**
+	 * The placeholder of endpoint, the value is
+	 * <code>"${nacos.discovery.namespace:${nacos.namespace:}}"</code>
+	 */
+	String NAMESPACE_PLACEHOLDER = "${" + DISCOVERY_PREFIX + NAMESPACE + ":"
+			+ NacosProperties.NAMESPACE_PLACEHOLDER + "}";
 
-    /**
-     * The placeholder of endpoint, the value is
-     * <code>"${nacos.discovery.access-key:${nacos.access-key:}}"</code>
-     */
-    String ACCESS_KEY_PLACEHOLDER = "${" + DISCOVERY_PREFIX + ACCESS_KEY +":" + NacosProperties.ACCESS_KEY_PLACEHOLDER + "}";
+	/**
+	 * The placeholder of endpoint, the value is
+	 * <code>"${nacos.discovery.access-key:${nacos.access-key:}}"</code>
+	 */
+	String ACCESS_KEY_PLACEHOLDER = "${" + DISCOVERY_PREFIX + ACCESS_KEY + ":"
+			+ NacosProperties.ACCESS_KEY_PLACEHOLDER + "}";
 
-    /**
-     * The placeholder of endpoint, the value is
-     * <code>"${nacos.discovery.secret-key:${nacos.secret-key:}}"</code>
-     */
-    String SECRET_KEY_PLACEHOLDER = "${" + DISCOVERY_PREFIX + SECRET_KEY + ":" + NacosProperties.SECRET_KEY_PLACEHOLDER + "}";
+	/**
+	 * The placeholder of endpoint, the value is
+	 * <code>"${nacos.discovery.secret-key:${nacos.secret-key:}}"</code>
+	 */
+	String SECRET_KEY_PLACEHOLDER = "${" + DISCOVERY_PREFIX + SECRET_KEY + ":"
+			+ NacosProperties.SECRET_KEY_PLACEHOLDER + "}";
 
-    /**
-     * The placeholder of endpoint, the value is
-     * <code>"${nacos.discovery.server-addr:${nacos.server-addr:}}"</code>
-     */
-    String SERVER_ADDR_PLACEHOLDER = "${" + DISCOVERY_PREFIX + SERVER_ADDR + ":" + NacosProperties.SERVER_ADDR_PLACEHOLDER + "}";
+	/**
+	 * The placeholder of endpoint, the value is
+	 * <code>"${nacos.discovery.server-addr:${nacos.server-addr:}}"</code>
+	 */
+	String SERVER_ADDR_PLACEHOLDER = "${" + DISCOVERY_PREFIX + SERVER_ADDR + ":"
+			+ NacosProperties.SERVER_ADDR_PLACEHOLDER + "}";
 
+	/**
+	 * The placeholder of endpoint, the value is
+	 * <code>"${nacos.discovery.context-path:${nacos.context-path:}}"</code>
+	 */
+	String CONTEXT_PATH_PLACEHOLDER = "${" + DISCOVERY_PREFIX + CONTEXT_PATH + ":"
+			+ NacosProperties.CONTEXT_PATH_PLACEHOLDER + "}";
 
-    /**
-     * The placeholder of endpoint, the value is
-     * <code>"${nacos.discovery.context-path:${nacos.context-path:}}"</code>
-     */
-    String CONTEXT_PATH_PLACEHOLDER = "${" + DISCOVERY_PREFIX + CONTEXT_PATH + ":" + NacosProperties.CONTEXT_PATH_PLACEHOLDER + "}";
+	/**
+	 * The placeholder of endpoint, the value is
+	 * <code>"${nacos.discovery.cluster-name:${nacos.cluster-name:}}"</code>
+	 */
+	String CLUSTER_NAME_PLACEHOLDER = "${" + DISCOVERY_PREFIX + CLUSTER_NAME + ":"
+			+ NacosProperties.CLUSTER_NAME_PLACEHOLDER + "}";
 
-    /**
-     * The placeholder of endpoint, the value is
-     * <code>"${nacos.discovery.cluster-name:${nacos.cluster-name:}}"</code>
-     */
-    String CLUSTER_NAME_PLACEHOLDER = "${" + DISCOVERY_PREFIX + CLUSTER_NAME + ":" + NacosProperties.CLUSTER_NAME_PLACEHOLDER + "}";
+	/**
+	 * The placeholder of {@link NacosProperties#ENCODE encode}, the value is
+	 * <code>"${nacos.discovery.encode:${nacos.encode:UTF-8}}"</code>
+	 */
+	String ENCODE_PLACEHOLDER = "${" + DISCOVERY_PREFIX + ENCODE + ":"
+			+ NacosProperties.ENCODE_PLACEHOLDER + "}";
 
-    /**
-     * The placeholder of {@link NacosProperties#ENCODE encode}, the value is
-     * <code>"${nacos.discovery.encode:${nacos.encode:UTF-8}}"</code>
-     */
-    String ENCODE_PLACEHOLDER = "${" + DISCOVERY_PREFIX + ENCODE + ":" + NacosProperties.ENCODE_PLACEHOLDER + "}";
-
-    /**
-     * Global {@link NacosProperties Nacos Properties}
-     *
-     * @return required
-     * @see NacosInjected#properties()
-     */
-    NacosProperties globalProperties() default
-            @NacosProperties(
-                    endpoint = ENDPOINT_PLACEHOLDER,
-                    namespace = NAMESPACE_PLACEHOLDER,
-                    accessKey = ACCESS_KEY_PLACEHOLDER,
-                    secretKey = SECRET_KEY_PLACEHOLDER,
-                    serverAddr = SERVER_ADDR_PLACEHOLDER,
-                    contextPath = CONTEXT_PATH_PLACEHOLDER,
-                    clusterName = CLUSTER_NAME_PLACEHOLDER,
-                    encode = ENCODE_PLACEHOLDER
-            );
+	/**
+	 * Global {@link NacosProperties Nacos Properties}
+	 *
+	 * @return required
+	 * @see NacosInjected#properties()
+	 */
+	NacosProperties globalProperties() default @NacosProperties(endpoint = ENDPOINT_PLACEHOLDER, namespace = NAMESPACE_PLACEHOLDER, accessKey = ACCESS_KEY_PLACEHOLDER, secretKey = SECRET_KEY_PLACEHOLDER, serverAddr = SERVER_ADDR_PLACEHOLDER, contextPath = CONTEXT_PATH_PLACEHOLDER, clusterName = CLUSTER_NAME_PLACEHOLDER, encode = ENCODE_PLACEHOLDER);
 }

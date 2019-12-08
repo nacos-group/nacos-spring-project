@@ -26,14 +26,16 @@ import com.alibaba.nacos.api.annotation.NacosProperties;
  */
 public interface NacosConstants {
 
-    /**
-     * The parallelism of Nacos Config Listener
-     */
-    String NACOS_CONFIG_LISTENER_PARALLELISM = NacosProperties.PREFIX + "config.listener.parallelism";
+	/**
+	 * The parallelism of Nacos Config Listener
+	 */
+	String NACOS_CONFIG_LISTENER_PARALLELISM = NacosProperties.PREFIX
+			+ "config.listener.parallelism";
 
-    /**
-     * The default parallelism of Nacos Config Listener (available processors)
-     */
-    int DEFAULT_NACOS_CONFIG_LISTENER_PARALLELISM = Runtime.getRuntime().availableProcessors();
+	/**
+	 * The default parallelism of Nacos Config Listener (available processors)
+	 */
+	int DEFAULT_NACOS_CONFIG_LISTENER_PARALLELISM = Runtime.getRuntime()
+			.availableProcessors();
 
 }

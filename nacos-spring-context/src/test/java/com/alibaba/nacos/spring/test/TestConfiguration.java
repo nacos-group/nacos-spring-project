@@ -16,17 +16,14 @@
  */
 package com.alibaba.nacos.spring.test;
 
+import java.util.Properties;
+
 import com.alibaba.nacos.api.PropertyKeyConst;
 import com.alibaba.nacos.api.config.ConfigService;
-import com.alibaba.nacos.spring.factory.CacheableEventPublishingNacosServiceFactory;
-import com.alibaba.nacos.spring.factory.NacosServiceFactory;
-import org.springframework.beans.factory.ListableBeanFactory;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.StringUtils;
-
-import java.util.Map;
-import java.util.Properties;
 
 import static com.alibaba.nacos.spring.util.NacosBeanUtils.GLOBAL_NACOS_PROPERTIES_BEAN_NAME;
 
@@ -39,37 +36,29 @@ import static com.alibaba.nacos.spring.util.NacosBeanUtils.GLOBAL_NACOS_PROPERTI
 @Configuration
 public class TestConfiguration {
 
-    /**
-     * The bean name of {@link ConfigService}
-     */
-    public static final String CONFIG_SERVICE_BEAN_NAME = "configService";
+	/**
+	 * The bean name of {@link ConfigService}
+	 */
+	public static final String CONFIG_SERVICE_BEAN_NAME = "configService";
 
-    public static final String TEST_CONFIG = "test.id = 1\n" +
-            "test.name = mercyblitz\n" +
-            "test.value = 0.95\n" +
-            "test.intData  = 1234\n" +
-            "test.float-data = 1234.5\n" +
-            "test.list = 1,2,3,4,5\n" +
-            "test.map[key-1]=value";
+	public static final String TEST_CONFIG = "test.id = 1\n" + "test.name = mercyblitz\n"
+			+ "test.value = 0.95\n" + "test.intData  = 1234\n"
+			+ "test.float-data = 1234.5\n" + "test.list = 1,2,3,4,5\n"
+			+ "test.map[key-1]=value";
 
-    public static final String MODIFIED_TEST_CONTEXT = "id = 1\n" +
-            "test.name = mercyblitz@gmail.com\n" +
-            "test.value = 9527\n" +
-            "test.list[0] = 6\n" +
-            "test.list[1] = 6\n" +
-            "test.list[2] = 6\n" +
-            "test.list[3] = 6\n" +
-            "test.map[key-2]=value\n" +
-            "test.map[key-3]=value";
+	public static final String MODIFIED_TEST_CONTEXT = "id = 1\n"
+			+ "test.name = mercyblitz@gmail.com\n" + "test.value = 9527\n"
+			+ "test.list[0] = 6\n" + "test.list[1] = 6\n" + "test.list[2] = 6\n"
+			+ "test.list[3] = 6\n" + "test.map[key-2]=value\n" + "test.map[key-3]=value";
 
-
-    @Bean(name = GLOBAL_NACOS_PROPERTIES_BEAN_NAME)
-    public Properties globalNacosProperties() {
-        Properties properties = new Properties();
-        if (!StringUtils.isEmpty(System.getProperty("server.addr"))) {
-            properties.put(PropertyKeyConst.SERVER_ADDR, System.getProperty("server.addr"));
-        }
-        return properties;
-    }
+	@Bean(name = GLOBAL_NACOS_PROPERTIES_BEAN_NAME)
+	public Properties globalNacosProperties() {
+		Properties properties = new Properties();
+		if (!StringUtils.isEmpty(System.getProperty("server.addr"))) {
+			properties.put(PropertyKeyConst.SERVER_ADDR,
+					System.getProperty("server.addr"));
+		}
+		return properties;
+	}
 
 }

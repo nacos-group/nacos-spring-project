@@ -16,24 +16,32 @@
  */
 package com.alibaba.nacos.spring.context.config.xml;
 
+import java.util.Properties;
+
 import com.alibaba.nacos.api.PropertyKeyConst;
 import com.alibaba.nacos.api.annotation.NacosProperties;
 import com.alibaba.nacos.spring.util.NacosBeanUtils;
+import org.w3c.dom.Element;
+
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.xml.BeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.core.env.Environment;
-import org.w3c.dom.Element;
 
-import java.util.Properties;
-
-import static com.alibaba.nacos.api.annotation.NacosProperties.*;
+import static com.alibaba.nacos.api.annotation.NacosProperties.ACCESS_KEY;
+import static com.alibaba.nacos.api.annotation.NacosProperties.CLUSTER_NAME;
+import static com.alibaba.nacos.api.annotation.NacosProperties.ENCODE;
+import static com.alibaba.nacos.api.annotation.NacosProperties.ENDPOINT;
+import static com.alibaba.nacos.api.annotation.NacosProperties.NAMESPACE;
+import static com.alibaba.nacos.api.annotation.NacosProperties.SECRET_KEY;
+import static com.alibaba.nacos.api.annotation.NacosProperties.SERVER_ADDR;
 import static com.alibaba.nacos.spring.util.NacosBeanUtils.GLOBAL_NACOS_PROPERTIES_BEAN_NAME;
 import static com.alibaba.nacos.spring.util.NacosBeanUtils.registerGlobalNacosProperties;
 
 /**
- * Nacos Global {@link Properties} {@link BeanDefinitionParser} for &lt;nacos:global-properties ...&gt;
+ * Nacos Global {@link Properties} {@link BeanDefinitionParser} for
+ * &lt;nacos:global-properties ...&gt;
  *
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
  * @see NacosBeanUtils#GLOBAL_NACOS_PROPERTIES_BEAN_NAME
@@ -43,27 +51,34 @@ import static com.alibaba.nacos.spring.util.NacosBeanUtils.registerGlobalNacosPr
  */
 public class GlobalNacosPropertiesBeanDefinitionParser implements BeanDefinitionParser {
 
-    @Override
-    public BeanDefinition parse(Element element, ParserContext parserContext) {
+	@Override
+	public BeanDefinition parse(Element element, ParserContext parserContext) {
 
-        Properties properties = new Properties();
+		Properties properties = new Properties();
 
-        Environment environment = parserContext.getDelegate().getReaderContext().getReader().getEnvironment();
+		Environment environment = parserContext.getDelegate().getReaderContext()
+				.getReader().getEnvironment();
 
-        properties.setProperty(PropertyKeyConst.ENDPOINT, element.getAttribute(ENDPOINT));
-        properties.setProperty(PropertyKeyConst.NAMESPACE, element.getAttribute(NAMESPACE));
-        properties.setProperty(PropertyKeyConst.ACCESS_KEY, element.getAttribute(ACCESS_KEY));
-        properties.setProperty(PropertyKeyConst.SECRET_KEY, element.getAttribute(SECRET_KEY));
-        properties.setProperty(PropertyKeyConst.SERVER_ADDR, element.getAttribute(SERVER_ADDR));
-        properties.setProperty(PropertyKeyConst.CLUSTER_NAME, element.getAttribute(CLUSTER_NAME));
-        properties.setProperty(PropertyKeyConst.ENCODE, element.getAttribute(ENCODE));
+		properties.setProperty(PropertyKeyConst.ENDPOINT, element.getAttribute(ENDPOINT));
+		properties.setProperty(PropertyKeyConst.NAMESPACE,
+				element.getAttribute(NAMESPACE));
+		properties.setProperty(PropertyKeyConst.ACCESS_KEY,
+				element.getAttribute(ACCESS_KEY));
+		properties.setProperty(PropertyKeyConst.SECRET_KEY,
+				element.getAttribute(SECRET_KEY));
+		properties.setProperty(PropertyKeyConst.SERVER_ADDR,
+				element.getAttribute(SERVER_ADDR));
+		properties.setProperty(PropertyKeyConst.CLUSTER_NAME,
+				element.getAttribute(CLUSTER_NAME));
+		properties.setProperty(PropertyKeyConst.ENCODE, element.getAttribute(ENCODE));
 
-        BeanDefinitionRegistry registry = parserContext.getRegistry();
+		BeanDefinitionRegistry registry = parserContext.getRegistry();
 
-        // Register Global Nacos Properties as Spring singleton bean
-        registerGlobalNacosProperties(properties, registry, environment, GLOBAL_NACOS_PROPERTIES_BEAN_NAME);
+		// Register Global Nacos Properties as Spring singleton bean
+		registerGlobalNacosProperties(properties, registry, environment,
+				GLOBAL_NACOS_PROPERTIES_BEAN_NAME);
 
-        return null;
-    }
+		return null;
+	}
 
 }

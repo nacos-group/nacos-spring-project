@@ -16,12 +16,11 @@
  */
 package com.alibaba.nacos.spring.util.parse;
 
-import com.alibaba.nacos.api.config.ConfigType;
-import com.alibaba.nacos.spring.util.AbstractConfigParse;
-import com.alibaba.nacos.spring.util.ConfigParse;
-
 import java.util.Map;
 import java.util.Properties;
+
+import com.alibaba.nacos.api.config.ConfigType;
+import com.alibaba.nacos.spring.util.AbstractConfigParse;
 
 import static com.alibaba.nacos.spring.util.parse.DefaultYamlConfigParse.createYaml;
 
@@ -31,22 +30,21 @@ import static com.alibaba.nacos.spring.util.parse.DefaultYamlConfigParse.createY
  */
 public class DefaultJsonConfigParse extends AbstractConfigParse {
 
-    @Override
-    public Properties parse(String configText) {
-        final Properties result = new Properties();
-        DefaultYamlConfigParse.process(new DefaultYamlConfigParse.MatchCallback() {
-            @Override
-            public void process(Properties properties, Map<String, Object> map) {
-                result.putAll(properties);
-            }
-        }, createYaml(), configText);
-        return result;
-    }
+	@Override
+	public Properties parse(String configText) {
+		final Properties result = new Properties();
+		DefaultYamlConfigParse.process(new DefaultYamlConfigParse.MatchCallback() {
+			@Override
+			public void process(Properties properties, Map<String, Object> map) {
+				result.putAll(properties);
+			}
+		}, createYaml(), configText);
+		return result;
+	}
 
-    @Override
-    public String processType() {
-        return ConfigType.JSON.getType();
-    }
+	@Override
+	public String processType() {
+		return ConfigType.JSON.getType();
+	}
 
 }
-

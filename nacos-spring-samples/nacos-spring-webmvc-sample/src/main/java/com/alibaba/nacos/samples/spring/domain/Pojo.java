@@ -16,11 +16,11 @@
  */
 package com.alibaba.nacos.samples.spring.domain;
 
+import java.util.Date;
+
 import com.alibaba.nacos.api.config.annotation.NacosConfigurationProperties;
 import com.alibaba.nacos.api.config.annotation.NacosIgnore;
 import com.alibaba.nacos.api.config.annotation.NacosProperty;
-
-import java.util.Date;
 
 import static com.alibaba.nacos.samples.spring.domain.Pojo.DATA_ID;
 
@@ -33,68 +33,63 @@ import static com.alibaba.nacos.samples.spring.domain.Pojo.DATA_ID;
 @NacosConfigurationProperties(dataId = DATA_ID, autoRefreshed = true)
 public class Pojo {
 
-    public static final String DATA_ID = "pojo-data-id";
+	public static final String DATA_ID = "pojo-data-id";
 
-    private Long id;
+	private Long id;
 
-    private String name;
+	private String name;
 
-    private Date created;
+	private Date created;
 
-    @NacosProperty("desc")
-    private String description;
+	@NacosProperty("desc")
+	private String description;
 
-    @NacosIgnore
-    private boolean ignored;
+	@NacosIgnore
+	private boolean ignored;
 
-    public Long getId() {
-        return id;
-    }
+	public Long getId() {
+		return id;
+	}
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-    public String getName() {
-        return name;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public Date getCreated() {
-        return created;
-    }
+	public Date getCreated() {
+		return created;
+	}
 
-    public void setCreated(Date created) {
-        this.created = created;
-    }
+	public void setCreated(Date created) {
+		this.created = created;
+	}
 
-    public String getDescription() {
-        return description;
-    }
+	public String getDescription() {
+		return description;
+	}
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+	public void setDescription(String description) {
+		this.description = description;
+	}
 
-    public boolean isIgnored() {
-        return ignored;
-    }
+	public boolean isIgnored() {
+		return ignored;
+	}
 
-    public void setIgnored(boolean ignored) {
-        this.ignored = ignored;
-    }
+	public void setIgnored(boolean ignored) {
+		this.ignored = ignored;
+	}
 
-    @Override
-    public String toString() {
-        return "Pojo{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", created=" + created +
-                ", description='" + description + '\'' +
-                ", ignored=" + ignored +
-                '}';
-    }
+	@Override
+	public String toString() {
+		return "Pojo{" + "id=" + id + ", name='" + name + '\'' + ", created=" + created
+				+ ", description='" + description + '\'' + ", ignored=" + ignored + '}';
+	}
 }

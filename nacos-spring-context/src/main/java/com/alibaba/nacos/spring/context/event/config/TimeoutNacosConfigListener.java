@@ -16,13 +16,19 @@
  */
 package com.alibaba.nacos.spring.context.event.config;
 
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import com.alibaba.nacos.api.config.listener.AbstractListener;
 import com.alibaba.nacos.api.config.listener.Listener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Timeout {@link Listener Nacos Config Listener}
@@ -32,67 +38,74 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public abstract class TimeoutNacosConfigListener extends AbstractListener {
 
-    private static AtomicInteger id = new AtomicInteger(0);
+	private static AtomicInteger id = new AtomicInteger(0);
 
-    private static ExecutorService executorService = Executors.newScheduledThreadPool(8, new ThreadFactory() {
-        @Override
-        public Thread newThread(Runnable r) {
-            Thread t = new Thread(r);
-            t.setDaemon(true);
-            t.setName("com.alibaba.nacos.spring.configListener-" + id.incrementAndGet());
-            return t;
-        }
-    });
+	private static ExecutorService executorService = Executors.newScheduledThreadPool(8,
+			new ThreadFactory() {
+				@Override
+				public Thread newThread(Runnable r) {
+					Thread t = new Thread(r);
+					t.setDaemon(true);
+					t.setName("com.alibaba.nacos.spring.configListener-"
+							+ id.incrementAndGet());
+					return t;
+				}
+			});
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final String dataId;
+	private final String dataId;
 
-    private final String groupId;
+	private final String groupId;
 
-    private final long timeout;
+	private final long timeout;
 
-    public TimeoutNacosConfigListener(String dataId, String groupId, long timeout) {
-        this.dataId = dataId;
-        this.groupId = groupId;
-        this.timeout = timeout;
-    }
+	public TimeoutNacosConfigListener(String dataId, String groupId, long timeout) {
+		this.dataId = dataId;
+		this.groupId = groupId;
+		this.timeout = timeout;
+	}
 
-    @Override
-    public void receiveConfigInfo(final String content) {
-        Future future = executorService.submit(new Runnable() {
-            @Override
-            public void run() {
-                onReceived(content);
-            }
-        });
-        try {
-            future.get(timeout, TimeUnit.MILLISECONDS);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new RuntimeException(e);
-        } catch (ExecutionException e) {
-            throw new RuntimeException(e);
-        } catch (TimeoutException e) {
-            future.cancel(true);
-            logger.warn("Listening on Nacos Config exceeds timeout {} ms " +
-                    "[dataId : {}, groupId : {}, data : {}]", timeout, dataId, groupId, content);
-        }
-    }
+	@Override
+	public void receiveConfigInfo(final String content) {
+		Future future = executorService.submit(new Runnable() {
+			@Override
+			public void run() {
+				onReceived(content);
+			}
+		});
+		try {
+			future.get(timeout, TimeUnit.MILLISECONDS);
+		}
+		catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			throw new RuntimeException(e);
+		}
+		catch (ExecutionException e) {
+			throw new RuntimeException(e);
+		}
+		catch (TimeoutException e) {
+			future.cancel(true);
+			logger.warn(
+					"Listening on Nacos Config exceeds timeout {} ms "
+							+ "[dataId : {}, groupId : {}, data : {}]",
+					timeout, dataId, groupId, content);
+		}
+	}
 
-    /**
-     * process Nacos Config when received.
-     *
-     * @param content Nacos Config
-     */
-    protected abstract void onReceived(String content);
+	/**
+	 * process Nacos Config when received.
+	 *
+	 * @param content Nacos Config
+	 */
+	protected abstract void onReceived(String content);
 
-    /**
-     * Get timeout in milliseconds
-     *
-     * @return timeout in milliseconds
-     */
-    public long getTimeout() {
-        return timeout;
-    }
+	/**
+	 * Get timeout in milliseconds
+	 *
+	 * @return timeout in milliseconds
+	 */
+	public long getTimeout() {
+		return timeout;
+	}
 }
