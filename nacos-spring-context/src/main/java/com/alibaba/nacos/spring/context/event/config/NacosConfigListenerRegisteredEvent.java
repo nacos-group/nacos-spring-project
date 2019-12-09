@@ -28,29 +28,29 @@ import com.alibaba.nacos.api.config.listener.Listener;
  */
 public class NacosConfigListenerRegisteredEvent extends NacosConfigEvent {
 
-    private final Listener listener;
+	private final Listener listener;
 
-    private final boolean registered;
+	private final boolean registered;
 
-    /**
-     * @param configService Nacos {@link ConfigService}
-     * @param dataId        data ID
-     * @param groupId       group ID
-     * @param listener      {@link Listener} instance
-     * @param registered    registered or not unregistered
-     */
-    public NacosConfigListenerRegisteredEvent(ConfigService configService, String dataId, String groupId,
-                                              Listener listener, boolean registered) {
-        super(configService, dataId, groupId);
-        this.listener = listener;
-        this.registered = registered;
-    }
+	/**
+	 * @param configService Nacos {@link ConfigService}
+	 * @param dataId data ID
+	 * @param groupId group ID
+	 * @param listener {@link Listener} instance
+	 * @param registered registered or not unregistered
+	 */
+	public NacosConfigListenerRegisteredEvent(ConfigService configService, String dataId,
+			String groupId, Listener listener, boolean registered) {
+		super(configService, dataId, groupId);
+		this.listener = listener;
+		this.registered = registered;
+	}
 
-    public Listener getListener() {
-        return listener;
-    }
+	public Listener getListener() {
+		return listener;
+	}
 
-    public boolean isRegistered() {
-        return registered;
-    }
+	public boolean isRegistered() {
+		return registered;
+	}
 }

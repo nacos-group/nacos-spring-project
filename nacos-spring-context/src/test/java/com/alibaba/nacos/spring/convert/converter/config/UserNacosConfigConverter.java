@@ -28,13 +28,13 @@ import com.alibaba.nacos.spring.test.User;
  */
 public class UserNacosConfigConverter implements NacosConfigConverter<User> {
 
-    @Override
-    public boolean canConvert(Class<User> targetType) {
-        return true;
-    }
+	@Override
+	public boolean canConvert(Class<User> targetType) {
+		return true;
+	}
 
-    @Override
-    public User convert(String source) {
-        return JSON.parseObject(source, User.class);
-    }
+	@Override
+	public User convert(String source) {
+		return JSON.parseObject(source, User.class);
+	}
 }

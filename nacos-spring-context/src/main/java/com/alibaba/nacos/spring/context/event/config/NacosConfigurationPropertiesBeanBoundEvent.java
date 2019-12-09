@@ -16,10 +16,10 @@
  */
 package com.alibaba.nacos.spring.context.event.config;
 
+import java.util.EventObject;
+
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.config.annotation.NacosConfigurationProperties;
-
-import java.util.EventObject;
 
 /**
  * {@link NacosConfigurationProperties} Bean Bound {@link EventObject event}.
@@ -29,50 +29,46 @@ import java.util.EventObject;
  */
 public class NacosConfigurationPropertiesBeanBoundEvent extends NacosConfigEvent {
 
-    private final Object bean;
+	private final Object bean;
 
-    private final String beanName;
+	private final String beanName;
 
-    private final NacosConfigurationProperties properties;
+	private final NacosConfigurationProperties properties;
 
-    private final String content;
+	private final String content;
 
-    /**
-     * @param configService Nacos {@link ConfigService}
-     * @param dataId        data ID
-     * @param groupId       group ID
-     * @param bean          annotated {@link NacosConfigurationProperties} bean
-     * @param beanName      the name of annotated {@link NacosConfigurationProperties} bean
-     * @param properties    {@link NacosConfigurationProperties} object
-     * @param content       the Nacos content for binding
-     */
-    public NacosConfigurationPropertiesBeanBoundEvent(ConfigService configService,
-                                                      String dataId,
-                                                      String groupId,
-                                                      Object bean,
-                                                      String beanName,
-                                                      NacosConfigurationProperties properties,
-                                                      String content) {
-        super(configService, dataId, groupId);
-        this.bean = bean;
-        this.beanName = beanName;
-        this.properties = properties;
-        this.content = content;
-    }
+	/**
+	 * @param configService Nacos {@link ConfigService}
+	 * @param dataId data ID
+	 * @param groupId group ID
+	 * @param bean annotated {@link NacosConfigurationProperties} bean
+	 * @param beanName the name of annotated {@link NacosConfigurationProperties} bean
+	 * @param properties {@link NacosConfigurationProperties} object
+	 * @param content the Nacos content for binding
+	 */
+	public NacosConfigurationPropertiesBeanBoundEvent(ConfigService configService,
+			String dataId, String groupId, Object bean, String beanName,
+			NacosConfigurationProperties properties, String content) {
+		super(configService, dataId, groupId);
+		this.bean = bean;
+		this.beanName = beanName;
+		this.properties = properties;
+		this.content = content;
+	}
 
-    public Object getBean() {
-        return bean;
-    }
+	public Object getBean() {
+		return bean;
+	}
 
-    public String getBeanName() {
-        return beanName;
-    }
+	public String getBeanName() {
+		return beanName;
+	}
 
-    public NacosConfigurationProperties getProperties() {
-        return properties;
-    }
+	public NacosConfigurationProperties getProperties() {
+		return properties;
+	}
 
-    public String getContent() {
-        return content;
-    }
+	public String getContent() {
+		return content;
+	}
 }

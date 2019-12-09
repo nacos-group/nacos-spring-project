@@ -25,7 +25,8 @@
     <scm>
         <url>git@github.com:nacos-group/nacos-spring-project.git</url>
         <connection>scm:git@github.com:nacos-group/nacos-spring-project.git</connection>
-        <developerConnection>scm:git@github.com:nacos-group/nacos-spring-project.git</developerConnection>
+        <developerConnection>scm:git@github.com:nacos-group/nacos-spring-project.git
+        </developerConnection>
     </scm>
 
     <mailingLists>
@@ -82,10 +83,11 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
         <!-- Exclude all generated code -->
-        <sonar.jacoco.itReportPath>${project.basedir}/../test/target/jacoco-it.exec</sonar.jacoco.itReportPath>
+        <sonar.jacoco.itReportPath>${project.basedir}/../test/target/jacoco-it.exec
+        </sonar.jacoco.itReportPath>
         <sonar.exclusions>file:**/generated-sources/**,**/test/**</sonar.exclusions>
         <!-- Nacos -->
-        <nacos.version>1.1.3</nacos.version>
+        <nacos.version>1.1.4</nacos.version>
         <!-- Spring -->
         <spring.framework.version>5.1.8.RELEASE</spring.framework.version>
         <!--snake-yaml-->
@@ -183,7 +185,6 @@
                             </execution>
                         </executions>
                     </plugin>
-
                 </plugins>
             </build>
 
@@ -194,7 +195,8 @@
                 </snapshotRepository>
                 <repository>
                     <id>sona</id>
-                    <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
+                    <url>https://oss.sonatype.org/service/local/staging/deploy/maven2
+                    </url>
                 </repository>
             </distributionManagement>
 
@@ -244,6 +246,15 @@
 
     </profiles>
 
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </reporting>
+
     <build>
         <plugins>
             <plugin>
@@ -257,6 +268,35 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-eclipse-plugin</artifactId>
+                <configuration>
+                    <useProjectReferences>false</useProjectReferences>
+                    <additionalConfig>
+                        <file>
+                            <name>.settings/org.eclipse.jdt.ui.prefs</name>
+                            <location>
+                                ${project.basedir}/eclipse/org.eclipse.jdt.ui.prefs
+                            </location>
+                        </file>
+                        <file>
+                            <name>.settings/org.eclipse.jdt.core.prefs</name>
+                            <location>
+                                ${project.basedir}/eclipse/org.eclipse.jdt.core.prefs
+                            </location>
+                        </file>
+                    </additionalConfig>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>io.spring.javaformat</groupId>
+                <artifactId>spring-javaformat-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

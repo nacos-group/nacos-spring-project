@@ -16,10 +16,12 @@
  */
 package com.alibaba.nacos.spring.context.annotation.config;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.alibaba.nacos.api.annotation.NacosInjected;
 import com.alibaba.nacos.api.annotation.NacosProperties;
 import com.alibaba.nacos.api.config.ConfigService;
-import com.alibaba.nacos.api.config.ConfigType;
 import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.embedded.web.server.EmbeddedNacosHttpServer;
 import com.alibaba.nacos.spring.context.annotation.EnableNacos;
@@ -28,6 +30,7 @@ import com.alibaba.nacos.spring.test.XmlApp;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
@@ -37,85 +40,66 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import static com.alibaba.nacos.api.common.Constants.DEFAULT_GROUP;
 import static com.alibaba.nacos.embedded.web.server.NacosConfigHttpHandler.CONTENT_PARAM_NAME;
 import static com.alibaba.nacos.embedded.web.server.NacosConfigHttpHandler.DATA_ID_PARAM_NAME;
 import static com.alibaba.nacos.embedded.web.server.NacosConfigHttpHandler.GROUP_ID_PARAM_NAME;
-import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.GROUP_ID;
 
 /**
  * @author <a href="mailto:liaochunyhm@live.com">liaochuntao</a>
  * @since
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {
-        NacosPropertySourceXmlTest.class
-})
-@TestExecutionListeners({DependencyInjectionTestExecutionListener.class,
-        DirtiesContextTestExecutionListener.class, NacosPropertySourceXmlTest.class})
+@ContextConfiguration(classes = { NacosPropertySourceXmlTest.class })
+@TestExecutionListeners({ DependencyInjectionTestExecutionListener.class,
+		DirtiesContextTestExecutionListener.class, NacosPropertySourceXmlTest.class })
 @EnableNacos(globalProperties = @NacosProperties(serverAddr = "${server.addr}"))
 @Component
-public class NacosPropertySourceXmlTest extends AbstractNacosHttpServerTestExecutionListener {
+public class NacosPropertySourceXmlTest
+		extends AbstractNacosHttpServerTestExecutionListener {
 
-    @Override
-    protected String getServerAddressPropertyName() {
-        return "server.addr";
-    }
+	@Override
+	protected String getServerAddressPropertyName() {
+		return "server.addr";
+	}
 
-    private String xml =
-                    "<students>" +
-                    "<student>" +
-                    "<name>lct-1</name>" +
-                    "<num>1006010022</num>" +
-                    "</student>" +
-                    "<student>" +
-                    "<name>lct-2</name>" +
-                    "<num>1006010033</num>" +
-                    "</student>" +
-                    "<student>" +
-                    "<name>lct-3</name>" +
-                    "<num>1006010044</num>" +
-                    "</student>" +
-                    "<student>" +
-                    "<name>lct-4</name>" +
-                    "<num>1006010055</num>" +
-                    "</student>" +
-                    "</students>";
+	private String xml = "<students>" + "<student>" + "<name>lct-1</name>"
+			+ "<num>1006010022</num>" + "</student>" + "<student>" + "<name>lct-2</name>"
+			+ "<num>1006010033</num>" + "</student>" + "<student>" + "<name>lct-3</name>"
+			+ "<num>1006010044</num>" + "</student>" + "<student>" + "<name>lct-4</name>"
+			+ "<num>1006010055</num>" + "</student>" + "</students>";
 
-    private final String except = "XmlApp{students=[Student{name='lct-1', num='1006010022'}, Student{name='lct-3', num='1006010044'}, Student{name='lct-4', num='1006010055'}]}";
+	private final String except = "XmlApp{students=[Student{name='lct-1', num='1006010022'}, Student{name='lct-3', num='1006010044'}, Student{name='lct-4', num='1006010055'}]}";
 
-    @Override
-    public void init(EmbeddedNacosHttpServer httpServer) {
-        Map<String, String> config = new HashMap<String, String>(1);
-        config.put(DATA_ID_PARAM_NAME, XmlApp.DATA_ID_XML);
-        config.put(GROUP_ID_PARAM_NAME, DEFAULT_GROUP);
-        config.put(CONTENT_PARAM_NAME, xml);
+	@Override
+	public void init(EmbeddedNacosHttpServer httpServer) {
+		Map<String, String> config = new HashMap<String, String>(1);
+		config.put(DATA_ID_PARAM_NAME, XmlApp.DATA_ID_XML);
+		config.put(GROUP_ID_PARAM_NAME, DEFAULT_GROUP);
+		config.put(CONTENT_PARAM_NAME, xml);
 
-        httpServer.initConfig(config);
-    }
+		httpServer.initConfig(config);
+	}
 
-    @Bean
-    public XmlApp xmlApp() {
-        return new XmlApp();
-    }
+	@Bean
+	public XmlApp xmlApp() {
+		return new XmlApp();
+	}
 
-    @NacosInjected
-    private ConfigService configService;
+	@NacosInjected
+	private ConfigService configService;
 
-    @Autowired
-    private XmlApp xmlApp;
+	@Autowired
+	private XmlApp xmlApp;
 
-    @Test
-    public void testValue() throws NacosException, InterruptedException {
+	@Test
+	public void testValue() throws NacosException, InterruptedException {
 
-        configService.publishConfig(XmlApp.DATA_ID_XML, DEFAULT_GROUP, xml);
+		configService.publishConfig(XmlApp.DATA_ID_XML, DEFAULT_GROUP, xml);
 
-        Thread.sleep(2000);
+		Thread.sleep(2000);
 
-        Assert.assertEquals(except, xmlApp.toString());
-    }
+		Assert.assertEquals(except, xmlApp.toString());
+	}
 
 }

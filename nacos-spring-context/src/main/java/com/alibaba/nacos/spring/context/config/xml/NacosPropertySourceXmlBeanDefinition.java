@@ -16,11 +16,12 @@
  */
 package com.alibaba.nacos.spring.context.config.xml;
 
+import org.w3c.dom.Element;
+
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.beans.factory.xml.XmlReaderContext;
 import org.springframework.context.annotation.PropertySource;
-import org.w3c.dom.Element;
 
 /**
  * Nacos {@link PropertySource} XML {@link BeanDefinition}
@@ -30,29 +31,29 @@ import org.w3c.dom.Element;
  */
 public class NacosPropertySourceXmlBeanDefinition extends GenericBeanDefinition {
 
-    private Element element;
+	private Element element;
 
-    private XmlReaderContext xmlReaderContext;
+	private XmlReaderContext xmlReaderContext;
 
-    public NacosPropertySourceXmlBeanDefinition() {
-        // Self type as Bean Class
-        setBeanClass(getClass());
-    }
+	public NacosPropertySourceXmlBeanDefinition() {
+		// Self type as Bean Class
+		setBeanClass(getClass());
+	}
 
-    void setXmlReaderContext(XmlReaderContext xmlReaderContext) {
-        this.xmlReaderContext = xmlReaderContext;
-    }
+	void setXmlReaderContext(XmlReaderContext xmlReaderContext) {
+		this.xmlReaderContext = xmlReaderContext;
+	}
 
-    void setElement(Element element) {
-        this.element = element;
-    }
+	void setElement(Element element) {
+		this.element = element;
+	}
 
-    public Element getElement() {
-        return element;
-    }
+	public Element getElement() {
+		return element;
+	}
 
-    public XmlReaderContext getXmlReaderContext() {
-        return xmlReaderContext;
-    }
+	public XmlReaderContext getXmlReaderContext() {
+		return xmlReaderContext;
+	}
 
 }

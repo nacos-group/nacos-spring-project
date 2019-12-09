@@ -16,13 +16,14 @@
  */
 package com.alibaba.nacos.spring.util;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.springframework.mock.env.MockEnvironment;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+
+import org.junit.Assert;
+import org.junit.Test;
+
+import org.springframework.mock.env.MockEnvironment;
 
 /**
  * {@link PropertiesPlaceholderResolver} Test
@@ -32,26 +33,26 @@ import java.util.Properties;
  */
 public class PropertiesPlaceholderResolverTest {
 
-    @Test
-    public void testResolve() {
+	@Test
+	public void testResolve() {
 
-        MockEnvironment environment = new MockEnvironment();
+		MockEnvironment environment = new MockEnvironment();
 
-        PropertiesPlaceholderResolver resolver = new PropertiesPlaceholderResolver(environment);
+		PropertiesPlaceholderResolver resolver = new PropertiesPlaceholderResolver(
+				environment);
 
-        Map properties = new HashMap();
-        properties.put("my.name", "${my.name}");
-        properties.put("my.age", 18);
+		Map properties = new HashMap();
+		properties.put("my.name", "${my.name}");
+		properties.put("my.age", 18);
 
-        environment.setProperty("my.name", "mercyblitz");
-        environment.setProperty("my.age", "18");
+		environment.setProperty("my.name", "mercyblitz");
+		environment.setProperty("my.age", "18");
 
-        Properties resolvedProperties = resolver.resolve(properties);
+		Properties resolvedProperties = resolver.resolve(properties);
 
-        Assert.assertEquals(resolvedProperties.get("my.name"), "mercyblitz");
-        Assert.assertNull(resolvedProperties.get("my.age"));
+		Assert.assertEquals(resolvedProperties.get("my.name"), "mercyblitz");
+		Assert.assertNull(resolvedProperties.get("my.age"));
 
-
-    }
+	}
 
 }

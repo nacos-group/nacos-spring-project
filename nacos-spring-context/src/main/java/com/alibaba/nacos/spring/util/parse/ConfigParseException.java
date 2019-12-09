@@ -22,7 +22,7 @@ package com.alibaba.nacos.spring.util.parse;
  */
 class ConfigParseException extends RuntimeException {
 
-    ConfigParseException(Throwable cause) {
-        super(cause);
-    }
+	ConfigParseException(Throwable cause) {
+		super(cause);
+	}
 }

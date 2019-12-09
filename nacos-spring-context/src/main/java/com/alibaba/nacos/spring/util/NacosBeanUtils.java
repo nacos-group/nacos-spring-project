@@ -16,12 +16,22 @@
  */
 package com.alibaba.nacos.spring.util;
 
+import java.lang.reflect.Constructor;
+import java.util.Map;
+import java.util.Properties;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import com.alibaba.nacos.spring.beans.factory.annotation.AnnotationNacosInjectedBeanPostProcessor;
 import com.alibaba.nacos.spring.beans.factory.annotation.ConfigServiceBeanBuilder;
 import com.alibaba.nacos.spring.beans.factory.annotation.NamingMaintainServiceBeanBuilder;
 import com.alibaba.nacos.spring.beans.factory.annotation.NamingServiceBeanBuilder;
 import com.alibaba.nacos.spring.context.annotation.config.NacosConfigListenerMethodProcessor;
 import com.alibaba.nacos.spring.context.annotation.config.NacosValueAnnotationBeanPostProcessor;
+import com.alibaba.nacos.spring.context.annotation.config.SpringValueAnnotationBeanPostProcessor;
 import com.alibaba.nacos.spring.context.event.LoggingNacosConfigMetadataEventListener;
 import com.alibaba.nacos.spring.context.properties.config.NacosConfigurationPropertiesBindingPostProcessor;
 import com.alibaba.nacos.spring.core.env.AnnotationNacosPropertySourceBuilder;
@@ -32,6 +42,7 @@ import com.alibaba.nacos.spring.factory.CacheableEventPublishingNacosServiceFact
 import com.alibaba.nacos.spring.factory.NacosServiceFactory;
 import com.alibaba.spring.util.BeanUtils;
 import org.apache.commons.lang3.ArrayUtils;
+
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -46,15 +57,6 @@ import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertyResolver;
 
-import java.lang.reflect.Constructor;
-import java.util.Map;
-import java.util.Properties;
-import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import static com.alibaba.nacos.spring.context.constants.NacosConstants.DEFAULT_NACOS_CONFIG_LISTENER_PARALLELISM;
 import static com.alibaba.nacos.spring.context.constants.NacosConstants.NACOS_CONFIG_LISTENER_PARALLELISM;
 import static com.alibaba.nacos.spring.util.NacosUtils.resolveProperties;
@@ -67,413 +69,513 @@ import static com.alibaba.nacos.spring.util.NacosUtils.resolveProperties;
  */
 public abstract class NacosBeanUtils {
 
-    /**
-     * The bean name of {@link PropertySourcesPlaceholderConfigurer}
-     */
-    public static final String PLACEHOLDER_CONFIGURER_BEAN_NAME = "propertySourcesPlaceholderConfigurer";
+	/**
+	 * The bean name of {@link PropertySourcesPlaceholderConfigurer}
+	 */
+	public static final String PLACEHOLDER_CONFIGURER_BEAN_NAME = "propertySourcesPlaceholderConfigurer";
 
-    /**
-     * The bean name of global Nacos {@link Properties}
-     */
-    public static final String GLOBAL_NACOS_PROPERTIES_BEAN_NAME = "globalNacosProperties";
+	/**
+	 * The bean name of global Nacos {@link Properties}
+	 */
+	public static final String GLOBAL_NACOS_PROPERTIES_BEAN_NAME = "globalNacosProperties";
 
-    /**
-     * The bean name of global Nacos {@link Properties} for config
-     */
-    public static final String CONFIG_GLOBAL_NACOS_PROPERTIES_BEAN_NAME = GLOBAL_NACOS_PROPERTIES_BEAN_NAME
-            + "$config";
+	/**
+	 * The bean name of global Nacos {@link Properties} for config
+	 */
+	public static final String CONFIG_GLOBAL_NACOS_PROPERTIES_BEAN_NAME = GLOBAL_NACOS_PROPERTIES_BEAN_NAME
+			+ "$config";
 
-    /**
-     * The bean name of global Nacos {@link Properties} for discovery
-     */
-    public static final String DISCOVERY_GLOBAL_NACOS_PROPERTIES_BEAN_NAME = GLOBAL_NACOS_PROPERTIES_BEAN_NAME +
-            "$discovery";
+	/**
+	 * The bean name of global Nacos {@link Properties} for discovery
+	 */
+	public static final String DISCOVERY_GLOBAL_NACOS_PROPERTIES_BEAN_NAME = GLOBAL_NACOS_PROPERTIES_BEAN_NAME
+			+ "$discovery";
 
-    /**
-     * The bean name of global Nacos {@link Properties} for maintain
-     */
-    public static final String MAINTAIN_GLOBAL_NACOS_PROPERTIES_BEAN_NAME = GLOBAL_NACOS_PROPERTIES_BEAN_NAME +
-            "$maintain";
+	/**
+	 * The bean name of global Nacos {@link Properties} for maintain
+	 */
+	public static final String MAINTAIN_GLOBAL_NACOS_PROPERTIES_BEAN_NAME = GLOBAL_NACOS_PROPERTIES_BEAN_NAME
+			+ "$maintain";
 
-    /**
-     * The bean name of {@link Executor} for Nacos Config Listener
-     */
-    public static final String NACOS_CONFIG_LISTENER_EXECUTOR_BEAN_NAME = "nacosConfigListenerExecutor";
+	/**
+	 * The bean name of {@link Executor} for Nacos Config Listener
+	 */
+	public static final String NACOS_CONFIG_LISTENER_EXECUTOR_BEAN_NAME = "nacosConfigListenerExecutor";
 
-    /**
-     * Register an object to be Singleton Bean
-     *
-     * @param registry        {@link BeanDefinitionRegistry}
-     * @param beanName        bean name
-     * @param singletonObject singleton object
-     */
-    public static void registerSingleton(BeanDefinitionRegistry registry, String beanName, Object singletonObject) {
-        SingletonBeanRegistry beanRegistry = null;
-        if (registry instanceof SingletonBeanRegistry) {
-            beanRegistry = (SingletonBeanRegistry) registry;
-        } else if (registry instanceof AbstractApplicationContext) {
-            // Maybe AbstractApplicationContext or its sub-classes
-            beanRegistry = ((AbstractApplicationContext) registry).getBeanFactory();
-        }
-        // Register Singleton Object if possible
-        if (beanRegistry != null) {
-            // Determine in advance whether injected with beans
-            if (!beanRegistry.containsSingleton(beanName)) {
-                beanRegistry.registerSingleton(beanName, singletonObject);
-            }
-        }
-    }
+	/**
+	 * the ignoreResourceNotFound property for propertySourcesPlaceholderConfigurer
+	 */
+	public static final String IGNORE_RESOURCE_NOT_FOUND = "ignoreResourceNotFound";
 
-    /**
-     * Register Infrastructure Bean
-     *
-     * @param registry        {@link BeanDefinitionRegistry}
-     * @param beanName        the name of bean
-     * @param beanClass       the class of bean
-     * @param constructorArgs the arguments of {@link Constructor}
-     */
-    public static void registerInfrastructureBean(BeanDefinitionRegistry registry, String beanName, Class<?> beanClass,
-                                                  Object... constructorArgs) {
-        // Build a BeanDefinition for NacosServiceFactory class
-        BeanDefinitionBuilder beanDefinitionBuilder = BeanDefinitionBuilder.rootBeanDefinition(beanClass);
-        for (Object constructorArg : constructorArgs) {
-            beanDefinitionBuilder.addConstructorArgValue(constructorArg);
-        }
-        // ROLE_INFRASTRUCTURE
-        beanDefinitionBuilder.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
-        // Register
-        registry.registerBeanDefinition(beanName, beanDefinitionBuilder.getBeanDefinition());
-    }
+	/**
+	 * the ignoreUnresolvablePlaceholders property for
+	 * propertySourcesPlaceholderConfigurer
+	 */
+	public static final String IGNORE_UNRESOLVABLE_PLACEHOLDERS = "ignoreUnresolvablePlaceholders";
 
-    /**
-     * Register Infrastructure Bean if absent
-     *
-     * @param registry        {@link BeanDefinitionRegistry}
-     * @param beanName        the name of bean
-     * @param beanClass       the class of bean
-     * @param constructorArgs the arguments of {@link Constructor}
-     */
-    public static void registerInfrastructureBeanIfAbsent(BeanDefinitionRegistry registry, String beanName, Class<?> beanClass,
-                                                          Object... constructorArgs) {
-        if (!isBeanDefinitionPresent(registry, beanName, beanClass) && !registry.containsBeanDefinition(beanName)) {
-            registerInfrastructureBean(registry, beanName, beanClass, constructorArgs);
-        }
-    }
+	/**
+	 * Register an object to be Singleton Bean
+	 *
+	 * @param registry {@link BeanDefinitionRegistry}
+	 * @param beanName bean name
+	 * @param singletonObject singleton object
+	 */
+	public static void registerSingleton(BeanDefinitionRegistry registry, String beanName,
+			Object singletonObject) {
+		SingletonBeanRegistry beanRegistry = null;
+		if (registry instanceof SingletonBeanRegistry) {
+			beanRegistry = (SingletonBeanRegistry) registry;
+		}
+		else if (registry instanceof AbstractApplicationContext) {
+			// Maybe AbstractApplicationContext or its sub-classes
+			beanRegistry = ((AbstractApplicationContext) registry).getBeanFactory();
+		}
+		// Register Singleton Object if possible
+		if (beanRegistry != null) {
+			// Determine in advance whether injected with beans
+			if (!beanRegistry.containsSingleton(beanName)) {
+				beanRegistry.registerSingleton(beanName, singletonObject);
+			}
+		}
+	}
 
-    /**
-     * Resolve {@link BeanFactory} from {@link BeanDefinitionRegistry}
-     *
-     * @param registry {@link BeanDefinitionRegistry}
-     * @return {@link BeanFactory} if resolved
-     */
-    public static BeanFactory resolveBeanFactory(BeanDefinitionRegistry registry) {
-        if (registry instanceof BeanFactory) {
-            return (BeanFactory) registry;
-        }
+	/**
+	 * Register Infrastructure Bean
+	 *
+	 * @param registry {@link BeanDefinitionRegistry}
+	 * @param beanName the name of bean
+	 * @param beanClass the class of bean
+	 * @param constructorArgs the arguments of {@link Constructor}
+	 */
+	public static void registerInfrastructureBean(BeanDefinitionRegistry registry,
+			String beanName, Class<?> beanClass, Object... constructorArgs) {
+		// Build a BeanDefinition for NacosServiceFactory class
+		BeanDefinitionBuilder beanDefinitionBuilder = BeanDefinitionBuilder
+				.rootBeanDefinition(beanClass);
+		for (Object constructorArg : constructorArgs) {
+			beanDefinitionBuilder.addConstructorArgValue(constructorArg);
+		}
+		// ROLE_INFRASTRUCTURE
+		beanDefinitionBuilder.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
+		// Register
+		registry.registerBeanDefinition(beanName,
+				beanDefinitionBuilder.getBeanDefinition());
+	}
 
-        if (registry instanceof AbstractApplicationContext) {
-            return ((AbstractApplicationContext) registry).getBeanFactory();
-        }
-        return null;
-    }
+	/**
+	 * Register Infrastructure Bean if absent
+	 *
+	 * @param registry {@link BeanDefinitionRegistry}
+	 * @param beanName the name of bean
+	 * @param beanClass the class of bean
+	 * @param constructorArgs the arguments of {@link Constructor}
+	 */
+	public static void registerInfrastructureBeanIfAbsent(BeanDefinitionRegistry registry,
+			String beanName, Class<?> beanClass, Object... constructorArgs) {
+		if (!isBeanDefinitionPresent(registry, beanName, beanClass)
+				&& !registry.containsBeanDefinition(beanName)) {
+			registerInfrastructureBean(registry, beanName, beanClass, constructorArgs);
+		}
+	}
 
-    /**
-     * Is {@link BeanDefinition} present in {@link BeanDefinitionRegistry}
-     *
-     * @param registry        {@link BeanDefinitionRegistry}
-     * @param beanName        the name of bean
-     * @param targetBeanClass the type of bean
-     * @return If Present , return <code>true</code>
-     */
-    public static boolean isBeanDefinitionPresent(BeanDefinitionRegistry registry, String beanName, Class<?> targetBeanClass) {
-        String[] beanNames = BeanUtils.getBeanNames((ListableBeanFactory) registry, targetBeanClass);
-        return ArrayUtils.contains(beanNames, beanName);
-    }
+	/**
+	 * Resolve {@link BeanFactory} from {@link BeanDefinitionRegistry}
+	 *
+	 * @param registry {@link BeanDefinitionRegistry}
+	 * @return {@link BeanFactory} if resolved
+	 */
+	public static BeanFactory resolveBeanFactory(BeanDefinitionRegistry registry) {
+		if (registry instanceof BeanFactory) {
+			return (BeanFactory) registry;
+		}
 
-    /**
-     * Register {@link PropertySourcesPlaceholderConfigurer} Bean
-     *
-     * @param registry {@link BeanDefinitionRegistry}
-     */
-    public static void registerPropertySourcesPlaceholderConfigurer(BeanDefinitionRegistry registry) {
-        registerInfrastructureBeanIfAbsent(registry, PLACEHOLDER_CONFIGURER_BEAN_NAME,
-                PropertySourcesPlaceholderConfigurer.class);
-    }
+		if (registry instanceof AbstractApplicationContext) {
+			return ((AbstractApplicationContext) registry).getBeanFactory();
+		}
+		return null;
+	}
 
+	/**
+	 * Is {@link BeanDefinition} present in {@link BeanDefinitionRegistry}
+	 *
+	 * @param registry {@link BeanDefinitionRegistry}
+	 * @param beanName the name of bean
+	 * @param targetBeanClass the type of bean
+	 * @return If Present , return <code>true</code>
+	 */
+	public static boolean isBeanDefinitionPresent(BeanDefinitionRegistry registry,
+			String beanName, Class<?> targetBeanClass) {
+		String[] beanNames = BeanUtils.getBeanNames((ListableBeanFactory) registry,
+				targetBeanClass);
+		return ArrayUtils.contains(beanNames, beanName);
+	}
 
-    /**
-     * Register Global Nacos Properties Bean with specified name
-     *
-     * @param attributes       the attributes of Global Nacos Properties may contain placeholders
-     * @param registry         {@link BeanDefinitionRegistry}
-     * @param propertyResolver {@link PropertyResolver}
-     * @param beanName         Bean name
-     */
-    public static void registerGlobalNacosProperties(AnnotationAttributes attributes,
-                                                     BeanDefinitionRegistry registry,
-                                                     PropertyResolver propertyResolver,
-                                                     String beanName) {
-        if (attributes == null) {
-            return; // Compatible with null
-        }
-        AnnotationAttributes globalPropertiesAttributes = attributes.getAnnotation("globalProperties");
-        registerGlobalNacosProperties((Map<?, ?>) globalPropertiesAttributes, registry, propertyResolver,
-                beanName);
-    }
+	/**
+	 * Register {@link PropertySourcesPlaceholderConfigurer} Bean
+	 *
+	 * @param registry {@link BeanDefinitionRegistry}
+	 * @param beanFactory {@link BeanFactory}
+	 */
+	public static void registerPropertySourcesPlaceholderConfigurer(
+			BeanDefinitionRegistry registry, BeanFactory beanFactory) {
+		registerInfrastructureBeanIfAbsent(registry, PLACEHOLDER_CONFIGURER_BEAN_NAME,
+				PropertySourcesPlaceholderConfigurer.class);
 
-    /**
-     * Register Global Nacos Properties Bean with specified name
-     *
-     * @param globalPropertiesAttributes the attributes of Global Nacos Properties may contain placeholders
-     * @param registry                   {@link BeanDefinitionRegistry}
-     * @param propertyResolver           {@link PropertyResolver}
-     * @param beanName                   Bean name
-     */
-    public static void registerGlobalNacosProperties(Map<?, ?> globalPropertiesAttributes,
-                                                     BeanDefinitionRegistry registry,
-                                                     PropertyResolver propertyResolver,
-                                                     String beanName) {
-        Properties globalProperties = resolveProperties(globalPropertiesAttributes, propertyResolver);
-        registerSingleton(registry, beanName, globalProperties);
-    }
+		/*
+		 * If you can't guarantee your old project properties file and config items are
+		 * complete ， please setIgnoreUnresolvablePlaceholders setIgnoreResourceNotFound
+		 * is true 。 if not,you may not be able to start the spring container and your
+		 * application
+		 */
 
-    public static void registerNacosApplicationContextHolder(BeanDefinitionRegistry registry) {
-        registerInfrastructureBeanIfAbsent(registry, ApplicationContextHolder.BEAN_NAME,
-                ApplicationContextHolder.class);
-    }
+		boolean ignoreResourceNotFound = Boolean
+				.parseBoolean(System.getProperty(IGNORE_RESOURCE_NOT_FOUND));
+		boolean ignoreUnresolvablePlaceholders = Boolean
+				.parseBoolean(System.getProperty(IGNORE_UNRESOLVABLE_PLACEHOLDERS));
+		if (ignoreResourceNotFound || ignoreUnresolvablePlaceholders) {
+			PropertySourcesPlaceholderConfigurer configurer = (PropertySourcesPlaceholderConfigurer) beanFactory
+					.getBean(NacosBeanUtils.PLACEHOLDER_CONFIGURER_BEAN_NAME);
+			if (configurer != null) {
+				configurer.setIgnoreResourceNotFound(ignoreResourceNotFound);
+				configurer.setIgnoreUnresolvablePlaceholders(
+						ignoreUnresolvablePlaceholders);
+			}
+		}
+	}
 
-    public static void registerNacosConfigPropertiesBindingPostProcessor(BeanDefinitionRegistry registry) {
-        registerInfrastructureBeanIfAbsent(registry, NacosConfigurationPropertiesBindingPostProcessor.BEAN_NAME,
-                NacosConfigurationPropertiesBindingPostProcessor.class);
-    }
+	/**
+	 * Register Global Nacos Properties Bean with specified name
+	 *
+	 * @param attributes the attributes of Global Nacos Properties may contain
+	 *     placeholders
+	 * @param registry {@link BeanDefinitionRegistry}
+	 * @param propertyResolver {@link PropertyResolver}
+	 * @param beanName Bean name
+	 */
+	public static void registerGlobalNacosProperties(AnnotationAttributes attributes,
+			BeanDefinitionRegistry registry, PropertyResolver propertyResolver,
+			String beanName) {
+		if (attributes == null) {
+			return; // Compatible with null
+		}
+		AnnotationAttributes globalPropertiesAttributes = attributes
+				.getAnnotation("globalProperties");
+		registerGlobalNacosProperties((Map<?, ?>) globalPropertiesAttributes, registry,
+				propertyResolver, beanName);
+	}
 
-    public static void registerNacosConfigListenerMethodProcessor(BeanDefinitionRegistry registry) {
-        registerInfrastructureBeanIfAbsent(registry, NacosConfigListenerMethodProcessor.BEAN_NAME,
-                NacosConfigListenerMethodProcessor.class);
-    }
+	/**
+	 * Register Global Nacos Properties Bean with specified name
+	 *
+	 * @param globalPropertiesAttributes the attributes of Global Nacos Properties may
+	 *     contain placeholders
+	 * @param registry {@link BeanDefinitionRegistry}
+	 * @param propertyResolver {@link PropertyResolver}
+	 * @param beanName Bean name
+	 */
+	public static void registerGlobalNacosProperties(Map<?, ?> globalPropertiesAttributes,
+			BeanDefinitionRegistry registry, PropertyResolver propertyResolver,
+			String beanName) {
+		Properties globalProperties = resolveProperties(globalPropertiesAttributes,
+				propertyResolver);
+		registerSingleton(registry, beanName, globalProperties);
+	}
 
-    public static void registerNacosPropertySourcePostProcessor(BeanDefinitionRegistry registry) {
-        registerInfrastructureBeanIfAbsent(registry, NacosPropertySourcePostProcessor.BEAN_NAME,
-                NacosPropertySourcePostProcessor.class);
-    }
+	public static void registerNacosApplicationContextHolder(
+			BeanDefinitionRegistry registry) {
+		registerInfrastructureBeanIfAbsent(registry, ApplicationContextHolder.BEAN_NAME,
+				ApplicationContextHolder.class);
+	}
 
-    public static void registerAnnotationNacosPropertySourceBuilder(BeanDefinitionRegistry registry) {
-        registerInfrastructureBeanIfAbsent(registry, AnnotationNacosPropertySourceBuilder.BEAN_NAME,
-                AnnotationNacosPropertySourceBuilder.class);
-    }
+	public static void registerNacosConfigPropertiesBindingPostProcessor(
+			BeanDefinitionRegistry registry) {
+		registerInfrastructureBeanIfAbsent(registry,
+				NacosConfigurationPropertiesBindingPostProcessor.BEAN_NAME,
+				NacosConfigurationPropertiesBindingPostProcessor.class);
+	}
 
-    public static void registerXmlNacosPropertySourceBuilder(BeanDefinitionRegistry registry) {
-        registerInfrastructureBeanIfAbsent(registry, XmlNacosPropertySourceBuilder.BEAN_NAME,
-                XmlNacosPropertySourceBuilder.class);
-    }
+	public static void registerNacosConfigListenerMethodProcessor(
+			BeanDefinitionRegistry registry) {
+		registerInfrastructureBeanIfAbsent(registry,
+				NacosConfigListenerMethodProcessor.BEAN_NAME,
+				NacosConfigListenerMethodProcessor.class);
+	}
 
-    public static void registerNacosConfigListenerExecutor(BeanDefinitionRegistry registry, Environment environment) {
-        final String beanName = NACOS_CONFIG_LISTENER_EXECUTOR_BEAN_NAME;
-        if (registry instanceof BeanFactory && ((BeanFactory) registry).containsBean(beanName)) {
-            return;
-        }
-        ExecutorService nacosConfigListenerExecutor = buildNacosConfigListenerExecutor(environment);
-        registerSingleton(registry, beanName, nacosConfigListenerExecutor);
-    }
+	public static void registerNacosPropertySourcePostProcessor(
+			BeanDefinitionRegistry registry) {
+		registerInfrastructureBeanIfAbsent(registry,
+				NacosPropertySourcePostProcessor.BEAN_NAME,
+				NacosPropertySourcePostProcessor.class);
+	}
 
-    private static ExecutorService buildNacosConfigListenerExecutor(Environment environment) {
-        int parallelism = getParallelism(environment);
-        return Executors.newFixedThreadPool(parallelism, new ThreadFactory() {
-            private final AtomicInteger threadNumber = new AtomicInteger(1);
+	public static void registerAnnotationNacosPropertySourceBuilder(
+			BeanDefinitionRegistry registry) {
+		registerInfrastructureBeanIfAbsent(registry,
+				AnnotationNacosPropertySourceBuilder.BEAN_NAME,
+				AnnotationNacosPropertySourceBuilder.class);
+	}
 
-            @Override
-            public Thread newThread(Runnable r) {
-                Thread thread = new Thread(r);
-                thread.setName("NacosConfigListener-ThreadPool-" + threadNumber.getAndIncrement());
-                return thread;
-            }
-        });
-    }
+	public static void registerXmlNacosPropertySourceBuilder(
+			BeanDefinitionRegistry registry) {
+		registerInfrastructureBeanIfAbsent(registry,
+				XmlNacosPropertySourceBuilder.BEAN_NAME,
+				XmlNacosPropertySourceBuilder.class);
+	}
 
-    private static int getParallelism(Environment environment) {
-        int parallelism = environment.getProperty(NACOS_CONFIG_LISTENER_PARALLELISM, int.class,
-                DEFAULT_NACOS_CONFIG_LISTENER_PARALLELISM);
-        return parallelism < 1 ? DEFAULT_NACOS_CONFIG_LISTENER_PARALLELISM : parallelism;
-    }
+	public static void registerNacosConfigListenerExecutor(
+			BeanDefinitionRegistry registry, Environment environment) {
+		final String beanName = NACOS_CONFIG_LISTENER_EXECUTOR_BEAN_NAME;
+		if (registry instanceof BeanFactory
+				&& ((BeanFactory) registry).containsBean(beanName)) {
+			return;
+		}
+		ExecutorService nacosConfigListenerExecutor = buildNacosConfigListenerExecutor(
+				environment);
+		registerSingleton(registry, beanName, nacosConfigListenerExecutor);
+	}
 
-    public static void registerNacosValueAnnotationBeanPostProcessor(BeanDefinitionRegistry registry) {
-        registerInfrastructureBeanIfAbsent(registry, NacosValueAnnotationBeanPostProcessor.BEAN_NAME,
-                NacosValueAnnotationBeanPostProcessor.class);
-    }
+	private static ExecutorService buildNacosConfigListenerExecutor(
+			Environment environment) {
+		int parallelism = getParallelism(environment);
+		return Executors.newFixedThreadPool(parallelism, new ThreadFactory() {
+			private final AtomicInteger threadNumber = new AtomicInteger(1);
 
-    /**
-     * Register Nacos Common Beans
-     *
-     * @param registry {@link BeanDefinitionRegistry}
-     */
-    public static void registerNacosCommonBeans(BeanDefinitionRegistry registry) {
-        // Register NacosApplicationContextHolder Bean
-        registerNacosApplicationContextHolder(registry);
-        // Register AnnotationNacosInjectedBeanPostProcessor Bean
-        registerAnnotationNacosInjectedBeanPostProcessor(registry);
-    }
+			@Override
+			public Thread newThread(Runnable r) {
+				Thread thread = new Thread(r);
+				thread.setName("NacosConfigListener-ThreadPool-"
+						+ threadNumber.getAndIncrement());
+				return thread;
+			}
+		});
+	}
 
-    /**
-     * Register Nacos Config Beans
-     *
-     * @param registry    {@link BeanDefinitionRegistry}
-     * @param environment {@link Environment}
-     */
-    public static void registerNacosConfigBeans(BeanDefinitionRegistry registry, Environment environment) {
-        // Register PropertySourcesPlaceholderConfigurer Bean
-        registerPropertySourcesPlaceholderConfigurer(registry);
+	private static int getParallelism(Environment environment) {
+		int parallelism = environment.getProperty(NACOS_CONFIG_LISTENER_PARALLELISM,
+				int.class, DEFAULT_NACOS_CONFIG_LISTENER_PARALLELISM);
+		return parallelism < 1 ? DEFAULT_NACOS_CONFIG_LISTENER_PARALLELISM : parallelism;
+	}
 
-        registerNacosConfigPropertiesBindingPostProcessor(registry);
+	public static void registerNacosValueAnnotationBeanPostProcessor(
+			BeanDefinitionRegistry registry) {
+		registerInfrastructureBeanIfAbsent(registry,
+				NacosValueAnnotationBeanPostProcessor.BEAN_NAME,
+				NacosValueAnnotationBeanPostProcessor.class);
+	}
 
-        registerNacosConfigListenerMethodProcessor(registry);
+	public static void registerSpringValueAnnotationBeanPostProcessor(
+			BeanDefinitionRegistry registry) {
+		registerInfrastructureBeanIfAbsent(registry,
+				SpringValueAnnotationBeanPostProcessor.BEAN_NAME,
+				SpringValueAnnotationBeanPostProcessor.class);
+	}
 
-        registerNacosPropertySourcePostProcessor(registry);
+	/**
+	 * Register Nacos Common Beans
+	 *
+	 * @param registry {@link BeanDefinitionRegistry}
+	 */
+	public static void registerNacosCommonBeans(BeanDefinitionRegistry registry) {
+		// Register NacosApplicationContextHolder Bean
+		registerNacosApplicationContextHolder(registry);
+		// Register AnnotationNacosInjectedBeanPostProcessor Bean
+		registerAnnotationNacosInjectedBeanPostProcessor(registry);
+	}
 
-        registerAnnotationNacosPropertySourceBuilder(registry);
+	/**
+	 * Register Nacos Config Beans
+	 *
+	 * @param registry {@link BeanDefinitionRegistry}
+	 * @param environment {@link Environment}
+	 * @param beanFactory {@link BeanFactory}
+	 */
+	public static void registerNacosConfigBeans(BeanDefinitionRegistry registry,
+			Environment environment, BeanFactory beanFactory) {
+		// Register PropertySourcesPlaceholderConfigurer Bean
+		registerPropertySourcesPlaceholderConfigurer(registry, beanFactory);
 
-        registerNacosConfigListenerExecutor(registry, environment);
+		registerNacosConfigPropertiesBindingPostProcessor(registry);
 
-        registerNacosValueAnnotationBeanPostProcessor(registry);
+		registerNacosConfigListenerMethodProcessor(registry);
 
-        registerConfigServiceBeanBuilder(registry);
+		registerNacosPropertySourcePostProcessor(registry);
 
-        registerLoggingNacosConfigMetadataEventListener(registry);
-    }
+		registerAnnotationNacosPropertySourceBuilder(registry);
 
-    /**
-     * Invokes {@link NacosPropertySourcePostProcessor}
-     *
-     * @param beanFactory {@link BeanFactory}
-     */
-    public static void invokeNacosPropertySourcePostProcessor(BeanFactory beanFactory) {
-        NacosPropertySourcePostProcessor postProcessor =
-                beanFactory.getBean(NacosPropertySourcePostProcessor.BEAN_NAME, NacosPropertySourcePostProcessor.class);
-        postProcessor.postProcessBeanFactory((ConfigurableListableBeanFactory) beanFactory);
-    }
+		registerNacosConfigListenerExecutor(registry, environment);
 
-    /**
-     * Register {@link LoggingNacosConfigMetadataEventListener} Bean
-     *
-     * @param registry {@link BeanDefinitionRegistry}
-     */
-    private static void registerLoggingNacosConfigMetadataEventListener(BeanDefinitionRegistry registry) {
-        registerInfrastructureBeanIfAbsent(registry, LoggingNacosConfigMetadataEventListener.BEAN_NAME,
-                LoggingNacosConfigMetadataEventListener.class);
-    }
+		registerNacosValueAnnotationBeanPostProcessor(registry);
 
-    /**
-     * Register Nacos Discovery Beans
-     *
-     * @param registry {@link BeanDefinitionRegistry}
-     */
-    public static void registerNacosDiscoveryBeans(BeanDefinitionRegistry registry) {
-        registerNamingServiceBeanBuilder(registry);
-        registerNamingMaintainServiceBeanBuilder(registry);
-    }
+		registerSpringValueAnnotationBeanPostProcessor(registry);
 
-    /**
-     * Register {@link AnnotationNacosInjectedBeanPostProcessor} with
-     * {@link AnnotationNacosInjectedBeanPostProcessor#BEAN_NAME name}
-     *
-     * @param registry {@link BeanDefinitionRegistry}
-     */
-    private static void registerAnnotationNacosInjectedBeanPostProcessor(BeanDefinitionRegistry registry) {
-        registerInfrastructureBeanIfAbsent(registry, AnnotationNacosInjectedBeanPostProcessor.BEAN_NAME,
-                AnnotationNacosInjectedBeanPostProcessor.class);
-    }
+		registerConfigServiceBeanBuilder(registry);
 
-    private static void registerConfigServiceBeanBuilder(BeanDefinitionRegistry registry) {
-        registerInfrastructureBeanIfAbsent(registry, ConfigServiceBeanBuilder.BEAN_NAME, ConfigServiceBeanBuilder.class);
-    }
+		registerLoggingNacosConfigMetadataEventListener(registry);
+	}
 
-    private static void registerNamingServiceBeanBuilder(BeanDefinitionRegistry registry) {
-        registerInfrastructureBeanIfAbsent(registry, NamingServiceBeanBuilder.BEAN_NAME, NamingServiceBeanBuilder.class);
-    }
+	/**
+	 * Invokes {@link NacosPropertySourcePostProcessor}
+	 *
+	 * @param beanFactory {@link BeanFactory}
+	 */
+	public static void invokeNacosPropertySourcePostProcessor(BeanFactory beanFactory) {
+		NacosPropertySourcePostProcessor postProcessor = beanFactory.getBean(
+				NacosPropertySourcePostProcessor.BEAN_NAME,
+				NacosPropertySourcePostProcessor.class);
+		postProcessor
+				.postProcessBeanFactory((ConfigurableListableBeanFactory) beanFactory);
+	}
 
-    private static void registerNamingMaintainServiceBeanBuilder(BeanDefinitionRegistry registry) {
-        registerInfrastructureBeanIfAbsent(registry, NamingMaintainServiceBeanBuilder.BEAN_NAME, NamingMaintainServiceBeanBuilder.class);
-    }
+	/**
+	 * Register {@link LoggingNacosConfigMetadataEventListener} Bean
+	 *
+	 * @param registry {@link BeanDefinitionRegistry}
+	 */
+	private static void registerLoggingNacosConfigMetadataEventListener(
+			BeanDefinitionRegistry registry) {
+		registerInfrastructureBeanIfAbsent(registry,
+				LoggingNacosConfigMetadataEventListener.BEAN_NAME,
+				LoggingNacosConfigMetadataEventListener.class);
+	}
 
-    /**
-     * Get Global Properties Bean
-     *
-     * @param beanFactory {@link BeanFactory}
-     * @return Global Properties Bean
-     * @throws NoSuchBeanDefinitionException if there is no such bean definition
-     */
-    public static Properties getGlobalPropertiesBean(BeanFactory beanFactory) throws NoSuchBeanDefinitionException {
-        return beanFactory.getBean(GLOBAL_NACOS_PROPERTIES_BEAN_NAME, Properties.class);
-    }
+	/**
+	 * Register Nacos Discovery Beans
+	 *
+	 * @param registry {@link BeanDefinitionRegistry}
+	 */
+	public static void registerNacosDiscoveryBeans(BeanDefinitionRegistry registry) {
+		registerNamingServiceBeanBuilder(registry);
+		registerNamingMaintainServiceBeanBuilder(registry);
+	}
 
-    /**
-     * Get {@link NacosServiceFactory} Bean
-     *
-     * @param beanFactory {@link BeanFactory}
-     * @return {@link NacosServiceFactory} Bean
-     * @throws NoSuchBeanDefinitionException if there is no such bean definition
-     */
-    public static NacosServiceFactory getNacosServiceFactoryBean(BeanFactory beanFactory) throws NoSuchBeanDefinitionException {
-        if (null == beanFactory) {
-            return getNacosServiceFactoryBean();
-        }
-        ApplicationContextHolder applicationContextHolder = getApplicationContextHolder(beanFactory);
-        CacheableEventPublishingNacosServiceFactory nacosServiceFactory = CacheableEventPublishingNacosServiceFactory.getSingleton();
-        nacosServiceFactory.setApplicationContext(applicationContextHolder.getApplicationContext());
-        return nacosServiceFactory;
-    }
+	/**
+	 * Register {@link AnnotationNacosInjectedBeanPostProcessor} with
+	 * {@link AnnotationNacosInjectedBeanPostProcessor#BEAN_NAME name}
+	 *
+	 * @param registry {@link BeanDefinitionRegistry}
+	 */
+	private static void registerAnnotationNacosInjectedBeanPostProcessor(
+			BeanDefinitionRegistry registry) {
+		registerInfrastructureBeanIfAbsent(registry,
+				AnnotationNacosInjectedBeanPostProcessor.BEAN_NAME,
+				AnnotationNacosInjectedBeanPostProcessor.class);
+	}
 
-    public static NacosServiceFactory getNacosServiceFactoryBean() throws NoSuchBeanDefinitionException {
-        return CacheableEventPublishingNacosServiceFactory.getSingleton();
-    }
+	private static void registerConfigServiceBeanBuilder(
+			BeanDefinitionRegistry registry) {
+		registerInfrastructureBeanIfAbsent(registry, ConfigServiceBeanBuilder.BEAN_NAME,
+				ConfigServiceBeanBuilder.class);
+	}
 
-    public static ApplicationContextHolder getApplicationContextHolder(BeanFactory beanFactory) throws NoSuchBeanDefinitionException {
-        return beanFactory.getBean(ApplicationContextHolder.BEAN_NAME, ApplicationContextHolder.class);
-    }
+	private static void registerNamingServiceBeanBuilder(
+			BeanDefinitionRegistry registry) {
+		registerInfrastructureBeanIfAbsent(registry, NamingServiceBeanBuilder.BEAN_NAME,
+				NamingServiceBeanBuilder.class);
+	}
 
-    /**
-     * Get {@link Executor} Bean for Nacos Config Listener If Present
-     *
-     * @param beanFactory {@link BeanFactory}
-     * @return {@link Executor} Bean If Present, or <code>null</code>
-     */
-    public static ExecutorService getNacosConfigListenerExecutorIfPresent(BeanFactory beanFactory) {
-        if (!beanFactory.containsBean(NACOS_CONFIG_LISTENER_EXECUTOR_BEAN_NAME)) {
-            return null;
-        }
-        return beanFactory.getBean(NACOS_CONFIG_LISTENER_EXECUTOR_BEAN_NAME, ExecutorService.class);
-    }
+	private static void registerNamingMaintainServiceBeanBuilder(
+			BeanDefinitionRegistry registry) {
+		registerInfrastructureBeanIfAbsent(registry,
+				NamingMaintainServiceBeanBuilder.BEAN_NAME,
+				NamingMaintainServiceBeanBuilder.class);
+	}
 
-    /**
-     * Get {@link ConfigServiceBeanBuilder} Bean
-     *
-     * @param beanFactory {@link BeanFactory}
-     * @return {@link ConfigServiceBeanBuilder} Bean
-     * @throws NoSuchBeanDefinitionException if there is no such bean definition
-     */
-    public static ConfigServiceBeanBuilder getConfigServiceBeanBuilder(BeanFactory beanFactory) throws NoSuchBeanDefinitionException {
-        return beanFactory.getBean(ConfigServiceBeanBuilder.BEAN_NAME, ConfigServiceBeanBuilder.class);
-    }
+	/**
+	 * Get Global Properties Bean
+	 *
+	 * @param beanFactory {@link BeanFactory}
+	 * @return Global Properties Bean
+	 * @throws NoSuchBeanDefinitionException if there is no such bean definition
+	 */
+	public static Properties getGlobalPropertiesBean(BeanFactory beanFactory)
+			throws NoSuchBeanDefinitionException {
+		return beanFactory.getBean(GLOBAL_NACOS_PROPERTIES_BEAN_NAME, Properties.class);
+	}
 
-    /**
-     * Get {@link NamingServiceBeanBuilder} Bean
-     *
-     * @param beanFactory {@link BeanFactory}
-     * @return {@link NamingServiceBeanBuilder} Bean
-     * @throws NoSuchBeanDefinitionException if there is no such bean definition
-     */
-    public static NamingServiceBeanBuilder getNamingServiceBeanBuilder(BeanFactory beanFactory) throws NoSuchBeanDefinitionException {
-        return beanFactory.getBean(NamingServiceBeanBuilder.BEAN_NAME, NamingServiceBeanBuilder.class);
-    }
+	/**
+	 * Get {@link NacosServiceFactory} Bean
+	 *
+	 * @param beanFactory {@link BeanFactory}
+	 * @return {@link NacosServiceFactory} Bean
+	 * @throws NoSuchBeanDefinitionException if there is no such bean definition
+	 */
+	public static NacosServiceFactory getNacosServiceFactoryBean(BeanFactory beanFactory)
+			throws NoSuchBeanDefinitionException {
+		if (null == beanFactory) {
+			return getNacosServiceFactoryBean();
+		}
+		ApplicationContextHolder applicationContextHolder = getApplicationContextHolder(
+				beanFactory);
+		CacheableEventPublishingNacosServiceFactory nacosServiceFactory = CacheableEventPublishingNacosServiceFactory
+				.getSingleton();
+		nacosServiceFactory
+				.setApplicationContext(applicationContextHolder.getApplicationContext());
+		return nacosServiceFactory;
+	}
 
-    /**
-     * Get {@link NamingMaintainServiceBeanBuilder} Bean
-     *
-     * @param beanFactory {@link BeanFactory}
-     * @return {@link NamingMaintainServiceBeanBuilder} Bean
-     * @throws NoSuchBeanDefinitionException if there is no such bean definition
-     */
-    public static NamingMaintainServiceBeanBuilder getNamingMaintainServiceBeanBuilder(BeanFactory beanFactory) throws NoSuchBeanDefinitionException {
-        return beanFactory.getBean(NamingMaintainServiceBeanBuilder.BEAN_NAME, NamingMaintainServiceBeanBuilder.class);
-    }
+	public static NacosServiceFactory getNacosServiceFactoryBean()
+			throws NoSuchBeanDefinitionException {
+		return CacheableEventPublishingNacosServiceFactory.getSingleton();
+	}
+
+	public static ApplicationContextHolder getApplicationContextHolder(
+			BeanFactory beanFactory) throws NoSuchBeanDefinitionException {
+		return beanFactory.getBean(ApplicationContextHolder.BEAN_NAME,
+				ApplicationContextHolder.class);
+	}
+
+	/**
+	 * Get {@link Executor} Bean for Nacos Config Listener If Present
+	 *
+	 * @param beanFactory {@link BeanFactory}
+	 * @return {@link Executor} Bean If Present, or <code>null</code>
+	 */
+	public static ExecutorService getNacosConfigListenerExecutorIfPresent(
+			BeanFactory beanFactory) {
+		if (!beanFactory.containsBean(NACOS_CONFIG_LISTENER_EXECUTOR_BEAN_NAME)) {
+			return null;
+		}
+		return beanFactory.getBean(NACOS_CONFIG_LISTENER_EXECUTOR_BEAN_NAME,
+				ExecutorService.class);
+	}
+
+	/**
+	 * Get {@link ConfigServiceBeanBuilder} Bean
+	 *
+	 * @param beanFactory {@link BeanFactory}
+	 * @return {@link ConfigServiceBeanBuilder} Bean
+	 * @throws NoSuchBeanDefinitionException if there is no such bean definition
+	 */
+	public static ConfigServiceBeanBuilder getConfigServiceBeanBuilder(
+			BeanFactory beanFactory) throws NoSuchBeanDefinitionException {
+		return beanFactory.getBean(ConfigServiceBeanBuilder.BEAN_NAME,
+				ConfigServiceBeanBuilder.class);
+	}
+
+	/**
+	 * Get {@link NamingServiceBeanBuilder} Bean
+	 *
+	 * @param beanFactory {@link BeanFactory}
+	 * @return {@link NamingServiceBeanBuilder} Bean
+	 * @throws NoSuchBeanDefinitionException if there is no such bean definition
+	 */
+	public static NamingServiceBeanBuilder getNamingServiceBeanBuilder(
+			BeanFactory beanFactory) throws NoSuchBeanDefinitionException {
+		return beanFactory.getBean(NamingServiceBeanBuilder.BEAN_NAME,
+				NamingServiceBeanBuilder.class);
+	}
+
+	/**
+	 * Get {@link NamingMaintainServiceBeanBuilder} Bean
+	 *
+	 * @param beanFactory {@link BeanFactory}
+	 * @return {@link NamingMaintainServiceBeanBuilder} Bean
+	 * @throws NoSuchBeanDefinitionException if there is no such bean definition
+	 */
+	public static NamingMaintainServiceBeanBuilder getNamingMaintainServiceBeanBuilder(
+			BeanFactory beanFactory) throws NoSuchBeanDefinitionException {
+		return beanFactory.getBean(NamingMaintainServiceBeanBuilder.BEAN_NAME,
+				NamingMaintainServiceBeanBuilder.class);
+	}
 
 }

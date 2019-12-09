@@ -16,10 +16,10 @@
  */
 package com.alibaba.nacos.spring.test;
 
+import java.util.List;
+
 import com.alibaba.nacos.api.config.ConfigType;
 import com.alibaba.nacos.api.config.annotation.NacosConfigurationProperties;
-
-import java.util.List;
 
 import static com.alibaba.nacos.spring.test.XmlApp.DATA_ID_XML;
 
@@ -30,54 +30,48 @@ import static com.alibaba.nacos.spring.test.XmlApp.DATA_ID_XML;
 @NacosConfigurationProperties(dataId = DATA_ID_XML, autoRefreshed = true, ignoreNestedProperties = true, type = ConfigType.XML)
 public class XmlApp {
 
-    public static final String DATA_ID_XML = "xml_app";
+	public static final String DATA_ID_XML = "xml_app";
 
-    private List<Student> students;
+	private List<Student> students;
 
-    public List<XmlApp.Student> getStudents() {
-        return students;
-    }
+	public List<XmlApp.Student> getStudents() {
+		return students;
+	}
 
-    public void setStudents(List<XmlApp.Student> students) {
-        this.students = students;
-    }
+	public void setStudents(List<XmlApp.Student> students) {
+		this.students = students;
+	}
 
-    @Override
-    public String toString() {
-        return "XmlApp{" +
-                "students=" + students +
-                '}';
-    }
+	@Override
+	public String toString() {
+		return "XmlApp{" + "students=" + students + '}';
+	}
 
-    public static class Student {
+	public static class Student {
 
-        private String name;
-        private String num;
+		private String name;
+		private String num;
 
-        public String getName() {
-            return name;
-        }
+		public String getName() {
+			return name;
+		}
 
-        public void setName(String name) {
-            this.name = name;
-        }
+		public void setName(String name) {
+			this.name = name;
+		}
 
-        public String getNum() {
-            return num;
-        }
+		public String getNum() {
+			return num;
+		}
 
-        public void setNum(String num) {
-            this.num = num;
-        }
+		public void setNum(String num) {
+			this.num = num;
+		}
 
-        @Override
-        public String toString() {
-            return "Student{" +
-                    "name='" + name + '\'' +
-                    ", num='" + num + '\'' +
-                    '}';
-        }
-    }
+		@Override
+		public String toString() {
+			return "Student{" + "name='" + name + '\'' + ", num='" + num + '\'' + '}';
+		}
+	}
 
 }
-

@@ -16,12 +16,16 @@
  */
 package com.alibaba.nacos.spring.context.config.xml;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.alibaba.nacos.embedded.web.server.EmbeddedNacosHttpServer;
 import com.alibaba.nacos.spring.test.AbstractNacosHttpServerTestExecutionListener;
 import com.alibaba.nacos.spring.test.User;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
@@ -30,11 +34,10 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import static com.alibaba.nacos.api.common.Constants.DEFAULT_GROUP;
-import static com.alibaba.nacos.embedded.web.server.NacosConfigHttpHandler.*;
+import static com.alibaba.nacos.embedded.web.server.NacosConfigHttpHandler.CONTENT_PARAM_NAME;
+import static com.alibaba.nacos.embedded.web.server.NacosConfigHttpHandler.DATA_ID_PARAM_NAME;
+import static com.alibaba.nacos.embedded.web.server.NacosConfigHttpHandler.GROUP_ID_PARAM_NAME;
 
 /**
  * {@link NacosPropertySourceBeanDefinitionParser} Test
@@ -45,39 +48,39 @@ import static com.alibaba.nacos.embedded.web.server.NacosConfigHttpHandler.*;
  * @since 0.1.0
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {
-    "classpath:/META-INF/nacos-context.xml",
-    "classpath:/META-INF/nacos-property-source.xml"
-})
+@ContextConfiguration(locations = { "classpath:/META-INF/nacos-context.xml",
+		"classpath:/META-INF/nacos-property-source.xml" })
 @DirtiesContext
-@TestExecutionListeners({DependencyInjectionTestExecutionListener.class,
-    DirtiesContextTestExecutionListener.class, NacosPropertySourceBeanDefinitionParserTest.class})
-public class NacosPropertySourceBeanDefinitionParserTest extends AbstractNacosHttpServerTestExecutionListener {
+@TestExecutionListeners({ DependencyInjectionTestExecutionListener.class,
+		DirtiesContextTestExecutionListener.class,
+		NacosPropertySourceBeanDefinitionParserTest.class })
+public class NacosPropertySourceBeanDefinitionParserTest
+		extends AbstractNacosHttpServerTestExecutionListener {
 
-    private static final Long USER_ID = 1991L;
-    private static final String USER_NAME = "hxy";
+	private static final Long USER_ID = 1991L;
+	private static final String USER_NAME = "hxy";
 
-    @Override
-    protected void init(EmbeddedNacosHttpServer server) {
-        Map<String, String> config = new HashMap<String, String>(1);
-        config.put(DATA_ID_PARAM_NAME, "user");
-        config.put(GROUP_ID_PARAM_NAME, DEFAULT_GROUP);
-        config.put(CONTENT_PARAM_NAME, "id=" + USER_ID + "\nname=" + USER_NAME);
-        server.initConfig(config);
-    }
+	@Override
+	protected void init(EmbeddedNacosHttpServer server) {
+		Map<String, String> config = new HashMap<String, String>(1);
+		config.put(DATA_ID_PARAM_NAME, "user");
+		config.put(GROUP_ID_PARAM_NAME, DEFAULT_GROUP);
+		config.put(CONTENT_PARAM_NAME, "id=" + USER_ID + "\nname=" + USER_NAME);
+		server.initConfig(config);
+	}
 
-    @Override
-    protected String getServerAddressPropertyName() {
-        return "nacos.server-addr";
-    }
+	@Override
+	protected String getServerAddressPropertyName() {
+		return "nacos.server-addr";
+	}
 
-    @Autowired
-    private User user;
+	@Autowired
+	private User user;
 
-    @Test
-    public void testGetConfig() {
-        Assert.assertEquals(USER_ID, user.getId());
-        Assert.assertEquals(USER_NAME, user.getName());
-    }
+	@Test
+	public void testGetConfig() {
+		Assert.assertEquals(USER_ID, user.getId());
+		Assert.assertEquals(USER_NAME, user.getName());
+	}
 
 }

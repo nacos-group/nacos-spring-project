@@ -16,12 +16,12 @@
  */
 package com.alibaba.nacos.spring.beans.factory.annotation;
 
+import java.util.Properties;
+
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.spring.factory.NacosServiceFactory;
 import com.alibaba.nacos.spring.util.GlobalNacosPropertiesSource;
-
-import java.util.Properties;
 
 /**
  * {@link ConfigService} Bean Builder
@@ -29,20 +29,21 @@ import java.util.Properties;
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
  * @since 0.1.0
  */
-public class ConfigServiceBeanBuilder extends AbstractNacosServiceBeanBuilder<ConfigService> {
+public class ConfigServiceBeanBuilder
+		extends AbstractNacosServiceBeanBuilder<ConfigService> {
 
-    /**
-     * The bean name of {@link ConfigServiceBeanBuilder}
-     */
-    public static final String BEAN_NAME = "configServiceBeanBuilder";
+	/**
+	 * The bean name of {@link ConfigServiceBeanBuilder}
+	 */
+	public static final String BEAN_NAME = "configServiceBeanBuilder";
 
-    protected ConfigServiceBeanBuilder() {
-        super(GlobalNacosPropertiesSource.CONFIG);
-    }
+	protected ConfigServiceBeanBuilder() {
+		super(GlobalNacosPropertiesSource.CONFIG);
+	}
 
-    @Override
-    protected ConfigService createService(NacosServiceFactory nacosServiceFactory, Properties properties)
-            throws NacosException {
-        return nacosServiceFactory.createConfigService(properties);
-    }
+	@Override
+	protected ConfigService createService(NacosServiceFactory nacosServiceFactory,
+			Properties properties) throws NacosException {
+		return nacosServiceFactory.createConfigService(properties);
+	}
 }
