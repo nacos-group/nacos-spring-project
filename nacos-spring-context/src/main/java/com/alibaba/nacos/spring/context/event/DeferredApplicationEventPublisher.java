@@ -35,63 +35,59 @@ import org.springframework.context.support.AbstractApplicationContext;
  * hold all early {@link ApplicationEvent events} temporary until
  * {@link ConfigurableApplicationContext#isRunning() Spring ApplicationContext is active},
  * and then those {@link ApplicationEvent events} will be replayed.
- *
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
  * @since 0.1.0
  */
 public class DeferredApplicationEventPublisher
-		implements ApplicationEventPublisher, ApplicationListener<ContextRefreshedEvent> {
+        implements ApplicationEventPublisher, ApplicationListener<ContextRefreshedEvent> {
 
-	private final ConfigurableApplicationContext context;
+    private final ConfigurableApplicationContext context;
 
-	// fix issue #85
-	private final ConcurrentLinkedQueue<ApplicationEvent> deferredEvents = new ConcurrentLinkedQueue<ApplicationEvent>();
+    // fix issue #85
+    private final ConcurrentLinkedQueue<ApplicationEvent> deferredEvents = new ConcurrentLinkedQueue<ApplicationEvent>();
 
-	public DeferredApplicationEventPublisher(ConfigurableApplicationContext context) {
-		this.context = context;
-		this.context.addApplicationListener(this);
-	}
-
-	@Override
-	public void publishEvent(ApplicationEvent event) {
-
-		try {
-			if (context.isRunning()) {
-				context.publishEvent(event);
-			}
-			else {
-				deferredEvents.add(event);
-			}
-		}
-		catch (Exception ignore) {
-			deferredEvents.add(event);
-		}
-	}
-
-    @Override
-    public void publishEvent(Object event) {
-
+    public DeferredApplicationEventPublisher(ConfigurableApplicationContext context) {
+        this.context = context;
+        this.context.addApplicationListener(this);
     }
 
     @Override
-	public void onApplicationEvent(ContextRefreshedEvent event) {
+    public void publishEvent(ApplicationEvent event) {
 
-		ApplicationContext currentContext = event.getApplicationContext();
+        try {
+            if (context.isRunning()) {
+                context.publishEvent(event);
+            } else {
+                deferredEvents.add(event);
+            }
+        } catch (Exception ignore) {
+            deferredEvents.add(event);
+        }
+    }
 
-		if (!currentContext.equals(context)) {
-			// prevent multiple event multi-casts in hierarchical contexts
-			return;
-		}
+    public void publishEvent(Object event) {
+    	// TODO
+    }
 
-		replayDeferredEvents();
-	}
+    @Override
+    public void onApplicationEvent(ContextRefreshedEvent event) {
 
-	private void replayDeferredEvents() {
-		Iterator<ApplicationEvent> iterator = deferredEvents.iterator();
-		while (iterator.hasNext()) {
-			ApplicationEvent event = iterator.next();
-			publishEvent(event);
-			iterator.remove(); // remove if published
-		}
-	}
+        ApplicationContext currentContext = event.getApplicationContext();
+
+        if (!currentContext.equals(context)) {
+            // prevent multiple event multi-casts in hierarchical contexts
+            return;
+        }
+
+        replayDeferredEvents();
+    }
+
+    private void replayDeferredEvents() {
+        Iterator<ApplicationEvent> iterator = deferredEvents.iterator();
+        while (iterator.hasNext()) {
+            ApplicationEvent event = iterator.next();
+            publishEvent(event);
+            iterator.remove(); // remove if published
+        }
+    }
 }

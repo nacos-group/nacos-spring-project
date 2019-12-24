@@ -12,7 +12,7 @@
 
     <groupId>com.alibaba.nacos</groupId>
     <artifactId>nacos-spring-parent</artifactId>
-    <version>0.3.4</version>
+    <version>1.0.0-SNAPSHOT</version>
     <name>Alibaba Nacos :: Spring :: POM</name>
     <packaging>pom</packaging>
 
@@ -62,7 +62,7 @@
         <developer>
             <id>mercyblitz</id>
             <name>小马哥</name>
-            <url>http://nacos.io</url>
+            <url>https://github.com/mercyblitz</url>
             <email>mercyblitz@gmail.com</email>
         </developer>
     </developers>
@@ -89,7 +89,7 @@
         <!-- Nacos -->
         <nacos.version>1.1.4</nacos.version>
         <!-- Spring -->
-        <spring.framework.version>5.1.8.RELEASE</spring.framework.version>
+        <spring.framework.version>3.2.18.RELEASE</spring.framework.version>
         <!--snake-yaml-->
         <snake.yaml.version>1.19</snake.yaml.version>
         <!-- Servlet -->
@@ -203,13 +203,6 @@
         </profile>
 
         <profile>
-            <id>spring-3.2</id>
-            <properties>
-                <spring.framework.version>3.2.18.RELEASE</spring.framework.version>
-            </properties>
-        </profile>
-
-        <profile>
             <id>spring-4.0</id>
             <properties>
                 <spring.framework.version>4.0.9.RELEASE</spring.framework.version>
@@ -233,14 +226,28 @@
         <profile>
             <id>spring-4.3</id>
             <properties>
-                <spring.framework.version>4.3.24.RELEASE</spring.framework.version>
+                <spring.framework.version>4.3.25.RELEASE</spring.framework.version>
             </properties>
         </profile>
 
         <profile>
             <id>spring-5.0</id>
             <properties>
-                <spring.framework.version>5.0.9.RELEASE</spring.framework.version>
+                <spring.framework.version>5.0.15.RELEASE</spring.framework.version>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>spring-5.1</id>
+            <properties>
+                <spring.framework.version>5.1.12.RELEASE</spring.framework.version>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>spring-5.2</id>
+            <properties>
+                <spring.framework.version>5.2.2.RELEASE</spring.framework.version>
             </properties>
         </profile>
 
