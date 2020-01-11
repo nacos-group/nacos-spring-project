@@ -19,6 +19,7 @@ package com.alibaba.nacos.spring.util;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Collection;
+import java.util.Hashtable;
 import java.util.Map;
 
 import com.alibaba.nacos.api.config.annotation.NacosIgnore;
@@ -49,7 +50,8 @@ public final class ObjectUtils {
 							return;
 						}
 						Class<?> type = field.getType();
-						if (type.isAssignableFrom(Map.class)
+
+						if (Map.class.isAssignableFrom(type)
 								|| Collection.class.isAssignableFrom(type)) {
 							field.set(bean, null);
 						}
