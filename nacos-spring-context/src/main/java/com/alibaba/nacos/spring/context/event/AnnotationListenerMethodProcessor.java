@@ -52,7 +52,7 @@ import static java.lang.reflect.Modifier.isStatic;
  * @see Method
  * @since 0.1.0
  */
-public abstract class AnnotationListenerMethodProcessor<A extends Annotation>
+public abstract class          AnnotationListenerMethodProcessor<A extends Annotation>
 		implements ApplicationListener<ContextRefreshedEvent> {
 
 	protected final Log logger = LogFactory.getLog(getClass());
@@ -95,7 +95,7 @@ public abstract class AnnotationListenerMethodProcessor<A extends Annotation>
 
 	private void processBeans(ApplicationContext applicationContext) {
 
-		Map<String, Object> beansMap = applicationContext.getBeansOfType(Object.class);
+		Map<String, Object> beansMap = applicationContext.getBeansOfType(Object.class, false, false);
 
 		processBeans(beansMap, applicationContext);
 

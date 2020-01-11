@@ -32,6 +32,8 @@ import org.springframework.context.annotation.Import;
 
 import static com.alibaba.nacos.api.annotation.NacosProperties.ACCESS_KEY;
 import static com.alibaba.nacos.api.annotation.NacosProperties.CLUSTER_NAME;
+import static com.alibaba.nacos.api.annotation.NacosProperties.CONFIG_LONG_POLL_TIMEOUT;
+import static com.alibaba.nacos.api.annotation.NacosProperties.CONFIG_RETRY_TIME;
 import static com.alibaba.nacos.api.annotation.NacosProperties.CONTEXT_PATH;
 import static com.alibaba.nacos.api.annotation.NacosProperties.ENCODE;
 import static com.alibaba.nacos.api.annotation.NacosProperties.ENDPOINT;
@@ -39,6 +41,7 @@ import static com.alibaba.nacos.api.annotation.NacosProperties.NAMESPACE;
 import static com.alibaba.nacos.api.annotation.NacosProperties.PREFIX;
 import static com.alibaba.nacos.api.annotation.NacosProperties.SECRET_KEY;
 import static com.alibaba.nacos.api.annotation.NacosProperties.SERVER_ADDR;
+import static com.alibaba.nacos.api.annotation.NacosProperties.MAX_RETRY;
 
 /**
  * Annotation for enabling Nacos Config features.
@@ -118,21 +121,21 @@ public @interface EnableNacosConfig {
 	 * The placeholder of {@link NacosProperties#CONFIG_LONG_POLL_TIMEOUT
 	 * configLongPollTimeout}, the value is <code>"${nacos.configLongPollTimeout:}"</code>
 	 */
-	String CONFIG_LONG_POLL_TIMEOUT_PLACEHOLDER = "${" + CONFIG_PREFIX + PREFIX
+	String CONFIG_LONG_POLL_TIMEOUT_PLACEHOLDER = "${" + CONFIG_PREFIX + CONFIG_LONG_POLL_TIMEOUT
 			+ NacosProperties.CONFIG_LONG_POLL_TIMEOUT_PLACEHOLDER + "}";
 
 	/**
 	 * The placeholder of {@link NacosProperties#CONFIG_RETRY_TIME configRetryTime}, the
 	 * value is <code>"${nacos.configRetryTime:}"</code>
 	 */
-	String CONFIG_RETRY_TIME_PLACEHOLDER = "${" + CONFIG_PREFIX + PREFIX
+	String CONFIG_RETRY_TIME_PLACEHOLDER = "${" + CONFIG_PREFIX + CONFIG_RETRY_TIME
 			+ NacosProperties.CONFIG_RETRY_TIME_PLACEHOLDER + "}";
 
 	/**
 	 * The placeholder of {@link NacosProperties#MAX_RETRY maxRetry}, the value is
 	 * <code>"${nacos.maxRetry:}"</code>
 	 */
-	String MAX_RETRY_PLACEHOLDER = "${" + CONFIG_PREFIX + PREFIX
+	String MAX_RETRY_PLACEHOLDER = "${" + CONFIG_PREFIX + MAX_RETRY
 			+ NacosProperties.MAX_RETRY_PLACEHOLDER + "}";
 
 	/**
