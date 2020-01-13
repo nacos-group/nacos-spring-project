@@ -362,13 +362,6 @@ public abstract class NacosBeanUtils {
 				NacosValueAnnotationBeanPostProcessor.class);
 	}
 
-	public static void registerSpringValueAnnotationBeanPostProcessor(
-			BeanDefinitionRegistry registry) {
-		registerInfrastructureBeanIfAbsent(registry,
-				SpringValueAnnotationBeanPostProcessor.BEAN_NAME,
-				SpringValueAnnotationBeanPostProcessor.class);
-	}
-
 	/**
 	 * Register Nacos Common Beans
 	 *
@@ -404,8 +397,6 @@ public abstract class NacosBeanUtils {
 		registerNacosConfigListenerExecutor(registry, environment);
 
 		registerNacosValueAnnotationBeanPostProcessor(registry);
-
-		registerSpringValueAnnotationBeanPostProcessor(registry);
 
 		registerConfigServiceBeanBuilder(registry);
 
