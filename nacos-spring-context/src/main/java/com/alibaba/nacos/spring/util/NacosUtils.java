@@ -224,7 +224,7 @@ public abstract class NacosUtils {
 							// If it is a map, the data will not be fetched
 							// fix issue #91
 							if (Collection.class.isAssignableFrom(field.getType())
-									|| field.getType().isAssignableFrom(Map.class)) {
+									|| Map.class.isAssignableFrom(field.getType())) {
 								bindContainer(prefix, propertyName, configProperties,
 										propertyValues);
 								return;
@@ -373,7 +373,7 @@ public abstract class NacosUtils {
 				int index = s.indexOf('.');
 				if (index != -1) {
 					String key = s.substring(index + 1);
-					propertyValues.add(name + "[" + key + "]", value);
+					propertyValues.add(s.substring(0, index) + "[" + key + "]", value);
 				}
 			}
 		}
