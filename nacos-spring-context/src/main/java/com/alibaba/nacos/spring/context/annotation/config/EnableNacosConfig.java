@@ -139,12 +139,18 @@ public @interface EnableNacosConfig {
 			+ NacosProperties.MAX_RETRY_PLACEHOLDER + "}";
 
 	/**
-	 * The placeholder of {@link NacosProperties#ENABLE_REMOTE_SYNC_CONFIG_PLACEHOLDER
-	 * enableRemoteSyncConfig} the value is
-	 * <code>"${nacos.enableRemoteSyncConfig:}"</code>
+	 * The placeholder of endpoint, the value is
+	 * <code>"${nacos.discovery.username:${nacos.username:}}"</code>
 	 */
-	// String ENABLE_REMOTE_SYNC_CONFIG_PLACEHOLDER = "${" + CONFIG_PREFIX + ENCODE + ":"
-	// + NacosProperties.ENABLE_REMOTE_SYNC_CONFIG_PLACEHOLDER + "}";
+	String USERNAME_PLACEHOLDER = "${" + CONFIG_PREFIX + USERNAME + ":"
+			+ NacosProperties.USERNAME_PLACEHOLDER + "}";
+
+	/**
+	 * The placeholder of endpoint, the value is
+	 * <code>"${nacos.discovery.password:${nacos.password:}}"</code>
+	 */
+	String PASSWORD_PLACEHOLDER = "${" + CONFIG_PREFIX + PASSWORD + ":"
+			+ NacosProperties.PASSWORD_PLACEHOLDER + "}";
 
 	/**
 	 * Global {@link NacosProperties Nacos Properties}
@@ -154,7 +160,5 @@ public @interface EnableNacosConfig {
 	 * @see NacosConfigListener#properties()
 	 * @see NacosConfigurationProperties#properties()
 	 */
-	NacosProperties globalProperties() default @NacosProperties(endpoint = ENDPOINT_PLACEHOLDER, namespace = NAMESPACE_PLACEHOLDER, accessKey = ACCESS_KEY_PLACEHOLDER, secretKey = SECRET_KEY_PLACEHOLDER, serverAddr = SERVER_ADDR_PLACEHOLDER, contextPath = CONTEXT_PATH_PLACEHOLDER, clusterName = CLUSTER_NAME_PLACEHOLDER, encode = ENCODE_PLACEHOLDER, configLongPollTimeout = CONFIG_LONG_POLL_TIMEOUT_PLACEHOLDER, configRetryTime = CONFIG_RETRY_TIME_PLACEHOLDER, maxRetry = MAX_RETRY_PLACEHOLDER
-	// enableRemoteSyncConfig = ENABLE_REMOTE_SYNC_CONFIG_PLACEHOLDER
-	);
+	NacosProperties globalProperties() default @NacosProperties(username = USERNAME_PLACEHOLDER,password = PASSWORD_PLACEHOLDER,endpoint = ENDPOINT_PLACEHOLDER, namespace = NAMESPACE_PLACEHOLDER, accessKey = ACCESS_KEY_PLACEHOLDER, secretKey = SECRET_KEY_PLACEHOLDER, serverAddr = SERVER_ADDR_PLACEHOLDER, contextPath = CONTEXT_PATH_PLACEHOLDER, clusterName = CLUSTER_NAME_PLACEHOLDER, encode = ENCODE_PLACEHOLDER, configLongPollTimeout = CONFIG_LONG_POLL_TIMEOUT_PLACEHOLDER, configRetryTime = CONFIG_RETRY_TIME_PLACEHOLDER, maxRetry = MAX_RETRY_PLACEHOLDER);
 }
