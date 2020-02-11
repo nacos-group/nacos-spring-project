@@ -110,7 +110,8 @@ public @interface EnableNacosConfig {
 	 * The placeholder of {@link NacosProperties#CONFIG_LONG_POLL_TIMEOUT
 	 * configLongPollTimeout}, the value is <code>"${nacos.configLongPollTimeout:}"</code>
 	 */
-	String CONFIG_LONG_POLL_TIMEOUT_PLACEHOLDER = "${" + CONFIG_PREFIX + CONFIG_LONG_POLL_TIMEOUT
+	String CONFIG_LONG_POLL_TIMEOUT_PLACEHOLDER = "${" + CONFIG_PREFIX
+			+ CONFIG_LONG_POLL_TIMEOUT
 			+ NacosProperties.CONFIG_LONG_POLL_TIMEOUT_PLACEHOLDER + "}";
 
 	/**
@@ -149,5 +150,5 @@ public @interface EnableNacosConfig {
 	 * @see NacosConfigListener#properties()
 	 * @see NacosConfigurationProperties#properties()
 	 */
-	NacosProperties globalProperties() default @NacosProperties(username = USERNAME_PLACEHOLDER,password = PASSWORD_PLACEHOLDER,endpoint = ENDPOINT_PLACEHOLDER, namespace = NAMESPACE_PLACEHOLDER, accessKey = ACCESS_KEY_PLACEHOLDER, secretKey = SECRET_KEY_PLACEHOLDER, serverAddr = SERVER_ADDR_PLACEHOLDER, contextPath = CONTEXT_PATH_PLACEHOLDER, clusterName = CLUSTER_NAME_PLACEHOLDER, encode = ENCODE_PLACEHOLDER, configLongPollTimeout = CONFIG_LONG_POLL_TIMEOUT_PLACEHOLDER, configRetryTime = CONFIG_RETRY_TIME_PLACEHOLDER, maxRetry = MAX_RETRY_PLACEHOLDER);
+	NacosProperties globalProperties() default @NacosProperties(username = USERNAME_PLACEHOLDER, password = PASSWORD_PLACEHOLDER, endpoint = ENDPOINT_PLACEHOLDER, namespace = NAMESPACE_PLACEHOLDER, accessKey = ACCESS_KEY_PLACEHOLDER, secretKey = SECRET_KEY_PLACEHOLDER, serverAddr = SERVER_ADDR_PLACEHOLDER, contextPath = CONTEXT_PATH_PLACEHOLDER, clusterName = CLUSTER_NAME_PLACEHOLDER, encode = ENCODE_PLACEHOLDER, configLongPollTimeout = CONFIG_LONG_POLL_TIMEOUT_PLACEHOLDER, configRetryTime = CONFIG_RETRY_TIME_PLACEHOLDER, maxRetry = MAX_RETRY_PLACEHOLDER);
 }
