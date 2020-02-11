@@ -30,18 +30,7 @@ import com.alibaba.nacos.spring.context.annotation.NacosBeanDefinitionRegistrar;
 
 import org.springframework.context.annotation.Import;
 
-import static com.alibaba.nacos.api.annotation.NacosProperties.ACCESS_KEY;
-import static com.alibaba.nacos.api.annotation.NacosProperties.CLUSTER_NAME;
-import static com.alibaba.nacos.api.annotation.NacosProperties.CONFIG_LONG_POLL_TIMEOUT;
-import static com.alibaba.nacos.api.annotation.NacosProperties.CONFIG_RETRY_TIME;
-import static com.alibaba.nacos.api.annotation.NacosProperties.CONTEXT_PATH;
-import static com.alibaba.nacos.api.annotation.NacosProperties.ENCODE;
-import static com.alibaba.nacos.api.annotation.NacosProperties.ENDPOINT;
-import static com.alibaba.nacos.api.annotation.NacosProperties.NAMESPACE;
-import static com.alibaba.nacos.api.annotation.NacosProperties.PREFIX;
-import static com.alibaba.nacos.api.annotation.NacosProperties.SECRET_KEY;
-import static com.alibaba.nacos.api.annotation.NacosProperties.SERVER_ADDR;
-import static com.alibaba.nacos.api.annotation.NacosProperties.MAX_RETRY;
+import static com.alibaba.nacos.api.annotation.NacosProperties.*;
 
 /**
  * Annotation for enabling Nacos Config features.
@@ -140,14 +129,14 @@ public @interface EnableNacosConfig {
 
 	/**
 	 * The placeholder of endpoint, the value is
-	 * <code>"${nacos.discovery.username:${nacos.username:}}"</code>
+	 * <code>"${nacos.config.username:${nacos.username:}}"</code>
 	 */
 	String USERNAME_PLACEHOLDER = "${" + CONFIG_PREFIX + USERNAME + ":"
 			+ NacosProperties.USERNAME_PLACEHOLDER + "}";
 
 	/**
 	 * The placeholder of endpoint, the value is
-	 * <code>"${nacos.discovery.password:${nacos.password:}}"</code>
+	 * <code>"${nacos.config.password:${nacos.password:}}"</code>
 	 */
 	String PASSWORD_PLACEHOLDER = "${" + CONFIG_PREFIX + PASSWORD + ":"
 			+ NacosProperties.PASSWORD_PLACEHOLDER + "}";
