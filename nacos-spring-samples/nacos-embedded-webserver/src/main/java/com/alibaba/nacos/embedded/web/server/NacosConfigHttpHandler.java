@@ -34,7 +34,7 @@ import java.util.concurrent.TimeUnit;
 
 import com.alibaba.nacos.api.common.Constants;
 import com.alibaba.nacos.api.config.ConfigService;
-import com.alibaba.nacos.common.util.Md5Utils;
+import com.alibaba.nacos.common.utils.Md5Utils;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import org.slf4j.Logger;
