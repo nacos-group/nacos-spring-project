@@ -42,6 +42,8 @@
             <xsd:attribute name="context-path" default="${nacos.context-path:}"/>
             <xsd:attribute name="cluster-name" default="${nacos.cluster-name:}"/>
             <xsd:attribute name="encode" default="${nacos.encode:UTF-8}"/>
+            <xsd:attribute name="username" default="${nacos.username:}"/>
+            <xsd:attribute name="password" default="${nacos.password:}"/>
         </xsd:complexType>
     </xsd:element>
 
