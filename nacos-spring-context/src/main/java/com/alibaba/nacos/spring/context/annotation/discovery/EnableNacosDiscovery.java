@@ -28,6 +28,8 @@ import com.alibaba.nacos.spring.context.annotation.NacosBeanDefinitionRegistrar;
 
 import org.springframework.context.annotation.Import;
 
+import static com.alibaba.nacos.api.PropertyKeyConst.PASSWORD;
+import static com.alibaba.nacos.api.PropertyKeyConst.USERNAME;
 import static com.alibaba.nacos.api.annotation.NacosProperties.*;
 
 /**
