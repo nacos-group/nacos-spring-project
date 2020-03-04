@@ -33,6 +33,7 @@ import org.springframework.util.StringUtils;
 
 import static com.alibaba.nacos.api.common.Constants.DEFAULT_GROUP;
 import static com.alibaba.nacos.spring.context.annotation.config.NacosPropertySource.AFTER_ATTRIBUTE_NAME;
+import static com.alibaba.nacos.spring.context.annotation.config.NacosPropertySource.AUTO_REFRESHED_ATTRIBUTE_NAME;
 import static com.alibaba.nacos.spring.context.annotation.config.NacosPropertySource.BEFORE_ATTRIBUTE_NAME;
 import static com.alibaba.nacos.spring.context.annotation.config.NacosPropertySource.CONFIG_TYPE_ATTRIBUTE_NAME;
 import static com.alibaba.nacos.spring.context.annotation.config.NacosPropertySource.DATA_ID_ATTRIBUTE_NAME;
@@ -72,6 +73,18 @@ public class XmlNacosPropertySourceBuilder
 		// PropertySource Name
 		runtimeAttributes.put(NAME_ATTRIBUTE_NAME, getAttribute(element,
 				NAME_ATTRIBUTE_NAME, DEFAULT_STRING_ATTRIBUTE_VALUE));
+		// auto-refresh
+		runtimeAttributes.put(AUTO_REFRESHED_ATTRIBUTE_NAME, getAttribute(element,
+				AUTO_REFRESHED_ATTRIBUTE_NAME, DEFAULT_BOOLEAN_ATTRIBUTE_VALUE));
+		// is first order
+		runtimeAttributes.put(FIRST_ATTRIBUTE_NAME, getAttribute(element, FIRST_ATTRIBUTE_NAME,
+				DEFAULT_BOOLEAN_ATTRIBUTE_VALUE));
+		// The relative order before specified
+		runtimeAttributes.put(BEFORE_ATTRIBUTE_NAME, getAttribute(element, BEFORE_ATTRIBUTE_NAME,
+				DEFAULT_STRING_ATTRIBUTE_VALUE));
+		// The relative order after specified
+		runtimeAttributes.put(AFTER_ATTRIBUTE_NAME, getAttribute(element, AFTER_ATTRIBUTE_NAME,
+				DEFAULT_STRING_ATTRIBUTE_VALUE));
 		// Config type
 		String type = getAttribute(element, CONFIG_TYPE_ATTRIBUTE_NAME,
 				DEFAULT_CONFIG_TYPE_VALUE);
