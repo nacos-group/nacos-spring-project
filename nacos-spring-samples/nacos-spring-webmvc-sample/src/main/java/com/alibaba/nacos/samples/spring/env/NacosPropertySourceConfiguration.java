@@ -19,6 +19,7 @@ package com.alibaba.nacos.samples.spring.env;
 import javax.annotation.PostConstruct;
 
 import com.alibaba.nacos.api.NacosFactory;
+import com.alibaba.nacos.api.PropertyKeyConst;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.spring.context.annotation.config.NacosPropertySource;
@@ -28,6 +29,8 @@ import org.slf4j.LoggerFactory;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
+
+import java.util.Properties;
 
 import static com.alibaba.nacos.api.common.Constants.DEFAULT_GROUP;
 import static com.alibaba.nacos.samples.spring.env.NacosPropertySourceConfiguration.AFTER_SYS_PROP_DATA_ID;
@@ -61,9 +64,13 @@ public class NacosPropertySourceConfiguration {
 	public static final String AFTER_SYS_PROP_DATA_ID = "after-system-properties-property-source-data-id";
 
 	static {
-		String serverAddr = System.getProperty("nacos.server-addr");
+		Properties properties = new Properties();
+		properties.put(PropertyKeyConst.SERVER_ADDR, System.getProperty("nacos.server-addr", "127.0.0.1:8848"));
+		properties.put(PropertyKeyConst.NAMESPACE, System.getProperty("nacos.config.namespace", ""));
+		properties.put(PropertyKeyConst.USERNAME, System.getProperty("nacos.username", ""));
+		properties.put(PropertyKeyConst.PASSWORD, System.getProperty("nacos.password", ""));
 		try {
-			ConfigService configService = NacosFactory.createConfigService(serverAddr);
+			ConfigService configService = NacosFactory.createConfigService(properties);
 			// Publish for FIRST_DATA_ID
 			publishConfig(configService, FIRST_DATA_ID, "user.name = Mercy Ma");
 

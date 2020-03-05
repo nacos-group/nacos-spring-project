@@ -16,6 +16,7 @@
  */
 package com.alibaba.nacos.spring.context.annotation.config;
 
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import com.alibaba.nacos.api.annotation.NacosInjected;
@@ -57,13 +58,27 @@ public class NacosConfigListenerTest
 	private ConfigService configService;
 
 	private static volatile String content = "";
-	private static volatile boolean receive = false;
+	private static volatile boolean receiveOne = false;
+	private static volatile boolean receiveTwo = false;
+	private static volatile boolean receiveThree = false;
 
 	@NacosConfigListener(dataId = "com.alibaba.nacos.example.properties", timeout = 2000L)
 	public void onMessage(String config) {
 		System.out.println("onMessage: " + config);
-		receive = true;
+		receiveOne = true;
 		content = config;
+	}
+
+	@NacosConfigListener(dataId = "convert_map.properties", timeout = 2000L)
+	public void onMessage(Map config) {
+		System.out.println("onMessage: " + config);
+		receiveTwo = true;
+	}
+
+	@NacosConfigListener(dataId = "convert_map.yaml", timeout = 2000L)
+	public void onMessageYaml(Map config) {
+		System.out.println("onMessage: " + config);
+		receiveThree = true;
 	}
 
 	@Before
@@ -80,12 +95,25 @@ public class NacosConfigListenerTest
 		try {
 			result = configService.publishConfig("com.alibaba.nacos.example.properties",
 					"DEFAULT_GROUP", "" + currentTimeMillis);
+			result = configService.publishConfig("convert_map.properties",
+					"DEFAULT_GROUP", "this.is.test=true");
+			result = configService.publishConfig("convert_map.yaml",
+					"DEFAULT_GROUP", "routingMap:\n" +
+							"  - aaa\n" +
+							"  - bbb\n" +
+							"  - ccc\n" +
+							"  - ddd\n" +
+							"  - eee\n" +
+							"endPointMap:\n" +
+							"  - fff\n" +
+							"testMap:\n" +
+							"  abc: def1");
 		}
 		catch (NacosException e) {
 			e.printStackTrace();
 		}
 		Assert.assertTrue(result);
-		while (!receive) {
+		while (!receiveOne && !receiveTwo && !receiveThree) {
 			TimeUnit.SECONDS.sleep(3);
 		}
 		Assert.assertEquals("" + currentTimeMillis, content);

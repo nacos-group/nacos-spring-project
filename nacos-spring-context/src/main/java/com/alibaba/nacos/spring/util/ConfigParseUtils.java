@@ -32,7 +32,7 @@ import com.alibaba.nacos.spring.util.parse.DefaultYamlConfigParse;
  * @author <a href="mailto:liaochunyhm@live.com">liaochuntao</a>
  * @since 0.3.0
  */
-final class ConfigParseUtils {
+public final class ConfigParseUtils {
 
 	private static final String LINK_CHAR = "#@#";
 	private static Map<String, ConfigParse> DEFAULT_CONFIG_PARSE_MAP = new HashMap(8);
@@ -82,7 +82,7 @@ final class ConfigParseUtils {
 				.unmodifiableMap(CUSTOMER_CONFIG_PARSE_MAP);
 	}
 
-	static Properties toProperties(final String context, String type) {
+	public static Properties toProperties(final String context, String type) {
 
 		if (context == null) {
 			return new Properties();
@@ -111,7 +111,7 @@ final class ConfigParseUtils {
 	 * @param type config type
 	 * @return {@link Properties}
 	 */
-	static Properties toProperties(final String dataId, final String group,
+	public static Properties toProperties(final String dataId, final String group,
 			final String context, String type) {
 
 		if (context == null) {
@@ -120,8 +120,7 @@ final class ConfigParseUtils {
 		// Again the type lowercase, ensure the search
 		type = type.toLowerCase();
 
-		String configParseKey = new StringBuilder().append(dataId).append(LINK_CHAR)
-				.append(group).toString();
+		String configParseKey = dataId + LINK_CHAR + group;
 		Properties properties = new Properties();
 
 		if (CUSTOMER_CONFIG_PARSE_MAP.isEmpty() || LINK_CHAR.equals(configParseKey)) {

@@ -29,13 +29,7 @@ import org.springframework.beans.factory.xml.BeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.core.env.Environment;
 
-import static com.alibaba.nacos.api.annotation.NacosProperties.ACCESS_KEY;
-import static com.alibaba.nacos.api.annotation.NacosProperties.CLUSTER_NAME;
-import static com.alibaba.nacos.api.annotation.NacosProperties.ENCODE;
-import static com.alibaba.nacos.api.annotation.NacosProperties.ENDPOINT;
-import static com.alibaba.nacos.api.annotation.NacosProperties.NAMESPACE;
-import static com.alibaba.nacos.api.annotation.NacosProperties.SECRET_KEY;
-import static com.alibaba.nacos.api.annotation.NacosProperties.SERVER_ADDR;
+import static com.alibaba.nacos.api.annotation.NacosProperties.*;
 import static com.alibaba.nacos.spring.util.NacosBeanUtils.GLOBAL_NACOS_PROPERTIES_BEAN_NAME;
 import static com.alibaba.nacos.spring.util.NacosBeanUtils.registerGlobalNacosProperties;
 
@@ -71,6 +65,8 @@ public class GlobalNacosPropertiesBeanDefinitionParser implements BeanDefinition
 		properties.setProperty(PropertyKeyConst.CLUSTER_NAME,
 				element.getAttribute(CLUSTER_NAME));
 		properties.setProperty(PropertyKeyConst.ENCODE, element.getAttribute(ENCODE));
+		properties.setProperty(PropertyKeyConst.USERNAME, element.getAttribute(USERNAME));
+		properties.setProperty(PropertyKeyConst.PASSWORD, element.getAttribute(PASSWORD));
 
 		BeanDefinitionRegistry registry = parserContext.getRegistry();
 
