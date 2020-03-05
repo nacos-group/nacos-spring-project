@@ -25,6 +25,8 @@ import com.alibaba.nacos.api.naming.NamingService;
 import com.alibaba.nacos.spring.context.annotation.EnableNacos;
 
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 
 /**
  * Nacos {@link Configuration}
@@ -33,7 +35,7 @@ import org.springframework.context.annotation.Configuration;
  * @since 0.1.0
  */
 @Configuration
-@EnableNacos(globalProperties = @NacosProperties(serverAddr = "${nacos.server-addr}", enableRemoteSyncConfig = "true", maxRetry = "5", configRetryTime = "4000", configLongPollTimeout = "26000"))
+@EnableNacos(globalProperties = @NacosProperties(serverAddr = "${nacos.server-addr}", enableRemoteSyncConfig = "true", maxRetry = "5", configRetryTime = "4000", configLongPollTimeout = "26000", username = "nacos", password = "nacos"))
 public class NacosConfiguration {
 
 	/**

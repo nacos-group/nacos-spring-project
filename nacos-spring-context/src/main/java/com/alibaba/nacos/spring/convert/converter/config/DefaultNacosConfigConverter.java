@@ -18,8 +18,12 @@ package com.alibaba.nacos.spring.convert.converter.config;
 
 import com.alibaba.nacos.api.config.convert.NacosConfigConverter;
 
+import com.alibaba.nacos.spring.util.ConfigParse;
+import com.alibaba.nacos.spring.util.ConfigParseUtils;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.format.support.DefaultFormattingConversionService;
+
+import java.util.Map;
 
 /**
  * Default {@link NacosConfigConverter} implementation
@@ -48,6 +52,13 @@ public class DefaultNacosConfigConverter<T> implements NacosConfigConverter<T> {
 
 	@Override
 	public T convert(String source) {
+
+		// If the parameter is of Map type, the configuration is automatically formatted
+
+		if (Map.class.isAssignableFrom(targetType)) {
+			return (T) ConfigParseUtils.toProperties(source, type);
+		}
+
 		if (conversionService.canConvert(source.getClass(), targetType)) {
 			return conversionService.convert(source, targetType);
 		}
