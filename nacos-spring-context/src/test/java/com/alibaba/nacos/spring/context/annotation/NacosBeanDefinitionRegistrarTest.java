@@ -73,6 +73,56 @@ import static com.alibaba.nacos.spring.util.NacosBeanUtils.PLACEHOLDER_CONFIGURE
 public class NacosBeanDefinitionRegistrarTest
 		extends AbstractNacosHttpServerTestExecutionListener {
 
+	@Autowired
+	@Qualifier(NacosBeanUtils.GLOBAL_NACOS_PROPERTIES_BEAN_NAME)
+	private Properties globalProperties;
+	@Autowired
+	@Qualifier(NacosBeanUtils.CONFIG_GLOBAL_NACOS_PROPERTIES_BEAN_NAME)
+	private Properties configGlobalProperties;
+	@Autowired
+	@Qualifier(NacosBeanUtils.DISCOVERY_GLOBAL_NACOS_PROPERTIES_BEAN_NAME)
+	private Properties discoveryGlobalProperties;
+	@Autowired
+	@Qualifier(AnnotationNacosInjectedBeanPostProcessor.BEAN_NAME)
+	private AnnotationNacosInjectedBeanPostProcessor annotationNacosInjectedBeanPostProcessor;
+	@Autowired
+	@Qualifier(PLACEHOLDER_CONFIGURER_BEAN_NAME)
+	private PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer;
+	@Autowired
+	@Qualifier(NacosConfigurationPropertiesBindingPostProcessor.BEAN_NAME)
+	private NacosConfigurationPropertiesBindingPostProcessor nacosConfigurationPropertiesBindingPostProcessor;
+	@Autowired
+	@Qualifier(NacosConfigListenerMethodProcessor.BEAN_NAME)
+	private NacosConfigListenerMethodProcessor nacosConfigListenerMethodProcessor;
+	@Autowired
+	@Qualifier(NacosPropertySourcePostProcessor.BEAN_NAME)
+	private NacosPropertySourcePostProcessor nacosPropertySourcePostProcessor;
+	@Autowired
+	@Qualifier(AnnotationNacosPropertySourceBuilder.BEAN_NAME)
+	private AnnotationNacosPropertySourceBuilder annotationNacosPropertySourceBuilder;
+	@Autowired
+	@Qualifier(NacosValueAnnotationBeanPostProcessor.BEAN_NAME)
+	private NacosValueAnnotationBeanPostProcessor nacosValueAnnotationBeanPostProcessor;
+	@Autowired
+	@Qualifier(ConfigServiceBeanBuilder.BEAN_NAME)
+	private ConfigServiceBeanBuilder configServiceBeanBuilder;
+	@Autowired
+	@Qualifier(NACOS_CONFIG_LISTENER_EXECUTOR_BEAN_NAME)
+	private ExecutorService nacosConfigListenerExecutor;
+	@Autowired
+	@Qualifier(NamingServiceBeanBuilder.BEAN_NAME)
+	private NamingServiceBeanBuilder namingServiceBeanBuilder;
+	@NacosInjected
+	private ConfigService globalConfigService;
+	@NacosInjected(properties = @NacosProperties(serverAddr = "${server.addr}"))
+	private ConfigService configService;
+	@NacosInjected
+	private NamingService namingService;
+	@Autowired
+	private Config config;
+	@Value("${user.home:${user.dir}}")
+	private String dir;
+
 	@Override
 	protected String getServerAddressPropertyName() {
 		return "server.addr";
@@ -82,72 +132,6 @@ public class NacosBeanDefinitionRegistrarTest
 	public Config config() {
 		return new Config();
 	}
-
-	@Autowired
-	@Qualifier(NacosBeanUtils.GLOBAL_NACOS_PROPERTIES_BEAN_NAME)
-	private Properties globalProperties;
-
-	@Autowired
-	@Qualifier(NacosBeanUtils.CONFIG_GLOBAL_NACOS_PROPERTIES_BEAN_NAME)
-	private Properties configGlobalProperties;
-	@Autowired
-	@Qualifier(NacosBeanUtils.DISCOVERY_GLOBAL_NACOS_PROPERTIES_BEAN_NAME)
-	private Properties discoveryGlobalProperties;
-
-	@Autowired
-	@Qualifier(AnnotationNacosInjectedBeanPostProcessor.BEAN_NAME)
-	private AnnotationNacosInjectedBeanPostProcessor annotationNacosInjectedBeanPostProcessor;
-
-	@Autowired
-	@Qualifier(PLACEHOLDER_CONFIGURER_BEAN_NAME)
-	private PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer;
-
-	@Autowired
-	@Qualifier(NacosConfigurationPropertiesBindingPostProcessor.BEAN_NAME)
-	private NacosConfigurationPropertiesBindingPostProcessor nacosConfigurationPropertiesBindingPostProcessor;
-
-	@Autowired
-	@Qualifier(NacosConfigListenerMethodProcessor.BEAN_NAME)
-	private NacosConfigListenerMethodProcessor nacosConfigListenerMethodProcessor;
-
-	@Autowired
-	@Qualifier(NacosPropertySourcePostProcessor.BEAN_NAME)
-	private NacosPropertySourcePostProcessor nacosPropertySourcePostProcessor;
-
-	@Autowired
-	@Qualifier(AnnotationNacosPropertySourceBuilder.BEAN_NAME)
-	private AnnotationNacosPropertySourceBuilder annotationNacosPropertySourceBuilder;
-
-	@Autowired
-	@Qualifier(NacosValueAnnotationBeanPostProcessor.BEAN_NAME)
-	private NacosValueAnnotationBeanPostProcessor nacosValueAnnotationBeanPostProcessor;
-
-	@Autowired
-	@Qualifier(ConfigServiceBeanBuilder.BEAN_NAME)
-	private ConfigServiceBeanBuilder configServiceBeanBuilder;
-
-	@Autowired
-	@Qualifier(NACOS_CONFIG_LISTENER_EXECUTOR_BEAN_NAME)
-	private ExecutorService nacosConfigListenerExecutor;
-
-	@Autowired
-	@Qualifier(NamingServiceBeanBuilder.BEAN_NAME)
-	private NamingServiceBeanBuilder namingServiceBeanBuilder;
-
-	@NacosInjected
-	private ConfigService globalConfigService;
-
-	@NacosInjected(properties = @NacosProperties(serverAddr = "${server.addr}"))
-	private ConfigService configService;
-
-	@NacosInjected
-	private NamingService namingService;
-
-	@Autowired
-	private Config config;
-
-	@Value("${user.home:${user.dir}}")
-	private String dir;
 
 	@Test
 	public void testGetConfig() throws Exception {

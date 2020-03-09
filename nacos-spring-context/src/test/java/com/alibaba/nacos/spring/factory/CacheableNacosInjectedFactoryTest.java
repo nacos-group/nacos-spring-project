@@ -47,17 +47,15 @@ import static com.alibaba.nacos.spring.util.NacosBeanUtils.NACOS_CONFIG_LISTENER
 		CacheableNacosInjectedFactoryTest.class })
 public class CacheableNacosInjectedFactoryTest {
 
+	@Autowired
+	private CacheableEventPublishingNacosServiceFactory nacosServiceFactory;
+	private Properties properties = new Properties();
+	private Properties properties2 = new Properties();
+
 	@Bean(name = NACOS_CONFIG_LISTENER_EXECUTOR_BEAN_NAME)
 	public static ExecutorService executorService() {
 		return Executors.newSingleThreadExecutor();
 	}
-
-	@Autowired
-	private CacheableEventPublishingNacosServiceFactory nacosServiceFactory;
-
-	private Properties properties = new Properties();
-
-	private Properties properties2 = new Properties();
 
 	@Before
 	public void init() {

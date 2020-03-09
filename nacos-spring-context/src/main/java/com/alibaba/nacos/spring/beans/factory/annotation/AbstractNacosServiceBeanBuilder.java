@@ -46,13 +46,10 @@ import static org.springframework.core.annotation.AnnotationUtils.getAnnotationA
 public abstract class AbstractNacosServiceBeanBuilder<S>
 		implements BeanFactoryAware, EnvironmentAware {
 
-	private BeanFactory beanFactory;
-
-	private Environment environment;
-
 	private final Class<?> type;
-
 	private final GlobalNacosPropertiesSource source;
+	private BeanFactory beanFactory;
+	private Environment environment;
 
 	protected AbstractNacosServiceBeanBuilder(GlobalNacosPropertiesSource source) {
 		type = resolveGenericType(getClass());

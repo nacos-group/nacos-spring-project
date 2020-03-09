@@ -65,14 +65,10 @@ import static com.alibaba.nacos.spring.context.annotation.config.NacosPropertySo
 public class NacosPropertySourceReadFromEnvironmentTest
 		extends AbstractNacosHttpServerTestExecutionListener {
 
-	private static final String LINE_SEPARATOR = System.getProperty("line.separator");
-
 	public static final String ENV_DATA_ID = "${data-id}";
-
 	public static final String ENV_GROUP_ID = "${group-id:nacos_env_test}";
-
 	public static final String DATA_ID = "app.properties";
-
+	private static final String LINE_SEPARATOR = System.getProperty("line.separator");
 	private static final String APP_NAME = "Nacos-Spring";
 
 	private static final String ANOTHER_APP_NAME = "Nacos-Spring-1";
@@ -84,6 +80,17 @@ public class NacosPropertySourceReadFromEnvironmentTest
 	private static final int VALUE_3 = 3;
 
 	private static final int VALUE_4 = 4;
+	@NacosInjected
+	private ConfigService configService;
+	@Autowired
+	private App app;
+	@Autowired
+	private ConfigurableEnvironment environment;
+
+	@BeforeClass
+	public static void init() {
+		System.setProperty("data-id", "app.properties");
+	}
 
 	@Override
 	public void init(EmbeddedNacosHttpServer httpServer) {
@@ -96,14 +103,65 @@ public class NacosPropertySourceReadFromEnvironmentTest
 		httpServer.initConfig(config);
 	}
 
-	@BeforeClass
-	public static void init() {
-		System.setProperty("data-id", "app.properties");
-	}
-
 	@Override
 	protected String getServerAddressPropertyName() {
 		return "server.addr";
+	}
+
+	@Bean
+	public App app() {
+		return new App();
+	}
+
+	@Test
+	public void testValue() throws NacosException, InterruptedException {
+		Assert.assertEquals(APP_NAME, app.name);
+
+		Assert.assertEquals(APP_NAME, app.nameWithDefaultValue);
+
+		Assert.assertEquals(APP_NAME, app.nacosNameAutoRefreshed);
+
+		Assert.assertEquals(APP_NAME, app.nacosNameAutoRefreshedWithDefaultValue);
+
+		Assert.assertEquals(APP_NAME, app.nacosNameNotAutoRefreshed);
+
+		Assert.assertEquals(APP_NAME, environment.getProperty("app.name"));
+
+		Assert.assertEquals(VALUE_1, app.nacosFieldIntValue);
+
+		Assert.assertEquals(VALUE_2, app.nacosMethodIntValue);
+
+		Assert.assertEquals(VALUE_1, app.nacosFieldIntValueAutoRefreshed);
+
+		Assert.assertEquals(VALUE_2, app.nacosMethodIntValueAutoRefreshed);
+
+		configService.publishConfig(DATA_ID, "nacos_env_test",
+				"app.name=" + ANOTHER_APP_NAME + LINE_SEPARATOR
+						+ "app.nacosFieldIntValueAutoRefreshed=" + VALUE_3
+						+ LINE_SEPARATOR + "app.nacosMethodIntValueAutoRefreshed="
+						+ VALUE_4);
+
+		Thread.sleep(1000);
+
+		Assert.assertEquals(APP_NAME, app.name);
+
+		Assert.assertEquals(APP_NAME, app.nameWithDefaultValue);
+
+		Assert.assertEquals(ANOTHER_APP_NAME, app.nacosNameAutoRefreshed);
+
+		Assert.assertEquals(ANOTHER_APP_NAME, app.nacosNameAutoRefreshedWithDefaultValue);
+
+		Assert.assertEquals(APP_NAME, app.nacosNameNotAutoRefreshed);
+
+		Assert.assertEquals(ANOTHER_APP_NAME, environment.getProperty("app.name"));
+
+		Assert.assertEquals(VALUE_1, app.nacosFieldIntValue);
+
+		Assert.assertEquals(VALUE_2, app.nacosMethodIntValue);
+
+		Assert.assertEquals(VALUE_3, app.nacosFieldIntValueAutoRefreshed);
+
+		Assert.assertEquals(VALUE_4, app.nacosMethodIntValueAutoRefreshed);
 	}
 
 	public static class App {
@@ -130,82 +188,18 @@ public class NacosPropertySourceReadFromEnvironmentTest
 		private int nacosFieldIntValueAutoRefreshed;
 
 		private int nacosMethodIntValue;
+		private int nacosMethodIntValueAutoRefreshed;
 
 		@NacosValue("${app.nacosMethodIntValue:" + VALUE_2 + "}")
 		public void setNacosMethodIntValue(int nacosMethodIntValue) {
 			this.nacosMethodIntValue = nacosMethodIntValue;
 		}
 
-		private int nacosMethodIntValueAutoRefreshed;
-
 		@NacosValue(value = "${app.nacosMethodIntValueAutoRefreshed}", autoRefreshed = true)
 		public void setNacosMethodIntValueAutoRefreshed(
 				int nacosMethodIntValueAutoRefreshed) {
 			this.nacosMethodIntValueAutoRefreshed = nacosMethodIntValueAutoRefreshed;
 		}
-	}
-
-	@Bean
-	public App app() {
-		return new App();
-	}
-
-	@NacosInjected
-	private ConfigService configService;
-
-	@Autowired
-	private App app;
-
-	@Autowired
-	private ConfigurableEnvironment environment;
-
-	@Test
-	public void testValue() throws NacosException, InterruptedException {
-		Assert.assertEquals(APP_NAME, app.name);
-
-		Assert.assertEquals(APP_NAME, app.nameWithDefaultValue);
-
-		Assert.assertEquals(APP_NAME, app.nacosNameAutoRefreshed);
-
-		Assert.assertEquals(APP_NAME, app.nacosNameAutoRefreshedWithDefaultValue);
-
-		Assert.assertEquals(APP_NAME, app.nacosNameNotAutoRefreshed);
-
-		Assert.assertEquals(APP_NAME, environment.getProperty("app.name"));
-
-		Assert.assertEquals(VALUE_1, app.nacosFieldIntValue);
-
-		Assert.assertEquals(VALUE_2, app.nacosMethodIntValue);
-
-		Assert.assertEquals(VALUE_1, app.nacosFieldIntValueAutoRefreshed);
-
-		Assert.assertEquals(VALUE_2, app.nacosMethodIntValueAutoRefreshed);
-
-		configService.publishConfig(DATA_ID, "nacos_env_test", "app.name=" + ANOTHER_APP_NAME
-				+ LINE_SEPARATOR + "app.nacosFieldIntValueAutoRefreshed=" + VALUE_3
-				+ LINE_SEPARATOR + "app.nacosMethodIntValueAutoRefreshed=" + VALUE_4);
-
-		Thread.sleep(1000);
-
-		Assert.assertEquals(APP_NAME, app.name);
-
-		Assert.assertEquals(APP_NAME, app.nameWithDefaultValue);
-
-		Assert.assertEquals(ANOTHER_APP_NAME, app.nacosNameAutoRefreshed);
-
-		Assert.assertEquals(ANOTHER_APP_NAME, app.nacosNameAutoRefreshedWithDefaultValue);
-
-		Assert.assertEquals(APP_NAME, app.nacosNameNotAutoRefreshed);
-
-		Assert.assertEquals(ANOTHER_APP_NAME, environment.getProperty("app.name"));
-
-		Assert.assertEquals(VALUE_1, app.nacosFieldIntValue);
-
-		Assert.assertEquals(VALUE_2, app.nacosMethodIntValue);
-
-		Assert.assertEquals(VALUE_3, app.nacosFieldIntValueAutoRefreshed);
-
-		Assert.assertEquals(VALUE_4, app.nacosMethodIntValueAutoRefreshed);
 	}
 
 }

@@ -71,17 +71,11 @@ public abstract class AbstractNacosPropertySourceBuilder<T extends BeanDefinitio
 		ApplicationContextAware, InitializingBean {
 
 	protected final Logger logger = LoggerFactory.getLogger(this.getClass());
-
-	protected ConfigurableEnvironment environment;
-
-	protected BeanFactory beanFactory;
-
-	private NacosConfigLoader nacosConfigLoader;
-
-	private Properties globalNacosProperties;
-
 	private final Class<T> beanDefinitionType;
-
+	protected ConfigurableEnvironment environment;
+	protected BeanFactory beanFactory;
+	private NacosConfigLoader nacosConfigLoader;
+	private Properties globalNacosProperties;
 	private ClassLoader classLoader;
 
 	private ApplicationEventPublisher applicationEventPublisher;

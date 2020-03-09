@@ -58,6 +58,19 @@ import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.GROUP_ID;
 public class AnnotationNacosInjectedBeanPostProcessorTest
 		extends AbstractNacosHttpServerTestExecutionListener {
 
+	@NacosInjected
+	private ConfigService configService;
+	@NacosInjected(properties = @NacosProperties(encode = "UTF-8"))
+	private ConfigService configService2;
+	@NacosInjected(properties = @NacosProperties(encode = "GBK"))
+	private ConfigService configService3;
+	@NacosInjected
+	private NamingService namingService;
+	@NacosInjected(properties = @NacosProperties(encode = "UTF-8"))
+	private NamingService namingService2;
+	@NacosInjected(properties = @NacosProperties(encode = "GBK"))
+	private NamingService namingService3;
+
 	@Bean(name = ApplicationContextHolder.BEAN_NAME)
 	public ApplicationContextHolder applicationContextHolder(
 			ApplicationContext applicationContext) {
@@ -70,24 +83,6 @@ public class AnnotationNacosInjectedBeanPostProcessorTest
 	protected String getServerAddressPropertyName() {
 		return "server.addr";
 	}
-
-	@NacosInjected
-	private ConfigService configService;
-
-	@NacosInjected(properties = @NacosProperties(encode = "UTF-8"))
-	private ConfigService configService2;
-
-	@NacosInjected(properties = @NacosProperties(encode = "GBK"))
-	private ConfigService configService3;
-
-	@NacosInjected
-	private NamingService namingService;
-
-	@NacosInjected(properties = @NacosProperties(encode = "UTF-8"))
-	private NamingService namingService2;
-
-	@NacosInjected(properties = @NacosProperties(encode = "GBK"))
-	private NamingService namingService3;
 
 	@Test
 	public void testInjection() {

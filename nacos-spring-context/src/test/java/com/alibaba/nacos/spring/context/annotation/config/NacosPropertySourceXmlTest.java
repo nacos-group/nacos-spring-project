@@ -58,18 +58,21 @@ import static com.alibaba.nacos.embedded.web.server.NacosConfigHttpHandler.GROUP
 public class NacosPropertySourceXmlTest
 		extends AbstractNacosHttpServerTestExecutionListener {
 
-	@Override
-	protected String getServerAddressPropertyName() {
-		return "server.addr";
-	}
-
+	private final String except = "XmlApp{students=[Student{name='lct-1', num='1006010022'}, Student{name='lct-3', num='1006010044'}, Student{name='lct-4', num='1006010055'}]}";
 	private String xml = "<students>" + "<student>" + "<name>lct-1</name>"
 			+ "<num>1006010022</num>" + "</student>" + "<student>" + "<name>lct-2</name>"
 			+ "<num>1006010033</num>" + "</student>" + "<student>" + "<name>lct-3</name>"
 			+ "<num>1006010044</num>" + "</student>" + "<student>" + "<name>lct-4</name>"
 			+ "<num>1006010055</num>" + "</student>" + "</students>";
+	@NacosInjected
+	private ConfigService configService;
+	@Autowired
+	private XmlApp xmlApp;
 
-	private final String except = "XmlApp{students=[Student{name='lct-1', num='1006010022'}, Student{name='lct-3', num='1006010044'}, Student{name='lct-4', num='1006010055'}]}";
+	@Override
+	protected String getServerAddressPropertyName() {
+		return "server.addr";
+	}
 
 	@Override
 	public void init(EmbeddedNacosHttpServer httpServer) {
@@ -85,12 +88,6 @@ public class NacosPropertySourceXmlTest
 	public XmlApp xmlApp() {
 		return new XmlApp();
 	}
-
-	@NacosInjected
-	private ConfigService configService;
-
-	@Autowired
-	private XmlApp xmlApp;
 
 	@Test
 	public void testValue() throws NacosException, InterruptedException {
