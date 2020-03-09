@@ -30,7 +30,14 @@ import org.springframework.context.annotation.Import;
 
 import static com.alibaba.nacos.api.PropertyKeyConst.PASSWORD;
 import static com.alibaba.nacos.api.PropertyKeyConst.USERNAME;
-import static com.alibaba.nacos.api.annotation.NacosProperties.*;
+import static com.alibaba.nacos.api.annotation.NacosProperties.ACCESS_KEY;
+import static com.alibaba.nacos.api.annotation.NacosProperties.CLUSTER_NAME;
+import static com.alibaba.nacos.api.annotation.NacosProperties.CONTEXT_PATH;
+import static com.alibaba.nacos.api.annotation.NacosProperties.ENCODE;
+import static com.alibaba.nacos.api.annotation.NacosProperties.ENDPOINT;
+import static com.alibaba.nacos.api.annotation.NacosProperties.NAMESPACE;
+import static com.alibaba.nacos.api.annotation.NacosProperties.SECRET_KEY;
+import static com.alibaba.nacos.api.annotation.NacosProperties.SERVER_ADDR;
 
 /**
  * Annotation for enabling Nacos discovery features.

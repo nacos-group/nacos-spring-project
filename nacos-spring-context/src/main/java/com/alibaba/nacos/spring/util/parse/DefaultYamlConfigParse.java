@@ -46,23 +46,6 @@ public class DefaultYamlConfigParse extends AbstractConfigParse {
 		return new Yaml(new MapAppenderConstructor());
 	}
 
-	@Override
-	public Properties parse(String configText) {
-		final Properties result = new Properties();
-		process(new MatchCallback() {
-			@Override
-			public void process(Properties properties, Map<String, Object> map) {
-				result.putAll(properties);
-			}
-		}, createYaml(), configText);
-		return result;
-	}
-
-	@Override
-	public String processType() {
-		return ConfigType.YAML.getType();
-	}
-
 	protected static boolean process(MatchCallback callback, Yaml yaml, String content) {
 		int count = 0;
 		if (logger.isDebugEnabled()) {
@@ -160,6 +143,23 @@ public class DefaultYamlConfigParse extends AbstractConfigParse {
 				result.put(key, (value != null ? value.toString() : ""));
 			}
 		}
+	}
+
+	@Override
+	public Properties parse(String configText) {
+		final Properties result = new Properties();
+		process(new MatchCallback() {
+			@Override
+			public void process(Properties properties, Map<String, Object> map) {
+				result.putAll(properties);
+			}
+		}, createYaml(), configText);
+		return result;
+	}
+
+	@Override
+	public String processType() {
+		return ConfigType.YAML.getType();
 	}
 
 	protected interface MatchCallback {

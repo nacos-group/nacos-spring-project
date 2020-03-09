@@ -16,14 +16,13 @@
  */
 package com.alibaba.nacos.spring.convert.converter.config;
 
-import com.alibaba.nacos.api.config.convert.NacosConfigConverter;
+import java.util.Map;
 
-import com.alibaba.nacos.spring.util.ConfigParse;
+import com.alibaba.nacos.api.config.convert.NacosConfigConverter;
 import com.alibaba.nacos.spring.util.ConfigParseUtils;
+
 import org.springframework.core.convert.ConversionService;
 import org.springframework.format.support.DefaultFormattingConversionService;
-
-import java.util.Map;
 
 /**
  * Default {@link NacosConfigConverter} implementation

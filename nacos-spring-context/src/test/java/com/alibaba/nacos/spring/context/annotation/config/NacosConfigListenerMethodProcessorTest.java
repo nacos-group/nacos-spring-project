@@ -68,6 +68,12 @@ import static org.junit.Assert.assertNull;
 public class NacosConfigListenerMethodProcessorTest
 		extends AbstractNacosHttpServerTestExecutionListener {
 
+	@Autowired
+	private Listeners listeners;
+	@NacosInjected
+	private ConfigService configService;
+	private volatile boolean received = false;
+
 	@Bean(name = ApplicationContextHolder.BEAN_NAME)
 	public ApplicationContextHolder applicationContextHolder(
 			ApplicationContext applicationContext) {
@@ -80,14 +86,6 @@ public class NacosConfigListenerMethodProcessorTest
 	protected String getServerAddressPropertyName() {
 		return "server.addr";
 	}
-
-	@Autowired
-	private Listeners listeners;
-
-	@NacosInjected
-	private ConfigService configService;
-
-	private volatile boolean received = false;
 
 	@PostConstruct
 	public void initListener() throws NacosException {

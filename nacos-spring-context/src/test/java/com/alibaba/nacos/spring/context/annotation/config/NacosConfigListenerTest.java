@@ -49,18 +49,17 @@ import org.springframework.test.context.support.DirtiesContextTestExecutionListe
 public class NacosConfigListenerTest
 		extends AbstractNacosHttpServerTestExecutionListener {
 
-	@Override
-	protected String getServerAddressPropertyName() {
-		return "server.addr";
-	}
-
-	@NacosInjected
-	private ConfigService configService;
-
 	private static volatile String content = "";
 	private static volatile boolean receiveOne = false;
 	private static volatile boolean receiveTwo = false;
 	private static volatile boolean receiveThree = false;
+	@NacosInjected
+	private ConfigService configService;
+
+	@Override
+	protected String getServerAddressPropertyName() {
+		return "server.addr";
+	}
 
 	@NacosConfigListener(dataId = "com.alibaba.nacos.example.properties", timeout = 2000L)
 	public void onMessage(String config) {
@@ -97,17 +96,10 @@ public class NacosConfigListenerTest
 					"DEFAULT_GROUP", "" + currentTimeMillis);
 			result = configService.publishConfig("convert_map.properties",
 					"DEFAULT_GROUP", "this.is.test=true");
-			result = configService.publishConfig("convert_map.yaml",
-					"DEFAULT_GROUP", "routingMap:\n" +
-							"  - aaa\n" +
-							"  - bbb\n" +
-							"  - ccc\n" +
-							"  - ddd\n" +
-							"  - eee\n" +
-							"endPointMap:\n" +
-							"  - fff\n" +
-							"testMap:\n" +
-							"  abc: def1");
+			result = configService.publishConfig("convert_map.yaml", "DEFAULT_GROUP",
+					"routingMap:\n" + "  - aaa\n" + "  - bbb\n" + "  - ccc\n"
+							+ "  - ddd\n" + "  - eee\n" + "endPointMap:\n" + "  - fff\n"
+							+ "testMap:\n" + "  abc: def1");
 		}
 		catch (NacosException e) {
 			e.printStackTrace();

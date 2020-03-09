@@ -133,22 +133,6 @@ public class NacosPropertySource extends PropertiesPropertySource {
 	}
 
 	/**
-	 * @param attributesMetadata the attributesMetadata of attributes from
-	 *     {@link com.alibaba.nacos.spring.context.annotation.config.NacosPropertySource @NacosPropertySource}
-	 *     or &lt;nacos:property-source ... &gt;
-	 */
-	public void setAttributesMetadata(Map<String, Object> attributesMetadata) {
-		this.attributesMetadata = attributesMetadata;
-	}
-
-	/**
-	 * @param origin where Nacos {@link PropertySource} comes from
-	 */
-	public void setOrigin(Object origin) {
-		this.origin = origin;
-	}
-
-	/**
 	 * @return the attributesMetadata of attributes from
 	 * {@link com.alibaba.nacos.spring.context.annotation.config.NacosPropertySource @NacosPropertySource}
 	 * or &lt;nacos:property-source ... &gt;
@@ -159,10 +143,26 @@ public class NacosPropertySource extends PropertiesPropertySource {
 	}
 
 	/**
+	 * @param attributesMetadata the attributesMetadata of attributes from
+	 *     {@link com.alibaba.nacos.spring.context.annotation.config.NacosPropertySource @NacosPropertySource}
+	 *     or &lt;nacos:property-source ... &gt;
+	 */
+	public void setAttributesMetadata(Map<String, Object> attributesMetadata) {
+		this.attributesMetadata = attributesMetadata;
+	}
+
+	/**
 	 * @return where Nacos {@link PropertySource} comes from
 	 */
 	public Object getOrigin() {
 		return origin;
+	}
+
+	/**
+	 * @param origin where Nacos {@link PropertySource} comes from
+	 */
+	public void setOrigin(Object origin) {
+		this.origin = origin;
 	}
 
 	public String getBeanName() {

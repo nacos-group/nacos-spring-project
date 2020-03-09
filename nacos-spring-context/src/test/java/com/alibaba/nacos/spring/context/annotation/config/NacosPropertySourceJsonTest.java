@@ -62,19 +62,21 @@ public class NacosPropertySourceJsonTest
 		extends AbstractNacosHttpServerTestExecutionListener {
 
 	public static final String DATA_ID = "data_json";
+	private String configStr = "{\n" + "    \"people\":{\n"
+			+ "        \"a\":\"liaochuntao\",\n" + "        \"b\":\"this is test\"\n"
+			+ "    }\n" + "}";
+	private String newConfigStr = "{\n" + "    \"people\":{\n"
+			+ "        \"a\":\"liaochuntao\",\n"
+			+ "        \"b\":\"refresh this is test\"\n" + "    }\n" + "}";
+	@NacosInjected
+	private ConfigService configService;
+	@Autowired
+	private App app;
 
 	@Override
 	protected String getServerAddressPropertyName() {
 		return "server.addr";
 	}
-
-	private String configStr = "{\n" + "    \"people\":{\n"
-			+ "        \"a\":\"liaochuntao\",\n" + "        \"b\":\"this is test\"\n"
-			+ "    }\n" + "}";
-
-	private String newConfigStr = "{\n" + "    \"people\":{\n"
-			+ "        \"a\":\"liaochuntao\",\n"
-			+ "        \"b\":\"refresh this is test\"\n" + "    }\n" + "}";
 
 	@Override
 	public void init(EmbeddedNacosHttpServer httpServer) {
@@ -86,8 +88,24 @@ public class NacosPropertySourceJsonTest
 		httpServer.initConfig(config);
 	}
 
-	@NacosInjected
-	private ConfigService configService;
+	@Bean
+	public App app() {
+		return new App();
+	}
+
+	@Test
+	public void testValue() throws NacosException, InterruptedException {
+
+		Assert.assertEquals("liaochuntao", app.a);
+		Assert.assertEquals("this is test", app.b);
+
+		configService.publishConfig(DATA_ID, DEFAULT_GROUP, newConfigStr);
+
+		Thread.sleep(2000);
+
+		Assert.assertEquals("liaochuntao", app.a);
+		Assert.assertEquals("refresh this is test", app.b);
+	}
 
 	public static class App {
 
@@ -111,28 +129,6 @@ public class NacosPropertySourceJsonTest
 		public void setB(String b) {
 			this.b = b;
 		}
-	}
-
-	@Bean
-	public App app() {
-		return new App();
-	}
-
-	@Autowired
-	private App app;
-
-	@Test
-	public void testValue() throws NacosException, InterruptedException {
-
-		Assert.assertEquals("liaochuntao", app.a);
-		Assert.assertEquals("this is test", app.b);
-
-		configService.publishConfig(DATA_ID, DEFAULT_GROUP, newConfigStr);
-
-		Thread.sleep(2000);
-
-		Assert.assertEquals("liaochuntao", app.a);
-		Assert.assertEquals("refresh this is test", app.b);
 	}
 
 }

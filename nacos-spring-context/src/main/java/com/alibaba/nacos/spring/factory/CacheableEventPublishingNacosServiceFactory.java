@@ -75,6 +75,10 @@ public class CacheableEventPublishingNacosServiceFactory implements NacosService
 		createWorkerManager = Collections.unmodifiableMap(createWorkerManager);
 	}
 
+	public static CacheableEventPublishingNacosServiceFactory getSingleton() {
+		return SINGLETON;
+	}
+
 	@Override
 	public ConfigService createConfigService(Properties properties)
 			throws NacosException {
@@ -93,6 +97,10 @@ public class CacheableEventPublishingNacosServiceFactory implements NacosService
 				null);
 	}
 
+	// Exist some cases need to create the ConfigService | NamingService |
+	// NamingMaintainService
+	// before loading the Context object, lazy loading
+
 	@Override
 	public NamingMaintainService createNamingMaintainService(Properties properties)
 			throws NacosException {
@@ -101,10 +109,6 @@ public class CacheableEventPublishingNacosServiceFactory implements NacosService
 		return (NamingMaintainService) createWorkerManager.get(ServiceType.MAINTAIN)
 				.run(copy, null);
 	}
-
-	// Exist some cases need to create the ConfigService | NamingService |
-	// NamingMaintainService
-	// before loading the Context object, lazy loading
 
 	public <T> T deferCreateService(T service, Properties properties) {
 		DeferServiceHolder serviceHolder = new DeferServiceHolder();
@@ -160,10 +164,6 @@ public class CacheableEventPublishingNacosServiceFactory implements NacosService
 	@Override
 	public Collection<NamingMaintainService> getNamingMaintainService() {
 		return maintainServiceCache.values();
-	}
-
-	public static CacheableEventPublishingNacosServiceFactory getSingleton() {
-		return SINGLETON;
 	}
 
 	private static enum ServiceType {

@@ -38,6 +38,19 @@ public class TimeoutNacosConfigListenerTest {
 
 	private final ConfigService configService = new MockConfigService();
 
+	private static void doWait(long millis) {
+
+		long startTime = System.currentTimeMillis();
+
+		while (true) {
+			long costTime = System.currentTimeMillis() - startTime;
+			if (costTime > millis) {
+				break;
+			}
+
+		}
+	}
+
 	private String receiveConfig(final long executionTime, long timeout, String content)
 			throws NacosException {
 
@@ -78,19 +91,6 @@ public class TimeoutNacosConfigListenerTest {
 
 		Assert.assertNull(receivedConfig);
 
-	}
-
-	private static void doWait(long millis) {
-
-		long startTime = System.currentTimeMillis();
-
-		while (true) {
-			long costTime = System.currentTimeMillis() - startTime;
-			if (costTime > millis) {
-				break;
-			}
-
-		}
 	}
 
 }

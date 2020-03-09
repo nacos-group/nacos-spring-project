@@ -31,13 +31,13 @@ public class ApplicationContextHolder implements ApplicationContextAware {
 
 	private ConfigurableApplicationContext context;
 
+	public ConfigurableApplicationContext getApplicationContext() {
+		return context;
+	}
+
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext)
 			throws BeansException {
 		context = (ConfigurableApplicationContext) applicationContext;
-	}
-
-	public ConfigurableApplicationContext getApplicationContext() {
-		return context;
 	}
 }
