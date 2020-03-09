@@ -42,11 +42,9 @@ import static com.alibaba.nacos.api.common.Constants.DEFAULT_GROUP;
 @Configuration
 public class SimpleNacosConfigListener {
 
+	public static final String PROPERTIES_DATA_ID = "properties-data-id";
 	private static final Logger logger = LoggerFactory
 			.getLogger(SimpleNacosConfigListener.class);
-
-	public static final String PROPERTIES_DATA_ID = "properties-data-id";
-
 	@NacosInjected
 	private ConfigService configService;
 

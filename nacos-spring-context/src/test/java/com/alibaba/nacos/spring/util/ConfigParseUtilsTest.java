@@ -32,30 +32,6 @@ public class ConfigParseUtilsTest {
 	private static String group = "group";
 	private static AtomicInteger atomicInteger = new AtomicInteger(0);
 
-	public static class CustomerParse extends AbstractConfigParse {
-
-		@Override
-		public Properties parse(String configText) {
-			atomicInteger.incrementAndGet();
-			return new Properties();
-		}
-
-		@Override
-		public String processType() {
-			return "xml";
-		}
-
-		@Override
-		public String dataId() {
-			return dataId;
-		}
-
-		@Override
-		public String group() {
-			return group;
-		}
-	}
-
 	@Test
 	public void testConfigParse() {
 		String xmlConfig = "<xmlSign>\n" + "    <Students>\n" + "        <Student>\n"
@@ -87,6 +63,30 @@ public class ConfigParseUtilsTest {
 		Assert.assertTrue(0 != properties.size());
 		System.out.println(ConfigParse.class.isAssignableFrom(CustomerParse.class));
 		System.out.println(properties);
+	}
+
+	public static class CustomerParse extends AbstractConfigParse {
+
+		@Override
+		public Properties parse(String configText) {
+			atomicInteger.incrementAndGet();
+			return new Properties();
+		}
+
+		@Override
+		public String processType() {
+			return "xml";
+		}
+
+		@Override
+		public String dataId() {
+			return dataId;
+		}
+
+		@Override
+		public String group() {
+			return group;
+		}
 	}
 
 }

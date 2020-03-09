@@ -43,17 +43,15 @@ public class NacosConfigurationPropertiesConfiguration {
 
 	private static final Logger logger = LoggerFactory
 			.getLogger(NacosConfigurationPropertiesConfiguration.class);
+	@NacosInjected
+	private ConfigService configService;
+	@Autowired
+	private Pojo pojo;
 
 	@Bean
 	public Pojo pojo() {
 		return new Pojo();
 	}
-
-	@NacosInjected
-	private ConfigService configService;
-
-	@Autowired
-	private Pojo pojo;
 
 	@PostConstruct
 	public void init() throws Exception {

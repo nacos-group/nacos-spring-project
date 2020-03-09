@@ -58,23 +58,15 @@ import static java.nio.charset.Charset.forName;
  */
 public class NacosConfigHttpHandler implements HttpHandler {
 
-	private final Logger logger = LoggerFactory.getLogger(getClass());
-
-	private Map<String, String> contentCache = new HashMap<String, String>();
-
-	private Map<String, LongPolling> longPollingMap = new HashMap<String, LongPolling>();
-
-	private ScheduledExecutorService scheduledExecutorService;
-
-	private volatile boolean isRunning;
-
 	public static final String DATA_ID_PARAM_NAME = "dataId";
-
 	public static final String GROUP_ID_PARAM_NAME = "group";
-
 	public static final String CONTENT_PARAM_NAME = "content";
-
 	private static final Object LOCK = new Object();
+	private final Logger logger = LoggerFactory.getLogger(getClass());
+	private Map<String, String> contentCache = new HashMap<String, String>();
+	private Map<String, LongPolling> longPollingMap = new HashMap<String, LongPolling>();
+	private ScheduledExecutorService scheduledExecutorService;
+	private volatile boolean isRunning;
 
 	public void init() {
 		isRunning = true;

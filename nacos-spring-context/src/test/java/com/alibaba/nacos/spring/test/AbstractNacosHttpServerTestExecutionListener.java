@@ -32,11 +32,11 @@ import org.springframework.test.context.support.AbstractTestExecutionListener;
 public abstract class AbstractNacosHttpServerTestExecutionListener
 		extends AbstractTestExecutionListener {
 
-	private EmbeddedNacosHttpServer httpServer;
-
 	static {
 		System.setProperty("nacos.standalone", "true");
 	}
+
+	private EmbeddedNacosHttpServer httpServer;
 
 	@Override
 	public void beforeTestClass(TestContext testContext) throws Exception {

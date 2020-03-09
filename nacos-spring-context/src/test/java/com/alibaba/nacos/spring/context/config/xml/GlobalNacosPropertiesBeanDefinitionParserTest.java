@@ -50,6 +50,10 @@ import static com.alibaba.nacos.spring.util.NacosBeanUtils.GLOBAL_NACOS_PROPERTI
 @ContextConfiguration(locations = { "classpath:/META-INF/nacos-global-properties.xml" })
 public class GlobalNacosPropertiesBeanDefinitionParserTest {
 
+	@Autowired
+	@Qualifier(GLOBAL_NACOS_PROPERTIES_BEAN_NAME)
+	private Properties globalNacosProperties;
+
 	@BeforeClass
 	public static void init() {
 		System.setProperty("nacos.server-addr", "127.0.0.1:8080");
@@ -59,10 +63,6 @@ public class GlobalNacosPropertiesBeanDefinitionParserTest {
 	public static void afterClass() {
 		System.getProperties().remove("nacos.server-addr");
 	}
-
-	@Autowired
-	@Qualifier(GLOBAL_NACOS_PROPERTIES_BEAN_NAME)
-	private Properties globalNacosProperties;
 
 	@Test
 	public void test() {

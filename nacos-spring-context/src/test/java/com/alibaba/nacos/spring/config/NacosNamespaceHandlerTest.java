@@ -64,6 +64,8 @@ public class NacosNamespaceHandlerTest
 
 	@Autowired
 	private User user;
+	@NacosInjected
+	private ConfigService configService;
 
 	@Override
 	protected String getServerAddressPropertyName() {
@@ -78,9 +80,6 @@ public class NacosNamespaceHandlerTest
 		config.put(CONTENT_PARAM_NAME, "id=" + 1 + "\nname=mercyblitz");
 		server.initConfig(config);
 	}
-
-	@NacosInjected
-	private ConfigService configService;
 
 	@Test
 	public void testGetConfig() throws Exception {

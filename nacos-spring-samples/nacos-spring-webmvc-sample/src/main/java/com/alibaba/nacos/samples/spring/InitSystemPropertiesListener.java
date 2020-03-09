@@ -21,10 +21,18 @@ import org.slf4j.LoggerFactory;
 public class InitSystemPropertiesListener implements ServletContextListener {
 
 	/**
+	 * the ignoreResourceNotFound property for propertySourcesPlaceholderConfigurer
+	 */
+	public static final String IGNORE_RESOURCE_NOT_FOUND = "ignoreResourceNotFound";
+	/**
+	 * the ignoreUnresolvablePlaceholders property for
+	 * propertySourcesPlaceholderConfigurer
+	 */
+	public static final String IGNORE_UNRESOLVABLE_PLACEHOLDERS = "ignoreUnresolvablePlaceholders";
+	/**
 	 * the nacos server address
 	 */
 	private static final String SERVER_ADDRESS_PROPERTY_NAME = "nacos.server-addr";
-
 	/**
 	 * the nacos namespace
 	 */
@@ -37,17 +45,6 @@ public class InitSystemPropertiesListener implements ServletContextListener {
 	 * the nacos password
 	 */
 	private static final String PASSWORD_PROPERTY_NAME = "nacos.password";
-	/**
-	 * the ignoreResourceNotFound property for propertySourcesPlaceholderConfigurer
-	 */
-	public static final String IGNORE_RESOURCE_NOT_FOUND = "ignoreResourceNotFound";
-
-	/**
-	 * the ignoreUnresolvablePlaceholders property for
-	 * propertySourcesPlaceholderConfigurer
-	 */
-	public static final String IGNORE_UNRESOLVABLE_PLACEHOLDERS = "ignoreUnresolvablePlaceholders";
-
 	private static final Logger logger = LoggerFactory
 			.getLogger(InitSystemPropertiesListener.class);
 

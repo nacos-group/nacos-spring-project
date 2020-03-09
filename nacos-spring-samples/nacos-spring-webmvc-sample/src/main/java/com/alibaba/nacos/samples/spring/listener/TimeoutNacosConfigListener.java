@@ -40,11 +40,9 @@ import static com.alibaba.nacos.samples.spring.NacosConfiguration.CURRENT_TIME_D
 @Configuration
 public class TimeoutNacosConfigListener {
 
+	public static final String TEST_DATA_ID = "timeout-data-id";
 	private static final Logger logger = LoggerFactory
 			.getLogger(TimeoutNacosConfigListener.class);
-
-	public static final String TEST_DATA_ID = "timeout-data-id";
-
 	@NacosInjected
 	private ConfigService configService;
 
