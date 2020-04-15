@@ -254,45 +254,6 @@ public abstract class NacosUtils {
 		return propertyValues;
 	}
 
-
-	private static void bindBean(String propertyName, Class<?> target, Properties configProperties, MutablePropertyValues propertyValues) {
-		String propertyValue = configProperties.getProperty(propertyName);
-		if (propertyValue != null) {
-			propertyValues.add(propertyName, propertyValue);
-		}
-		if (isUnbindableBean(target)) {
-			return;
-		}
-
-		Field[] fields = target.getDeclaredFields();
-		for (Field field : fields) {
-			String mergePropertyName = propertyName + "." + NacosUtils.resolvePropertyName(field);
-			bindBean(mergePropertyName, field.getType(), configProperties, propertyValues);
-		}
-
-
-	}
-
-	private static boolean containsDescendantOf(Set<String> names, String propertyName) {
-		for (String name : names) {
-			if (name.startsWith(propertyName + ".")) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	private static boolean isUnbindableBean(Class<?> resolved) {
-		if (resolved.isPrimitive() || NON_BEAN_CLASSES.contains(resolved)) {
-			return true;
-		}
-		return resolved.getName().startsWith("java.");
-	}
-
-
-
-
-
 	public static Properties resolveProperties(NacosProperties nacosProperties,
 			PropertyResolver propertyResolver) {
 		return resolveProperties(nacosProperties, propertyResolver, null);
@@ -394,6 +355,48 @@ public abstract class NacosUtils {
 		}
 		return content;
 	}
+
+    /**
+     * bind properties to bean
+     *
+     * @param propertyName propertyName
+     * @param target bind target
+     * @param configProperties config context
+     * @param propertyValues {@link MutablePropertyValues}
+     */
+    private static void bindBean(String propertyName, Class<?> target, Properties configProperties, MutablePropertyValues propertyValues) {
+        String propertyValue = configProperties.getProperty(propertyName);
+        if (propertyValue != null) {
+            propertyValues.add(propertyName, propertyValue);
+        }
+        if (isUnbindableBean(target)) {
+            return;
+        }
+
+        Field[] fields = target.getDeclaredFields();
+        for (Field field : fields) {
+            String mergePropertyName = propertyName + "." + NacosUtils.resolvePropertyName(field);
+            bindBean(mergePropertyName, field.getType(), configProperties, propertyValues);
+        }
+
+
+    }
+
+    private static boolean containsDescendantOf(Set<String> names, String propertyName) {
+        for (String name : names) {
+            if (name.startsWith(propertyName + ".")) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static boolean isUnbindableBean(Class<?> resolved) {
+        if (resolved.isPrimitive() || NON_BEAN_CLASSES.contains(resolved)) {
+            return true;
+        }
+        return resolved.getName().startsWith("java.");
+    }
 
 	/**
 	 * Simple solutions to support {@link Map} or {@link Collection}
