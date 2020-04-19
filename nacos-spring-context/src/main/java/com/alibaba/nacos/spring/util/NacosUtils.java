@@ -27,6 +27,10 @@ import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.Collections;
+import java.util.Arrays;
 import java.util.Properties;
 import java.util.regex.Pattern;
 
@@ -92,6 +96,11 @@ public abstract class NacosUtils {
 	 */
 	public static final long DEFAULT_TIMEOUT = Long.getLong("nacos.default.timeout",
 			5000L);
+
+
+	private static final Set<Class<?>> NON_BEAN_CLASSES = Collections
+			.unmodifiableSet(new HashSet<Class<?>>(Arrays.asList(Object.class, Class.class)));
+
 
 	private static final Logger logger = LoggerFactory.getLogger(NacosUtils.class);
 
@@ -229,6 +238,11 @@ public abstract class NacosUtils {
 										propertyValues);
 								return;
 							}
+							if (containsDescendantOf(configProperties.stringPropertyNames(), propertyName) && !isUnbindableBean(field.getType())) {
+								bindBean(propertyName, field.getType(), configProperties, propertyValues);
+								return;
+							}
+
 							if (configProperties.containsKey(propertyName)) {
 								String propertyValue = configProperties
 										.getProperty(propertyName);
@@ -341,6 +355,48 @@ public abstract class NacosUtils {
 		}
 		return content;
 	}
+
+    /**
+     * bind properties to bean
+     *
+     * @param propertyName propertyName
+     * @param target bind target
+     * @param configProperties config context
+     * @param propertyValues {@link MutablePropertyValues}
+     */
+    private static void bindBean(String propertyName, Class<?> target, Properties configProperties, MutablePropertyValues propertyValues) {
+        String propertyValue = configProperties.getProperty(propertyName);
+        if (propertyValue != null) {
+            propertyValues.add(propertyName, propertyValue);
+        }
+        if (isUnbindableBean(target)) {
+            return;
+        }
+
+        Field[] fields = target.getDeclaredFields();
+        for (Field field : fields) {
+            String mergePropertyName = propertyName + "." + NacosUtils.resolvePropertyName(field);
+            bindBean(mergePropertyName, field.getType(), configProperties, propertyValues);
+        }
+
+
+    }
+
+    private static boolean containsDescendantOf(Set<String> names, String propertyName) {
+        for (String name : names) {
+            if (name.startsWith(propertyName + ".")) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static boolean isUnbindableBean(Class<?> resolved) {
+        if (resolved.isPrimitive() || NON_BEAN_CLASSES.contains(resolved)) {
+            return true;
+        }
+        return resolved.getName().startsWith("java.");
+    }
 
 	/**
 	 * Simple solutions to support {@link Map} or {@link Collection}
