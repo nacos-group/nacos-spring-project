@@ -97,9 +97,7 @@ public class NacosConfigListenerMethodProcessor
 				environment);
 		final String groupId = NacosUtils.readFromEnvironment(listener.groupId(),
 				environment);
-		final String type = StringUtils.isEmpty(NacosUtils.readTypeFromDataId(dataId))
-				? listener.type().getType()
-				: NacosUtils.readTypeFromDataId(dataId);
+		final String type = listener.type().getType();
 		long timeout = listener.timeout();
 
 		Assert.isTrue(StringUtils.hasText(dataId), "dataId must have content");

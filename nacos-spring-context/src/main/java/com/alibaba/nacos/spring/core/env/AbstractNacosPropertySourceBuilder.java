@@ -164,8 +164,7 @@ public abstract class AbstractNacosPropertySourceBuilder<T extends BeanDefinitio
 
 		dataId = NacosUtils.readFromEnvironment(dataId, environment);
 		groupId = NacosUtils.readFromEnvironment(groupId, environment);
-		type = StringUtils.isEmpty(NacosUtils.readTypeFromDataId(dataId)) ? type
-				: NacosUtils.readTypeFromDataId(dataId);
+
 		Map<String, Object> nacosPropertiesAttributes = (Map<String, Object>) runtimeAttributes
 				.get(PROPERTIES_ATTRIBUTE_NAME);
 

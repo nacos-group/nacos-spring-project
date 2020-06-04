@@ -25,7 +25,6 @@ import com.alibaba.nacos.spring.util.GlobalNacosPropertiesSource;
 
 /**
  * @author <a href="mailto:liaochunyhm@live.com">liaochuntao</a>
- * @since
  */
 public class NamingMaintainServiceBeanBuilder
 		extends AbstractNacosServiceBeanBuilder<NamingMaintainService> {

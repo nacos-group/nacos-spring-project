@@ -22,6 +22,7 @@ import java.util.Map;
 import com.alibaba.nacos.api.annotation.NacosInjected;
 import com.alibaba.nacos.api.annotation.NacosProperties;
 import com.alibaba.nacos.api.config.ConfigService;
+import com.alibaba.nacos.api.config.ConfigType;
 import com.alibaba.nacos.api.config.annotation.NacosValue;
 import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.embedded.web.server.EmbeddedNacosHttpServer;
@@ -59,9 +60,9 @@ import static com.alibaba.nacos.embedded.web.server.NacosConfigHttpHandler.GROUP
 
 @NacosPropertySources(value = {
 		@NacosPropertySource(dataId = YamlApp.DATA_ID_YAML
-				+ "_not_exist.yaml", autoRefreshed = true),
+				+ "_not_exist.yaml", type = ConfigType.YAML, autoRefreshed = true),
 		@NacosPropertySource(dataId = YamlApp.DATA_ID_YAML
-				+ ".yml", autoRefreshed = true) })
+				+ ".yml", type = ConfigType.YAML, autoRefreshed = true) })
 @EnableNacos(globalProperties = @NacosProperties(serverAddr = "${server.addr}"))
 @Component
 public class NacosPropertySourceYamlTest
@@ -73,10 +74,13 @@ public class NacosPropertySourceYamlTest
 	private String configStr = "people:\n" + "  a: 1\n" + "  b: 1";
 
 	private String except = "YamlApp{students=[Student{name='lct-1', num='12'}, Student{name='lct-2', num='13'}, Student{name='lct-3', num='14'}]}";
+
 	@NacosInjected
 	private ConfigService configService;
+
 	@Autowired
 	private YamlApp yamlApp;
+
 	@Autowired
 	@Qualifier(value = "myApp")
 	private App app;
@@ -122,7 +126,7 @@ public class NacosPropertySourceYamlTest
 
 	private static class App {
 
-		@Value("${people.a}")
+		@NacosValue("${people.a}")
 		private String a;
 		@NacosValue("${people.b}")
 		private String b;

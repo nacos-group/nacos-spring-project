@@ -85,7 +85,7 @@ public class EventPublishingConfigService implements ConfigService, NacosService
 	 * @param group group
 	 * @param type config's type
 	 * @param listener listener
-	 * @throws NacosException
+	 * @throws NacosException NacosException
 	 */
 	public void addListener(String dataId, String group, String type, Listener listener)
 			throws NacosException {

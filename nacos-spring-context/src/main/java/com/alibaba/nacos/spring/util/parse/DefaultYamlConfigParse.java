@@ -23,6 +23,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 
 import com.alibaba.nacos.api.config.ConfigType;
 import com.alibaba.nacos.spring.util.AbstractConfigParse;
@@ -64,13 +65,10 @@ public class DefaultYamlConfigParse extends AbstractConfigParse {
 	}
 
 	protected static boolean process(Map<String, Object> map, MatchCallback callback) {
-		Properties properties = new Properties();
-		properties.putAll(getFlattenedMap(map));
-
 		if (logger.isDebugEnabled()) {
 			logger.debug("Merging document (no matchers set): " + map);
 		}
-		callback.process(properties, map);
+		callback.process(getFlattenedMap(map));
 		return true;
 	}
 
@@ -146,15 +144,15 @@ public class DefaultYamlConfigParse extends AbstractConfigParse {
 	}
 
 	@Override
-	public Properties parse(String configText) {
-		final Properties result = new Properties();
+	public Map<String, Object> parse(String configText) {
+		final AtomicReference<Map<String, Object>> result = new AtomicReference<>();
 		process(new MatchCallback() {
 			@Override
-			public void process(Properties properties, Map<String, Object> map) {
-				result.putAll(properties);
+			public void process(Map<String, Object> map) {
+				result.set(map);
 			}
 		}, createYaml(), configText);
-		return result;
+		return result.get();
 	}
 
 	@Override
@@ -167,10 +165,9 @@ public class DefaultYamlConfigParse extends AbstractConfigParse {
 		/**
 		 * Put Map to Properties
 		 *
-		 * @param properties {@link Properties}
 		 * @param map {@link Map}
 		 */
-		void process(Properties properties, Map<String, Object> map);
+		void process(Map<String, Object> map);
 	}
 
 	protected static class MapAppenderConstructor extends Constructor {
