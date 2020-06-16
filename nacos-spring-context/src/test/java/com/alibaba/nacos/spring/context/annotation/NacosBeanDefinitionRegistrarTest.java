@@ -71,14 +71,10 @@ import static com.alibaba.nacos.spring.util.NacosBeanUtils.PLACEHOLDER_CONFIGURE
 		DirtiesContextTestExecutionListener.class,
 		NacosBeanDefinitionRegistrarTest.class })
 @EnableNacos(readConfigTypeFromDataId = false, globalProperties = @NacosProperties(serverAddr = "${server.addr}"))
+@EnableNacosConfig
 @EnableNacosDiscovery
 public class NacosBeanDefinitionRegistrarTest
 		extends AbstractNacosHttpServerTestExecutionListener {
-
-	@BeforeClass
-	public static void beforeClass() {
-		NacosUtils.resetReadTypeFromDataId();
-	}
 
 	@AfterClass
 	public static void afterClass() {
