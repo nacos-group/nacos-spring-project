@@ -55,6 +55,8 @@ public class EventPublishingConfigServiceTest {
 
 	private Properties properties = new Properties();
 
+
+
 	@Before
 	public void init() {
 		this.mockConfigService = new MockConfigService();

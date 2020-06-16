@@ -67,6 +67,11 @@ import static com.alibaba.nacos.spring.context.annotation.config.NacosPropertySo
 public class NacosPropertySourceReadFromEnvironmentTest
 		extends AbstractNacosHttpServerTestExecutionListener {
 
+	@BeforeClass
+	public static void beforeClass() {
+		NacosUtils.resetReadTypeFromDataId();
+	}
+
 	@AfterClass
 	public static void afterClass() {
 		NacosUtils.resetReadTypeFromDataId();

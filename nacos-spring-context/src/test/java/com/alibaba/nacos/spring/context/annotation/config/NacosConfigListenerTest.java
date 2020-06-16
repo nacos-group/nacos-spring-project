@@ -29,6 +29,7 @@ import com.alibaba.nacos.spring.util.NacosUtils;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -50,6 +51,11 @@ import org.springframework.test.context.support.DirtiesContextTestExecutionListe
 		NacosConfigListenerTest.class })
 public class NacosConfigListenerTest
 		extends AbstractNacosHttpServerTestExecutionListener {
+
+	@BeforeClass
+	public static void beforeClass() {
+		NacosUtils.resetReadTypeFromDataId();
+	}
 
 	@AfterClass
 	public static void afterClass() {

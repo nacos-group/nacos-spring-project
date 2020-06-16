@@ -33,6 +33,7 @@ import com.alibaba.nacos.spring.test.User;
 import com.alibaba.nacos.spring.util.NacosUtils;
 import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -67,12 +68,15 @@ import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.DATA_ID;
 @EnableNacos(readConfigTypeFromDataId = false, globalProperties = @NacosProperties(serverAddr = "${nacos.server-addr}"))
 public class NacosNamespaceHandlerTest
 		extends AbstractNacosHttpServerTestExecutionListener {
+	@BeforeClass
+	public static void beforeClass() {
+		NacosUtils.resetReadTypeFromDataId();
+	}
 
 	@AfterClass
 	public static void afterClass() {
 		NacosUtils.resetReadTypeFromDataId();
 	}
-
 	@Autowired
 	private User user;
 	@NacosInjected
