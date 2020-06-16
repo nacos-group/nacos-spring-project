@@ -18,6 +18,8 @@ package com.alibaba.nacos.spring.context.annotation.config;
 
 import com.alibaba.nacos.api.annotation.NacosProperties;
 import com.alibaba.nacos.spring.context.annotation.EnableNacos;
+import com.alibaba.nacos.spring.util.NacosUtils;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -31,6 +33,11 @@ import org.springframework.mock.env.MockEnvironment;
  * @since 0.1.0
  */
 public class NacosPropertiesTest {
+
+	@AfterClass
+	public static void afterClass() {
+		NacosUtils.resetReadTypeFromDataId();
+	}
 
 	@Test
 	public void testConstants() {

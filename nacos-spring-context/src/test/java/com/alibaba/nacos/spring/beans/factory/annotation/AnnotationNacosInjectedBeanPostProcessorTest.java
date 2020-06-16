@@ -25,6 +25,8 @@ import com.alibaba.nacos.spring.context.annotation.EnableNacos;
 import com.alibaba.nacos.spring.factory.ApplicationContextHolder;
 import com.alibaba.nacos.spring.test.AbstractNacosHttpServerTestExecutionListener;
 import com.alibaba.nacos.spring.test.TestConfiguration;
+import com.alibaba.nacos.spring.util.NacosUtils;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -57,6 +59,11 @@ import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.GROUP_ID;
 @EnableNacos(globalProperties = @NacosProperties(serverAddr = "${server.addr}"))
 public class AnnotationNacosInjectedBeanPostProcessorTest
 		extends AbstractNacosHttpServerTestExecutionListener {
+
+	@AfterClass
+	public static void afterClass() {
+		NacosUtils.resetReadTypeFromDataId();
+	}
 
 	@NacosInjected
 	private ConfigService configService;

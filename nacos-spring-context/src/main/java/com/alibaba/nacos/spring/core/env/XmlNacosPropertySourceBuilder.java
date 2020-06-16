@@ -23,6 +23,7 @@ import java.util.Properties;
 import com.alibaba.nacos.api.config.ConfigType;
 import com.alibaba.nacos.spring.context.config.xml.NacosPropertySourceXmlBeanDefinition;
 import com.alibaba.nacos.spring.context.event.config.NacosConfigMetadataEvent;
+import com.alibaba.nacos.spring.util.NacosUtils;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 

@@ -33,6 +33,8 @@ import com.alibaba.nacos.spring.test.AbstractNacosHttpServerTestExecutionListene
 import com.alibaba.nacos.spring.test.Listeners;
 import com.alibaba.nacos.spring.test.TestConfiguration;
 import com.alibaba.nacos.spring.test.User;
+import com.alibaba.nacos.spring.util.NacosUtils;
+import org.junit.AfterClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -64,9 +66,14 @@ import static org.junit.Assert.assertNull;
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class,
 		DirtiesContextTestExecutionListener.class,
 		NacosConfigListenerMethodProcessorTest.class })
-@EnableNacos(globalProperties = @NacosProperties(serverAddr = "${server.addr}"))
+@EnableNacosConfig(readConfigTypeFromDataId =  false, globalProperties = @NacosProperties(serverAddr = "${server.addr}"))
 public class NacosConfigListenerMethodProcessorTest
 		extends AbstractNacosHttpServerTestExecutionListener {
+
+	@AfterClass
+	public static void afterClass() {
+		NacosUtils.resetReadTypeFromDataId();
+	}
 
 	@Autowired
 	private Listeners listeners;

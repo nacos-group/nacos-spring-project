@@ -20,13 +20,18 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.alibaba.nacos.api.annotation.NacosInjected;
+import com.alibaba.nacos.api.annotation.NacosProperties;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.embedded.web.server.EmbeddedNacosHttpServer;
+import com.alibaba.nacos.spring.context.annotation.EnableNacos;
+import com.alibaba.nacos.spring.context.annotation.config.EnableNacosConfig;
 import com.alibaba.nacos.spring.context.config.xml.GlobalNacosPropertiesBeanDefinitionParser;
 import com.alibaba.nacos.spring.context.config.xml.NacosAnnotationDrivenBeanDefinitionParser;
 import com.alibaba.nacos.spring.context.config.xml.NacosNamespaceHandler;
 import com.alibaba.nacos.spring.test.AbstractNacosHttpServerTestExecutionListener;
 import com.alibaba.nacos.spring.test.User;
+import com.alibaba.nacos.spring.util.NacosUtils;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -59,8 +64,14 @@ import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.DATA_ID;
 @DirtiesContext
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class,
 		DirtiesContextTestExecutionListener.class, NacosNamespaceHandlerTest.class })
+@EnableNacos(readConfigTypeFromDataId = false, globalProperties = @NacosProperties(serverAddr = "${nacos.server-addr}"))
 public class NacosNamespaceHandlerTest
 		extends AbstractNacosHttpServerTestExecutionListener {
+
+	@AfterClass
+	public static void afterClass() {
+		NacosUtils.resetReadTypeFromDataId();
+	}
 
 	@Autowired
 	private User user;

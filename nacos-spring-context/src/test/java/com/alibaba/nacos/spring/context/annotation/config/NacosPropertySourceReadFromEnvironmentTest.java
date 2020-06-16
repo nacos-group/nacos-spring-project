@@ -27,6 +27,8 @@ import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.embedded.web.server.EmbeddedNacosHttpServer;
 import com.alibaba.nacos.spring.context.annotation.EnableNacos;
 import com.alibaba.nacos.spring.test.AbstractNacosHttpServerTestExecutionListener;
+import com.alibaba.nacos.spring.util.NacosUtils;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
@@ -60,10 +62,15 @@ import static com.alibaba.nacos.spring.context.annotation.config.NacosPropertySo
 		DirtiesContextTestExecutionListener.class,
 		NacosPropertySourceReadFromEnvironmentTest.class })
 @NacosPropertySource(dataId = NacosPropertySourceReadFromEnvironmentTest.ENV_DATA_ID, groupId = ENV_GROUP_ID, autoRefreshed = true)
-@EnableNacos(globalProperties = @NacosProperties(serverAddr = "${server.addr}", enableRemoteSyncConfig = "true", maxRetry = "5", configRetryTime = "2600", configLongPollTimeout = "26000"))
+@EnableNacosConfig(readConfigTypeFromDataId =  false, globalProperties = @NacosProperties(serverAddr = "${server.addr}", enableRemoteSyncConfig = "true", maxRetry = "5", configRetryTime = "2600", configLongPollTimeout = "26000"))
 @Component
 public class NacosPropertySourceReadFromEnvironmentTest
 		extends AbstractNacosHttpServerTestExecutionListener {
+
+	@AfterClass
+	public static void afterClass() {
+		NacosUtils.resetReadTypeFromDataId();
+	}
 
 	public static final String ENV_DATA_ID = "${data-id}";
 	public static final String ENV_GROUP_ID = "${group-id:nacos_env_test}";

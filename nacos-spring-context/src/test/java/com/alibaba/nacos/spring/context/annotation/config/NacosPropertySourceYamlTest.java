@@ -29,6 +29,8 @@ import com.alibaba.nacos.embedded.web.server.EmbeddedNacosHttpServer;
 import com.alibaba.nacos.spring.context.annotation.EnableNacos;
 import com.alibaba.nacos.spring.test.AbstractNacosHttpServerTestExecutionListener;
 import com.alibaba.nacos.spring.test.YamlApp;
+import com.alibaba.nacos.spring.util.NacosUtils;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -57,16 +59,20 @@ import static com.alibaba.nacos.embedded.web.server.NacosConfigHttpHandler.GROUP
 @ContextConfiguration(classes = { NacosPropertySourceYamlTest.class })
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class,
 		DirtiesContextTestExecutionListener.class, NacosPropertySourceYamlTest.class })
-
 @NacosPropertySources(value = {
 		@NacosPropertySource(dataId = YamlApp.DATA_ID_YAML
-				+ "_not_exist.yaml", type = ConfigType.YAML, autoRefreshed = true),
+				+ "_not_exist.yaml", autoRefreshed = true),
 		@NacosPropertySource(dataId = YamlApp.DATA_ID_YAML
-				+ ".yml", type = ConfigType.YAML, autoRefreshed = true) })
-@EnableNacos(globalProperties = @NacosProperties(serverAddr = "${server.addr}"))
+				+ ".yml", autoRefreshed = true) })
+@EnableNacosConfig(globalProperties = @NacosProperties(serverAddr = "${server.addr}"))
 @Component
 public class NacosPropertySourceYamlTest
 		extends AbstractNacosHttpServerTestExecutionListener {
+
+	@AfterClass
+	public static void afterClass() {
+		NacosUtils.resetReadTypeFromDataId();
+	}
 
 	private String yaml = "students:\n" + "    - {name: lct-1,num: 12}\n"
 			+ "    - {name: lct-2,num: 13}\n" + "    - {name: lct-3,num: 14}";

@@ -21,9 +21,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Properties;
 
 import com.alibaba.nacos.api.config.ConfigType;
 import com.alibaba.nacos.spring.util.AbstractConfigParse;
@@ -182,7 +182,7 @@ public class DefaultPropertiesConfigParse extends AbstractConfigParse {
 
 			CharacterReader(Resource resource) throws IOException {
 				this.reader = new LineNumberReader(new InputStreamReader(
-						resource.getInputStream(), Charset.forName("ISO-8859-1")));
+						resource.getInputStream(), StandardCharsets.ISO_8859_1));
 			}
 
 			@Override
