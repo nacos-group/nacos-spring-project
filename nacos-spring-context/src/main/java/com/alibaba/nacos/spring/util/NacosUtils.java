@@ -457,7 +457,7 @@ public abstract class NacosUtils {
 	private static Map<String, Object> listToProperties(String fieldName, String content) {
 		String[] splits = content.split(",");
 		int index = 0;
-		Map<String, Object> properties = new LinkedHashMap<>();
+		Map<String, Object> properties = new LinkedHashMap<String, Object>();
 		for (String s : splits) {
 			properties.put(fieldName + "[" + index + "]", s.trim());
 			index++;

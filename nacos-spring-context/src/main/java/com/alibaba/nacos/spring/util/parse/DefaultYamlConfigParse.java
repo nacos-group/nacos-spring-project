@@ -145,7 +145,7 @@ public class DefaultYamlConfigParse extends AbstractConfigParse {
 
 	@Override
 	public Map<String, Object> parse(String configText) {
-		final AtomicReference<Map<String, Object>> result = new AtomicReference<>();
+		final AtomicReference<Map<String, Object>> result = new AtomicReference<Map<String, Object>>();
 		process(new MatchCallback() {
 			@Override
 			public void process(Map<String, Object> map) {

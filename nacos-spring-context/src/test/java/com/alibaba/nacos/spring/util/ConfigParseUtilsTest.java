@@ -99,7 +99,7 @@ public class ConfigParseUtilsTest {
 		@Override
 		public Map<String, Object> parse(String configText) {
 			atomicInteger.incrementAndGet();
-			return new LinkedHashMap<>();
+			return new LinkedHashMap<String, Object>();
 		}
 
 		@Override

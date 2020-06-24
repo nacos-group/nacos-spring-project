@@ -52,7 +52,7 @@ public class DefaultPropertiesConfigParse extends AbstractConfigParse {
 			if (StringUtils.hasText(configText)) {
 				return loader.load();
 			}
-			return new LinkedHashMap<>();
+			return new LinkedHashMap<String, Object>();
 		}
 		catch (IOException e) {
 			throw new ConfigParseException(e);
@@ -98,8 +98,9 @@ public class DefaultPropertiesConfigParse extends AbstractConfigParse {
 		 * @throws IOException on read error
 		 */
 		public Map<String, Object> load(boolean expandLists) throws IOException {
-			try (OriginTrackedPropertiesLoader.CharacterReader reader = new OriginTrackedPropertiesLoader.CharacterReader(this.resource)) {
-				Map<String, Object> result = new LinkedHashMap<>();
+			OriginTrackedPropertiesLoader.CharacterReader reader = new OriginTrackedPropertiesLoader.CharacterReader(this.resource);
+			try {
+				Map<String, Object> result = new LinkedHashMap<String, Object>();
 				StringBuilder buffer = new StringBuilder();
 				while (reader.read()) {
 					String key = loadKey(buffer, reader).trim();
@@ -120,6 +121,8 @@ public class DefaultPropertiesConfigParse extends AbstractConfigParse {
 					}
 				}
 				return result;
+			} finally {
+				reader.close();
 			}
 		}
 

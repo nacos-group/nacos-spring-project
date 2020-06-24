@@ -85,7 +85,7 @@ public final class ConfigParseUtils {
 	public static Map<String, Object> toProperties(final String context, String type) {
 
 		if (context == null) {
-			return new LinkedHashMap<>();
+			return new LinkedHashMap<String, Object>();
 		}
 		// Again the type lowercase, ensure the search
 		type = type.toLowerCase();
@@ -104,7 +104,7 @@ public final class ConfigParseUtils {
 			final String context, String type) {
 
 		if (context == null) {
-			return new LinkedHashMap<>();
+			return new LinkedHashMap<String, Object>();
 		}
 		// Again the type lowercase, ensure the search
 		type = type.toLowerCase();
