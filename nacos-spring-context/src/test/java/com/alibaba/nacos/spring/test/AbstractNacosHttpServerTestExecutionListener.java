@@ -19,6 +19,7 @@ package com.alibaba.nacos.spring.test;
 import com.alibaba.nacos.api.annotation.NacosProperties;
 import com.alibaba.nacos.embedded.web.server.EmbeddedNacosHttpServer;
 
+import com.alibaba.nacos.spring.util.NacosUtils;
 import org.springframework.test.context.TestContext;
 import org.springframework.test.context.TestExecutionListener;
 import org.springframework.test.context.support.AbstractTestExecutionListener;

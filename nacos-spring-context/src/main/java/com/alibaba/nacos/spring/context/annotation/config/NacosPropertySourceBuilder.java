@@ -16,6 +16,7 @@
  */
 package com.alibaba.nacos.spring.context.annotation.config;
 
+import java.util.Map;
 import java.util.Properties;
 
 import com.alibaba.nacos.spring.factory.NacosServiceFactory;
@@ -25,7 +26,7 @@ import org.slf4j.LoggerFactory;
 
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.core.env.PropertiesPropertySource;
+import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.PropertySource;
 import org.springframework.util.StringUtils;
 
@@ -120,13 +121,13 @@ class NacosPropertySourceBuilder {
 			return null;
 		}
 
-		Properties properties = toProperties(dataId, groupId, config, type);
+		Map<String, Object> properties = toProperties(dataId, groupId, config, type);
 
 		if (!StringUtils.hasText(name)) {
 			name = buildDefaultPropertySourceName(dataId, groupId, properties);
 		}
 
-		return new PropertiesPropertySource(name, properties);
+		return new MapPropertySource(name, properties);
 	}
 
 	public NacosConfigLoader getNacosConfigLoader() {

@@ -58,6 +58,13 @@ import static com.alibaba.nacos.api.annotation.NacosProperties.USERNAME;
 public @interface EnableNacosConfig {
 
 	/**
+	 * Whether to get the file type from dataId
+	 *
+	 * @return read config-type from dataId, default value is {@link Boolean#TRUE}
+	 */
+	boolean readConfigTypeFromDataId() default true;
+
+	/**
 	 * The prefix of property name of Nacos Config
 	 */
 	String CONFIG_PREFIX = NacosProperties.PREFIX + "config.";

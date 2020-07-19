@@ -22,7 +22,11 @@ import java.util.Map;
 import com.alibaba.nacos.embedded.web.server.EmbeddedNacosHttpServer;
 import com.alibaba.nacos.spring.test.AbstractNacosHttpServerTestExecutionListener;
 import com.alibaba.nacos.spring.test.User;
+import com.alibaba.nacos.spring.util.NacosUtils;
+import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -57,8 +61,19 @@ import static com.alibaba.nacos.embedded.web.server.NacosConfigHttpHandler.GROUP
 public class NacosPropertySourceBeanDefinitionParserTest
 		extends AbstractNacosHttpServerTestExecutionListener {
 
+	@BeforeClass
+	public static void beforeClass() {
+		NacosUtils.resetReadTypeFromDataId();
+	}
+
+	@AfterClass
+	public static void afterClass() {
+		NacosUtils.resetReadTypeFromDataId();
+	}
+
 	private static final Long USER_ID = 1991L;
 	private static final String USER_NAME = "hxy";
+
 	@Autowired
 	private User user;
 

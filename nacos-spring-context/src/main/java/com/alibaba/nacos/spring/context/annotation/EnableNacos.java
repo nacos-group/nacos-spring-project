@@ -43,6 +43,14 @@ import org.springframework.context.annotation.Import;
 public @interface EnableNacos {
 
 	/**
+	 * Whether to get the file type from dataId
+	 *
+	 * @return read config-type from dataId, default value is {@link Boolean#TRUE}
+	 */
+	boolean readConfigTypeFromDataId() default true;
+
+
+	/**
 	 * Global {@link NacosProperties Nacos Properties}
 	 *
 	 * @return required

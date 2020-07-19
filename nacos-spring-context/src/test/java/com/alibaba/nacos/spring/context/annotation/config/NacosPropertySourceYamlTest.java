@@ -22,13 +22,17 @@ import java.util.Map;
 import com.alibaba.nacos.api.annotation.NacosInjected;
 import com.alibaba.nacos.api.annotation.NacosProperties;
 import com.alibaba.nacos.api.config.ConfigService;
+import com.alibaba.nacos.api.config.ConfigType;
 import com.alibaba.nacos.api.config.annotation.NacosValue;
 import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.embedded.web.server.EmbeddedNacosHttpServer;
 import com.alibaba.nacos.spring.context.annotation.EnableNacos;
 import com.alibaba.nacos.spring.test.AbstractNacosHttpServerTestExecutionListener;
 import com.alibaba.nacos.spring.test.YamlApp;
+import com.alibaba.nacos.spring.util.NacosUtils;
+import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -56,16 +60,25 @@ import static com.alibaba.nacos.embedded.web.server.NacosConfigHttpHandler.GROUP
 @ContextConfiguration(classes = { NacosPropertySourceYamlTest.class })
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class,
 		DirtiesContextTestExecutionListener.class, NacosPropertySourceYamlTest.class })
-
 @NacosPropertySources(value = {
 		@NacosPropertySource(dataId = YamlApp.DATA_ID_YAML
 				+ "_not_exist.yaml", autoRefreshed = true),
 		@NacosPropertySource(dataId = YamlApp.DATA_ID_YAML
 				+ ".yml", autoRefreshed = true) })
-@EnableNacos(globalProperties = @NacosProperties(serverAddr = "${server.addr}"))
+@EnableNacosConfig(globalProperties = @NacosProperties(serverAddr = "${server.addr}"))
 @Component
 public class NacosPropertySourceYamlTest
 		extends AbstractNacosHttpServerTestExecutionListener {
+
+	@BeforeClass
+	public static void beforeClass() {
+		NacosUtils.resetReadTypeFromDataId();
+	}
+
+	@AfterClass
+	public static void afterClass() {
+		NacosUtils.resetReadTypeFromDataId();
+	}
 
 	private String yaml = "students:\n" + "    - {name: lct-1,num: 12}\n"
 			+ "    - {name: lct-2,num: 13}\n" + "    - {name: lct-3,num: 14}";
@@ -73,10 +86,13 @@ public class NacosPropertySourceYamlTest
 	private String configStr = "people:\n" + "  a: 1\n" + "  b: 1";
 
 	private String except = "YamlApp{students=[Student{name='lct-1', num='12'}, Student{name='lct-2', num='13'}, Student{name='lct-3', num='14'}]}";
+
 	@NacosInjected
 	private ConfigService configService;
+
 	@Autowired
 	private YamlApp yamlApp;
+
 	@Autowired
 	@Qualifier(value = "myApp")
 	private App app;
@@ -122,7 +138,7 @@ public class NacosPropertySourceYamlTest
 
 	private static class App {
 
-		@Value("${people.a}")
+		@NacosValue("${people.a}")
 		private String a;
 		@NacosValue("${people.b}")
 		private String b;

@@ -18,9 +18,9 @@ package com.alibaba.nacos.spring.util;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.Properties;
 import java.util.ServiceLoader;
 
 import com.alibaba.nacos.spring.util.parse.DefaultJsonConfigParse;
@@ -82,19 +82,17 @@ public final class ConfigParseUtils {
 				.unmodifiableMap(CUSTOMER_CONFIG_PARSE_MAP);
 	}
 
-	public static Properties toProperties(final String context, String type) {
+	public static Map<String, Object> toProperties(final String context, String type) {
 
 		if (context == null) {
-			return new Properties();
+			return new LinkedHashMap<String, Object>();
 		}
 		// Again the type lowercase, ensure the search
 		type = type.toLowerCase();
 
-		Properties properties = new Properties();
 		if (DEFAULT_CONFIG_PARSE_MAP.containsKey(type)) {
 			ConfigParse configParse = DEFAULT_CONFIG_PARSE_MAP.get(type);
-			properties.putAll(configParse.parse(context));
-			return properties;
+			return configParse.parse(context);
 		}
 		else {
 			throw new UnsupportedOperationException(
@@ -102,26 +100,16 @@ public final class ConfigParseUtils {
 		}
 	}
 
-	/**
-	 * XML configuration parsing to support different schemas
-	 *
-	 * @param dataId config dataId
-	 * @param group config group
-	 * @param context config context
-	 * @param type config type
-	 * @return {@link Properties}
-	 */
-	public static Properties toProperties(final String dataId, final String group,
+	public static Map<String, Object> toProperties(final String dataId, final String group,
 			final String context, String type) {
 
 		if (context == null) {
-			return new Properties();
+			return new LinkedHashMap<String, Object>();
 		}
 		// Again the type lowercase, ensure the search
 		type = type.toLowerCase();
 
 		String configParseKey = dataId + LINK_CHAR + group;
-		Properties properties = new Properties();
 
 		if (CUSTOMER_CONFIG_PARSE_MAP.isEmpty() || LINK_CHAR.equals(configParseKey)) {
 			return toProperties(context, type);
@@ -141,8 +129,7 @@ public final class ConfigParseUtils {
 					throw new NoSuchElementException(
 							"This config can't find ConfigParse to parse");
 				}
-				properties.putAll(configParse.parse(context));
-				return properties;
+				return configParse.parse(context);
 			}
 			else {
 				throw new UnsupportedOperationException(
