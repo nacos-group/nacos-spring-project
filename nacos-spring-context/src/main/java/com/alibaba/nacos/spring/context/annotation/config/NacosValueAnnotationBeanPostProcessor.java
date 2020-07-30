@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.alibaba.nacos.api.config.annotation.NacosValue;
-import com.alibaba.nacos.client.config.utils.MD5;
+import com.alibaba.nacos.common.utils.MD5Utils;
 import com.alibaba.nacos.spring.context.event.config.NacosConfigReceivedEvent;
 import com.alibaba.spring.beans.factory.annotation.AnnotationInjectedBeanPostProcessor;
 import org.slf4j.Logger;
@@ -139,7 +139,7 @@ public class NacosValueAnnotationBeanPostProcessor extends
 			}
 			List<NacosValueTarget> beanPropertyList = entry.getValue();
 			for (NacosValueTarget target : beanPropertyList) {
-				String md5String = MD5.getInstance().getMD5String(newValue);
+				String md5String = MD5Utils.md5Hex(newValue, "UTF-8");
 				boolean isUpdate = !target.lastMD5.equals(md5String);
 				if (isUpdate) {
 					target.updateLastMD5(md5String);

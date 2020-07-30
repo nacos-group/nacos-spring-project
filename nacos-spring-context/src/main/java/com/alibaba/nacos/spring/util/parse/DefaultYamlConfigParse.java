@@ -26,6 +26,7 @@ import java.util.Set;
 
 import com.alibaba.nacos.api.config.ConfigType;
 import com.alibaba.nacos.spring.util.AbstractConfigParse;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
@@ -111,7 +112,7 @@ public class DefaultYamlConfigParse extends AbstractConfigParse {
 			Map<String, Object> source, String path) {
 		for (Map.Entry<String, Object> entry : source.entrySet()) {
 			String key = entry.getKey();
-			if (!com.alibaba.nacos.client.utils.StringUtils.isBlank(path)) {
+			if (!StringUtils.isBlank(path)) {
 				if (key.startsWith("[")) {
 					key = path + key;
 				}
