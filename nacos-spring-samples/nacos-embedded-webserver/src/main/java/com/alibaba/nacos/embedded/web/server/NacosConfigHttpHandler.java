@@ -32,9 +32,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import com.alibaba.nacos.common.utils.MD5Utils;
 import com.alibaba.nacos.api.common.Constants;
 import com.alibaba.nacos.api.config.ConfigService;
-import com.alibaba.nacos.common.utils.Md5Utils;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import org.slf4j.Logger;
@@ -216,7 +216,7 @@ public class NacosConfigHttpHandler implements HttpHandler {
 		String contentKey = createContentKey(dataId, groupId);
 		String content = contentCache.get(contentKey);
 		if (content != null) {
-			if (!md5.equals(Md5Utils.getMD5(content, "UTF-8"))) {
+			if (!md5.equals(MD5Utils.md5Hex(content, "UTF-8"))) {
 				changeDataIdList.add(dataId);
 				changeGroupIdList.add(groupId);
 				return;

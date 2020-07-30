@@ -347,6 +347,11 @@ class DelegatingNamingService implements NamingService, NacosServiceMetaData {
 	}
 
 	@Override
+	public void shutDown() throws NacosException {
+		this.delegate.shutDown();
+	}
+
+	@Override
 	public Properties getProperties() {
 		return properties;
 	}

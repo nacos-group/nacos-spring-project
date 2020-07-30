@@ -112,6 +112,11 @@ public class MockConfigService implements ConfigService {
 		return "UP";
 	}
 
+	@Override
+	public void shutDown() throws NacosException {
+
+	}
+
 	private String createKey(String dataId, String groupId) {
 		return dataId + "&" + groupId;
 	}

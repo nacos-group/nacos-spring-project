@@ -16,9 +16,11 @@
  */
 package com.alibaba.nacos.spring.convert.converter.config;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.nacos.api.config.convert.NacosConfigConverter;
 import com.alibaba.nacos.spring.test.User;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.IOException;
 
 /**
  * {@link User} {@link NacosConfigConverter}
@@ -28,6 +30,8 @@ import com.alibaba.nacos.spring.test.User;
  */
 public class UserNacosConfigConverter implements NacosConfigConverter<User> {
 
+	private ObjectMapper objectMapper = new ObjectMapper();
+
 	@Override
 	public boolean canConvert(Class<User> targetType) {
 		return true;
@@ -35,6 +39,11 @@ public class UserNacosConfigConverter implements NacosConfigConverter<User> {
 
 	@Override
 	public User convert(String source) {
-		return JSON.parseObject(source, User.class);
+		try {
+			return objectMapper.readValue(source, User.class);
+		}
+		catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 }

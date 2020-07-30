@@ -130,6 +130,11 @@ public class EventPublishingConfigService implements ConfigService, NacosService
 		return configService.getServerStatus();
 	}
 
+	@Override
+	public void shutDown() throws NacosException {
+		this.configService.shutDown();
+	}
+
 	private void publishEvent(NacosConfigEvent nacosConfigEvent) {
 		applicationEventPublisher.publishEvent(nacosConfigEvent);
 	}
