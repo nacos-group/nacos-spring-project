@@ -130,21 +130,21 @@ public @interface EnableNacosConfig {
 	 * configLongPollTimeout}, the value is <code>"${nacos.configLongPollTimeout:}"</code>
 	 */
 	String CONFIG_LONG_POLL_TIMEOUT_PLACEHOLDER = "${" + CONFIG_PREFIX
-			+ CONFIG_LONG_POLL_TIMEOUT
+			+ CONFIG_LONG_POLL_TIMEOUT + ":"
 			+ NacosProperties.CONFIG_LONG_POLL_TIMEOUT_PLACEHOLDER + "}";
 
 	/**
 	 * The placeholder of {@link NacosProperties#CONFIG_RETRY_TIME configRetryTime}, the
 	 * value is <code>"${nacos.configRetryTime:}"</code>
 	 */
-	String CONFIG_RETRY_TIME_PLACEHOLDER = "${" + CONFIG_PREFIX + CONFIG_RETRY_TIME
+	String CONFIG_RETRY_TIME_PLACEHOLDER = "${" + CONFIG_PREFIX + CONFIG_RETRY_TIME + ":"
 			+ NacosProperties.CONFIG_RETRY_TIME_PLACEHOLDER + "}";
 
 	/**
 	 * The placeholder of {@link NacosProperties#MAX_RETRY maxRetry}, the value is
 	 * <code>"${nacos.maxRetry:}"</code>
 	 */
-	String MAX_RETRY_PLACEHOLDER = "${" + CONFIG_PREFIX + MAX_RETRY
+	String MAX_RETRY_PLACEHOLDER = "${" + CONFIG_PREFIX + MAX_RETRY + ":"
 			+ NacosProperties.MAX_RETRY_PLACEHOLDER + "}";
 
 	/**

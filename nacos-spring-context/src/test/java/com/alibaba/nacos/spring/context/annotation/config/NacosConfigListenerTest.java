@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.alibaba.nacos.spring.context.annotation.config;
 
 import java.util.Map;
@@ -41,93 +42,96 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 
 /**
+ * NacosConfigListenerTest.
+ *
  * @author <a href="mailto:liaochunyhm@live.com">liaochuntao</a>
  * @since
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@TestExecutionListeners({ DependencyInjectionTestExecutionListener.class,
-		DirtiesContextTestExecutionListener.class, NacosConfigListenerTest.class })
-@ContextConfiguration(classes = { NacosConfigListenerTest.NacosConfiguration.class,
-		NacosConfigListenerTest.class })
-public class NacosConfigListenerTest
+@RunWith(SpringJUnit4ClassRunner.class) @TestExecutionListeners({
+		DependencyInjectionTestExecutionListener.class,
+		DirtiesContextTestExecutionListener.class,
+		NacosConfigListenerTest.class }) @ContextConfiguration(classes = {
+		NacosConfigListenerTest.NacosConfiguration.class,
+		NacosConfigListenerTest.class }) public class NacosConfigListenerTest
 		extends AbstractNacosHttpServerTestExecutionListener {
-
-	@BeforeClass
-	public static void beforeClass() {
-		NacosUtils.resetReadTypeFromDataId();
-	}
-
-	@AfterClass
-	public static void afterClass() {
-		NacosUtils.resetReadTypeFromDataId();
-	}
-
-	private static volatile String content = "";
-	private static volatile boolean receiveOne = false;
-	private static volatile boolean receiveTwo = false;
-	private static volatile boolean receiveThree = false;
-	@NacosInjected
-	private ConfigService configService;
-
-	@Override
-	protected String getServerAddressPropertyName() {
-		return "server.addr";
-	}
-
-	@NacosConfigListener(dataId = "com.alibaba.nacos.example.properties", timeout = 2000L)
-	public void onMessage(String config) {
-		System.out.println("onMessage: " + config);
-		receiveOne = true;
-		content = config;
-	}
-
-	@NacosConfigListener(dataId = "convert_map.properties", timeout = 2000L)
-	public void onMessage(Map config) {
-		System.out.println("onMessage: " + config);
-		receiveTwo = true;
-	}
-
-	@NacosConfigListener(dataId = "convert_map.yaml", timeout = 2000L)
-	public void onMessageYaml(Map config) {
-		System.out.println("onMessage: " + config);
-		receiveThree = true;
-	}
-
-	@Before
-	public void before() {
-
-	}
-
-	@Test
-	public void testConfigListener() throws InterruptedException {
-
-		final long currentTimeMillis = System.currentTimeMillis();
-
-		boolean result = false;
-		try {
-			result = configService.publishConfig("com.alibaba.nacos.example.properties",
-					"DEFAULT_GROUP", "" + currentTimeMillis);
-			result = configService.publishConfig("convert_map.properties",
-					"DEFAULT_GROUP", "this.is.test=true");
-			result = configService.publishConfig("convert_map.yaml", "DEFAULT_GROUP",
-					"routingMap:\n" + "  - aaa\n" + "  - bbb\n" + "  - ccc\n"
-							+ "  - ddd\n" + "  - eee\n" + "endPointMap:\n" + "  - fff\n"
-							+ "testMap:\n" + "  abc: def1");
+		
+		@BeforeClass public static void beforeClass() {
+				NacosUtils.resetReadTypeFromDataId();
 		}
-		catch (NacosException e) {
-			e.printStackTrace();
+		
+		@AfterClass public static void afterClass() {
+				NacosUtils.resetReadTypeFromDataId();
 		}
-		Assert.assertTrue(result);
-		while (!receiveOne && !receiveTwo && !receiveThree) {
-			TimeUnit.SECONDS.sleep(3);
+		
+		private static volatile String content = "";
+		
+		private static volatile boolean receiveOne = false;
+		
+		private static volatile boolean receiveTwo = false;
+		
+		private static volatile boolean receiveThree = false;
+		
+		@NacosInjected private ConfigService configService;
+		
+		@Override protected String getServerAddressPropertyName() {
+				return "server.addr";
 		}
-		Assert.assertEquals("" + currentTimeMillis, content);
-	}
-
-	@Configuration
-	// 在命名空间详情处可以获取到 endpoint 和 namespace；accessKey 和 secretKey 推荐使用 RAM 账户的
-	@EnableNacosConfig(readConfigTypeFromDataId =  false, globalProperties = @NacosProperties(serverAddr = "${server.addr}"))
-	public static class NacosConfiguration {
-
-	}
+		
+		@NacosConfigListener(dataId = "com.alibaba.nacos.example.properties", timeout = 2000L) public void onMessage(
+				String config) {
+				System.out.println("onMessage: " + config);
+				receiveOne = true;
+				content = config;
+		}
+		
+		@NacosConfigListener(dataId = "convert_map.properties", timeout = 2000L) public void onMessage(
+				Map config) {
+				System.out.println("onMessage: " + config);
+				receiveTwo = true;
+		}
+		
+		@NacosConfigListener(dataId = "convert_map.yaml", timeout = 2000L) public void onMessageYaml(
+				Map config) {
+				System.out.println("onMessage: " + config);
+				receiveThree = true;
+		}
+		
+		@Before public void before() {
+		
+		}
+		
+		@Test public void testConfigListener() throws InterruptedException {
+				
+				final long currentTimeMillis = System.currentTimeMillis();
+				
+				boolean result = false;
+				try {
+						result = configService
+								.publishConfig("com.alibaba.nacos.example.properties",
+										"DEFAULT_GROUP", "" + currentTimeMillis);
+						result = configService
+								.publishConfig("convert_map.properties", "DEFAULT_GROUP",
+										"this.is.test=true");
+						result = configService
+								.publishConfig("convert_map.yaml", "DEFAULT_GROUP",
+										"routingMap:\n" + "  - aaa\n" + "  - bbb\n"
+												+ "  - ccc\n" + "  - ddd\n" + "  - eee\n"
+												+ "endPointMap:\n" + "  - fff\n"
+												+ "testMap:\n" + "  abc: def1");
+				}
+				catch (NacosException e) {
+						e.printStackTrace();
+				}
+				Assert.assertTrue(result);
+				while (!receiveOne && !receiveTwo && !receiveThree) {
+						TimeUnit.SECONDS.sleep(3);
+				}
+				Assert.assertEquals("" + currentTimeMillis, content);
+		}
+		
+		@Configuration
+		// 在命名空间详情处可以获取到 endpoint 和 namespace；accessKey 和 secretKey 推荐使用 RAM 账户的
+		@EnableNacosConfig(readConfigTypeFromDataId = false, globalProperties = @NacosProperties(serverAddr = "${server.addr}")) public static class NacosConfiguration {
+		
+		}
 }
