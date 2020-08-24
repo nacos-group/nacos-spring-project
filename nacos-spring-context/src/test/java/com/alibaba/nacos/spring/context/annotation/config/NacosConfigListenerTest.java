@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.alibaba.nacos.spring.context.annotation.config;
 
 import java.util.Map;
@@ -41,6 +42,8 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 
 /**
+ * NacosConfigListenerTest.
+ *
  * @author <a href="mailto:liaochunyhm@live.com">liaochuntao</a>
  * @since
  */
@@ -63,9 +66,13 @@ public class NacosConfigListenerTest
 	}
 
 	private static volatile String content = "";
+
 	private static volatile boolean receiveOne = false;
+
 	private static volatile boolean receiveTwo = false;
+
 	private static volatile boolean receiveThree = false;
+
 	@NacosInjected
 	private ConfigService configService;
 
@@ -126,7 +133,7 @@ public class NacosConfigListenerTest
 
 	@Configuration
 	// 在命名空间详情处可以获取到 endpoint 和 namespace；accessKey 和 secretKey 推荐使用 RAM 账户的
-	@EnableNacosConfig(readConfigTypeFromDataId =  false, globalProperties = @NacosProperties(serverAddr = "${server.addr}"))
+	@EnableNacosConfig(readConfigTypeFromDataId = false, globalProperties = @NacosProperties(serverAddr = "${server.addr}"))
 	public static class NacosConfiguration {
 
 	}

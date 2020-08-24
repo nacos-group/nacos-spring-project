@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.alibaba.nacos.spring.context.event.config;
 
 import java.util.Properties;
@@ -29,7 +30,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ConfigurableApplicationContext;
 
 /**
- * {@link NacosConfigEvent Event} publishing {@link ConfigService}
+ * {@link NacosConfigEvent Event} publishing {@link ConfigService}.
  *
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
  * @since 0.1.0
@@ -79,7 +80,7 @@ public class EventPublishingConfigService implements ConfigService, NacosService
 
 	/**
 	 * Implementation of the new version of support for multiple configuration file type
-	 * resolution
+	 * resolution.
 	 *
 	 * @param dataId dataId
 	 * @param group group
@@ -128,6 +129,11 @@ public class EventPublishingConfigService implements ConfigService, NacosService
 	@Override
 	public String getServerStatus() {
 		return configService.getServerStatus();
+	}
+
+	@Override
+	public void shutDown() throws NacosException {
+		configService.shutDown();
 	}
 
 	private void publishEvent(NacosConfigEvent nacosConfigEvent) {

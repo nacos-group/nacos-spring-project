@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.alibaba.nacos.spring.util.parse;
 
 import java.io.Closeable;
@@ -47,7 +48,8 @@ public class DefaultPropertiesConfigParse extends AbstractConfigParse {
 
 	@Override
 	public Map<String, Object> parse(String configText) {
-		OriginTrackedPropertiesLoader loader = new OriginTrackedPropertiesLoader(new ByteArrayResource(configText.getBytes(Charset.defaultCharset())));
+		OriginTrackedPropertiesLoader loader = new OriginTrackedPropertiesLoader(
+				new ByteArrayResource(configText.getBytes(Charset.defaultCharset())));
 		try {
 			if (StringUtils.hasText(configText)) {
 				return loader.load();
@@ -98,7 +100,8 @@ public class DefaultPropertiesConfigParse extends AbstractConfigParse {
 		 * @throws IOException on read error
 		 */
 		public Map<String, Object> load(boolean expandLists) throws IOException {
-			OriginTrackedPropertiesLoader.CharacterReader reader = new OriginTrackedPropertiesLoader.CharacterReader(this.resource);
+			OriginTrackedPropertiesLoader.CharacterReader reader = new OriginTrackedPropertiesLoader.CharacterReader(
+					this.resource);
 			try {
 				Map<String, Object> result = new LinkedHashMap<String, Object>();
 				StringBuilder buffer = new StringBuilder();
@@ -115,13 +118,15 @@ public class DefaultPropertiesConfigParse extends AbstractConfigParse {
 							}
 						}
 						while (!reader.isEndOfLine());
-					} else {
+					}
+					else {
 						OriginTrackedValue value = loadValue(buffer, reader, false);
 						put(result, key, value);
 					}
 				}
 				return result;
-			} finally {
+			}
+			finally {
 				reader.close();
 			}
 		}
@@ -133,8 +138,8 @@ public class DefaultPropertiesConfigParse extends AbstractConfigParse {
 			}
 		}
 
-		private String loadKey(StringBuilder buffer, OriginTrackedPropertiesLoader.CharacterReader reader)
-				throws IOException {
+		private String loadKey(StringBuilder buffer,
+				OriginTrackedPropertiesLoader.CharacterReader reader) throws IOException {
 			buffer.setLength(0);
 			boolean previousWhitespace = false;
 			while (!reader.isEndOfLine()) {
@@ -152,8 +157,9 @@ public class DefaultPropertiesConfigParse extends AbstractConfigParse {
 			return buffer.toString();
 		}
 
-		private OriginTrackedValue loadValue(StringBuilder buffer, OriginTrackedPropertiesLoader.CharacterReader reader,
-				boolean splitLists) throws IOException {
+		private OriginTrackedValue loadValue(StringBuilder buffer,
+				OriginTrackedPropertiesLoader.CharacterReader reader, boolean splitLists)
+				throws IOException {
 			buffer.setLength(0);
 			while (reader.isWhiteSpace() && !reader.isEndOfLine()) {
 				reader.read();
@@ -173,7 +179,7 @@ public class DefaultPropertiesConfigParse extends AbstractConfigParse {
 		 */
 		private class CharacterReader implements Closeable {
 
-			private final String[] ESCAPES = {"trnf", "\t\r\n\f"};
+			private final String[] ESCAPES = { "trnf", "\t\r\n\f" };
 
 			private final LineNumberReader reader;
 
@@ -210,7 +216,8 @@ public class DefaultPropertiesConfigParse extends AbstractConfigParse {
 				if (this.character == '\\') {
 					this.escaped = true;
 					readEscaped();
-				} else if (this.character == '\n') {
+				}
+				else if (this.character == '\n') {
 					this.columnNumber = -1;
 				}
 				return !isEndOfFile();
@@ -238,10 +245,12 @@ public class DefaultPropertiesConfigParse extends AbstractConfigParse {
 				int escapeIndex = ESCAPES[0].indexOf(this.character);
 				if (escapeIndex != -1) {
 					this.character = ESCAPES[1].charAt(escapeIndex);
-				} else if (this.character == '\n') {
+				}
+				else if (this.character == '\n') {
 					this.columnNumber = -1;
 					read(true);
-				} else if (this.character == 'u') {
+				}
+				else if (this.character == 'u') {
 					readUnicode();
 				}
 			}
@@ -252,11 +261,14 @@ public class DefaultPropertiesConfigParse extends AbstractConfigParse {
 					int digit = this.reader.read();
 					if (digit >= '0' && digit <= '9') {
 						this.character = (this.character << 4) + digit - '0';
-					} else if (digit >= 'a' && digit <= 'f') {
+					}
+					else if (digit >= 'a' && digit <= 'f') {
 						this.character = (this.character << 4) + digit - 'a' + 10;
-					} else if (digit >= 'A' && digit <= 'F') {
+					}
+					else if (digit >= 'A' && digit <= 'F') {
 						this.character = (this.character << 4) + digit - 'A' + 10;
-					} else {
+					}
+					else {
 						throw new IllegalStateException("Malformed \\uxxxx encoding.");
 					}
 				}
@@ -299,22 +311,23 @@ public class DefaultPropertiesConfigParse extends AbstractConfigParse {
 
 		/**
 		 * Return the source origin or {@code null} if the origin is not known.
+		 *
 		 * @return the origin or {@code null}
 		 */
 		Origin getOrigin();
 
 	}
 
-
 	public abstract static class Origin {
 
 		/**
-		 * Find the {@link Origin} that an object originated from. Checks if the source object
-		 * is an {@link OriginProvider} and also searches exception stacks.
+		 * Find the {@link Origin} that an object originated from. Checks if the source
+		 * object is an {@link OriginProvider} and also searches exception stacks.
+		 *
 		 * @param source the source object or {@code null}
 		 * @return an optional {@link Origin}
 		 */
-		 static Origin from(Object source) {
+		static Origin from(Object source) {
 			if (source instanceof Origin) {
 				return (Origin) source;
 			}
@@ -343,6 +356,7 @@ public class DefaultPropertiesConfigParse extends AbstractConfigParse {
 
 		/**
 		 * Return the tracked value.
+		 *
 		 * @return the tracked value
 		 */
 		public Object getValue() {
@@ -369,7 +383,8 @@ public class DefaultPropertiesConfigParse extends AbstractConfigParse {
 			if (obj == null || obj.getClass() != getClass()) {
 				return false;
 			}
-			return ObjectUtils.nullSafeEquals(this.value, ((OriginTrackedValue) obj).value);
+			return ObjectUtils.nullSafeEquals(this.value,
+					((OriginTrackedValue) obj).value);
 		}
 
 		public static OriginTrackedValue of(Object value) {
@@ -377,9 +392,10 @@ public class DefaultPropertiesConfigParse extends AbstractConfigParse {
 		}
 
 		/**
-		 * Create an {@link OriginTrackedValue} containing the specified {@code value} and
-		 * {@code origin}. If the source value implements {@link CharSequence} then so will
-		 * the resulting {@link OriginTrackedValue}.
+		 * Create an {@link OriginTrackedValue} containing the specified {@code
+		 * value} and {@code origin}. If the source value implements {@link CharSequence}
+		 * then so will the resulting {@link OriginTrackedValue}.
+		 *
 		 * @param value the source value
 		 * @param origin the origin
 		 * @return an {@link OriginTrackedValue} or {@code null} if the source value was
@@ -429,7 +445,6 @@ public class DefaultPropertiesConfigParse extends AbstractConfigParse {
 
 	}
 
-
 	public class TextResourceOrigin extends Origin {
 
 		private final Resource resource;
@@ -443,6 +458,7 @@ public class DefaultPropertiesConfigParse extends AbstractConfigParse {
 
 		/**
 		 * Return the resource where the property originated.
+		 *
 		 * @return the text resource or {@code null}
 		 */
 		public Resource getResource() {
@@ -451,6 +467,7 @@ public class DefaultPropertiesConfigParse extends AbstractConfigParse {
 
 		/**
 		 * Return the location of the property within the source (if known).
+		 *
 		 * @return the location or {@code null}
 		 */
 		public Location getLocation() {
@@ -476,8 +493,10 @@ public class DefaultPropertiesConfigParse extends AbstractConfigParse {
 			if (obj instanceof TextResourceOrigin) {
 				TextResourceOrigin other = (TextResourceOrigin) obj;
 				boolean result = true;
-				result = result && ObjectUtils.nullSafeEquals(this.resource, other.resource);
-				result = result && ObjectUtils.nullSafeEquals(this.location, other.location);
+				result = result
+						&& ObjectUtils.nullSafeEquals(this.resource, other.resource);
+				result = result
+						&& ObjectUtils.nullSafeEquals(this.location, other.location);
 				return result;
 			}
 			return super.equals(obj);
@@ -506,6 +525,7 @@ public class DefaultPropertiesConfigParse extends AbstractConfigParse {
 
 		/**
 		 * Create a new {@link Location} instance.
+		 *
 		 * @param line the line number (zero indexed)
 		 * @param column the column number (zero indexed)
 		 */
@@ -516,6 +536,7 @@ public class DefaultPropertiesConfigParse extends AbstractConfigParse {
 
 		/**
 		 * Return the line of the text resource where the property originated.
+		 *
 		 * @return the line number (zero indexed)
 		 */
 		public int getLine() {
@@ -524,6 +545,7 @@ public class DefaultPropertiesConfigParse extends AbstractConfigParse {
 
 		/**
 		 * Return the column of the text resource where the property originated.
+		 *
 		 * @return the column number (zero indexed)
 		 */
 		public int getColumn() {
