@@ -54,7 +54,7 @@
         <dependency>
             <groupId>com.alibaba.spring</groupId>
             <artifactId>spring-context-support</artifactId>
-            <version>1.0.6</version>
+            <version>${alibaba.spring-context-support.version}</version>
         </dependency>
 
         <!-- Testing -->
