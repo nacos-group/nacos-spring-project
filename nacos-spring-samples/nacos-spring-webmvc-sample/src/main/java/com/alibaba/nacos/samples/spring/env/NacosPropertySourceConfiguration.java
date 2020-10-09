@@ -16,9 +16,12 @@
  */
 package com.alibaba.nacos.samples.spring.env;
 
+import java.util.Properties;
+
 import javax.annotation.PostConstruct;
 
 import com.alibaba.nacos.api.NacosFactory;
+import com.alibaba.nacos.api.PropertyKeyConst;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.spring.context.annotation.config.NacosPropertySource;
@@ -51,19 +54,24 @@ import static org.springframework.core.env.StandardEnvironment.SYSTEM_PROPERTIES
 		@NacosPropertySource(dataId = "people", groupId = "DEVELOP") })
 public class NacosPropertySourceConfiguration {
 
+	public static final String FIRST_DATA_ID = "first-property-source-data-id";
+	public static final String BEFORE_OS_ENV_DATA_ID = "before-os-env-property-source-data-id";
+	public static final String AFTER_SYS_PROP_DATA_ID = "after-system-properties-property-source-data-id";
 	private static final Logger logger = LoggerFactory
 			.getLogger(NacosPropertySourceConfiguration.class);
 
-	public static final String FIRST_DATA_ID = "first-property-source-data-id";
-
-	public static final String BEFORE_OS_ENV_DATA_ID = "before-os-env-property-source-data-id";
-
-	public static final String AFTER_SYS_PROP_DATA_ID = "after-system-properties-property-source-data-id";
-
 	static {
-		String serverAddr = System.getProperty("nacos.server-addr");
+		Properties properties = new Properties();
+		properties.put(PropertyKeyConst.SERVER_ADDR,
+				System.getProperty("nacos.server-addr", "127.0.0.1:8848"));
+		properties.put(PropertyKeyConst.NAMESPACE,
+				System.getProperty("nacos.config.namespace", ""));
+		properties.put(PropertyKeyConst.USERNAME,
+				System.getProperty("nacos.username", ""));
+		properties.put(PropertyKeyConst.PASSWORD,
+				System.getProperty("nacos.password", ""));
 		try {
-			ConfigService configService = NacosFactory.createConfigService(serverAddr);
+			ConfigService configService = NacosFactory.createConfigService(properties);
 			// Publish for FIRST_DATA_ID
 			publishConfig(configService, FIRST_DATA_ID, "user.name = Mercy Ma");
 
@@ -80,17 +88,11 @@ public class NacosPropertySourceConfiguration {
 		}
 	}
 
-	private static void publishConfig(ConfigService configService, String dataId,
-			String propertiesContent) throws NacosException {
-		configService.publishConfig(dataId, DEFAULT_GROUP, propertiesContent);
-	}
-
 	/**
 	 * "before-os-env" overrides OS Environment variables $PATH
 	 */
 	@Value("${PATH}")
 	private String path;
-
 	/**
 	 * There are three definitions of "user.name" from FIRST_DATA_ID,
 	 * SYSTEM_PROPERTIES_PROPERTY_SOURCE_NAME, AFTER_SYS_PROP_DATA_ID
@@ -100,6 +102,11 @@ public class NacosPropertySourceConfiguration {
 	 */
 	@Value("${user.name}")
 	private String userName;
+
+	private static void publishConfig(ConfigService configService, String dataId,
+			String propertiesContent) throws NacosException {
+		configService.publishConfig(dataId, DEFAULT_GROUP, propertiesContent);
+	}
 
 	@PostConstruct
 	public void init() {

@@ -90,6 +90,56 @@ public class NacosPropertySourcePostProcessor
 
 	private ConfigServiceBeanBuilder configServiceBeanBuilder;
 
+	public static void addListenerIfAutoRefreshed(
+			final NacosPropertySource nacosPropertySource, final Properties properties,
+			final ConfigurableEnvironment environment) {
+
+		if (!nacosPropertySource.isAutoRefreshed()) { // Disable Auto-Refreshed
+			return;
+		}
+
+		final String dataId = nacosPropertySource.getDataId();
+		final String groupId = nacosPropertySource.getGroupId();
+		final String type = nacosPropertySource.getType();
+		final NacosServiceFactory nacosServiceFactory = getNacosServiceFactoryBean(
+				beanFactory);
+
+		try {
+
+			ConfigService configService = nacosServiceFactory
+					.createConfigService(properties);
+
+			Listener listener = new AbstractListener() {
+
+				@Override
+				public void receiveConfigInfo(String config) {
+					String name = nacosPropertySource.getName();
+					NacosPropertySource newNacosPropertySource = new NacosPropertySource(
+							dataId, groupId, name, config, type);
+					newNacosPropertySource.copy(nacosPropertySource);
+					MutablePropertySources propertySources = environment
+							.getPropertySources();
+					// replace NacosPropertySource
+					propertySources.replace(name, newNacosPropertySource);
+				}
+			};
+
+			if (configService instanceof EventPublishingConfigService) {
+				((EventPublishingConfigService) configService).addListener(dataId,
+						groupId, type, listener);
+			}
+			else {
+				configService.addListener(dataId, groupId, listener);
+			}
+
+		}
+		catch (NacosException e) {
+			throw new RuntimeException(
+					"ConfigService can't add Listener with properties : " + properties,
+					e);
+		}
+	}
+
 	@Override
 	public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry)
 			throws BeansException {
@@ -180,56 +230,6 @@ public class NacosPropertySourcePostProcessor
 		}
 		else {
 			propertySources.addLast(nacosPropertySource); // default add last
-		}
-	}
-
-	public static void addListenerIfAutoRefreshed(
-			final NacosPropertySource nacosPropertySource, final Properties properties,
-			final ConfigurableEnvironment environment) {
-
-		if (!nacosPropertySource.isAutoRefreshed()) { // Disable Auto-Refreshed
-			return;
-		}
-
-		final String dataId = nacosPropertySource.getDataId();
-		final String groupId = nacosPropertySource.getGroupId();
-		final String type = nacosPropertySource.getType();
-		final NacosServiceFactory nacosServiceFactory = getNacosServiceFactoryBean(
-				beanFactory);
-
-		try {
-
-			ConfigService configService = nacosServiceFactory
-					.createConfigService(properties);
-
-			Listener listener = new AbstractListener() {
-
-				@Override
-				public void receiveConfigInfo(String config) {
-					String name = nacosPropertySource.getName();
-					NacosPropertySource newNacosPropertySource = new NacosPropertySource(
-							dataId, groupId, name, config, type);
-					newNacosPropertySource.copy(nacosPropertySource);
-					MutablePropertySources propertySources = environment
-							.getPropertySources();
-					// replace NacosPropertySource
-					propertySources.replace(name, newNacosPropertySource);
-				}
-			};
-
-			if (configService instanceof EventPublishingConfigService) {
-				((EventPublishingConfigService) configService).addListener(dataId,
-						groupId, type, listener);
-			}
-			else {
-				configService.addListener(dataId, groupId, listener);
-			}
-
-		}
-		catch (NacosException e) {
-			throw new RuntimeException(
-					"ConfigService can't add Listener with properties : " + properties,
-					e);
 		}
 	}
 

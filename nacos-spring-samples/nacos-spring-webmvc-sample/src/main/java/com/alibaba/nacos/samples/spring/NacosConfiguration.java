@@ -33,7 +33,7 @@ import org.springframework.context.annotation.Configuration;
  * @since 0.1.0
  */
 @Configuration
-@EnableNacos(globalProperties = @NacosProperties(serverAddr = "${nacos.server-addr}", enableRemoteSyncConfig = "true", maxRetry = "5", configRetryTime = "4000", configLongPollTimeout = "26000"))
+@EnableNacos(globalProperties = @NacosProperties(serverAddr = "${nacos.server-addr}", enableRemoteSyncConfig = "true", maxRetry = "5", configRetryTime = "4000", configLongPollTimeout = "26000", username = "nacos", password = "nacos"))
 public class NacosConfiguration {
 
 	/**

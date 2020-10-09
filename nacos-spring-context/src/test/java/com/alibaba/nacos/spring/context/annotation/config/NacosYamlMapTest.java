@@ -1,19 +1,3 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package com.alibaba.nacos.spring.context.annotation.config;
 
 import java.util.HashMap;
@@ -26,8 +10,7 @@ import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.embedded.web.server.EmbeddedNacosHttpServer;
 import com.alibaba.nacos.spring.context.annotation.EnableNacos;
 import com.alibaba.nacos.spring.test.AbstractNacosHttpServerTestExecutionListener;
-import com.alibaba.nacos.spring.test.XmlApp;
-import org.junit.Assert;
+import com.alibaba.nacos.spring.test.YamlMap;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -46,28 +29,33 @@ import static com.alibaba.nacos.embedded.web.server.NacosConfigHttpHandler.DATA_
 import static com.alibaba.nacos.embedded.web.server.NacosConfigHttpHandler.GROUP_ID_PARAM_NAME;
 
 /**
- * @author <a href="mailto:liaochunyhm@live.com">liaochuntao</a>
- * @since
+ * @author <a href="mailto:liaochuntao@youzan.com">liaochuntao</a>
+ * @Created at 2020/1/12 3:55 下午
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { NacosPropertySourceXmlTest.class })
+@ContextConfiguration(classes = { NacosYamlMapTest.class })
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class,
-		DirtiesContextTestExecutionListener.class, NacosPropertySourceXmlTest.class })
+		DirtiesContextTestExecutionListener.class, NacosYamlMapTest.class })
+
+@NacosPropertySources(value = {
+		@NacosPropertySource(dataId = "yaml_map"
+				+ "_not_exist.yaml", autoRefreshed = true),
+		@NacosPropertySource(dataId = "yaml_map" + ".yml", autoRefreshed = true) })
 @EnableNacos(globalProperties = @NacosProperties(serverAddr = "${server.addr}"))
 @Component
-public class NacosPropertySourceXmlTest
-		extends AbstractNacosHttpServerTestExecutionListener {
+public class NacosYamlMapTest extends AbstractNacosHttpServerTestExecutionListener {
 
-	private final String except = "XmlApp{students=[Student{name='lct-1', num='1006010022'}, Student{name='lct-3', num='1006010044'}, Student{name='lct-4', num='1006010055'}]}";
-	private String xml = "<students>" + "<student>" + "<name>lct-1</name>"
-			+ "<num>1006010022</num>" + "</student>" + "<student>" + "<name>lct-2</name>"
-			+ "<num>1006010033</num>" + "</student>" + "<student>" + "<name>lct-3</name>"
-			+ "<num>1006010044</num>" + "</student>" + "<student>" + "<name>lct-4</name>"
-			+ "<num>1006010055</num>" + "</student>" + "</students>";
+	private String configStr = "routingMap:\n" + "  - aaa\n" + "  - bbb\n" + "  - ccc\n"
+			+ "  - ddd\n" + "  - eee\n" + "endPointMap:\n" + "  - fff\n" + "testMap:\n"
+			+ "  abc: def1";
+
+	private String newConfigStr = "routingMap:\n" + "  - aaa\n" + "  - bbb\n"
+			+ "  - ccc\n" + "  - ddd\n" + "endPointMap:\n" + "  - fff\n" + "testMap:\n"
+			+ "  liaochuntao: def1";
+	@Autowired
+	private YamlMap yamlMap;
 	@NacosInjected
 	private ConfigService configService;
-	@Autowired
-	private XmlApp xmlApp;
 
 	@Override
 	protected String getServerAddressPropertyName() {
@@ -77,26 +65,29 @@ public class NacosPropertySourceXmlTest
 	@Override
 	public void init(EmbeddedNacosHttpServer httpServer) {
 		Map<String, String> config = new HashMap<String, String>(1);
-		config.put(DATA_ID_PARAM_NAME, XmlApp.DATA_ID_XML);
+		config.put(DATA_ID_PARAM_NAME, "yaml_map" + ".yml");
 		config.put(GROUP_ID_PARAM_NAME, DEFAULT_GROUP);
-		config.put(CONTENT_PARAM_NAME, xml);
+		config.put(CONTENT_PARAM_NAME, configStr);
 
 		httpServer.initConfig(config);
 	}
 
 	@Bean
-	public XmlApp xmlApp() {
-		return new XmlApp();
+	public YamlMap yamlMap() {
+		return new YamlMap();
 	}
 
 	@Test
 	public void testValue() throws NacosException, InterruptedException {
 
-		configService.publishConfig(XmlApp.DATA_ID_XML, DEFAULT_GROUP, xml);
+		System.out.println(yamlMap);
+
+		configService.publishConfig("yaml_map" + ".yml", DEFAULT_GROUP, newConfigStr);
 
 		Thread.sleep(2000);
 
-		Assert.assertEquals(except, xmlApp.toString());
+		System.out.println(yamlMap);
+
 	}
 
 }

@@ -40,20 +40,20 @@ public class NacosPropertySourceXmlBeanDefinition extends GenericBeanDefinition 
 		setBeanClass(getClass());
 	}
 
-	void setXmlReaderContext(XmlReaderContext xmlReaderContext) {
-		this.xmlReaderContext = xmlReaderContext;
+	public Element getElement() {
+		return element;
 	}
 
 	void setElement(Element element) {
 		this.element = element;
 	}
 
-	public Element getElement() {
-		return element;
-	}
-
 	public XmlReaderContext getXmlReaderContext() {
 		return xmlReaderContext;
+	}
+
+	void setXmlReaderContext(XmlReaderContext xmlReaderContext) {
+		this.xmlReaderContext = xmlReaderContext;
 	}
 
 }

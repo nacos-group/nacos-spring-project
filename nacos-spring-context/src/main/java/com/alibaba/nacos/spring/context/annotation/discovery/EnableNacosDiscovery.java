@@ -28,6 +28,8 @@ import com.alibaba.nacos.spring.context.annotation.NacosBeanDefinitionRegistrar;
 
 import org.springframework.context.annotation.Import;
 
+import static com.alibaba.nacos.api.PropertyKeyConst.PASSWORD;
+import static com.alibaba.nacos.api.PropertyKeyConst.USERNAME;
 import static com.alibaba.nacos.api.annotation.NacosProperties.ACCESS_KEY;
 import static com.alibaba.nacos.api.annotation.NacosProperties.CLUSTER_NAME;
 import static com.alibaba.nacos.api.annotation.NacosProperties.CONTEXT_PATH;
@@ -49,7 +51,6 @@ import static com.alibaba.nacos.api.annotation.NacosProperties.SERVER_ADDR;
 @Documented
 @Import(NacosDiscoveryBeanDefinitionRegistrar.class)
 public @interface EnableNacosDiscovery {
-
 	/**
 	 * The prefix of property name of Nacos discovery
 	 */
@@ -112,10 +113,24 @@ public @interface EnableNacosDiscovery {
 			+ NacosProperties.ENCODE_PLACEHOLDER + "}";
 
 	/**
+	 * The placeholder of endpoint, the value is
+	 * <code>"${nacos.discovery.username:${nacos.username:}}"</code>
+	 */
+	String USERNAME_PLACEHOLDER = "${" + DISCOVERY_PREFIX + USERNAME + ":"
+			+ NacosProperties.USERNAME_PLACEHOLDER + "}";
+
+	/**
+	 * The placeholder of endpoint, the value is
+	 * <code>"${nacos.discovery.password:${nacos.password:}}"</code>
+	 */
+	String PASSWORD_PLACEHOLDER = "${" + DISCOVERY_PREFIX + PASSWORD + ":"
+			+ NacosProperties.PASSWORD_PLACEHOLDER + "}";
+
+	/**
 	 * Global {@link NacosProperties Nacos Properties}
 	 *
 	 * @return required
 	 * @see NacosInjected#properties()
 	 */
-	NacosProperties globalProperties() default @NacosProperties(endpoint = ENDPOINT_PLACEHOLDER, namespace = NAMESPACE_PLACEHOLDER, accessKey = ACCESS_KEY_PLACEHOLDER, secretKey = SECRET_KEY_PLACEHOLDER, serverAddr = SERVER_ADDR_PLACEHOLDER, contextPath = CONTEXT_PATH_PLACEHOLDER, clusterName = CLUSTER_NAME_PLACEHOLDER, encode = ENCODE_PLACEHOLDER);
+	NacosProperties globalProperties() default @NacosProperties(username = USERNAME_PLACEHOLDER, password = PASSWORD_PLACEHOLDER, endpoint = ENDPOINT_PLACEHOLDER, namespace = NAMESPACE_PLACEHOLDER, accessKey = ACCESS_KEY_PLACEHOLDER, secretKey = SECRET_KEY_PLACEHOLDER, serverAddr = SERVER_ADDR_PLACEHOLDER, contextPath = CONTEXT_PATH_PLACEHOLDER, clusterName = CLUSTER_NAME_PLACEHOLDER, encode = ENCODE_PLACEHOLDER);
 }

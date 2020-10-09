@@ -36,11 +36,9 @@ import org.springframework.util.CollectionUtils;
  */
 public class MockConfigService implements ConfigService {
 
-	private Map<String, List<Listener>> listenersCache = new LinkedHashMap<String, List<Listener>>();
-
-	private Map<String, String> contentCache = new LinkedHashMap<String, String>();
-
 	public static final String TIMEOUT_ERROR_MESSAGE = "Timeout must not be less then zero.";
+	private Map<String, List<Listener>> listenersCache = new LinkedHashMap<String, List<Listener>>();
+	private Map<String, String> contentCache = new LinkedHashMap<String, String>();
 
 	@Override
 	public String getConfig(String dataId, String group, long timeoutMs)

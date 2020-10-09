@@ -32,14 +32,6 @@ import org.springframework.mock.env.MockEnvironment;
  */
 public class NacosPropertiesTest {
 
-	@EnableNacos(globalProperties = @NacosProperties)
-	private static class NacosPropertiesDefaultValues {
-	}
-
-	@EnableNacos(globalProperties = @NacosProperties(endpoint = "e", namespace = "n", accessKey = "a", secretKey = "s", serverAddr = "127.0.0.1", contextPath = "/", clusterName = "c", encode = "GBK"))
-	private static class NacosPropertiesValues {
-	}
-
 	@Test
 	public void testConstants() {
 		Assert.assertEquals("nacos.", NacosProperties.PREFIX);
@@ -139,6 +131,14 @@ public class NacosPropertiesTest {
 				.getAnnotation(EnableNacos.class);
 		NacosProperties nacosProperties = enableNacos.globalProperties();
 		return nacosProperties;
+	}
+
+	@EnableNacos(globalProperties = @NacosProperties)
+	private static class NacosPropertiesDefaultValues {
+	}
+
+	@EnableNacos(globalProperties = @NacosProperties(endpoint = "e", namespace = "n", accessKey = "a", secretKey = "s", serverAddr = "127.0.0.1", contextPath = "/", clusterName = "c", encode = "GBK"))
+	private static class NacosPropertiesValues {
 	}
 
 }

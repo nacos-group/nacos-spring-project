@@ -49,7 +49,8 @@ public final class ObjectUtils {
 							return;
 						}
 						Class<?> type = field.getType();
-						if (type.isAssignableFrom(Map.class)
+
+						if (Map.class.isAssignableFrom(type)
 								|| Collection.class.isAssignableFrom(type)) {
 							field.set(bean, null);
 						}

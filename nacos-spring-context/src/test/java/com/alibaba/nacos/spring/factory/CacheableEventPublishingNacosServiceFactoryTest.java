@@ -59,15 +59,14 @@ import static com.alibaba.nacos.spring.util.NacosBeanUtils.NACOS_CONFIG_LISTENER
 public class CacheableEventPublishingNacosServiceFactoryTest
 		extends AbstractNacosHttpServerTestExecutionListener {
 
+	@Autowired
+	private NacosServiceFactory nacosServiceFactory;
+	private Properties properties = new Properties();
+
 	@Bean(name = NACOS_CONFIG_LISTENER_EXECUTOR_BEAN_NAME)
 	public static ExecutorService executorService() {
 		return Executors.newSingleThreadExecutor();
 	}
-
-	@Autowired
-	private NacosServiceFactory nacosServiceFactory;
-
-	private Properties properties = new Properties();
 
 	@Before
 	public void init() {

@@ -73,6 +73,13 @@ public class NacosPropertySourceYamlTest
 	private String configStr = "people:\n" + "  a: 1\n" + "  b: 1";
 
 	private String except = "YamlApp{students=[Student{name='lct-1', num='12'}, Student{name='lct-2', num='13'}, Student{name='lct-3', num='14'}]}";
+	@NacosInjected
+	private ConfigService configService;
+	@Autowired
+	private YamlApp yamlApp;
+	@Autowired
+	@Qualifier(value = "myApp")
+	private App app;
 
 	@Override
 	public void init(EmbeddedNacosHttpServer httpServer) {
@@ -84,15 +91,6 @@ public class NacosPropertySourceYamlTest
 		httpServer.initConfig(config);
 	}
 
-	private static class App {
-
-		@Value("${people.a}")
-		private String a;
-		@NacosValue("${people.b}")
-		private String b;
-
-	}
-
 	@Bean(name = "myApp")
 	public App app() {
 		return new App();
@@ -102,16 +100,6 @@ public class NacosPropertySourceYamlTest
 	public YamlApp yamlApp() {
 		return new YamlApp();
 	}
-
-	@NacosInjected
-	private ConfigService configService;
-
-	@Autowired
-	private YamlApp yamlApp;
-
-	@Autowired
-	@Qualifier(value = "myApp")
-	private App app;
 
 	@Override
 	protected String getServerAddressPropertyName() {
@@ -129,6 +117,15 @@ public class NacosPropertySourceYamlTest
 		Thread.sleep(2000);
 
 		Assert.assertEquals(except, yamlApp.toString());
+
+	}
+
+	private static class App {
+
+		@Value("${people.a}")
+		private String a;
+		@NacosValue("${people.b}")
+		private String b;
 
 	}
 }

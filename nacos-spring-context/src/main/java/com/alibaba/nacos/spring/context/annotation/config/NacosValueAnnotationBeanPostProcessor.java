@@ -16,12 +16,22 @@
  */
 package com.alibaba.nacos.spring.context.annotation.config;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Member;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import com.alibaba.nacos.api.config.annotation.NacosValue;
 import com.alibaba.nacos.client.config.utils.MD5;
 import com.alibaba.nacos.spring.context.event.config.NacosConfigReceivedEvent;
 import com.alibaba.spring.beans.factory.annotation.AnnotationInjectedBeanPostProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.BeansException;
 import org.springframework.beans.TypeConverter;
 import org.springframework.beans.factory.BeanFactory;
@@ -34,15 +44,6 @@ import org.springframework.core.MethodParameter;
 import org.springframework.core.env.Environment;
 import org.springframework.util.ReflectionUtils;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Member;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import static org.springframework.core.annotation.AnnotationUtils.getAnnotation;
 
 /**
@@ -52,35 +53,31 @@ import static org.springframework.core.annotation.AnnotationUtils.getAnnotation;
  * @see NacosValue
  * @since 0.1.0
  */
-public class NacosValueAnnotationBeanPostProcessor extends AnnotationInjectedBeanPostProcessor<NacosValue>
-		implements BeanFactoryAware, EnvironmentAware, ApplicationListener<NacosConfigReceivedEvent> {
-
-	private final Logger logger = LoggerFactory.getLogger(getClass());
+public class NacosValueAnnotationBeanPostProcessor extends
+		AnnotationInjectedBeanPostProcessor<NacosValue> implements BeanFactoryAware,
+		EnvironmentAware, ApplicationListener<NacosConfigReceivedEvent> {
 
 	/**
 	 * The name of {@link NacosValueAnnotationBeanPostProcessor} bean
 	 */
 	public static final String BEAN_NAME = "nacosValueAnnotationBeanPostProcessor";
-
 	private static final String PLACEHOLDER_PREFIX = "${";
-
 	private static final String PLACEHOLDER_SUFFIX = "}";
-
 	private static final String VALUE_SEPARATOR = ":";
-
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 	/**
 	 * placeholder, nacosValueTarget
 	 */
-	private Map<String, List<NacosValueTarget>> placeholderNacosValueTargetMap
-			= new HashMap<String, List<NacosValueTarget>>();
+	private Map<String, List<NacosValueTarget>> placeholderNacosValueTargetMap = new HashMap<String, List<NacosValueTarget>>();
 
 	private ConfigurableListableBeanFactory beanFactory;
 
 	private Environment environment;
 
 	@Override
-	protected Object doGetInjectedBean(NacosValue annotation, Object bean, String beanName, Class<?> injectedType,
-									   InjectionMetadata.InjectedElement injectedElement) {
+	protected Object doGetInjectedBean(NacosValue annotation, Object bean,
+			String beanName, Class<?> injectedType,
+			InjectionMetadata.InjectedElement injectedElement) {
 		String annotationValue = annotation.value();
 		String value = beanFactory.resolveEmbeddedValue(annotationValue);
 
@@ -97,9 +94,9 @@ public class NacosValueAnnotationBeanPostProcessor extends AnnotationInjectedBea
 	}
 
 	@Override
-	protected String buildInjectedObjectCacheKey(NacosValue annotation, Object bean, String beanName,
-												 Class<?> injectedType,
-												 InjectionMetadata.InjectedElement injectedElement) {
+	protected String buildInjectedObjectCacheKey(NacosValue annotation, Object bean,
+			String beanName, Class<?> injectedType,
+			InjectionMetadata.InjectedElement injectedElement) {
 		return bean.getClass().getName() + annotation;
 	}
 
@@ -133,7 +130,8 @@ public class NacosValueAnnotationBeanPostProcessor extends AnnotationInjectedBea
 		// In to this event receiver, the environment has been updated the
 		// latest configuration information, pull directly from the environment
 		// fix issue #142
-		for (Map.Entry<String, List<NacosValueTarget>> entry : placeholderNacosValueTargetMap.entrySet()) {
+		for (Map.Entry<String, List<NacosValueTarget>> entry : placeholderNacosValueTargetMap
+				.entrySet()) {
 			String key = environment.resolvePlaceholders(entry.getKey());
 			String newValue = environment.getProperty(key);
 			if (newValue == null) {
@@ -147,7 +145,8 @@ public class NacosValueAnnotationBeanPostProcessor extends AnnotationInjectedBea
 					target.updateLastMD5(md5String);
 					if (target.method == null) {
 						setField(target, newValue);
-					} else {
+					}
+					else {
 						setMethod(target, newValue);
 					}
 				}
@@ -167,38 +166,44 @@ public class NacosValueAnnotationBeanPostProcessor extends AnnotationInjectedBea
 		TypeConverter converter = beanFactory.getTypeConverter();
 
 		if (arguments.length == 1) {
-			return converter.convertIfNecessary(value, paramTypes[0], new MethodParameter(method, 0));
+			return converter.convertIfNecessary(value, paramTypes[0],
+					new MethodParameter(method, 0));
 		}
 
 		for (int i = 0; i < arguments.length; i++) {
-			arguments[i] = converter.convertIfNecessary(value, paramTypes[i], new MethodParameter(method, i));
+			arguments[i] = converter.convertIfNecessary(value, paramTypes[i],
+					new MethodParameter(method, i));
 		}
 
 		return arguments;
 	}
 
 	private void doWithFields(final Object bean, final String beanName) {
-		ReflectionUtils.doWithFields(bean.getClass(), new ReflectionUtils.FieldCallback() {
-			@Override
-			public void doWith(Field field) throws IllegalArgumentException {
-				NacosValue annotation = getAnnotation(field, NacosValue.class);
-				doWithAnnotation(beanName, bean, annotation, field.getModifiers(), null, field);
-			}
-		});
+		ReflectionUtils.doWithFields(bean.getClass(),
+				new ReflectionUtils.FieldCallback() {
+					@Override
+					public void doWith(Field field) throws IllegalArgumentException {
+						NacosValue annotation = getAnnotation(field, NacosValue.class);
+						doWithAnnotation(beanName, bean, annotation, field.getModifiers(),
+								null, field);
+					}
+				});
 	}
 
 	private void doWithMethods(final Object bean, final String beanName) {
-		ReflectionUtils.doWithMethods(bean.getClass(), new ReflectionUtils.MethodCallback() {
-			@Override
-			public void doWith(Method method) throws IllegalArgumentException {
-				NacosValue annotation = getAnnotation(method, NacosValue.class);
-				doWithAnnotation(beanName, bean, annotation, method.getModifiers(), method, null);
-			}
-		});
+		ReflectionUtils.doWithMethods(bean.getClass(),
+				new ReflectionUtils.MethodCallback() {
+					@Override
+					public void doWith(Method method) throws IllegalArgumentException {
+						NacosValue annotation = getAnnotation(method, NacosValue.class);
+						doWithAnnotation(beanName, bean, annotation,
+								method.getModifiers(), method, null);
+					}
+				});
 	}
 
-	private void doWithAnnotation(String beanName, Object bean, NacosValue annotation, int modifiers, Method method,
-								  Field field) {
+	private void doWithAnnotation(String beanName, Object bean, NacosValue annotation,
+			int modifiers, Method method, Field field) {
 		if (annotation != null) {
 			if (Modifier.isStatic(modifiers)) {
 				return;
@@ -211,8 +216,10 @@ public class NacosValueAnnotationBeanPostProcessor extends AnnotationInjectedBea
 					return;
 				}
 
-				NacosValueTarget nacosValueTarget = new NacosValueTarget(bean, beanName, method, field);
-				put2ListMap(placeholderNacosValueTargetMap, placeholder, nacosValueTarget);
+				NacosValueTarget nacosValueTarget = new NacosValueTarget(bean, beanName,
+						method, field);
+				put2ListMap(placeholderNacosValueTargetMap, placeholder,
+						nacosValueTarget);
 			}
 		}
 	}
@@ -226,7 +233,8 @@ public class NacosValueAnnotationBeanPostProcessor extends AnnotationInjectedBea
 			return null;
 		}
 
-		if (placeholder.length() <= PLACEHOLDER_PREFIX.length() + PLACEHOLDER_SUFFIX.length()) {
+		if (placeholder.length() <= PLACEHOLDER_PREFIX.length()
+				+ PLACEHOLDER_SUFFIX.length()) {
 			return null;
 		}
 
@@ -255,22 +263,24 @@ public class NacosValueAnnotationBeanPostProcessor extends AnnotationInjectedBea
 		Method method = nacosValueTarget.method;
 		ReflectionUtils.makeAccessible(method);
 		try {
-			method.invoke(nacosValueTarget.bean, convertIfNecessary(method, propertyValue));
+			method.invoke(nacosValueTarget.bean,
+					convertIfNecessary(method, propertyValue));
 
 			if (logger.isDebugEnabled()) {
 				logger.debug("Update value with {} (method) in {} (bean) with {}",
 						method.getName(), nacosValueTarget.beanName, propertyValue);
 			}
-		} catch (Throwable e) {
+		}
+		catch (Throwable e) {
 			if (logger.isErrorEnabled()) {
-				logger.error(
-						"Can't update value with " + method.getName() + " (method) in "
-								+ nacosValueTarget.beanName + " (bean)", e);
+				logger.error("Can't update value with " + method.getName()
+						+ " (method) in " + nacosValueTarget.beanName + " (bean)", e);
 			}
 		}
 	}
 
-	private void setField(final NacosValueTarget nacosValueTarget, final String propertyValue) {
+	private void setField(final NacosValueTarget nacosValueTarget,
+			final String propertyValue) {
 		final Object bean = nacosValueTarget.bean;
 
 		Field field = nacosValueTarget.field;
@@ -285,11 +295,11 @@ public class NacosValueAnnotationBeanPostProcessor extends AnnotationInjectedBea
 				logger.debug("Update value of the {}" + " (field) in {} (bean) with {}",
 						fieldName, nacosValueTarget.beanName, propertyValue);
 			}
-		} catch (Throwable e) {
+		}
+		catch (Throwable e) {
 			if (logger.isErrorEnabled()) {
-				logger.error(
-						"Can't update value of the " + fieldName + " (field) in "
-								+ nacosValueTarget.beanName + " (bean)", e);
+				logger.error("Can't update value of the " + fieldName + " (field) in "
+						+ nacosValueTarget.beanName + " (bean)", e);
 			}
 		}
 	}

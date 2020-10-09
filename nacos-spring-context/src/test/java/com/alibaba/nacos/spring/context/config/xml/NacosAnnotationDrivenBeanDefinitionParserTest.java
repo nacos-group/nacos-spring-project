@@ -48,6 +48,27 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @ContextConfiguration(locations = { "classpath:/META-INF/nacos-context.xml" })
 public class NacosAnnotationDrivenBeanDefinitionParserTest {
 
+	@Autowired
+	@Qualifier(NacosBeanUtils.GLOBAL_NACOS_PROPERTIES_BEAN_NAME)
+	private Properties globalProperties;
+	@Autowired
+	@Qualifier(ApplicationContextHolder.BEAN_NAME)
+	private ApplicationContextHolder applicationContextHolder;
+	@Autowired
+	@Qualifier(AnnotationNacosInjectedBeanPostProcessor.BEAN_NAME)
+	private AnnotationNacosInjectedBeanPostProcessor annotationNacosInjectedBeanPostProcessor;
+	@Autowired
+	@Qualifier(NacosConfigurationPropertiesBindingPostProcessor.BEAN_NAME)
+	private NacosConfigurationPropertiesBindingPostProcessor nacosConfigurationPropertiesBindingPostProcessor;
+	@Autowired
+	@Qualifier(NacosConfigListenerMethodProcessor.BEAN_NAME)
+	private NacosConfigListenerMethodProcessor nacosConfigListenerMethodProcessor;
+	@Autowired
+	@Qualifier(NacosPropertySourcePostProcessor.BEAN_NAME)
+	private NacosPropertySourcePostProcessor nacosPropertySourcePostProcessor;
+	@NacosInjected
+	private ConfigService configService;
+
 	@BeforeClass
 	public static void init() {
 		System.setProperty("nacos.server-addr", "127.0.0.1:8080");
@@ -57,33 +78,6 @@ public class NacosAnnotationDrivenBeanDefinitionParserTest {
 	public static void afterClass() {
 		System.getProperties().remove("nacos.server-addr");
 	}
-
-	@Autowired
-	@Qualifier(NacosBeanUtils.GLOBAL_NACOS_PROPERTIES_BEAN_NAME)
-	private Properties globalProperties;
-
-	@Autowired
-	@Qualifier(ApplicationContextHolder.BEAN_NAME)
-	private ApplicationContextHolder applicationContextHolder;
-
-	@Autowired
-	@Qualifier(AnnotationNacosInjectedBeanPostProcessor.BEAN_NAME)
-	private AnnotationNacosInjectedBeanPostProcessor annotationNacosInjectedBeanPostProcessor;
-
-	@Autowired
-	@Qualifier(NacosConfigurationPropertiesBindingPostProcessor.BEAN_NAME)
-	private NacosConfigurationPropertiesBindingPostProcessor nacosConfigurationPropertiesBindingPostProcessor;
-
-	@Autowired
-	@Qualifier(NacosConfigListenerMethodProcessor.BEAN_NAME)
-	private NacosConfigListenerMethodProcessor nacosConfigListenerMethodProcessor;
-
-	@Autowired
-	@Qualifier(NacosPropertySourcePostProcessor.BEAN_NAME)
-	private NacosPropertySourcePostProcessor nacosPropertySourcePostProcessor;
-
-	@NacosInjected
-	private ConfigService configService;
 
 	@Test
 	public void test() {

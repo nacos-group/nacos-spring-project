@@ -35,14 +35,12 @@ public class LoggingNacosConfigMetadataEventListener
 	 * The bean name of {@link LoggingNacosConfigMetadataEventListener}
 	 */
 	public static final String BEAN_NAME = "loggingNacosConfigMetadataEventListener";
-
-	private final Logger logger = LoggerFactory.getLogger(getClass());
-
 	private final static String LOGGING_MESSAGE = "Nacos Config Metadata : "
 			+ "dataId='{}'" + ", groupId='{}'" + ", beanName='{}'" + ", bean='{}'"
 			+ ", beanType='{}'" + ", annotatedElement='{}'" + ", xmlResource='{}'"
 			+ ", nacosProperties='{}'" + ", nacosPropertiesAttributes='{}'"
 			+ ", source='{}'" + ", timestamp='{}'";
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@Override
 	public void onApplicationEvent(NacosConfigMetadataEvent event) {

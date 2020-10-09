@@ -82,19 +82,8 @@ public class NacosPropertySourcePostProcessorTest
 	private static final String TEST_CONTENT = TEST_PROPERTY_NAME + "="
 			+ TEST_PROPERTY_VALUE + System.getProperty("line.separator")
 			+ "PATH = /My/Path";
-
-	@NacosPropertySources({
-			@NacosPropertySource(name = "second", dataId = DATA_ID, first = true, before = SYSTEM_PROPERTIES_PROPERTY_SOURCE_NAME, after = SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME),
-			@NacosPropertySource(name = "first", dataId = DATA_ID, first = true, before = SYSTEM_PROPERTIES_PROPERTY_SOURCE_NAME, after = SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME) })
-	@NacosPropertySource(dataId = DATA_ID, before = SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME, after = SYSTEM_PROPERTIES_PROPERTY_SOURCE_NAME)
-	private static class FirstOrderNacosPropertySource {
-
-	}
-
-	@NacosPropertySource(dataId = DATA_ID, before = SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME, after = SYSTEM_PROPERTIES_PROPERTY_SOURCE_NAME)
-	private static class RelativeOrderNacosPropertySource {
-
-	}
+	@NacosInjected
+	private ConfigService configService;
 
 	@Override
 	public void init(EmbeddedNacosHttpServer httpServer) {
@@ -117,9 +106,6 @@ public class NacosPropertySourcePostProcessorTest
 		applicationContextHolder.setApplicationContext(applicationContext);
 		return applicationContextHolder;
 	}
-
-	@NacosInjected
-	private ConfigService configService;
 
 	@Test
 	public void testFirstOrder() throws NacosException {
@@ -199,5 +185,18 @@ public class NacosPropertySourcePostProcessorTest
 				AnnotationNacosPropertySourceBuilder.class, TestConfiguration.class,
 				TestApplicationHolder.class);
 		return context;
+	}
+
+	@NacosPropertySources({
+			@NacosPropertySource(name = "second", dataId = DATA_ID, first = true, before = SYSTEM_PROPERTIES_PROPERTY_SOURCE_NAME, after = SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME),
+			@NacosPropertySource(name = "first", dataId = DATA_ID, first = true, before = SYSTEM_PROPERTIES_PROPERTY_SOURCE_NAME, after = SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME) })
+	@NacosPropertySource(dataId = DATA_ID, before = SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME, after = SYSTEM_PROPERTIES_PROPERTY_SOURCE_NAME)
+	private static class FirstOrderNacosPropertySource {
+
+	}
+
+	@NacosPropertySource(dataId = DATA_ID, before = SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME, after = SYSTEM_PROPERTIES_PROPERTY_SOURCE_NAME)
+	private static class RelativeOrderNacosPropertySource {
+
 	}
 }

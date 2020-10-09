@@ -59,6 +59,8 @@ public class NacosPropertySourceBeanDefinitionParserTest
 
 	private static final Long USER_ID = 1991L;
 	private static final String USER_NAME = "hxy";
+	@Autowired
+	private User user;
 
 	@Override
 	protected void init(EmbeddedNacosHttpServer server) {
@@ -73,9 +75,6 @@ public class NacosPropertySourceBeanDefinitionParserTest
 	protected String getServerAddressPropertyName() {
 		return "nacos.server-addr";
 	}
-
-	@Autowired
-	private User user;
 
 	@Test
 	public void testGetConfig() {
