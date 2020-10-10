@@ -52,7 +52,7 @@ public class NacosConfigMetadataEvent extends ApplicationEvent {
 
 	private Resource xmlResource;
 
-	private Properties nacosProperties;
+	private Map<Object, Object> nacosProperties;
 
 	private Map<String, Object> nacosPropertiesAttributes;
 
@@ -139,20 +139,20 @@ public class NacosConfigMetadataEvent extends ApplicationEvent {
 	}
 
 	/**
-	 * Actual effective Nacos {@link Properties}
+	 * Actual effective Nacos {@link Map}
 	 *
 	 * @return non-null
 	 */
-	public Properties getNacosProperties() {
+	public Map<Object, Object> getNacosProperties() {
 		return nacosProperties;
 	}
 
-	public void setNacosProperties(Properties nacosProperties) {
+	public void setNacosProperties(Map<Object, Object> nacosProperties) {
 		this.nacosProperties = nacosProperties;
 	}
 
 	/**
-	 * Nacos {@link Properties}'s attributes that may come frome {@link Annotation} or
+	 * Nacos {@link Map}'s attributes that may come frome {@link Annotation} or
 	 * {@link Element XML element}
 	 *
 	 * @return non-null

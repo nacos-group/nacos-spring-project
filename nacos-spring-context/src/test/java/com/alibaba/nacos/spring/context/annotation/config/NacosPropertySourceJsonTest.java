@@ -28,7 +28,10 @@ import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.embedded.web.server.EmbeddedNacosHttpServer;
 import com.alibaba.nacos.spring.context.annotation.EnableNacos;
 import com.alibaba.nacos.spring.test.AbstractNacosHttpServerTestExecutionListener;
+import com.alibaba.nacos.spring.util.NacosUtils;
+import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -56,10 +59,20 @@ import static com.alibaba.nacos.embedded.web.server.NacosConfigHttpHandler.GROUP
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class,
 		DirtiesContextTestExecutionListener.class, NacosPropertySourceJsonTest.class })
 @NacosPropertySource(dataId = NacosPropertySourceJsonTest.DATA_ID, autoRefreshed = true, type = ConfigType.JSON)
-@EnableNacos(globalProperties = @NacosProperties(serverAddr = "${server.addr}"))
+@EnableNacosConfig(readConfigTypeFromDataId =  false, globalProperties = @NacosProperties(serverAddr = "${server.addr}"))
 @Component
 public class NacosPropertySourceJsonTest
 		extends AbstractNacosHttpServerTestExecutionListener {
+
+	@BeforeClass
+	public static void beforeClass() {
+		NacosUtils.resetReadTypeFromDataId();
+	}
+
+	@AfterClass
+	public static void afterClass() {
+		NacosUtils.resetReadTypeFromDataId();
+	}
 
 	public static final String DATA_ID = "data_json";
 	private String configStr = "{\n" + "    \"people\":{\n"

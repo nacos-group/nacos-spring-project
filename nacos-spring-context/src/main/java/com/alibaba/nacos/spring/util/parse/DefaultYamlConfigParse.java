@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.alibaba.nacos.spring.util.parse;
 
 import java.util.AbstractMap;
@@ -21,11 +22,12 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 
 import com.alibaba.nacos.api.config.ConfigType;
 import com.alibaba.nacos.spring.util.AbstractConfigParse;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
@@ -34,12 +36,14 @@ import org.yaml.snakeyaml.nodes.MappingNode;
 import org.yaml.snakeyaml.parser.ParserException;
 
 /**
+ * DefaultYamlConfigParse.
+ *
  * @author <a href="mailto:liaochunyhm@live.com">liaochuntao</a>
  * @since 0.3.0
  */
 public class DefaultYamlConfigParse extends AbstractConfigParse {
 
-	protected static final Logger logger = LoggerFactory
+	protected static final Logger LOGGER = LoggerFactory
 			.getLogger(DefaultYamlConfigParse.class);
 
 	protected static Yaml createYaml() {
@@ -48,29 +52,26 @@ public class DefaultYamlConfigParse extends AbstractConfigParse {
 
 	protected static boolean process(MatchCallback callback, Yaml yaml, String content) {
 		int count = 0;
-		if (logger.isDebugEnabled()) {
-			logger.debug("Loading from YAML: " + content);
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Loading from YAML: " + content);
 		}
 		for (Object object : yaml.loadAll(content)) {
 			if (object != null && process(asMap(object), callback)) {
 				count++;
 			}
 		}
-		if (logger.isDebugEnabled()) {
-			logger.debug("Loaded " + count + " document" + (count > 1 ? "s" : "")
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Loaded " + count + " document" + (count > 1 ? "s" : "")
 					+ " from YAML resource: " + content);
 		}
 		return (count > 0);
 	}
 
 	protected static boolean process(Map<String, Object> map, MatchCallback callback) {
-		Properties properties = new Properties();
-		properties.putAll(getFlattenedMap(map));
-
-		if (logger.isDebugEnabled()) {
-			logger.debug("Merging document (no matchers set): " + map);
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Merging document (no matchers set): " + map);
 		}
-		callback.process(properties, map);
+		callback.process(getFlattenedMap(map));
 		return true;
 	}
 
@@ -111,7 +112,7 @@ public class DefaultYamlConfigParse extends AbstractConfigParse {
 			Map<String, Object> source, String path) {
 		for (Map.Entry<String, Object> entry : source.entrySet()) {
 			String key = entry.getKey();
-			if (!com.alibaba.nacos.client.utils.StringUtils.isBlank(path)) {
+			if (!StringUtils.isBlank(path)) {
 				if (key.startsWith("[")) {
 					key = path + key;
 				}
@@ -146,15 +147,15 @@ public class DefaultYamlConfigParse extends AbstractConfigParse {
 	}
 
 	@Override
-	public Properties parse(String configText) {
-		final Properties result = new Properties();
+	public Map<String, Object> parse(String configText) {
+		final AtomicReference<Map<String, Object>> result = new AtomicReference<Map<String, Object>>();
 		process(new MatchCallback() {
 			@Override
-			public void process(Properties properties, Map<String, Object> map) {
-				result.putAll(properties);
+			public void process(Map<String, Object> map) {
+				result.set(map);
 			}
 		}, createYaml(), configText);
-		return result;
+		return result.get();
 	}
 
 	@Override
@@ -165,12 +166,11 @@ public class DefaultYamlConfigParse extends AbstractConfigParse {
 	protected interface MatchCallback {
 
 		/**
-		 * Put Map to Properties
+		 * Put Map to Properties.
 		 *
-		 * @param properties {@link Properties}
 		 * @param map {@link Map}
 		 */
-		void process(Properties properties, Map<String, Object> map);
+		void process(Map<String, Object> map);
 	}
 
 	protected static class MapAppenderConstructor extends Constructor {

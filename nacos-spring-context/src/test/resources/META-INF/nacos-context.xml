@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:context="http://www.springframework.org/schema/context"
+<beans xmlns:context="http://www.springframework.org/schema/context"
        xmlns:nacos="http://nacos.io/schema/nacos"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns="http://www.springframework.org/schema/beans"
        xsi:schemaLocation="
         http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans.xsd
@@ -13,8 +13,8 @@
 
     <context:property-placeholder order="0"></context:property-placeholder>
 
-    <nacos:annotation-driven/>
+    <nacos:annotation-driven read-type-from-daraId="false"/>
 
-    <nacos:global-properties server-addr="${nacos.server-addr}" />
+    <nacos:global-properties server-addr="${nacos.server-addr}"/>
 
 </beans>

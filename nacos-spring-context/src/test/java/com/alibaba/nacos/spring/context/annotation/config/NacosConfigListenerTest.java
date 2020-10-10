@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.alibaba.nacos.spring.context.annotation.config;
 
 import java.util.Map;
@@ -25,8 +26,11 @@ import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.config.annotation.NacosConfigListener;
 import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.spring.test.AbstractNacosHttpServerTestExecutionListener;
+import com.alibaba.nacos.spring.util.NacosUtils;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -38,6 +42,8 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 
 /**
+ * NacosConfigListenerTest.
+ *
  * @author <a href="mailto:liaochunyhm@live.com">liaochuntao</a>
  * @since
  */
@@ -49,10 +55,24 @@ import org.springframework.test.context.support.DirtiesContextTestExecutionListe
 public class NacosConfigListenerTest
 		extends AbstractNacosHttpServerTestExecutionListener {
 
+	@BeforeClass
+	public static void beforeClass() {
+		NacosUtils.resetReadTypeFromDataId();
+	}
+
+	@AfterClass
+	public static void afterClass() {
+		NacosUtils.resetReadTypeFromDataId();
+	}
+
 	private static volatile String content = "";
+
 	private static volatile boolean receiveOne = false;
+
 	private static volatile boolean receiveTwo = false;
+
 	private static volatile boolean receiveThree = false;
+
 	@NacosInjected
 	private ConfigService configService;
 
@@ -113,7 +133,7 @@ public class NacosConfigListenerTest
 
 	@Configuration
 	// 在命名空间详情处可以获取到 endpoint 和 namespace；accessKey 和 secretKey 推荐使用 RAM 账户的
-	@EnableNacosConfig(globalProperties = @NacosProperties(serverAddr = "${server.addr}"))
+	@EnableNacosConfig(readConfigTypeFromDataId = false, globalProperties = @NacosProperties(serverAddr = "${server.addr}"))
 	public static class NacosConfiguration {
 
 	}

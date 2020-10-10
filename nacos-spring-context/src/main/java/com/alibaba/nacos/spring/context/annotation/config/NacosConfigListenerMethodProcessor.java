@@ -22,6 +22,7 @@ import java.util.Properties;
 
 import com.alibaba.nacos.api.annotation.NacosProperties;
 import com.alibaba.nacos.api.config.ConfigService;
+import com.alibaba.nacos.api.config.ConfigType;
 import com.alibaba.nacos.api.config.annotation.NacosConfigListener;
 import com.alibaba.nacos.api.config.convert.NacosConfigConverter;
 import com.alibaba.nacos.api.exception.NacosException;
@@ -47,6 +48,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 
+import static com.alibaba.nacos.spring.context.annotation.config.NacosPropertySource.CONFIG_TYPE_ATTRIBUTE_NAME;
 import static com.alibaba.nacos.spring.util.GlobalNacosPropertiesSource.CONFIG;
 import static com.alibaba.nacos.spring.util.NacosBeanUtils.getConfigServiceBeanBuilder;
 import static com.alibaba.nacos.spring.util.NacosBeanUtils.getNacosServiceFactoryBean;
@@ -97,9 +99,15 @@ public class NacosConfigListenerMethodProcessor
 				environment);
 		final String groupId = NacosUtils.readFromEnvironment(listener.groupId(),
 				environment);
-		final String type = StringUtils.isEmpty(NacosUtils.readTypeFromDataId(dataId))
-				? listener.type().getType()
-				: NacosUtils.readTypeFromDataId(dataId);
+
+		final String type;
+
+		if (NacosUtils.isReadTypeFromDataId()) {
+			type = NacosUtils.readFileExtension(dataId);
+		} else {
+			type = listener.type().getType();
+		}
+
 		long timeout = listener.timeout();
 
 		Assert.isTrue(StringUtils.hasText(dataId), "dataId must have content");
