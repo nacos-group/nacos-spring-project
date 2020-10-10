@@ -5,14 +5,14 @@
     <parent>
         <artifactId>nacos-spring-parent</artifactId>
         <groupId>com.alibaba.nacos</groupId>
-        <version>0.3.7-SNAPSHOT</version>
+        <version>0.4.0</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.alibaba.nacos</groupId>
     <artifactId>nacos-spring-context</artifactId>
-    <version>0.3.7-SNAPSHOT</version>
+    <version>0.4.0</version>
     <name>Alibaba Nacos :: Spring :: Context</name>
     <packaging>jar</packaging>
 
@@ -45,7 +45,12 @@
             <artifactId>spring-context</artifactId>
         </dependency>
 
-        <!-- Alibaba's Spring Context Support -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+        </dependency>
+
+        <!-- Spring Context Extras -->
         <dependency>
             <groupId>com.alibaba.spring</groupId>
             <artifactId>spring-context-support</artifactId>
@@ -73,6 +78,7 @@
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
         </dependency>
+
     </dependencies>
 
 </project>

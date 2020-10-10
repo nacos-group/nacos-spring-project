@@ -27,7 +27,10 @@ import com.alibaba.nacos.embedded.web.server.EmbeddedNacosHttpServer;
 import com.alibaba.nacos.spring.context.annotation.EnableNacos;
 import com.alibaba.nacos.spring.test.AbstractNacosHttpServerTestExecutionListener;
 import com.alibaba.nacos.spring.test.XmlApp;
+import com.alibaba.nacos.spring.util.NacosUtils;
+import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -53,10 +56,20 @@ import static com.alibaba.nacos.embedded.web.server.NacosConfigHttpHandler.GROUP
 @ContextConfiguration(classes = { NacosPropertySourceXmlTest.class })
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class,
 		DirtiesContextTestExecutionListener.class, NacosPropertySourceXmlTest.class })
-@EnableNacos(globalProperties = @NacosProperties(serverAddr = "${server.addr}"))
+@EnableNacosConfig(globalProperties = @NacosProperties(serverAddr = "${server.addr}"), readConfigTypeFromDataId = false)
 @Component
 public class NacosPropertySourceXmlTest
 		extends AbstractNacosHttpServerTestExecutionListener {
+
+	@BeforeClass
+	public static void beforeClass() {
+		NacosUtils.resetReadTypeFromDataId();
+	}
+
+	@AfterClass
+	public static void afterClass() {
+		NacosUtils.resetReadTypeFromDataId();
+	}
 
 	private final String except = "XmlApp{students=[Student{name='lct-1', num='1006010022'}, Student{name='lct-3', num='1006010044'}, Student{name='lct-4', num='1006010055'}]}";
 	private String xml = "<students>" + "<student>" + "<name>lct-1</name>"

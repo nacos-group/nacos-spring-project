@@ -16,6 +16,7 @@
  */
 package com.alibaba.nacos.spring.util;
 
+import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -30,7 +31,7 @@ public interface ConfigParse {
 	 * @param configText receive config context
 	 * @return {@link Properties}
 	 */
-	Properties parse(String configText);
+	Map<String, Object> parse(String configText);
 
 	/**
 	 * get this ConfigParse process config type

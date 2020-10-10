@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.alibaba.nacos.spring.factory;
 
 import java.util.List;
@@ -29,7 +30,7 @@ import com.alibaba.nacos.api.selector.AbstractSelector;
 import com.alibaba.nacos.spring.metadata.NacosServiceMetaData;
 
 /**
- * Delegating {@link NamingService} with {@link NacosServiceMetaData}
+ * Delegating {@link NamingService} with {@link NacosServiceMetaData}.
  *
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
  * @see NamingService
@@ -344,6 +345,11 @@ class DelegatingNamingService implements NamingService, NacosServiceMetaData {
 	@Override
 	public String getServerStatus() {
 		return delegate.getServerStatus();
+	}
+
+	@Override
+	public void shutDown() throws NacosException {
+		delegate.shutDown();
 	}
 
 	@Override

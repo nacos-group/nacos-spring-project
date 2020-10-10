@@ -11,6 +11,9 @@ import com.alibaba.nacos.embedded.web.server.EmbeddedNacosHttpServer;
 import com.alibaba.nacos.spring.context.annotation.EnableNacos;
 import com.alibaba.nacos.spring.test.AbstractNacosHttpServerTestExecutionListener;
 import com.alibaba.nacos.spring.test.YamlMap;
+import com.alibaba.nacos.spring.util.NacosUtils;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -41,9 +44,19 @@ import static com.alibaba.nacos.embedded.web.server.NacosConfigHttpHandler.GROUP
 		@NacosPropertySource(dataId = "yaml_map"
 				+ "_not_exist.yaml", autoRefreshed = true),
 		@NacosPropertySource(dataId = "yaml_map" + ".yml", autoRefreshed = true) })
-@EnableNacos(globalProperties = @NacosProperties(serverAddr = "${server.addr}"))
+@EnableNacosConfig(readConfigTypeFromDataId =  false, globalProperties = @NacosProperties(serverAddr = "${server.addr}"))
 @Component
 public class NacosYamlMapTest extends AbstractNacosHttpServerTestExecutionListener {
+
+	@BeforeClass
+	public static void beforeClass() {
+		NacosUtils.resetReadTypeFromDataId();
+	}
+
+	@AfterClass
+	public static void afterClass() {
+		NacosUtils.resetReadTypeFromDataId();
+	}
 
 	private String configStr = "routingMap:\n" + "  - aaa\n" + "  - bbb\n" + "  - ccc\n"
 			+ "  - ddd\n" + "  - eee\n" + "endPointMap:\n" + "  - fff\n" + "testMap:\n"

@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.alibaba.nacos.embedded.web.server;
 
 import java.io.IOException;
@@ -34,7 +35,7 @@ import java.util.concurrent.TimeUnit;
 
 import com.alibaba.nacos.api.common.Constants;
 import com.alibaba.nacos.api.config.ConfigService;
-import com.alibaba.nacos.common.utils.Md5Utils;
+import com.alibaba.nacos.common.utils.MD5Utils;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import org.slf4j.Logger;
@@ -46,7 +47,7 @@ import org.springframework.util.StringUtils;
 import static java.nio.charset.Charset.forName;
 
 /**
- * Nacos Config {@link HttpHandler} which only supports request parameters :
+ * . Nacos Config {@link HttpHandler} which only supports request parameters :
  * <ul>
  * <li>{@link #DATA_ID_PARAM_NAME}</li>
  * <li>{@link #GROUP_ID_PARAM_NAME}</li>
@@ -59,13 +60,21 @@ import static java.nio.charset.Charset.forName;
 public class NacosConfigHttpHandler implements HttpHandler {
 
 	public static final String DATA_ID_PARAM_NAME = "dataId";
+
 	public static final String GROUP_ID_PARAM_NAME = "group";
+
 	public static final String CONTENT_PARAM_NAME = "content";
+
 	private static final Object LOCK = new Object();
+
 	private final Logger logger = LoggerFactory.getLogger(getClass());
+
 	private Map<String, String> contentCache = new HashMap<String, String>();
+
 	private Map<String, LongPolling> longPollingMap = new HashMap<String, LongPolling>();
+
 	private ScheduledExecutorService scheduledExecutorService;
+
 	private volatile boolean isRunning;
 
 	public void init() {
@@ -127,7 +136,7 @@ public class NacosConfigHttpHandler implements HttpHandler {
 	}
 
 	/**
-	 * Handle {@link ConfigService#publishConfig(String, String, String)}
+	 * . Handle {@link ConfigService#publishConfig(String, String, String)}
 	 *
 	 * @param httpExchange {@link HttpExchange}
 	 * @throws IOException IO error
@@ -175,6 +184,19 @@ public class NacosConfigHttpHandler implements HttpHandler {
 		return URLEncoder.encode(sb, "UTF-8");
 	}
 
+	private String createLongPollingResult(List<String> dataIdList,
+			List<String> groupIdList) throws IOException {
+		StringBuilder sb = new StringBuilder();
+		int size = dataIdList.size();
+		for (int i = 0; i < size; i++) {
+			sb.append(dataIdList.get(i));
+			sb.append(Constants.WORD_SEPARATOR);
+			sb.append(groupIdList.get(i));
+			sb.append(Constants.LINE_SEPARATOR);
+		}
+		return URLEncoder.encode(sb.toString(), "UTF-8");
+	}
+
 	private void handleLongPolling(HttpExchange httpExchange, String listeningConfigs)
 			throws IOException {
 		// @see ClientWorker.checkUpdateDataIds
@@ -216,26 +238,13 @@ public class NacosConfigHttpHandler implements HttpHandler {
 		String contentKey = createContentKey(dataId, groupId);
 		String content = contentCache.get(contentKey);
 		if (content != null) {
-			if (!md5.equals(Md5Utils.getMD5(content, "UTF-8"))) {
+			if (!md5.equals(MD5Utils.md5Hex(content, "UTF-8"))) {
 				changeDataIdList.add(dataId);
 				changeGroupIdList.add(groupId);
 				return;
 			}
 		}
 		contentKeyList.add(contentKey);
-	}
-
-	private String createLongPollingResult(List<String> dataIdList,
-			List<String> groupIdList) throws IOException {
-		StringBuilder sb = new StringBuilder();
-		int size = dataIdList.size();
-		for (int i = 0; i < size; i++) {
-			sb.append(dataIdList.get(i));
-			sb.append(Constants.WORD_SEPARATOR);
-			sb.append(groupIdList.get(i));
-			sb.append(Constants.LINE_SEPARATOR);
-		}
-		return URLEncoder.encode(sb.toString(), "UTF-8");
 	}
 
 	public void cacheConfig(Map<String, String> params) {
@@ -247,16 +256,16 @@ public class NacosConfigHttpHandler implements HttpHandler {
 	}
 
 	/**
-	 * Handle {@link ConfigService#getConfig(String, String, long)}
+	 * Handle {@link ConfigService#getConfig(String, String, long)}.
 	 *
 	 * @param httpExchange {@link HttpExchange}
 	 * @throws IOException IO error
 	 */
 	private void handleGetConfig(HttpExchange httpExchange) throws IOException {
 
-		URI requestURI = httpExchange.getRequestURI();
+		URI requestUri = httpExchange.getRequestURI();
 
-		String queryString = requestURI.getQuery();
+		String queryString = requestUri.getQuery();
 
 		Map<String, String> params = parseParams(queryString);
 
@@ -268,16 +277,16 @@ public class NacosConfigHttpHandler implements HttpHandler {
 	}
 
 	/**
-	 * Handle {@link ConfigService#removeConfig(String, String)}
+	 * Handle {@link ConfigService#removeConfig(String, String)}.
 	 *
 	 * @param httpExchange {@link HttpExchange}
 	 * @throws IOException IO error
 	 */
 	private void handleRemoveConfig(HttpExchange httpExchange) throws IOException {
 
-		URI requestURI = httpExchange.getRequestURI();
+		URI requestUri = httpExchange.getRequestURI();
 
-		String queryString = requestURI.getQuery();
+		String queryString = requestUri.getQuery();
 
 		Map<String, String> params = parseParams(queryString);
 
@@ -312,7 +321,13 @@ public class NacosConfigHttpHandler implements HttpHandler {
 		Map<String, String> params = new HashMap<String, String>();
 		String[] parts = StringUtils.delimitedListToStringArray(queryString, "&");
 		for (String part : parts) {
+			if (StringUtils.isEmpty(part)) {
+				continue;
+			}
 			String[] nameAndValue = StringUtils.split(part, "=");
+			if (nameAndValue.length != 2) {
+				continue;
+			}
 			params.put(StringUtils.trimAllWhitespace(nameAndValue[0]),
 					StringUtils.trimAllWhitespace(nameAndValue[1]));
 		}
@@ -327,7 +342,9 @@ public class NacosConfigHttpHandler implements HttpHandler {
 	}
 
 	private static class LongPolling {
+
 		private HttpExchange httpExchange;
+
 		private Date date;
 
 		LongPolling(HttpExchange httpExchange) {

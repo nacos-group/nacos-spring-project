@@ -1,11 +1,3 @@
-package com.alibaba.nacos.spring.util;
-
-import java.util.Properties;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import org.junit.Assert;
-import org.junit.Test;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -23,6 +15,18 @@ import org.junit.Test;
  * limitations under the License.
  */
 
+package com.alibaba.nacos.spring.util;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Properties;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import com.alibaba.nacos.spring.util.parse.DefaultPropertiesConfigParse;
+import com.alibaba.nacos.spring.util.parse.DefaultYamlConfigParse;
+import org.junit.Assert;
+import org.junit.Test;
+
 /**
  * @author liaochuntao
  */
@@ -33,7 +37,7 @@ public class ConfigParseUtilsTest {
 	private static AtomicInteger atomicInteger = new AtomicInteger(0);
 
 	@Test
-	public void testConfigParse() {
+	public void testXmlConfigParse() {
 		String xmlConfig = "<xmlSign>\n" + "    <Students>\n" + "        <Student>\n"
 				+ "            <Name>lct-1</Name>\n"
 				+ "            <Num>1006010022</Num>\n"
@@ -59,18 +63,43 @@ public class ConfigParseUtilsTest {
 		Assert.assertEquals(0,
 				ConfigParseUtils.toProperties(dataId, group, xmlConfig, "xml").size());
 		Assert.assertEquals(1, atomicInteger.get());
-		Properties properties = ConfigParseUtils.toProperties(xmlConfig, "XML");
+		Map<String, Object> properties = ConfigParseUtils.toProperties(xmlConfig, "XML");
 		Assert.assertTrue(0 != properties.size());
 		System.out.println(ConfigParse.class.isAssignableFrom(CustomerParse.class));
 		System.out.println(properties);
 	}
 
+	@Test
+	public void testPropertiesParser() {
+		final String properties = "name=yihaomen-aaa\n" + "address=wuhan\n" + "\n" + "#App\n"
+				+ "app.menus[0].title=Home\n" + "app.menus[0].name=Home\n"
+				+ "app.menus[0].path=/\n" + "app.menus[1].title=Login\n"
+				+ "app.menus[1].name=Login\n" + "app.menus[1].path=/login\n" + "\n"
+				+ "app.compiler.timeout=5\n" + "app.compiler.output-folder=/temp/\n" + "\n"
+				+ "app.error=/error/\n" + "\n" + "school=hangzhoudianzi \\\n" + "university";
+		DefaultPropertiesConfigParse parse = new DefaultPropertiesConfigParse();
+		Map<String, Object> p = parse.parse(properties);
+		System.out.println(p);
+	}
+
+	@Test
+	public void testYamlParser() {
+		final String yaml = "students:\n" + "    - {name: lct-1,num: 12}\n"
+				+ "    - {name: lct-2,num: 13}\n" + "    - {name: lct-3,num: 14}";
+
+		DefaultYamlConfigParse parse = new DefaultYamlConfigParse();
+		Map<String, Object> p = parse.parse(yaml);
+		System.out.println(p);
+
+		System.out.println(parse.parse("people:\n" + "  a: 1\n" + "  b: 1"));
+	}
+
 	public static class CustomerParse extends AbstractConfigParse {
 
 		@Override
-		public Properties parse(String configText) {
+		public Map<String, Object> parse(String configText) {
 			atomicInteger.incrementAndGet();
-			return new Properties();
+			return new LinkedHashMap<String, Object>();
 		}
 
 		@Override

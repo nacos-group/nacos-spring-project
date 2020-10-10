@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.alibaba.nacos.spring.context.annotation.config;
 
 import java.lang.reflect.Field;
@@ -26,7 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.alibaba.nacos.api.config.annotation.NacosValue;
-import com.alibaba.nacos.client.config.utils.MD5;
+import com.alibaba.nacos.common.utils.MD5Utils;
 import com.alibaba.nacos.spring.context.event.config.NacosConfigReceivedEvent;
 import com.alibaba.spring.beans.factory.annotation.AnnotationInjectedBeanPostProcessor;
 import org.slf4j.Logger;
@@ -47,7 +48,7 @@ import org.springframework.util.ReflectionUtils;
 import static org.springframework.core.annotation.AnnotationUtils.getAnnotation;
 
 /**
- * {@link org.springframework.beans.factory.config.BeanPostProcessor} implementation
+ * {@link org.springframework.beans.factory.config.BeanPostProcessor} implementation.
  *
  * @author <a href="mailto:huangxiaoyu1018@gmail.com">hxy1991</a>
  * @see NacosValue
@@ -58,15 +59,20 @@ public class NacosValueAnnotationBeanPostProcessor extends
 		EnvironmentAware, ApplicationListener<NacosConfigReceivedEvent> {
 
 	/**
-	 * The name of {@link NacosValueAnnotationBeanPostProcessor} bean
+	 * The name of {@link NacosValueAnnotationBeanPostProcessor} bean.
 	 */
 	public static final String BEAN_NAME = "nacosValueAnnotationBeanPostProcessor";
+
 	private static final String PLACEHOLDER_PREFIX = "${";
+
 	private static final String PLACEHOLDER_SUFFIX = "}";
+
 	private static final String VALUE_SEPARATOR = ":";
+
 	private final Logger logger = LoggerFactory.getLogger(getClass());
+
 	/**
-	 * placeholder, nacosValueTarget
+	 * placeholder, nacosValueTarget.
 	 */
 	private Map<String, List<NacosValueTarget>> placeholderNacosValueTargetMap = new HashMap<String, List<NacosValueTarget>>();
 
@@ -139,7 +145,7 @@ public class NacosValueAnnotationBeanPostProcessor extends
 			}
 			List<NacosValueTarget> beanPropertyList = entry.getValue();
 			for (NacosValueTarget target : beanPropertyList) {
-				String md5String = MD5.getInstance().getMD5String(newValue);
+				String md5String = MD5Utils.md5Hex(newValue, "UTF-8");
 				boolean isUpdate = !target.lastMD5.equals(md5String);
 				if (isUpdate) {
 					target.updateLastMD5(md5String);

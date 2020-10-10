@@ -26,6 +26,7 @@ import com.alibaba.nacos.spring.context.properties.config.NacosConfigurationProp
 import com.alibaba.nacos.spring.core.env.NacosPropertySourcePostProcessor;
 import com.alibaba.nacos.spring.factory.ApplicationContextHolder;
 import com.alibaba.nacos.spring.util.NacosBeanUtils;
+import com.alibaba.nacos.spring.util.NacosUtils;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -74,8 +75,14 @@ public class NacosAnnotationDrivenBeanDefinitionParserTest {
 		System.setProperty("nacos.server-addr", "127.0.0.1:8080");
 	}
 
+	@BeforeClass
+	public static void beforeClass() {
+		NacosUtils.resetReadTypeFromDataId();
+	}
+
 	@AfterClass
 	public static void afterClass() {
+		NacosUtils.resetReadTypeFromDataId();
 		System.getProperties().remove("nacos.server-addr");
 	}
 

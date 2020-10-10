@@ -16,6 +16,7 @@
  */
 package com.alibaba.nacos.spring.context.annotation;
 
+import com.alibaba.nacos.spring.util.NacosUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
@@ -63,6 +64,9 @@ public class NacosBeanDefinitionRegistrar
 		AnnotationAttributes attributes = AnnotationAttributes
 				.fromMap(importingClassMetadata
 						.getAnnotationAttributes(EnableNacos.class.getName()));
+
+		boolean readTypeFromDataId = attributes.getBoolean("readConfigTypeFromDataId");
+		NacosUtils.setReadTypeFromDataIdIfNull(readTypeFromDataId);
 
 		// Register Global Nacos Properties Bean
 		registerGlobalNacosProperties(attributes, registry, environment,

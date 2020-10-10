@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.alibaba.nacos.spring.test;
 
 import java.util.LinkedHashMap;
@@ -29,7 +30,7 @@ import com.alibaba.nacos.api.exception.NacosException;
 import org.springframework.util.CollectionUtils;
 
 /**
- * Mock {@link ConfigService}
+ * Mock {@link ConfigService}.
  *
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
  * @since 0.1.0
@@ -37,7 +38,9 @@ import org.springframework.util.CollectionUtils;
 public class MockConfigService implements ConfigService {
 
 	public static final String TIMEOUT_ERROR_MESSAGE = "Timeout must not be less then zero.";
+
 	private Map<String, List<Listener>> listenersCache = new LinkedHashMap<String, List<Listener>>();
+
 	private Map<String, String> contentCache = new LinkedHashMap<String, String>();
 
 	@Override
@@ -110,6 +113,11 @@ public class MockConfigService implements ConfigService {
 	@Override
 	public String getServerStatus() {
 		return "UP";
+	}
+
+	@Override
+	public void shutDown() throws NacosException {
+
 	}
 
 	private String createKey(String dataId, String groupId) {
