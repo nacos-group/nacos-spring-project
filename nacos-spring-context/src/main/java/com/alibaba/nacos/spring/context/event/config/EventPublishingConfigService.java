@@ -20,14 +20,14 @@ package com.alibaba.nacos.spring.context.event.config;
 import java.util.Properties;
 import java.util.concurrent.Executor;
 
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.ConfigurableApplicationContext;
+
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.config.listener.Listener;
 import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.spring.context.event.DeferredApplicationEventPublisher;
 import com.alibaba.nacos.spring.metadata.NacosServiceMetaData;
-
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.context.ConfigurableApplicationContext;
 
 /**
  * {@link NacosConfigEvent Event} publishing {@link ConfigService}.

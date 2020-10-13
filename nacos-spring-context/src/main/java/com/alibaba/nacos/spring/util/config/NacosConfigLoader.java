@@ -18,6 +18,9 @@ package com.alibaba.nacos.spring.util.config;
 
 import java.util.Properties;
 
+import org.springframework.core.convert.ConversionService;
+import org.springframework.core.env.ConfigurableEnvironment;
+
 import com.alibaba.nacos.api.NacosFactory;
 import com.alibaba.nacos.api.annotation.NacosProperties;
 import com.alibaba.nacos.api.config.ConfigService;
@@ -25,9 +28,6 @@ import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.spring.factory.NacosServiceFactory;
 import com.alibaba.nacos.spring.util.NacosUtils;
 import com.alibaba.nacos.spring.util.PropertiesPlaceholderResolver;
-
-import org.springframework.core.convert.ConversionService;
-import org.springframework.core.env.ConfigurableEnvironment;
 
 /**
  * Nacos Configuration Loader

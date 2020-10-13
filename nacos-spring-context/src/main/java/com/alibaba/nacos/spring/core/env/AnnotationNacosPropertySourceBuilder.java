@@ -16,6 +16,11 @@
  */
 package com.alibaba.nacos.spring.core.env;
 
+import static com.alibaba.nacos.spring.context.annotation.config.NacosPropertySource.AFTER_ATTRIBUTE_NAME;
+import static com.alibaba.nacos.spring.context.annotation.config.NacosPropertySource.AUTO_REFRESHED_ATTRIBUTE_NAME;
+import static com.alibaba.nacos.spring.context.annotation.config.NacosPropertySource.BEFORE_ATTRIBUTE_NAME;
+import static com.alibaba.nacos.spring.context.annotation.config.NacosPropertySource.FIRST_ATTRIBUTE_NAME;
+
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -23,16 +28,11 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import com.alibaba.nacos.spring.context.annotation.config.NacosPropertySources;
-import com.alibaba.nacos.spring.context.event.config.NacosConfigMetadataEvent;
-
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.core.type.AnnotationMetadata;
 
-import static com.alibaba.nacos.spring.context.annotation.config.NacosPropertySource.AFTER_ATTRIBUTE_NAME;
-import static com.alibaba.nacos.spring.context.annotation.config.NacosPropertySource.AUTO_REFRESHED_ATTRIBUTE_NAME;
-import static com.alibaba.nacos.spring.context.annotation.config.NacosPropertySource.BEFORE_ATTRIBUTE_NAME;
-import static com.alibaba.nacos.spring.context.annotation.config.NacosPropertySource.FIRST_ATTRIBUTE_NAME;
+import com.alibaba.nacos.spring.context.annotation.config.NacosPropertySources;
+import com.alibaba.nacos.spring.context.event.config.NacosConfigMetadataEvent;
 
 /**
  * Annotation {@link NacosPropertySource @NacosPropertySource}

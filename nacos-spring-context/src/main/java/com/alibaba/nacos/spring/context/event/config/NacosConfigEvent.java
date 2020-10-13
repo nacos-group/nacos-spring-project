@@ -16,9 +16,9 @@
  */
 package com.alibaba.nacos.spring.context.event.config;
 
-import com.alibaba.nacos.api.config.ConfigService;
-
 import org.springframework.context.ApplicationEvent;
+
+import com.alibaba.nacos.api.config.ConfigService;
 
 /**
  * The Event of Nacos Configuration is used on Spring Event

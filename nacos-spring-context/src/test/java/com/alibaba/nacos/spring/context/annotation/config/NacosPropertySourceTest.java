@@ -16,24 +16,19 @@
  */
 package com.alibaba.nacos.spring.context.annotation.config;
 
+import static com.alibaba.nacos.api.common.Constants.DEFAULT_GROUP;
+import static com.alibaba.nacos.embedded.web.server.NacosConfigHttpHandler.CONTENT_PARAM_NAME;
+import static com.alibaba.nacos.embedded.web.server.NacosConfigHttpHandler.DATA_ID_PARAM_NAME;
+import static com.alibaba.nacos.embedded.web.server.NacosConfigHttpHandler.GROUP_ID_PARAM_NAME;
+
 import java.util.HashMap;
 import java.util.Map;
 
-import com.alibaba.nacos.api.annotation.NacosInjected;
-import com.alibaba.nacos.api.annotation.NacosProperties;
-import com.alibaba.nacos.api.config.ConfigService;
-import com.alibaba.nacos.api.config.annotation.NacosValue;
-import com.alibaba.nacos.api.exception.NacosException;
-import com.alibaba.nacos.embedded.web.server.EmbeddedNacosHttpServer;
-import com.alibaba.nacos.spring.context.annotation.EnableNacos;
-import com.alibaba.nacos.spring.test.AbstractNacosHttpServerTestExecutionListener;
-import com.alibaba.nacos.spring.util.NacosUtils;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -45,10 +40,14 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 
-import static com.alibaba.nacos.api.common.Constants.DEFAULT_GROUP;
-import static com.alibaba.nacos.embedded.web.server.NacosConfigHttpHandler.CONTENT_PARAM_NAME;
-import static com.alibaba.nacos.embedded.web.server.NacosConfigHttpHandler.DATA_ID_PARAM_NAME;
-import static com.alibaba.nacos.embedded.web.server.NacosConfigHttpHandler.GROUP_ID_PARAM_NAME;
+import com.alibaba.nacos.api.annotation.NacosInjected;
+import com.alibaba.nacos.api.annotation.NacosProperties;
+import com.alibaba.nacos.api.config.ConfigService;
+import com.alibaba.nacos.api.config.annotation.NacosValue;
+import com.alibaba.nacos.api.exception.NacosException;
+import com.alibaba.nacos.embedded.web.server.EmbeddedNacosHttpServer;
+import com.alibaba.nacos.spring.test.AbstractNacosHttpServerTestExecutionListener;
+import com.alibaba.nacos.spring.util.NacosUtils;
 
 /**
  * {@link NacosPropertySource} {@link Value} Test
@@ -64,10 +63,25 @@ import static com.alibaba.nacos.embedded.web.server.NacosConfigHttpHandler.GROUP
 		DirtiesContextTestExecutionListener.class, NacosPropertySourceTest.class })
 @NacosPropertySources({
 		@NacosPropertySource(dataId = NacosPropertySourceTest.DATA_ID, autoRefreshed = true) })
-@EnableNacosConfig(readConfigTypeFromDataId =  false, globalProperties = @NacosProperties(serverAddr = "${server.addr}", enableRemoteSyncConfig = "true", maxRetry = "5", configRetryTime = "2600", configLongPollTimeout = "26000"))
+@EnableNacosConfig(readConfigTypeFromDataId = false, globalProperties = @NacosProperties(serverAddr = "${server.addr}", enableRemoteSyncConfig = "true", maxRetry = "5", configRetryTime = "2600", configLongPollTimeout = "26000"))
 @Component
 public class NacosPropertySourceTest
 		extends AbstractNacosHttpServerTestExecutionListener {
+
+	public static final String DATA_ID = "app";
+	private static final String LINE_SEPARATOR = System.getProperty("line.separator");
+	private static final String APP_NAME = "Nacos-Spring";
+	private static final String ANOTHER_APP_NAME = "Nacos-Spring-1";
+	private static final int VALUE_1 = 1;
+	private static final int VALUE_2 = 2;
+	private static final int VALUE_3 = 3;
+	private static final int VALUE_4 = 4;
+	@NacosInjected
+	private ConfigService configService;
+	@Autowired
+	private App app;
+	@Autowired
+	private Environment environment;
 
 	@BeforeClass
 	public static void beforeClass() {
@@ -78,26 +92,6 @@ public class NacosPropertySourceTest
 	public static void afterClass() {
 		NacosUtils.resetReadTypeFromDataId();
 	}
-
-	public static final String DATA_ID = "app";
-	private static final String LINE_SEPARATOR = System.getProperty("line.separator");
-	private static final String APP_NAME = "Nacos-Spring";
-
-	private static final String ANOTHER_APP_NAME = "Nacos-Spring-1";
-
-	private static final int VALUE_1 = 1;
-
-	private static final int VALUE_2 = 2;
-
-	private static final int VALUE_3 = 3;
-
-	private static final int VALUE_4 = 4;
-	@NacosInjected
-	private ConfigService configService;
-	@Autowired
-	private App app;
-	@Autowired
-	private Environment environment;
 
 	@Override
 	public void init(EmbeddedNacosHttpServer httpServer) {

@@ -16,10 +16,9 @@
  */
 package com.alibaba.nacos.spring.context.properties.config;
 
-import java.util.Properties;
+import static org.springframework.core.annotation.AnnotationUtils.findAnnotation;
 
-import com.alibaba.nacos.api.config.annotation.NacosConfigurationProperties;
-import com.alibaba.nacos.spring.factory.NacosServiceFactory;
+import java.util.Properties;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
@@ -29,7 +28,8 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.Environment;
 
-import static org.springframework.core.annotation.AnnotationUtils.findAnnotation;
+import com.alibaba.nacos.api.config.annotation.NacosConfigurationProperties;
+import com.alibaba.nacos.spring.factory.NacosServiceFactory;
 
 /**
  * {@link NacosConfigurationProperties} Binding {@link BeanPostProcessor}

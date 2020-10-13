@@ -35,7 +35,6 @@ import org.springframework.context.support.AbstractApplicationContext;
  * hold all early {@link ApplicationEvent events} temporary until
  * {@link ConfigurableApplicationContext#isRunning() Spring ApplicationContext is active},
  * and then those {@link ApplicationEvent events} will be replayed.
- *
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
  * @since 0.1.0
  */
@@ -66,6 +65,10 @@ public class DeferredApplicationEventPublisher
 		catch (Exception ignore) {
 			deferredEvents.add(event);
 		}
+	}
+
+	public void publishEvent(Object event) {
+		// TODO
 	}
 
 	@Override

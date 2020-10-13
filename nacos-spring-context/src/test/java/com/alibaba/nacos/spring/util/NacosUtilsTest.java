@@ -18,12 +18,12 @@ package com.alibaba.nacos.spring.util;
 
 import java.lang.reflect.Field;
 
-import com.alibaba.nacos.api.annotation.NacosInjected;
-import com.alibaba.nacos.api.annotation.NacosProperties;
 import org.junit.Assert;
 import org.junit.Test;
-
 import org.springframework.util.ReflectionUtils;
+
+import com.alibaba.nacos.api.annotation.NacosInjected;
+import com.alibaba.nacos.api.annotation.NacosProperties;
 
 /**
  * {@link NacosUtils} Test

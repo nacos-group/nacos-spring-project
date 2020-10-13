@@ -16,7 +16,16 @@
  */
 package com.alibaba.nacos.samples.spring.event;
 
+import static com.alibaba.nacos.api.common.Constants.DATAID;
+import static com.alibaba.nacos.api.common.Constants.DEFAULT_GROUP;
+
 import javax.annotation.PostConstruct;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 import com.alibaba.nacos.api.annotation.NacosInjected;
 import com.alibaba.nacos.api.config.ConfigService;
@@ -26,15 +35,6 @@ import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.spring.context.event.config.NacosConfigListenerRegisteredEvent;
 import com.alibaba.nacos.spring.context.event.config.NacosConfigReceivedEvent;
 import com.alibaba.nacos.spring.context.event.config.NacosConfigRemovedEvent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import org.springframework.context.ApplicationListener;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-
-import static com.alibaba.nacos.api.common.Constants.DATAID;
-import static com.alibaba.nacos.api.common.Constants.DEFAULT_GROUP;
 
 /**
  * Nacos Event/Listener {@link Configuration}

@@ -16,7 +16,13 @@
  */
 package com.alibaba.nacos.spring.context.annotation;
 
-import com.alibaba.nacos.spring.util.NacosUtils;
+import static com.alibaba.nacos.spring.util.NacosBeanUtils.GLOBAL_NACOS_PROPERTIES_BEAN_NAME;
+import static com.alibaba.nacos.spring.util.NacosBeanUtils.invokeNacosPropertySourcePostProcessor;
+import static com.alibaba.nacos.spring.util.NacosBeanUtils.registerGlobalNacosProperties;
+import static com.alibaba.nacos.spring.util.NacosBeanUtils.registerNacosCommonBeans;
+import static com.alibaba.nacos.spring.util.NacosBeanUtils.registerNacosConfigBeans;
+import static com.alibaba.nacos.spring.util.NacosBeanUtils.registerNacosDiscoveryBeans;
+
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
@@ -30,12 +36,7 @@ import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotationMetadata;
 
-import static com.alibaba.nacos.spring.util.NacosBeanUtils.GLOBAL_NACOS_PROPERTIES_BEAN_NAME;
-import static com.alibaba.nacos.spring.util.NacosBeanUtils.invokeNacosPropertySourcePostProcessor;
-import static com.alibaba.nacos.spring.util.NacosBeanUtils.registerGlobalNacosProperties;
-import static com.alibaba.nacos.spring.util.NacosBeanUtils.registerNacosCommonBeans;
-import static com.alibaba.nacos.spring.util.NacosBeanUtils.registerNacosConfigBeans;
-import static com.alibaba.nacos.spring.util.NacosBeanUtils.registerNacosDiscoveryBeans;
+import com.alibaba.nacos.spring.util.NacosUtils;
 
 /**
  * Nacos Properties {@link ImportBeanDefinitionRegistrar BeanDefinition Registrar}

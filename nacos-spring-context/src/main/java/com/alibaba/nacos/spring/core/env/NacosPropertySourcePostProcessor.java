@@ -16,6 +16,11 @@
  */
 package com.alibaba.nacos.spring.core.env;
 
+import static com.alibaba.nacos.spring.util.NacosBeanUtils.getConfigServiceBeanBuilder;
+import static com.alibaba.nacos.spring.util.NacosBeanUtils.getNacosServiceFactoryBean;
+import static com.alibaba.nacos.spring.util.NacosUtils.DEFAULT_STRING_ATTRIBUTE_VALUE;
+import static org.springframework.util.ObjectUtils.nullSafeEquals;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -23,17 +28,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
-
-import com.alibaba.nacos.api.config.ConfigService;
-import com.alibaba.nacos.api.config.listener.AbstractListener;
-import com.alibaba.nacos.api.config.listener.Listener;
-import com.alibaba.nacos.api.exception.NacosException;
-import com.alibaba.nacos.spring.beans.factory.annotation.ConfigServiceBeanBuilder;
-import com.alibaba.nacos.spring.context.annotation.config.NacosPropertySources;
-import com.alibaba.nacos.spring.context.config.xml.NacosPropertySourceXmlBeanDefinition;
-import com.alibaba.nacos.spring.context.event.config.EventPublishingConfigService;
-import com.alibaba.nacos.spring.factory.NacosServiceFactory;
-import com.alibaba.spring.util.BeanUtils;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
@@ -51,10 +45,16 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySources;
 
-import static com.alibaba.nacos.spring.util.NacosBeanUtils.getConfigServiceBeanBuilder;
-import static com.alibaba.nacos.spring.util.NacosBeanUtils.getNacosServiceFactoryBean;
-import static com.alibaba.nacos.spring.util.NacosUtils.DEFAULT_STRING_ATTRIBUTE_VALUE;
-import static org.springframework.util.ObjectUtils.nullSafeEquals;
+import com.alibaba.nacos.api.config.ConfigService;
+import com.alibaba.nacos.api.config.listener.AbstractListener;
+import com.alibaba.nacos.api.config.listener.Listener;
+import com.alibaba.nacos.api.exception.NacosException;
+import com.alibaba.nacos.spring.beans.factory.annotation.ConfigServiceBeanBuilder;
+import com.alibaba.nacos.spring.context.annotation.config.NacosPropertySources;
+import com.alibaba.nacos.spring.context.config.xml.NacosPropertySourceXmlBeanDefinition;
+import com.alibaba.nacos.spring.context.event.config.EventPublishingConfigService;
+import com.alibaba.nacos.spring.factory.NacosServiceFactory;
+import com.alibaba.spring.util.BeanUtils;
 
 /**
  * {@link BeanFactoryPostProcessor Post Processor} resolves

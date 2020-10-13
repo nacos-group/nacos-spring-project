@@ -18,11 +18,11 @@ package com.alibaba.nacos.spring.context.event.config;
 
 import java.util.concurrent.Executor;
 
+import org.springframework.context.ApplicationEventPublisher;
+
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.config.ConfigType;
 import com.alibaba.nacos.api.config.listener.Listener;
-
-import org.springframework.context.ApplicationEventPublisher;
 
 /**
  * A Delegating {@link NacosConfigReceivedEvent Event} Publishing {@link Listener} of

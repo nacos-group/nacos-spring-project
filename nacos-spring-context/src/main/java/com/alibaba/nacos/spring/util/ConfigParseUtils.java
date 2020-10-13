@@ -100,8 +100,8 @@ public final class ConfigParseUtils {
 		}
 	}
 
-	public static Map<String, Object> toProperties(final String dataId, final String group,
-			final String context, String type) {
+	public static Map<String, Object> toProperties(final String dataId,
+			final String group, final String context, String type) {
 
 		if (context == null) {
 			return new LinkedHashMap<String, Object>();

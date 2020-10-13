@@ -16,42 +16,6 @@
  */
 package com.alibaba.nacos.spring.util;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.Collections;
-import java.util.Arrays;
-import java.util.Properties;
-import java.util.regex.Pattern;
-
-import com.alibaba.nacos.api.annotation.NacosProperties;
-import com.alibaba.nacos.api.config.ConfigService;
-import com.alibaba.nacos.api.config.annotation.NacosConfigurationProperties;
-import com.alibaba.nacos.api.config.annotation.NacosIgnore;
-import com.alibaba.nacos.api.config.annotation.NacosProperty;
-import com.alibaba.nacos.api.exception.NacosException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import org.springframework.beans.MutablePropertyValues;
-import org.springframework.beans.PropertyValues;
-import org.springframework.core.env.Environment;
-import org.springframework.core.env.PropertyResolver;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.ReflectionUtils;
-import org.springframework.util.StringUtils;
-
 import static com.alibaba.nacos.api.PropertyKeyConst.ACCESS_KEY;
 import static com.alibaba.nacos.api.PropertyKeyConst.CLUSTER_NAME;
 import static com.alibaba.nacos.api.PropertyKeyConst.CONTEXT_PATH;
@@ -63,6 +27,41 @@ import static com.alibaba.nacos.api.PropertyKeyConst.SERVER_ADDR;
 import static org.springframework.core.annotation.AnnotationUtils.getAnnotation;
 import static org.springframework.core.annotation.AnnotationUtils.getAnnotationAttributes;
 import static org.springframework.util.StringUtils.hasText;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+import java.util.regex.Pattern;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.MutablePropertyValues;
+import org.springframework.beans.PropertyValues;
+import org.springframework.core.env.Environment;
+import org.springframework.core.env.PropertyResolver;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.ReflectionUtils;
+import org.springframework.util.StringUtils;
+
+import com.alibaba.nacos.api.annotation.NacosProperties;
+import com.alibaba.nacos.api.config.ConfigService;
+import com.alibaba.nacos.api.config.annotation.NacosConfigurationProperties;
+import com.alibaba.nacos.api.config.annotation.NacosIgnore;
+import com.alibaba.nacos.api.config.annotation.NacosProperty;
+import com.alibaba.nacos.api.exception.NacosException;
 
 /**
  * Nacos Utilities class
@@ -98,13 +97,11 @@ public abstract class NacosUtils {
 	public static final long DEFAULT_TIMEOUT = Long.getLong("nacos.default.timeout",
 			5000L);
 
-
-	private static final Set<Class<?>> NON_BEAN_CLASSES = Collections
-			.unmodifiableSet(new HashSet<Class<?>>(Arrays.asList(Object.class, Class.class)));
-
+	private static final Set<Class<?>> NON_BEAN_CLASSES = Collections.unmodifiableSet(
+			new HashSet<Class<?>>(Arrays.asList(Object.class, Class.class)));
 
 	private static final Logger logger = LoggerFactory.getLogger(NacosUtils.class);
-	
+
 	private static Boolean readTypeFromDataId = null;
 
 	public static Boolean isReadTypeFromDataId() {
@@ -233,7 +230,8 @@ public abstract class NacosUtils {
 
 	public static PropertyValues resolvePropertyValues(Object bean, final String prefix,
 			String dataId, String groupId, String content, String type) {
-		final Map<String, Object> configProperties = toProperties(dataId, groupId, content, type);
+		final Map<String, Object> configProperties = toProperties(dataId, groupId,
+				content, type);
 		final MutablePropertyValues propertyValues = new MutablePropertyValues();
 		ReflectionUtils.doWithFields(bean.getClass(),
 				new ReflectionUtils.FieldCallback() {
@@ -252,13 +250,16 @@ public abstract class NacosUtils {
 										propertyValues);
 								return;
 							}
-							if (containsDescendantOf(configProperties.keySet(), propertyName) && !isUnbindableBean(field.getType())) {
-								bindBean(propertyName, field.getType(), configProperties, propertyValues);
+							if (containsDescendantOf(configProperties.keySet(),
+									propertyName) && !isUnbindableBean(field.getType())) {
+								bindBean(propertyName, field.getType(), configProperties,
+										propertyValues);
 								return;
 							}
 
 							if (configProperties.containsKey(propertyName)) {
-								String propertyValue = String.valueOf(configProperties.get(propertyName));
+								String propertyValue = String
+										.valueOf(configProperties.get(propertyName));
 								propertyValues.add(field.getName(), propertyValue);
 							}
 						}
@@ -369,47 +370,49 @@ public abstract class NacosUtils {
 		return content;
 	}
 
-    /**
-     * bind properties to bean
-     *
-     * @param propertyName propertyName
-     * @param target bind target
-     * @param configProperties config context
-     * @param propertyValues {@link MutablePropertyValues}
-     */
-    private static void bindBean(String propertyName, Class<?> target, Map<String, Object> configProperties, MutablePropertyValues propertyValues) {
-        Object propertyValue = configProperties.get(propertyName);
-        if (propertyValue != null) {
-            propertyValues.add(propertyName, propertyValue);
-        }
-        if (isUnbindableBean(target)) {
-            return;
-        }
+	/**
+	 * bind properties to bean
+	 *
+	 * @param propertyName propertyName
+	 * @param target bind target
+	 * @param configProperties config context
+	 * @param propertyValues {@link MutablePropertyValues}
+	 */
+	private static void bindBean(String propertyName, Class<?> target,
+			Map<String, Object> configProperties, MutablePropertyValues propertyValues) {
+		Object propertyValue = configProperties.get(propertyName);
+		if (propertyValue != null) {
+			propertyValues.add(propertyName, propertyValue);
+		}
+		if (isUnbindableBean(target)) {
+			return;
+		}
 
-        Field[] fields = target.getDeclaredFields();
-        for (Field field : fields) {
-            String mergePropertyName = propertyName + "." + NacosUtils.resolvePropertyName(field);
-            bindBean(mergePropertyName, field.getType(), configProperties, propertyValues);
-        }
+		Field[] fields = target.getDeclaredFields();
+		for (Field field : fields) {
+			String mergePropertyName = propertyName + "."
+					+ NacosUtils.resolvePropertyName(field);
+			bindBean(mergePropertyName, field.getType(), configProperties,
+					propertyValues);
+		}
 
+	}
 
-    }
+	private static boolean containsDescendantOf(Set<String> names, String propertyName) {
+		for (String name : names) {
+			if (name.startsWith(propertyName + ".")) {
+				return true;
+			}
+		}
+		return false;
+	}
 
-    private static boolean containsDescendantOf(Set<String> names, String propertyName) {
-        for (String name : names) {
-            if (name.startsWith(propertyName + ".")) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private static boolean isUnbindableBean(Class<?> resolved) {
-        if (resolved.isPrimitive() || NON_BEAN_CLASSES.contains(resolved)) {
-            return true;
-        }
-        return resolved.getName().startsWith("java.");
-    }
+	private static boolean isUnbindableBean(Class<?> resolved) {
+		if (resolved.isPrimitive() || NON_BEAN_CLASSES.contains(resolved)) {
+			return true;
+		}
+		return resolved.getName().startsWith("java.");
+	}
 
 	/**
 	 * Simple solutions to support {@link Map} or {@link Collection}
@@ -431,8 +434,10 @@ public abstract class NacosUtils {
 			Object value = configProperties.get(s);
 			if (configProperties.containsKey(fieldName)) {
 				// for example: list=1,2,3,4,5 will be into here
-				bindContainer(prefix, fieldName, listToProperties(fieldName,
-						String.valueOf(configProperties.get(fieldName))), propertyValues);
+				bindContainer(prefix, fieldName,
+						listToProperties(fieldName,
+								String.valueOf(configProperties.get(fieldName))),
+						propertyValues);
 			}
 			else if (pattern1.matcher(s).find()) {
 				propertyValues.add(name, value);
@@ -454,7 +459,8 @@ public abstract class NacosUtils {
 	 * @param content content
 	 * @return {@link Properties}
 	 */
-	private static Map<String, Object> listToProperties(String fieldName, String content) {
+	private static Map<String, Object> listToProperties(String fieldName,
+			String content) {
 		String[] splits = content.split(",");
 		int index = 0;
 		Map<String, Object> properties = new LinkedHashMap<String, Object>();
@@ -490,7 +496,8 @@ public abstract class NacosUtils {
 		return toProperties("", "", text, type);
 	}
 
-	public static Map<String, Object> toProperties(String dataId, String group, String text) {
+	public static Map<String, Object> toProperties(String dataId, String group,
+			String text) {
 		return toProperties(dataId, group, text, "properties");
 	}
 
@@ -502,8 +509,8 @@ public abstract class NacosUtils {
 	 * @param text config context
 	 * @param type config type
 	 */
-	public static Map<String, Object> toProperties(String dataId, String group, String text,
-			String type) {
+	public static Map<String, Object> toProperties(String dataId, String group,
+			String text, String type) {
 		type = type.toLowerCase();
 		if ("yml".equalsIgnoreCase(type)) {
 			type = "yaml";

@@ -16,19 +16,19 @@
  */
 package com.alibaba.nacos.spring.util;
 
-import java.util.Map;
-import java.util.Properties;
-
-import com.alibaba.nacos.api.annotation.NacosProperties;
-
-import org.springframework.beans.factory.BeanFactory;
-
 import static com.alibaba.nacos.spring.util.NacosBeanUtils.CONFIG_GLOBAL_NACOS_PROPERTIES_BEAN_NAME;
 import static com.alibaba.nacos.spring.util.NacosBeanUtils.DISCOVERY_GLOBAL_NACOS_PROPERTIES_BEAN_NAME;
 import static com.alibaba.nacos.spring.util.NacosBeanUtils.GLOBAL_NACOS_PROPERTIES_BEAN_NAME;
 import static com.alibaba.nacos.spring.util.NacosBeanUtils.MAINTAIN_GLOBAL_NACOS_PROPERTIES_BEAN_NAME;
 import static com.alibaba.nacos.spring.util.NacosUtils.merge;
 import static java.util.Collections.emptyMap;
+
+import java.util.Map;
+import java.util.Properties;
+
+import org.springframework.beans.factory.BeanFactory;
+
+import com.alibaba.nacos.api.annotation.NacosProperties;
 
 /**
  * The source enumeration of Global {@link NacosProperties}
