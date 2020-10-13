@@ -16,22 +16,6 @@
  */
 package com.alibaba.nacos.spring.core.env;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
-
-import com.alibaba.nacos.api.config.ConfigType;
-import com.alibaba.nacos.spring.context.config.xml.NacosPropertySourceXmlBeanDefinition;
-import com.alibaba.nacos.spring.context.event.config.NacosConfigMetadataEvent;
-import com.alibaba.nacos.spring.util.NacosUtils;
-import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
-
-import org.springframework.beans.factory.xml.XmlReaderContext;
-import org.springframework.core.convert.ConversionService;
-import org.springframework.core.io.Resource;
-import org.springframework.util.StringUtils;
-
 import static com.alibaba.nacos.api.common.Constants.DEFAULT_GROUP;
 import static com.alibaba.nacos.spring.context.annotation.config.NacosPropertySource.AFTER_ATTRIBUTE_NAME;
 import static com.alibaba.nacos.spring.context.annotation.config.NacosPropertySource.AUTO_REFRESHED_ATTRIBUTE_NAME;
@@ -45,6 +29,21 @@ import static com.alibaba.nacos.spring.context.annotation.config.NacosPropertySo
 import static com.alibaba.nacos.spring.util.NacosUtils.DEFAULT_BOOLEAN_ATTRIBUTE_VALUE;
 import static com.alibaba.nacos.spring.util.NacosUtils.DEFAULT_CONFIG_TYPE_VALUE;
 import static com.alibaba.nacos.spring.util.NacosUtils.DEFAULT_STRING_ATTRIBUTE_VALUE;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+
+import org.springframework.beans.factory.xml.XmlReaderContext;
+import org.springframework.core.convert.ConversionService;
+import org.springframework.core.io.Resource;
+import org.springframework.util.StringUtils;
+import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
+
+import com.alibaba.nacos.api.config.ConfigType;
+import com.alibaba.nacos.spring.context.config.xml.NacosPropertySourceXmlBeanDefinition;
+import com.alibaba.nacos.spring.context.event.config.NacosConfigMetadataEvent;
 
 /**
  * XML {@link NacosPropertySource} {@link AbstractNacosPropertySourceBuilder Builder}

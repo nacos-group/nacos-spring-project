@@ -16,14 +16,13 @@
  */
 package com.alibaba.nacos.spring.core.env;
 
+import static com.alibaba.nacos.spring.util.NacosUtils.toProperties;
+
 import java.util.Collections;
 import java.util.Map;
-import java.util.Properties;
 
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.PropertySource;
-
-import static com.alibaba.nacos.spring.util.NacosUtils.toProperties;
 
 /**
  * Nacos {@link PropertySource}, all read methods are immutable.

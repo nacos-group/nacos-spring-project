@@ -16,25 +16,19 @@
  */
 package com.alibaba.nacos.spring.context.annotation.config;
 
+import static com.alibaba.nacos.api.common.Constants.DEFAULT_GROUP;
+import static com.alibaba.nacos.embedded.web.server.NacosConfigHttpHandler.CONTENT_PARAM_NAME;
+import static com.alibaba.nacos.embedded.web.server.NacosConfigHttpHandler.DATA_ID_PARAM_NAME;
+import static com.alibaba.nacos.embedded.web.server.NacosConfigHttpHandler.GROUP_ID_PARAM_NAME;
+
 import java.util.HashMap;
 import java.util.Map;
 
-import com.alibaba.nacos.api.annotation.NacosInjected;
-import com.alibaba.nacos.api.annotation.NacosProperties;
-import com.alibaba.nacos.api.config.ConfigService;
-import com.alibaba.nacos.api.config.ConfigType;
-import com.alibaba.nacos.api.config.annotation.NacosValue;
-import com.alibaba.nacos.api.exception.NacosException;
-import com.alibaba.nacos.embedded.web.server.EmbeddedNacosHttpServer;
-import com.alibaba.nacos.spring.context.annotation.EnableNacos;
-import com.alibaba.nacos.spring.test.AbstractNacosHttpServerTestExecutionListener;
-import com.alibaba.nacos.spring.util.NacosUtils;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -45,10 +39,15 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 
-import static com.alibaba.nacos.api.common.Constants.DEFAULT_GROUP;
-import static com.alibaba.nacos.embedded.web.server.NacosConfigHttpHandler.CONTENT_PARAM_NAME;
-import static com.alibaba.nacos.embedded.web.server.NacosConfigHttpHandler.DATA_ID_PARAM_NAME;
-import static com.alibaba.nacos.embedded.web.server.NacosConfigHttpHandler.GROUP_ID_PARAM_NAME;
+import com.alibaba.nacos.api.annotation.NacosInjected;
+import com.alibaba.nacos.api.annotation.NacosProperties;
+import com.alibaba.nacos.api.config.ConfigService;
+import com.alibaba.nacos.api.config.ConfigType;
+import com.alibaba.nacos.api.config.annotation.NacosValue;
+import com.alibaba.nacos.api.exception.NacosException;
+import com.alibaba.nacos.embedded.web.server.EmbeddedNacosHttpServer;
+import com.alibaba.nacos.spring.test.AbstractNacosHttpServerTestExecutionListener;
+import com.alibaba.nacos.spring.util.NacosUtils;
 
 /**
  * @author <a href="mailto:liaochunyhm@live.com">liaochuntao</a>
@@ -59,20 +58,10 @@ import static com.alibaba.nacos.embedded.web.server.NacosConfigHttpHandler.GROUP
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class,
 		DirtiesContextTestExecutionListener.class, NacosPropertySourceJsonTest.class })
 @NacosPropertySource(dataId = NacosPropertySourceJsonTest.DATA_ID, autoRefreshed = true, type = ConfigType.JSON)
-@EnableNacosConfig(readConfigTypeFromDataId =  false, globalProperties = @NacosProperties(serverAddr = "${server.addr}"))
+@EnableNacosConfig(readConfigTypeFromDataId = false, globalProperties = @NacosProperties(serverAddr = "${server.addr}"))
 @Component
 public class NacosPropertySourceJsonTest
 		extends AbstractNacosHttpServerTestExecutionListener {
-
-	@BeforeClass
-	public static void beforeClass() {
-		NacosUtils.resetReadTypeFromDataId();
-	}
-
-	@AfterClass
-	public static void afterClass() {
-		NacosUtils.resetReadTypeFromDataId();
-	}
 
 	public static final String DATA_ID = "data_json";
 	private String configStr = "{\n" + "    \"people\":{\n"
@@ -85,6 +74,16 @@ public class NacosPropertySourceJsonTest
 	private ConfigService configService;
 	@Autowired
 	private App app;
+
+	@BeforeClass
+	public static void beforeClass() {
+		NacosUtils.resetReadTypeFromDataId();
+	}
+
+	@AfterClass
+	public static void afterClass() {
+		NacosUtils.resetReadTypeFromDataId();
+	}
 
 	@Override
 	protected String getServerAddressPropertyName() {

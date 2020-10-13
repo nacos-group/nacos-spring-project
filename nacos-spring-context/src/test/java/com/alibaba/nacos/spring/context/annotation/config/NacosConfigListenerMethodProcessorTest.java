@@ -16,29 +16,17 @@
  */
 package com.alibaba.nacos.spring.context.annotation.config;
 
+import static com.alibaba.nacos.api.common.Constants.DEFAULT_GROUP;
+import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.DATA_ID;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+
 import javax.annotation.PostConstruct;
 
-import com.alibaba.nacos.api.annotation.NacosInjected;
-import com.alibaba.nacos.api.annotation.NacosProperties;
-import com.alibaba.nacos.api.config.ConfigService;
-import com.alibaba.nacos.api.config.annotation.NacosConfigListener;
-import com.alibaba.nacos.api.config.listener.AbstractListener;
-import com.alibaba.nacos.api.exception.NacosException;
-import com.alibaba.nacos.spring.beans.factory.annotation.AnnotationNacosInjectedBeanPostProcessor;
-import com.alibaba.nacos.spring.beans.factory.annotation.ConfigServiceBeanBuilder;
-import com.alibaba.nacos.spring.context.annotation.EnableNacos;
-import com.alibaba.nacos.spring.convert.converter.config.UserNacosConfigConverter;
-import com.alibaba.nacos.spring.factory.ApplicationContextHolder;
-import com.alibaba.nacos.spring.test.AbstractNacosHttpServerTestExecutionListener;
-import com.alibaba.nacos.spring.test.Listeners;
-import com.alibaba.nacos.spring.test.TestConfiguration;
-import com.alibaba.nacos.spring.test.User;
-import com.alibaba.nacos.spring.util.NacosUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -48,10 +36,21 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 
-import static com.alibaba.nacos.api.common.Constants.DEFAULT_GROUP;
-import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.DATA_ID;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import com.alibaba.nacos.api.annotation.NacosInjected;
+import com.alibaba.nacos.api.annotation.NacosProperties;
+import com.alibaba.nacos.api.config.ConfigService;
+import com.alibaba.nacos.api.config.annotation.NacosConfigListener;
+import com.alibaba.nacos.api.config.listener.AbstractListener;
+import com.alibaba.nacos.api.exception.NacosException;
+import com.alibaba.nacos.spring.beans.factory.annotation.AnnotationNacosInjectedBeanPostProcessor;
+import com.alibaba.nacos.spring.beans.factory.annotation.ConfigServiceBeanBuilder;
+import com.alibaba.nacos.spring.convert.converter.config.UserNacosConfigConverter;
+import com.alibaba.nacos.spring.factory.ApplicationContextHolder;
+import com.alibaba.nacos.spring.test.AbstractNacosHttpServerTestExecutionListener;
+import com.alibaba.nacos.spring.test.Listeners;
+import com.alibaba.nacos.spring.test.TestConfiguration;
+import com.alibaba.nacos.spring.test.User;
+import com.alibaba.nacos.spring.util.NacosUtils;
 
 /**
  * {@link NacosConfigListenerMethodProcessor} Test
@@ -67,9 +66,15 @@ import static org.junit.Assert.assertNull;
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class,
 		DirtiesContextTestExecutionListener.class,
 		NacosConfigListenerMethodProcessorTest.class })
-@EnableNacosConfig(readConfigTypeFromDataId =  false, globalProperties = @NacosProperties(serverAddr = "${server.addr}"))
+@EnableNacosConfig(readConfigTypeFromDataId = false, globalProperties = @NacosProperties(serverAddr = "${server.addr}"))
 public class NacosConfigListenerMethodProcessorTest
 		extends AbstractNacosHttpServerTestExecutionListener {
+
+	@Autowired
+	private Listeners listeners;
+	@NacosInjected
+	private ConfigService configService;
+	private volatile boolean received = false;
 
 	@BeforeClass
 	public static void beforeClass() {
@@ -80,12 +85,6 @@ public class NacosConfigListenerMethodProcessorTest
 	public static void afterClass() {
 		NacosUtils.resetReadTypeFromDataId();
 	}
-
-	@Autowired
-	private Listeners listeners;
-	@NacosInjected
-	private ConfigService configService;
-	private volatile boolean received = false;
 
 	@Bean(name = ApplicationContextHolder.BEAN_NAME)
 	public ApplicationContextHolder applicationContextHolder(

@@ -16,15 +16,15 @@
  */
 package com.alibaba.nacos.spring.test;
 
+import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.DATA_ID;
+import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.GROUP_ID;
+
 import java.util.List;
 import java.util.Map;
 
 import com.alibaba.nacos.api.config.annotation.NacosConfigurationProperties;
 import com.alibaba.nacos.api.config.annotation.NacosIgnore;
 import com.alibaba.nacos.api.config.annotation.NacosProperty;
-
-import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.DATA_ID;
-import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.GROUP_ID;
 
 /**
  * {@link NacosConfigurationProperties Nacos Config}

@@ -19,8 +19,6 @@ package com.alibaba.nacos.spring.test;
 import com.alibaba.nacos.api.config.ConfigType;
 import com.alibaba.nacos.api.config.annotation.NacosConfigurationProperties;
 
-import java.util.List;
-
 /**
  * @author mai.jh
  */
@@ -77,7 +75,8 @@ public class YamlBean {
 
 		@Override
 		public String toString() {
-			return "Student{" + "name='" + name + '\'' + ", num='" + num + '\'' + ", testApp=" + testApp + '}';
+			return "Student{" + "name='" + name + '\'' + ", num='" + num + '\''
+					+ ", testApp=" + testApp + '}';
 		}
 	}
 

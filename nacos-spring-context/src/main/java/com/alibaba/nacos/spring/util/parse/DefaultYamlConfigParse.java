@@ -25,8 +25,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
-import com.alibaba.nacos.api.config.ConfigType;
-import com.alibaba.nacos.spring.util.AbstractConfigParse;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +32,9 @@ import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.nodes.MappingNode;
 import org.yaml.snakeyaml.parser.ParserException;
+
+import com.alibaba.nacos.api.config.ConfigType;
+import com.alibaba.nacos.spring.util.AbstractConfigParse;
 
 /**
  * DefaultYamlConfigParse.

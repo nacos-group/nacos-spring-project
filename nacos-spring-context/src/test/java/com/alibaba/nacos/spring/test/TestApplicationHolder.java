@@ -16,11 +16,11 @@
  */
 package com.alibaba.nacos.spring.test;
 
-import com.alibaba.nacos.spring.factory.ApplicationContextHolder;
-
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import com.alibaba.nacos.spring.factory.ApplicationContextHolder;
 
 /**
  * @author <a href="mailto:liaochunyhm@live.com">liaochuntao</a>

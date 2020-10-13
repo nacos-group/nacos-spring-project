@@ -20,6 +20,19 @@ package com.alibaba.nacos.spring.context.annotation.config;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
+
 import com.alibaba.nacos.api.annotation.NacosInjected;
 import com.alibaba.nacos.api.annotation.NacosProperties;
 import com.alibaba.nacos.api.config.ConfigService;
@@ -27,19 +40,6 @@ import com.alibaba.nacos.api.config.annotation.NacosConfigListener;
 import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.spring.test.AbstractNacosHttpServerTestExecutionListener;
 import com.alibaba.nacos.spring.util.NacosUtils;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
-import org.springframework.context.annotation.Configuration;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
-import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 
 /**
  * NacosConfigListenerTest.
@@ -55,6 +55,13 @@ import org.springframework.test.context.support.DirtiesContextTestExecutionListe
 public class NacosConfigListenerTest
 		extends AbstractNacosHttpServerTestExecutionListener {
 
+	private static volatile String content = "";
+	private static volatile boolean receiveOne = false;
+	private static volatile boolean receiveTwo = false;
+	private static volatile boolean receiveThree = false;
+	@NacosInjected
+	private ConfigService configService;
+
 	@BeforeClass
 	public static void beforeClass() {
 		NacosUtils.resetReadTypeFromDataId();
@@ -64,17 +71,6 @@ public class NacosConfigListenerTest
 	public static void afterClass() {
 		NacosUtils.resetReadTypeFromDataId();
 	}
-
-	private static volatile String content = "";
-
-	private static volatile boolean receiveOne = false;
-
-	private static volatile boolean receiveTwo = false;
-
-	private static volatile boolean receiveThree = false;
-
-	@NacosInjected
-	private ConfigService configService;
 
 	@Override
 	protected String getServerAddressPropertyName() {

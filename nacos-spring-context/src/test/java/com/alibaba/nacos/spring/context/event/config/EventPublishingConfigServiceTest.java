@@ -16,8 +16,21 @@
  */
 package com.alibaba.nacos.spring.context.event.config;
 
+import static com.alibaba.nacos.spring.test.MockConfigService.TIMEOUT_ERROR_MESSAGE;
+import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.CONTENT;
+import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.DATA_ID;
+import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.GROUP_ID;
+
 import java.util.Properties;
 import java.util.concurrent.Executor;
+
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.support.GenericApplicationContext;
 
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.config.listener.AbstractListener;
@@ -25,19 +38,6 @@ import com.alibaba.nacos.api.config.listener.Listener;
 import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.spring.metadata.NacosServiceMetaData;
 import com.alibaba.nacos.spring.test.MockConfigService;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-
-import org.springframework.context.ApplicationListener;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.support.GenericApplicationContext;
-
-import static com.alibaba.nacos.spring.test.MockConfigService.TIMEOUT_ERROR_MESSAGE;
-import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.CONTENT;
-import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.DATA_ID;
-import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.GROUP_ID;
 
 /**
  * {@link EventPublishingConfigService} Test
@@ -54,8 +54,6 @@ public class EventPublishingConfigServiceTest {
 	private ConfigService configService;
 
 	private Properties properties = new Properties();
-
-
 
 	@Before
 	public void init() {

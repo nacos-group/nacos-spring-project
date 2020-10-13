@@ -16,15 +16,14 @@
  */
 package com.alibaba.nacos.spring.context.annotation.config;
 
+import static com.alibaba.nacos.spring.util.NacosBeanUtils.CONFIG_GLOBAL_NACOS_PROPERTIES_BEAN_NAME;
+
 import java.util.Properties;
 
-import com.alibaba.nacos.api.annotation.NacosProperties;
-import com.alibaba.nacos.spring.util.NacosUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -32,7 +31,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import static com.alibaba.nacos.spring.util.NacosBeanUtils.CONFIG_GLOBAL_NACOS_PROPERTIES_BEAN_NAME;
+import com.alibaba.nacos.api.annotation.NacosProperties;
+import com.alibaba.nacos.spring.util.NacosUtils;
 
 /**
  * {@link NacosConfigBeanDefinitionRegistrar} Test
@@ -42,9 +42,15 @@ import static com.alibaba.nacos.spring.util.NacosBeanUtils.CONFIG_GLOBAL_NACOS_P
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = NacosConfigBeanDefinitionRegistrarTest.class)
-@EnableNacosConfig(readConfigTypeFromDataId =  false, globalProperties = @NacosProperties(enableRemoteSyncConfig = "true", maxRetry = "5", configRetryTime = "2600", configLongPollTimeout = "26000"))
+@EnableNacosConfig(readConfigTypeFromDataId = false, globalProperties = @NacosProperties(enableRemoteSyncConfig = "true", maxRetry = "5", configRetryTime = "2600", configLongPollTimeout = "26000"))
 @Component
 public class NacosConfigBeanDefinitionRegistrarTest {
+
+	@Autowired
+	private BeanFactory beanFactory;
+	@Autowired
+	@Qualifier(CONFIG_GLOBAL_NACOS_PROPERTIES_BEAN_NAME)
+	private Properties properties;
 
 	@BeforeClass
 	public static void beforeClass() {
@@ -55,13 +61,6 @@ public class NacosConfigBeanDefinitionRegistrarTest {
 	public static void afterClass() {
 		NacosUtils.resetReadTypeFromDataId();
 	}
-
-	@Autowired
-	private BeanFactory beanFactory;
-
-	@Autowired
-	@Qualifier(CONFIG_GLOBAL_NACOS_PROPERTIES_BEAN_NAME)
-	private Properties properties;
 
 	@Test
 	public void testRegisterBeanDefinitions() {

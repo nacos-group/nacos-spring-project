@@ -16,11 +16,11 @@
  */
 package com.alibaba.nacos.spring.context.event;
 
-import com.alibaba.nacos.spring.context.event.config.NacosConfigMetadataEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.context.ApplicationListener;
+
+import com.alibaba.nacos.spring.context.event.config.NacosConfigMetadataEvent;
 
 /**
  * Logging {@link NacosConfigMetadataEvent} {@link ApplicationListener}

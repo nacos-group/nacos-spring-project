@@ -16,21 +16,21 @@
  */
 package com.alibaba.nacos.samples.spring.listener;
 
+import static com.alibaba.nacos.api.common.Constants.DEFAULT_GROUP;
+
 import java.util.Properties;
 
 import javax.annotation.PostConstruct;
+
+import org.apache.commons.lang3.SystemUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Configuration;
 
 import com.alibaba.nacos.api.annotation.NacosInjected;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.config.annotation.NacosConfigListener;
 import com.alibaba.nacos.samples.spring.NacosConfiguration;
-import org.apache.commons.lang3.SystemUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import org.springframework.context.annotation.Configuration;
-
-import static com.alibaba.nacos.api.common.Constants.DEFAULT_GROUP;
 
 /**
  * Simple {@link NacosConfigListener}

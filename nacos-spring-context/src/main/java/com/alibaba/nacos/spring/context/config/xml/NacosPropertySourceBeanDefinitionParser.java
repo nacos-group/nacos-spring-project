@@ -16,19 +16,19 @@
  */
 package com.alibaba.nacos.spring.context.config.xml;
 
-import com.alibaba.nacos.spring.context.annotation.config.NacosPropertySource;
+import static com.alibaba.nacos.spring.util.NacosBeanUtils.registerNacosPropertySourcePostProcessor;
+import static com.alibaba.nacos.spring.util.NacosBeanUtils.registerXmlNacosPropertySourceBuilder;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Element;
-
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
 import org.springframework.beans.factory.xml.BeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
+import org.w3c.dom.Element;
 
-import static com.alibaba.nacos.spring.util.NacosBeanUtils.registerNacosPropertySourcePostProcessor;
-import static com.alibaba.nacos.spring.util.NacosBeanUtils.registerXmlNacosPropertySourceBuilder;
+import com.alibaba.nacos.spring.context.annotation.config.NacosPropertySource;
 
 /**
  * Nacos Property Source {@link BeanDefinitionParser} for &lt;nacos:property-source

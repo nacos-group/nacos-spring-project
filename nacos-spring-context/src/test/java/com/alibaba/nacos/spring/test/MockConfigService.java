@@ -23,11 +23,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executor;
 
+import org.springframework.util.CollectionUtils;
+
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.config.listener.Listener;
 import com.alibaba.nacos.api.exception.NacosException;
-
-import org.springframework.util.CollectionUtils;
 
 /**
  * Mock {@link ConfigService}.

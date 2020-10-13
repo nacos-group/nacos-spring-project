@@ -16,11 +16,11 @@
  */
 package com.alibaba.nacos.spring.test;
 
-import com.alibaba.nacos.api.config.annotation.NacosConfigListener;
+import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.DATA_ID;
 
 import org.springframework.context.annotation.Configuration;
 
-import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.DATA_ID;
+import com.alibaba.nacos.api.config.annotation.NacosConfigListener;
 
 /**
  * {@link NacosConfigListener} {@link Configuration}

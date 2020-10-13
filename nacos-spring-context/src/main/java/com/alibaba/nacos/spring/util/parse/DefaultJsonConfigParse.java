@@ -16,14 +16,13 @@
  */
 package com.alibaba.nacos.spring.util.parse;
 
+import static com.alibaba.nacos.spring.util.parse.DefaultYamlConfigParse.createYaml;
+
 import java.util.Map;
-import java.util.Properties;
 import java.util.concurrent.atomic.AtomicReference;
 
 import com.alibaba.nacos.api.config.ConfigType;
 import com.alibaba.nacos.spring.util.AbstractConfigParse;
-
-import static com.alibaba.nacos.spring.util.parse.DefaultYamlConfigParse.createYaml;
 
 /**
  * @author <a href="mailto:liaochunyhm@live.com">liaochuntao</a>
