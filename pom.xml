@@ -12,7 +12,7 @@
 
     <groupId>com.alibaba.nacos</groupId>
     <artifactId>nacos-spring-parent</artifactId>
-    <version>0.4.0</version>
+    <version>1.0.0</version>
     <name>Alibaba Nacos :: Spring :: POM</name>
     <packaging>pom</packaging>
 
@@ -99,7 +99,7 @@
         <!-- apache commons-lang3 -->
         <commons-lang3.version>3.4</commons-lang3.version>
         <!-- Alibaba's Spring Context Support -->
-        <spring-context-support.version>1.0.10</spring-context-support.version>
+        <spring-context-support.version>1.0.11</spring-context-support.version>
     </properties>
 
     <!-- 管理依赖版本号,子项目不会默认依赖 -->
