@@ -39,23 +39,25 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.MethodParameter;
+import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.env.Environment;
 import org.springframework.util.ReflectionUtils;
 
 import com.alibaba.nacos.api.config.annotation.NacosValue;
 import com.alibaba.nacos.common.utils.MD5Utils;
 import com.alibaba.nacos.spring.context.event.config.NacosConfigReceivedEvent;
-import com.alibaba.spring.beans.factory.annotation.AnnotationInjectedBeanPostProcessor;
+import com.alibaba.spring.beans.factory.annotation.AbstractAnnotationBeanPostProcessor;
 
 /**
+ * Injected {@link NacosValue}
  * {@link org.springframework.beans.factory.config.BeanPostProcessor} implementation.
  *
  * @author <a href="mailto:huangxiaoyu1018@gmail.com">hxy1991</a>
  * @see NacosValue
  * @since 0.1.0
  */
-public class NacosValueAnnotationBeanPostProcessor extends
-		AnnotationInjectedBeanPostProcessor<NacosValue> implements BeanFactoryAware,
+public class NacosValueAnnotationBeanPostProcessor
+		extends AbstractAnnotationBeanPostProcessor implements BeanFactoryAware,
 		EnvironmentAware, ApplicationListener<NacosConfigReceivedEvent> {
 
 	/**
@@ -80,11 +82,29 @@ public class NacosValueAnnotationBeanPostProcessor extends
 
 	private Environment environment;
 
+	public NacosValueAnnotationBeanPostProcessor() {
+		super(NacosValue.class);
+	}
+
 	@Override
-	protected Object doGetInjectedBean(NacosValue annotation, Object bean,
+	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+		if (!(beanFactory instanceof ConfigurableListableBeanFactory)) {
+			throw new IllegalArgumentException(
+					"NacosValueAnnotationBeanPostProcessor requires a ConfigurableListableBeanFactory");
+		}
+		this.beanFactory = (ConfigurableListableBeanFactory) beanFactory;
+	}
+
+	@Override
+	public void setEnvironment(Environment environment) {
+		this.environment = environment;
+	}
+
+	@Override
+	protected Object doGetInjectedBean(AnnotationAttributes attributes, Object bean,
 			String beanName, Class<?> injectedType,
-			InjectionMetadata.InjectedElement injectedElement) {
-		String annotationValue = annotation.value();
+			InjectionMetadata.InjectedElement injectedElement) throws Exception {
+		String annotationValue = attributes.getString("value");
 		String value = beanFactory.resolveEmbeddedValue(annotationValue);
 
 		Member member = injectedElement.getMember();
@@ -100,24 +120,10 @@ public class NacosValueAnnotationBeanPostProcessor extends
 	}
 
 	@Override
-	protected String buildInjectedObjectCacheKey(NacosValue annotation, Object bean,
-			String beanName, Class<?> injectedType,
+	protected String buildInjectedObjectCacheKey(AnnotationAttributes attributes,
+			Object bean, String beanName, Class<?> injectedType,
 			InjectionMetadata.InjectedElement injectedElement) {
-		return bean.getClass().getName() + annotation;
-	}
-
-	@Override
-	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
-		if (!(beanFactory instanceof ConfigurableListableBeanFactory)) {
-			throw new IllegalArgumentException(
-					"NacosValueAnnotationBeanPostProcessor requires a ConfigurableListableBeanFactory");
-		}
-		this.beanFactory = (ConfigurableListableBeanFactory) beanFactory;
-	}
-
-	@Override
-	public void setEnvironment(Environment environment) {
-		this.environment = environment;
+		return bean.getClass().getName() + attributes;
 	}
 
 	@Override
