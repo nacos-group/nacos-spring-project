@@ -101,6 +101,7 @@ public class NacosPropertySourceTest
 
 		config.put(CONTENT_PARAM_NAME, "app.name=" + APP_NAME + LINE_SEPARATOR
 				+ "app.nacosFieldIntValueAutoRefreshed=" + VALUE_1 + LINE_SEPARATOR
+				+ "app.nacosFieldIntValueAutoRefreshedWithDefaultValueForRemove=" + VALUE_1 + LINE_SEPARATOR
 				+ "app.nacosMethodIntValueAutoRefreshed=" + VALUE_2);
 		httpServer.initConfig(config);
 	}
@@ -137,6 +138,8 @@ public class NacosPropertySourceTest
 
 		Assert.assertEquals(VALUE_2, app.nacosMethodIntValueAutoRefreshed);
 
+		Assert.assertEquals(VALUE_1, app.nacosFieldIntValueAutoRefreshedWithDefaultValueForRemove);
+
 		configService.publishConfig(DATA_ID, DEFAULT_GROUP, "app.name=" + ANOTHER_APP_NAME
 				+ LINE_SEPARATOR + "app.nacosFieldIntValueAutoRefreshed=" + VALUE_3
 				+ LINE_SEPARATOR + "app.nacosMethodIntValueAutoRefreshed=" + VALUE_4);
@@ -162,6 +165,8 @@ public class NacosPropertySourceTest
 		Assert.assertEquals(VALUE_3, app.nacosFieldIntValueAutoRefreshed);
 
 		Assert.assertEquals(VALUE_4, app.nacosMethodIntValueAutoRefreshed);
+
+		Assert.assertEquals(VALUE_2, app.nacosFieldIntValueAutoRefreshedWithDefaultValueForRemove);
 	}
 
 	public static class App {
@@ -177,6 +182,9 @@ public class NacosPropertySourceTest
 
 		@NacosValue(value = "${app.name:Nacos}", autoRefreshed = true)
 		private String nacosNameAutoRefreshedWithDefaultValue;
+
+		@NacosValue(value = "${app.nacosFieldIntValueAutoRefreshedWithDefaultValueForRemove:" + VALUE_2 + "}", autoRefreshed = true)
+		private int nacosFieldIntValueAutoRefreshedWithDefaultValueForRemove;
 
 		@NacosValue("${app.name}")
 		private String nacosNameNotAutoRefreshed;

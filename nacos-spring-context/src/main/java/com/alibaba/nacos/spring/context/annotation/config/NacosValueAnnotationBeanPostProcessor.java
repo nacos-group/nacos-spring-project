@@ -144,8 +144,7 @@ public class NacosValueAnnotationBeanPostProcessor
 		// fix issue #142
 		for (Map.Entry<String, List<NacosValueTarget>> entry : placeholderNacosValueTargetMap
 				.entrySet()) {
-			String key = environment.resolvePlaceholders(entry.getKey());
-			String newValue = environment.getProperty(key);
+			String newValue = environment.resolvePlaceholders(entry.getKey());
 			if (newValue == null) {
 				continue;
 			}
@@ -252,12 +251,6 @@ public class NacosValueAnnotationBeanPostProcessor
 
 		int beginIndex = PLACEHOLDER_PREFIX.length();
 		int endIndex = placeholder.length() - PLACEHOLDER_PREFIX.length() + 1;
-		placeholder = placeholder.substring(beginIndex, endIndex);
-
-		int separatorIndex = placeholder.indexOf(VALUE_SEPARATOR);
-		if (separatorIndex != -1) {
-			return placeholder.substring(0, separatorIndex);
-		}
 
 		return placeholder;
 	}
