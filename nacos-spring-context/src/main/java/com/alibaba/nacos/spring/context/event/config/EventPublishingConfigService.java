@@ -20,6 +20,7 @@ package com.alibaba.nacos.spring.context.event.config;
 import java.util.Properties;
 import java.util.concurrent.Executor;
 
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ConfigurableApplicationContext;
 
@@ -35,7 +36,8 @@ import com.alibaba.nacos.spring.metadata.NacosServiceMetaData;
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
  * @since 0.1.0
  */
-public class EventPublishingConfigService implements ConfigService, NacosServiceMetaData {
+public class EventPublishingConfigService
+		implements ConfigService, NacosServiceMetaData, DisposableBean {
 
 	private final ConfigService configService;
 
@@ -143,5 +145,15 @@ public class EventPublishingConfigService implements ConfigService, NacosService
 	@Override
 	public Properties getProperties() {
 		return properties;
+	}
+
+	/**
+	 * Destroy lifecycle method to invoke {@link #shutDown()}
+	 * @throws Exception
+	 * @since 1.0.0
+	 */
+	@Override
+	public void destroy() throws Exception {
+		shutDown();
 	}
 }
