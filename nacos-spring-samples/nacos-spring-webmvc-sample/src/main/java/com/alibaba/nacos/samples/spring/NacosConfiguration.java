@@ -33,7 +33,7 @@ import com.alibaba.nacos.spring.context.annotation.EnableNacos;
  * @since 0.1.0
  */
 @Configuration
-@EnableNacos(globalProperties = @NacosProperties(serverAddr = "${nacos.server-addr}", enableRemoteSyncConfig = "true", maxRetry = "5", configRetryTime = "4000", configLongPollTimeout = "26000", username = "nacos", password = "nacos"))
+@EnableNacos(readConfigTypeFromDataId = false, globalProperties = @NacosProperties(serverAddr = "${nacos.server-addr}", enableRemoteSyncConfig = "true", maxRetry = "5", configRetryTime = "4000", configLongPollTimeout = "26000", username = "nacos", password = "nacos"))
 public class NacosConfiguration {
 
 	/**
