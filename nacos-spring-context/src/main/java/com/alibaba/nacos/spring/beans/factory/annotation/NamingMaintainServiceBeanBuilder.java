@@ -30,7 +30,7 @@ public class NamingMaintainServiceBeanBuilder
 		extends AbstractNacosServiceBeanBuilder<NamingMaintainService> {
 
 	/**
-	 * The bean name of {@link NamingServiceBeanBuilder}
+	 * The bean name of {@link NamingMaintainServiceBeanBuilder}
 	 */
 	public static final String BEAN_NAME = "namingMaintainServiceBeanBuilder";
 
