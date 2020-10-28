@@ -20,6 +20,7 @@ import static com.alibaba.nacos.api.common.Constants.DEFAULT_GROUP;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.stereotype.Controller;
@@ -44,6 +45,9 @@ public class ConfigServiceController {
 	@NacosValue(value = "${people.enable}", autoRefreshed = true)
 	private String enable;
 
+	@NacosValue(value = "#{'${people.list:zhangsan,lisi}'.split(',')}", autoRefreshed = true)
+	private List list;
+
 	@NacosInjected
 	private ConfigService configService;
 
@@ -59,6 +63,12 @@ public class ConfigServiceController {
 	@ResponseBody
 	public String value() {
 		return enable;
+	}
+
+	@RequestMapping(value = "/list")
+	@ResponseBody
+	public Object list() {
+		return list;
 	}
 
 	@RequestMapping(value = "/publish", method = POST)

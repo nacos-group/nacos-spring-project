@@ -73,7 +73,7 @@ public class NacosPropertySourceConfiguration {
 		try {
 			ConfigService configService = NacosFactory.createConfigService(properties);
 			// Publish for FIRST_DATA_ID
-			publishConfig(configService, FIRST_DATA_ID, "user.name = Mercy Ma");
+			publishConfig(configService, FIRST_DATA_ID, "user.name = Mercy Ma\npeople.enable=false");
 
 			// Publish for BEFORE_OS_ENV_DATA_ID
 			publishConfig(configService, BEFORE_OS_ENV_DATA_ID, "PATH = /home/my-path");

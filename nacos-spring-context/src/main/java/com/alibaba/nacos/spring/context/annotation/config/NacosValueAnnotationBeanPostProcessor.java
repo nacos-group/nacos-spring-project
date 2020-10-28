@@ -35,6 +35,8 @@ import org.springframework.beans.TypeConverter;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.annotation.InjectionMetadata;
+import org.springframework.beans.factory.config.BeanExpressionContext;
+import org.springframework.beans.factory.config.BeanExpressionResolver;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.EnvironmentAware;
@@ -65,6 +67,8 @@ public class NacosValueAnnotationBeanPostProcessor
 	 */
 	public static final String BEAN_NAME = "nacosValueAnnotationBeanPostProcessor";
 
+	private static final String SPEL_PREFIX = "#{";
+
 	private static final String PLACEHOLDER_PREFIX = "${";
 
 	private static final String PLACEHOLDER_SUFFIX = "}";
@@ -82,6 +86,10 @@ public class NacosValueAnnotationBeanPostProcessor
 
 	private Environment environment;
 
+	private BeanExpressionResolver exprResolver;
+
+	private BeanExpressionContext exprContext;
+
 	public NacosValueAnnotationBeanPostProcessor() {
 		super(NacosValue.class);
 	}
@@ -93,6 +101,8 @@ public class NacosValueAnnotationBeanPostProcessor
 					"NacosValueAnnotationBeanPostProcessor requires a ConfigurableListableBeanFactory");
 		}
 		this.beanFactory = (ConfigurableListableBeanFactory) beanFactory;
+		this.exprResolver = ((ConfigurableListableBeanFactory) beanFactory).getBeanExpressionResolver();
+		this.exprContext = new BeanExpressionContext((ConfigurableListableBeanFactory) beanFactory, null);
 	}
 
 	@Override
@@ -104,10 +114,8 @@ public class NacosValueAnnotationBeanPostProcessor
 	protected Object doGetInjectedBean(AnnotationAttributes attributes, Object bean,
 			String beanName, Class<?> injectedType,
 			InjectionMetadata.InjectedElement injectedElement) throws Exception {
-		String annotationValue = attributes.getString("value");
-		String value = beanFactory.resolveEmbeddedValue(annotationValue);
-
-		Member member = injectedElement.getMember();
+        Object value = resolveStringValue(attributes.getString("value"));
+        Member member = injectedElement.getMember();
 		if (member instanceof Field) {
 			return convertIfNecessary((Field) member, value);
 		}
@@ -146,6 +154,7 @@ public class NacosValueAnnotationBeanPostProcessor
 				.entrySet()) {
 			String key = environment.resolvePlaceholders(entry.getKey());
 			String newValue = environment.getProperty(key);
+
 			if (newValue == null) {
 				continue;
 			}
@@ -155,15 +164,29 @@ public class NacosValueAnnotationBeanPostProcessor
 				boolean isUpdate = !target.lastMD5.equals(md5String);
 				if (isUpdate) {
 					target.updateLastMD5(md5String);
+					Object evaluatedValue = resolveNotifyValue(target.nacosValueExpr, key, newValue);
 					if (target.method == null) {
-						setField(target, newValue);
+						setField(target, evaluatedValue);
 					}
 					else {
-						setMethod(target, newValue);
+						setMethod(target, evaluatedValue);
 					}
 				}
 			}
 		}
+	}
+
+	private Object resolveNotifyValue(String nacosValueExpr, String key, String newValue) {
+		String spelExpr = nacosValueExpr.replaceAll("\\$\\{" + key + PLACEHOLDER_SUFFIX, newValue);
+		return resolveStringValue(spelExpr);
+	}
+
+	private Object resolveStringValue(String strVal) {
+		String value = beanFactory.resolveEmbeddedValue(strVal);
+		if (exprResolver != null && value != null) {
+			return exprResolver.evaluate(value, exprContext);
+		}
+		return value;
 	}
 
 	private Object convertIfNecessary(Field field, Object value) {
@@ -229,7 +252,7 @@ public class NacosValueAnnotationBeanPostProcessor
 				}
 
 				NacosValueTarget nacosValueTarget = new NacosValueTarget(bean, beanName,
-						method, field);
+						method, field, annotation.value());
 				put2ListMap(placeholderNacosValueTargetMap, placeholder,
 						nacosValueTarget);
 			}
@@ -237,7 +260,7 @@ public class NacosValueAnnotationBeanPostProcessor
 	}
 
 	private String resolvePlaceholder(String placeholder) {
-		if (!placeholder.startsWith(PLACEHOLDER_PREFIX)) {
+		if (!placeholder.startsWith(PLACEHOLDER_PREFIX) && !placeholder.startsWith(SPEL_PREFIX)) {
 			return null;
 		}
 
@@ -249,9 +272,15 @@ public class NacosValueAnnotationBeanPostProcessor
 				+ PLACEHOLDER_SUFFIX.length()) {
 			return null;
 		}
-
-		int beginIndex = PLACEHOLDER_PREFIX.length();
-		int endIndex = placeholder.length() - PLACEHOLDER_PREFIX.length() + 1;
+        int beginIndex = placeholder.indexOf(PLACEHOLDER_PREFIX);
+		if (beginIndex == -1) {
+		    return null;
+        }
+		beginIndex = beginIndex + PLACEHOLDER_PREFIX.length();
+        int endIndex = placeholder.indexOf(PLACEHOLDER_SUFFIX, beginIndex);
+		if (endIndex == -1) {
+		    return null;
+        }
 		placeholder = placeholder.substring(beginIndex, endIndex);
 
 		int separatorIndex = placeholder.indexOf(VALUE_SEPARATOR);
@@ -271,7 +300,7 @@ public class NacosValueAnnotationBeanPostProcessor
 		map.put(key, valueList);
 	}
 
-	private void setMethod(NacosValueTarget nacosValueTarget, String propertyValue) {
+	private void setMethod(NacosValueTarget nacosValueTarget, Object propertyValue) {
 		Method method = nacosValueTarget.method;
 		ReflectionUtils.makeAccessible(method);
 		try {
@@ -292,7 +321,7 @@ public class NacosValueAnnotationBeanPostProcessor
 	}
 
 	private void setField(final NacosValueTarget nacosValueTarget,
-			final String propertyValue) {
+			final Object propertyValue) {
 		final Object bean = nacosValueTarget.bean;
 
 		Field field = nacosValueTarget.field;
@@ -328,7 +357,9 @@ public class NacosValueAnnotationBeanPostProcessor
 
 		private String lastMD5;
 
-		NacosValueTarget(Object bean, String beanName, Method method, Field field) {
+		private final String nacosValueExpr;
+
+		NacosValueTarget(Object bean, String beanName, Method method, Field field, String nacosValueExpr) {
 			this.bean = bean;
 
 			this.beanName = beanName;
@@ -338,6 +369,20 @@ public class NacosValueAnnotationBeanPostProcessor
 			this.field = field;
 
 			this.lastMD5 = "";
+
+			this.nacosValueExpr = resolveExpr(nacosValueExpr);
+		}
+
+		private String resolveExpr(String nacosValueExpr) {
+			int replaceHolderBegin = nacosValueExpr.indexOf(PLACEHOLDER_PREFIX) + PLACEHOLDER_PREFIX.length();
+			int replaceHolderEnd = nacosValueExpr.indexOf(PLACEHOLDER_SUFFIX, replaceHolderBegin);
+
+			String replaceHolder = nacosValueExpr.substring(replaceHolderBegin, replaceHolderEnd);
+			int separatorIndex = replaceHolder.indexOf(VALUE_SEPARATOR);
+			if (separatorIndex != -1) {
+				return nacosValueExpr.substring(0, separatorIndex + replaceHolderBegin) + nacosValueExpr.substring(replaceHolderEnd);
+			}
+			return nacosValueExpr;
 		}
 
 		protected void updateLastMD5(String newMD5) {

@@ -22,6 +22,7 @@ import static com.alibaba.nacos.embedded.web.server.NacosConfigHttpHandler.DATA_
 import static com.alibaba.nacos.embedded.web.server.NacosConfigHttpHandler.GROUP_ID_PARAM_NAME;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.AfterClass;
@@ -76,6 +77,11 @@ public class NacosPropertySourceTest
 	private static final int VALUE_2 = 2;
 	private static final int VALUE_3 = 3;
 	private static final int VALUE_4 = 4;
+	private static final String VALUE_5 = "zhangsan";
+	private static final String VALUE_6 = "lisi";
+	private static final String VALUE_7 = "wangwu";
+	private static final String VALUE_8 = "zhaoliu";
+
 	@NacosInjected
 	private ConfigService configService;
 	@Autowired
@@ -101,7 +107,8 @@ public class NacosPropertySourceTest
 
 		config.put(CONTENT_PARAM_NAME, "app.name=" + APP_NAME + LINE_SEPARATOR
 				+ "app.nacosFieldIntValueAutoRefreshed=" + VALUE_1 + LINE_SEPARATOR
-				+ "app.nacosMethodIntValueAutoRefreshed=" + VALUE_2);
+				+ "app.nacosMethodIntValueAutoRefreshed=" + VALUE_2 + LINE_SEPARATOR
+				+ "app.nacosFieldListValueAutoRefreshed=" + VALUE_5 + "," + VALUE_6);
 		httpServer.initConfig(config);
 	}
 
@@ -133,13 +140,20 @@ public class NacosPropertySourceTest
 
 		Assert.assertEquals(VALUE_2, app.nacosMethodIntValue);
 
+		Assert.assertEquals(VALUE_5, app.nacosFieldListValue.get(0));
+		Assert.assertEquals(VALUE_6, app.nacosFieldListValue.get(1));
+
 		Assert.assertEquals(VALUE_1, app.nacosFieldIntValueAutoRefreshed);
 
 		Assert.assertEquals(VALUE_2, app.nacosMethodIntValueAutoRefreshed);
 
+		Assert.assertEquals(VALUE_5, app.nacosFieldListValueAutoRefreshed.get(0));
+		Assert.assertEquals(VALUE_6, app.nacosFieldListValueAutoRefreshed.get(1));
+
 		configService.publishConfig(DATA_ID, DEFAULT_GROUP, "app.name=" + ANOTHER_APP_NAME
 				+ LINE_SEPARATOR + "app.nacosFieldIntValueAutoRefreshed=" + VALUE_3
-				+ LINE_SEPARATOR + "app.nacosMethodIntValueAutoRefreshed=" + VALUE_4);
+				+ LINE_SEPARATOR + "app.nacosMethodIntValueAutoRefreshed=" + VALUE_4
+				+ LINE_SEPARATOR + "app.nacosFieldListValueAutoRefreshed=" + VALUE_7 + "," + VALUE_8);
 
 		Thread.sleep(1000);
 
@@ -159,9 +173,16 @@ public class NacosPropertySourceTest
 
 		Assert.assertEquals(VALUE_2, app.nacosMethodIntValue);
 
+		Assert.assertEquals(VALUE_5, app.nacosFieldListValue.get(0));
+		Assert.assertEquals(VALUE_6, app.nacosFieldListValue.get(1));
+
 		Assert.assertEquals(VALUE_3, app.nacosFieldIntValueAutoRefreshed);
 
 		Assert.assertEquals(VALUE_4, app.nacosMethodIntValueAutoRefreshed);
+
+		Assert.assertEquals(VALUE_7, app.nacosFieldListValueAutoRefreshed.get(0));
+		Assert.assertEquals(VALUE_8, app.nacosFieldListValueAutoRefreshed.get(1));
+
 	}
 
 	public static class App {
@@ -189,6 +210,12 @@ public class NacosPropertySourceTest
 
 		private int nacosMethodIntValue;
 		private int nacosMethodIntValueAutoRefreshed;
+
+		@NacosValue(value = "#{'${app.nacosFieldListValue:" + VALUE_5 + "," + VALUE_6 + "}'.split(',')}")
+		private List nacosFieldListValue;
+
+		@NacosValue(value = "#{'${app.nacosFieldListValueAutoRefreshed}'.split(',')}", autoRefreshed = true)
+		private List nacosFieldListValueAutoRefreshed;
 
 		@NacosValue("${app.nacosMethodIntValue:" + VALUE_2 + "}")
 		public void setNacosMethodIntValue(int nacosMethodIntValue) {
