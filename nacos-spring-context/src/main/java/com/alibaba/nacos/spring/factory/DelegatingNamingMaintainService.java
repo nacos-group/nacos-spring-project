@@ -125,6 +125,12 @@ class DelegatingNamingMaintainService
 	}
 
 	@Override
+	public void shutDown()
+			throws NacosException {
+		delegate.shutDown();
+	}
+
+	@Override
 	public Properties getProperties() {
 		return properties;
 	}
