@@ -35,13 +35,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import com.alibaba.nacos.api.config.ConfigService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.BeanClassLoaderAware;
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.BeanFactoryAware;
-import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.*;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -68,7 +66,7 @@ import com.alibaba.nacos.spring.util.config.NacosConfigLoader;
  */
 public abstract class AbstractNacosPropertySourceBuilder<T extends BeanDefinition>
 		implements EnvironmentAware, BeanFactoryAware, BeanClassLoaderAware,
-		ApplicationContextAware, InitializingBean {
+		ApplicationContextAware, InitializingBean, DisposableBean {
 
 	protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 	private final Class<T> beanDefinitionType;
@@ -271,6 +269,17 @@ public abstract class AbstractNacosPropertySourceBuilder<T extends BeanDefinitio
 		nacosConfigLoader = new NacosConfigLoader(environment);
 		nacosConfigLoader.setNacosServiceFactory(getNacosServiceFactoryBean(beanFactory));
 		globalNacosProperties = CONFIG.getMergedGlobalProperties(beanFactory);
+	}
+
+	@Override
+	public void destroy() throws Exception {
+		if(nacosConfigLoader == null){
+			return;
+		}
+		ConfigService configService = nacosConfigLoader.getConfigService();
+		if(configService != null){
+			configService.shutDown();
+		}
 	}
 
 	/**
