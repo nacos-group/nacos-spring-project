@@ -11,9 +11,9 @@
         http://nacos.io/schema/nacos
         http://nacos.io/schema/nacos.xsd">
 
-    <context:property-placeholder order="0"></context:property-placeholder>
+    <context:property-placeholder order="0"/>
 
-    <nacos:annotation-driven read-type-from-daraId="false"/>
+    <nacos:annotation-driven read-type-from-dataId="false"/>
 
     <nacos:global-properties server-addr="${nacos.server-addr}"/>
 

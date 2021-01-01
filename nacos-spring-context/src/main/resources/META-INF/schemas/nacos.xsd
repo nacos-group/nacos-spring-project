@@ -24,7 +24,7 @@
 			]]></xsd:documentation>
         </xsd:annotation>
         <xsd:complexType>
-            <xsd:attribute name="read-type-from-daraId" default="true"/>
+            <xsd:attribute name="read-type-from-dataId" default="true"/>
         </xsd:complexType>
     </xsd:element>
 
