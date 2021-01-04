@@ -273,11 +273,11 @@ public abstract class AbstractNacosPropertySourceBuilder<T extends BeanDefinitio
 
 	@Override
 	public void destroy() throws Exception {
-		if(nacosConfigLoader == null){
+		if (nacosConfigLoader == null) {
 			return;
 		}
 		ConfigService configService = nacosConfigLoader.getConfigService();
-		if(configService != null){
+		if (configService != null) {
 			configService.shutDown();
 		}
 	}
