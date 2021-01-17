@@ -99,7 +99,7 @@ public class MockConfigService implements ConfigService {
 	}
 	
 	@Override
-	public boolean publishConfig(String dataId, String group, String content, String type)
+	public boolean publishConfig(String dataId, String group, final String content, String type)
 			throws NacosException {
 		String key = createKey(dataId, group, type);
 		contentCache.put(key, content);
