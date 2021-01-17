@@ -98,7 +98,7 @@ public enum FileTypeEnum {
                 }
             }
         }
-        return FileTypeEnum.TEXT;
+        return FileTypeEnum.PROPERTIES;
     }
     
     private static final FileTypeEnum[] VALUES = FileTypeEnum.values();

@@ -25,9 +25,7 @@ import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.DATA_ID;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.AfterClass;
 import org.junit.Assert;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
