@@ -35,16 +35,6 @@ import com.alibaba.nacos.spring.util.NacosUtils;
  */
 public class NacosPropertiesTest {
 
-	@BeforeClass
-	public static void beforeClass() {
-		NacosUtils.resetReadTypeFromDataId();
-	}
-
-	@AfterClass
-	public static void afterClass() {
-		NacosUtils.resetReadTypeFromDataId();
-	}
-
 	@Test
 	public void testConstants() {
 		Assert.assertEquals("nacos.", NacosProperties.PREFIX);

@@ -23,9 +23,6 @@
 	            @NacosConfigProperties / @NacosProperty / @NacosIgnore
 			]]></xsd:documentation>
         </xsd:annotation>
-        <xsd:complexType>
-            <xsd:attribute name="read-type-from-daraId" default="true"/>
-        </xsd:complexType>
     </xsd:element>
 
     <xsd:element name="global-properties">

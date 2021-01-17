@@ -36,8 +36,6 @@ import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotationMetadata;
 
-import com.alibaba.nacos.spring.util.NacosUtils;
-
 /**
  * Nacos Properties {@link ImportBeanDefinitionRegistrar BeanDefinition Registrar}
  *
@@ -65,9 +63,6 @@ public class NacosBeanDefinitionRegistrar
 		AnnotationAttributes attributes = AnnotationAttributes
 				.fromMap(importingClassMetadata
 						.getAnnotationAttributes(EnableNacos.class.getName()));
-
-		boolean readTypeFromDataId = attributes.getBoolean("readConfigTypeFromDataId");
-		NacosUtils.setReadTypeFromDataIdIfNull(readTypeFromDataId);
 
 		// Register Global Nacos Properties Bean
 		registerGlobalNacosProperties(attributes, registry, environment,

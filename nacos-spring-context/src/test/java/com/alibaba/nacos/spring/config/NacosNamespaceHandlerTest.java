@@ -48,7 +48,6 @@ import com.alibaba.nacos.spring.context.config.xml.NacosAnnotationDrivenBeanDefi
 import com.alibaba.nacos.spring.context.config.xml.NacosNamespaceHandler;
 import com.alibaba.nacos.spring.test.AbstractNacosHttpServerTestExecutionListener;
 import com.alibaba.nacos.spring.test.User;
-import com.alibaba.nacos.spring.util.NacosUtils;
 
 /**
  * {@link NacosNamespaceHandler} Test
@@ -64,23 +63,13 @@ import com.alibaba.nacos.spring.util.NacosUtils;
 @DirtiesContext
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class,
 		DirtiesContextTestExecutionListener.class, NacosNamespaceHandlerTest.class })
-@EnableNacos(readConfigTypeFromDataId = false, globalProperties = @NacosProperties(serverAddr = "${nacos.server-addr}"))
+@EnableNacos(globalProperties = @NacosProperties(serverAddr = "${nacos.server-addr}"))
 public class NacosNamespaceHandlerTest
 		extends AbstractNacosHttpServerTestExecutionListener {
 	@Autowired
 	private User user;
 	@NacosInjected
 	private ConfigService configService;
-
-	@BeforeClass
-	public static void beforeClass() {
-		NacosUtils.resetReadTypeFromDataId();
-	}
-
-	@AfterClass
-	public static void afterClass() {
-		NacosUtils.resetReadTypeFromDataId();
-	}
 
 	@Override
 	protected String getServerAddressPropertyName() {

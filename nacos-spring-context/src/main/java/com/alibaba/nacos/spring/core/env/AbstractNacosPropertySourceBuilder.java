@@ -164,15 +164,15 @@ public abstract class AbstractNacosPropertySourceBuilder<T extends BeanDefinitio
 
 		dataId = NacosUtils.readFromEnvironment(dataId, environment);
 		groupId = NacosUtils.readFromEnvironment(groupId, environment);
-
-		String type = null;
-
-		if (NacosUtils.isReadTypeFromDataId()) {
+		
+		final String type;
+		
+		ConfigType typeEunm = (ConfigType) runtimeAttributes.get(CONFIG_TYPE_ATTRIBUTE_NAME);
+		if (ConfigType.UNSET.equals(typeEunm)) {
 			type = NacosUtils.readFileExtension(dataId);
 		}
 		else {
-			type = ((ConfigType) runtimeAttributes.get(CONFIG_TYPE_ATTRIBUTE_NAME))
-					.getType();
+			type = typeEunm.getType();
 		}
 
 		Map<String, Object> nacosPropertiesAttributes = (Map<String, Object>) runtimeAttributes

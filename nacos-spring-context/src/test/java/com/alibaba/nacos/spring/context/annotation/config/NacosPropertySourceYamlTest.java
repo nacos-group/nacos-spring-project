@@ -79,16 +79,6 @@ public class NacosPropertySourceYamlTest
 	@Qualifier(value = "myApp")
 	private App app;
 
-	@BeforeClass
-	public static void beforeClass() {
-		NacosUtils.resetReadTypeFromDataId();
-	}
-
-	@AfterClass
-	public static void afterClass() {
-		NacosUtils.resetReadTypeFromDataId();
-	}
-
 	@Override
 	public void init(EmbeddedNacosHttpServer httpServer) {
 		Map<String, String> config = new HashMap<String, String>(1);

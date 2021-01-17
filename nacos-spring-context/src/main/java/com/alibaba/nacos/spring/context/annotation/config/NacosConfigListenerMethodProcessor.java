@@ -26,6 +26,7 @@ import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.Properties;
 
+import com.alibaba.nacos.api.config.ConfigType;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.context.ApplicationContext;
@@ -97,14 +98,14 @@ public class NacosConfigListenerMethodProcessor
 				environment);
 		final String groupId = NacosUtils.readFromEnvironment(listener.groupId(),
 				environment);
-
 		final String type;
-
-		if (NacosUtils.isReadTypeFromDataId()) {
+		
+		ConfigType typeEunm = listener.type();
+		if (ConfigType.UNSET.equals(typeEunm)) {
 			type = NacosUtils.readFileExtension(dataId);
 		}
 		else {
-			type = listener.type().getType();
+			type = typeEunm.getType();
 		}
 
 		long timeout = listener.timeout();

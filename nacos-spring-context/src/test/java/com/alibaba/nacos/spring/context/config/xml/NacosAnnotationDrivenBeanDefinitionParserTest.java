@@ -75,14 +75,8 @@ public class NacosAnnotationDrivenBeanDefinitionParserTest {
 		System.setProperty("nacos.server-addr", "127.0.0.1:8080");
 	}
 
-	@BeforeClass
-	public static void beforeClass() {
-		NacosUtils.resetReadTypeFromDataId();
-	}
-
 	@AfterClass
 	public static void afterClass() {
-		NacosUtils.resetReadTypeFromDataId();
 		System.getProperties().remove("nacos.server-addr");
 	}
 

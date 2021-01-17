@@ -64,7 +64,7 @@ import com.alibaba.nacos.spring.util.NacosUtils;
 		DirtiesContextTestExecutionListener.class, NacosPropertySourceTest.class })
 @NacosPropertySources({
 		@NacosPropertySource(dataId = NacosPropertySourceTest.DATA_ID, autoRefreshed = true) })
-@EnableNacosConfig(readConfigTypeFromDataId = false, globalProperties = @NacosProperties(serverAddr = "${server.addr}", enableRemoteSyncConfig = "true", maxRetry = "5", configRetryTime = "2600", configLongPollTimeout = "26000"))
+@EnableNacosConfig(globalProperties = @NacosProperties(serverAddr = "${server.addr}", enableRemoteSyncConfig = "true", maxRetry = "5", configRetryTime = "2600", configLongPollTimeout = "26000"))
 @Component
 public class NacosPropertySourceTest
 		extends AbstractNacosHttpServerTestExecutionListener {
@@ -88,16 +88,6 @@ public class NacosPropertySourceTest
 	private App app;
 	@Autowired
 	private Environment environment;
-
-	@BeforeClass
-	public static void beforeClass() {
-		NacosUtils.resetReadTypeFromDataId();
-	}
-
-	@AfterClass
-	public static void afterClass() {
-		NacosUtils.resetReadTypeFromDataId();
-	}
 
 	@Override
 	public void init(EmbeddedNacosHttpServer httpServer) {

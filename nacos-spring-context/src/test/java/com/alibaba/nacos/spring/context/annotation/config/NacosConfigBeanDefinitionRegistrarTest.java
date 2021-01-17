@@ -42,7 +42,7 @@ import com.alibaba.nacos.spring.util.NacosUtils;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = NacosConfigBeanDefinitionRegistrarTest.class)
-@EnableNacosConfig(readConfigTypeFromDataId = false, globalProperties = @NacosProperties(enableRemoteSyncConfig = "true", maxRetry = "5", configRetryTime = "2600", configLongPollTimeout = "26000"))
+@EnableNacosConfig(globalProperties = @NacosProperties(enableRemoteSyncConfig = "true", maxRetry = "5", configRetryTime = "2600", configLongPollTimeout = "26000"))
 @Component
 public class NacosConfigBeanDefinitionRegistrarTest {
 
@@ -51,16 +51,6 @@ public class NacosConfigBeanDefinitionRegistrarTest {
 	@Autowired
 	@Qualifier(CONFIG_GLOBAL_NACOS_PROPERTIES_BEAN_NAME)
 	private Properties properties;
-
-	@BeforeClass
-	public static void beforeClass() {
-		NacosUtils.resetReadTypeFromDataId();
-	}
-
-	@AfterClass
-	public static void afterClass() {
-		NacosUtils.resetReadTypeFromDataId();
-	}
 
 	@Test
 	public void testRegisterBeanDefinitions() {

@@ -74,16 +74,6 @@ public class AnnotationNacosInjectedBeanPostProcessorTest
 	@NacosInjected(properties = @NacosProperties(encode = "GBK"))
 	private NamingService namingService3;
 
-	@BeforeClass
-	public static void beforeClass() {
-		NacosUtils.resetReadTypeFromDataId();
-	}
-
-	@AfterClass
-	public static void afterClass() {
-		NacosUtils.resetReadTypeFromDataId();
-	}
-
 	@Bean(name = ApplicationContextHolder.BEAN_NAME)
 	public ApplicationContextHolder applicationContextHolder(
 			ApplicationContext applicationContext) {

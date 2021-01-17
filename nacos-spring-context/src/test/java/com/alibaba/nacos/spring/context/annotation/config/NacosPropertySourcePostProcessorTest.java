@@ -72,7 +72,7 @@ import com.alibaba.nacos.spring.util.NacosUtils;
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class,
 		DirtiesContextTestExecutionListener.class,
 		NacosPropertySourcePostProcessorTest.class })
-@EnableNacosConfig(readConfigTypeFromDataId = false, globalProperties = @NacosProperties(serverAddr = "${server.addr}"))
+@EnableNacosConfig(globalProperties = @NacosProperties(serverAddr = "${server.addr}"))
 public class NacosPropertySourcePostProcessorTest
 		extends AbstractNacosHttpServerTestExecutionListener {
 
@@ -84,16 +84,6 @@ public class NacosPropertySourcePostProcessorTest
 			+ "PATH = /My/Path";
 	@NacosInjected
 	private ConfigService configService;
-
-	@BeforeClass
-	public static void beforeClass() {
-		NacosUtils.resetReadTypeFromDataId();
-	}
-
-	@AfterClass
-	public static void afterClass() {
-		NacosUtils.resetReadTypeFromDataId();
-	}
 
 	@Override
 	public void init(EmbeddedNacosHttpServer httpServer) {

@@ -69,7 +69,7 @@ import com.alibaba.nacos.spring.util.NacosUtils;
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class,
 		DirtiesContextTestExecutionListener.class,
 		NacosBeanDefinitionRegistrarTest.class })
-@EnableNacos(readConfigTypeFromDataId = false, globalProperties = @NacosProperties(serverAddr = "${server.addr}"))
+@EnableNacos(globalProperties = @NacosProperties(serverAddr = "${server.addr}"))
 @EnableNacosConfig
 @EnableNacosDiscovery
 public class NacosBeanDefinitionRegistrarTest
@@ -124,11 +124,6 @@ public class NacosBeanDefinitionRegistrarTest
 	private Config config;
 	@Value("${user.home:${user.dir}}")
 	private String dir;
-
-	@AfterClass
-	public static void afterClass() {
-		NacosUtils.resetReadTypeFromDataId();
-	}
 
 	@Override
 	protected String getServerAddressPropertyName() {

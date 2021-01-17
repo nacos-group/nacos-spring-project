@@ -65,16 +65,6 @@ public class NacosPropertySourceBeanDefinitionParserTest
 	@Autowired
 	private User user;
 
-	@BeforeClass
-	public static void beforeClass() {
-		NacosUtils.resetReadTypeFromDataId();
-	}
-
-	@AfterClass
-	public static void afterClass() {
-		NacosUtils.resetReadTypeFromDataId();
-	}
-
 	@Override
 	protected void init(EmbeddedNacosHttpServer server) {
 		Map<String, String> config = new HashMap<String, String>(1);

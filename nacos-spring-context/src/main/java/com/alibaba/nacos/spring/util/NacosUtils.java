@@ -46,6 +46,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import com.alibaba.nacos.spring.enums.FileTypeEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.MutablePropertyValues;
@@ -101,22 +102,6 @@ public abstract class NacosUtils {
 			new HashSet<Class<?>>(Arrays.asList(Object.class, Class.class)));
 
 	private static final Logger logger = LoggerFactory.getLogger(NacosUtils.class);
-
-	private static Boolean readTypeFromDataId = null;
-
-	public static Boolean isReadTypeFromDataId() {
-		return readTypeFromDataId;
-	}
-
-	public static void setReadTypeFromDataIdIfNull(boolean readTypeFromDataId) {
-		if (NacosUtils.readTypeFromDataId == null) {
-			NacosUtils.readTypeFromDataId = readTypeFromDataId;
-		}
-	}
-
-	public static void resetReadTypeFromDataId() {
-		NacosUtils.readTypeFromDataId = null;
-	}
 
 	/**
 	 * Build The default name of {@link NacosConfigurationProperties @NacosPropertySource}
@@ -220,7 +205,9 @@ public abstract class NacosUtils {
 
 	public static String readFileExtension(String dataId) {
 		int lastIndex = dataId.lastIndexOf(".");
-		return dataId.substring(lastIndex + 1);
+		final String extName = dataId.substring(lastIndex + 1);
+		FileTypeEnum fileTypeEnum = FileTypeEnum.getFileTypeEnumByFileExtensionOrFileType(extName);
+		return fileTypeEnum.getFileType();
 	}
 
 	public static PropertyValues resolvePropertyValues(Object bean, String content,
