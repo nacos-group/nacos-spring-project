@@ -162,7 +162,7 @@ public @interface NacosPropertySource {
 	 *
 	 * @return the type of config
 	 */
-	ConfigType type() default ConfigType.PROPERTIES;
+	ConfigType type() default ConfigType.UNSET;
 
 	/**
 	 * The {@link NacosProperties} attribute, If not specified, it will use

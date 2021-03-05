@@ -24,7 +24,6 @@ import org.springframework.core.env.Environment;
 import org.w3c.dom.Element;
 
 import com.alibaba.nacos.spring.context.annotation.NacosBeanDefinitionRegistrar;
-import com.alibaba.nacos.spring.util.NacosUtils;
 
 /**
  * Nacos Annotation Driven {@link BeanDefinitionParser} for XML element
@@ -38,9 +37,6 @@ public class NacosAnnotationDrivenBeanDefinitionParser implements BeanDefinition
 
 	@Override
 	public BeanDefinition parse(Element element, ParserContext parserContext) {
-
-		String val = element.getAttribute("read-type-from-daraId");
-		NacosUtils.setReadTypeFromDataIdIfNull("true".equalsIgnoreCase(val));
 
 		// Get Environment
 		Environment environment = parserContext.getDelegate().getReaderContext()

@@ -58,23 +58,13 @@ import com.alibaba.nacos.spring.util.NacosUtils;
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class,
 		DirtiesContextTestExecutionListener.class,
 		CacheableEventPublishingNacosServiceFactoryTest.class })
-@EnableNacos(readConfigTypeFromDataId = false, globalProperties = @NacosProperties(serverAddr = "${server.addr}"))
+@EnableNacos(globalProperties = @NacosProperties(serverAddr = "${server.addr}"))
 public class CacheableEventPublishingNacosServiceFactoryTest
 		extends AbstractNacosHttpServerTestExecutionListener {
 
 	@Autowired
 	private NacosServiceFactory nacosServiceFactory;
 	private Properties properties = new Properties();
-
-	@BeforeClass
-	public static void beforeClass() {
-		NacosUtils.resetReadTypeFromDataId();
-	}
-
-	@AfterClass
-	public static void afterClass() {
-		NacosUtils.resetReadTypeFromDataId();
-	}
 
 	@Bean(name = NACOS_CONFIG_LISTENER_EXECUTOR_BEAN_NAME)
 	public static ExecutorService executorService() {

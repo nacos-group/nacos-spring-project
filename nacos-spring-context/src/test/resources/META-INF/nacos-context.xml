@@ -13,7 +13,7 @@
 
     <context:property-placeholder order="0"></context:property-placeholder>
 
-    <nacos:annotation-driven read-type-from-daraId="false"/>
+    <nacos:annotation-driven />
 
     <nacos:global-properties server-addr="${nacos.server-addr}"/>
 

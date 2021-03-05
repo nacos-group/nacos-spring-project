@@ -62,16 +62,6 @@ public class NacosConfigListenerTest
 	@NacosInjected
 	private ConfigService configService;
 
-	@BeforeClass
-	public static void beforeClass() {
-		NacosUtils.resetReadTypeFromDataId();
-	}
-
-	@AfterClass
-	public static void afterClass() {
-		NacosUtils.resetReadTypeFromDataId();
-	}
-
 	@Override
 	protected String getServerAddressPropertyName() {
 		return "server.addr";
@@ -129,7 +119,7 @@ public class NacosConfigListenerTest
 
 	@Configuration
 	// 在命名空间详情处可以获取到 endpoint 和 namespace；accessKey 和 secretKey 推荐使用 RAM 账户的
-	@EnableNacosConfig(readConfigTypeFromDataId = false, globalProperties = @NacosProperties(serverAddr = "${server.addr}"))
+	@EnableNacosConfig(globalProperties = @NacosProperties(serverAddr = "${server.addr}"))
 	public static class NacosConfiguration {
 
 	}

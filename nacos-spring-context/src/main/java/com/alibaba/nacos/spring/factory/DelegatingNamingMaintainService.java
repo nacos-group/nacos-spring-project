@@ -123,7 +123,12 @@ class DelegatingNamingMaintainService
 			throws NacosException {
 		delegate.updateService(service, selector);
 	}
-
+	
+	@Override
+	public void shutDown() throws NacosException {
+		delegate.shutDown();
+	}
+	
 	@Override
 	public Properties getProperties() {
 		return properties;

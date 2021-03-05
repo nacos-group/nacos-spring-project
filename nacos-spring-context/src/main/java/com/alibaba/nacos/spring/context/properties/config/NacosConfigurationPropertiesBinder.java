@@ -102,13 +102,13 @@ public class NacosConfigurationPropertiesBinder {
 		final String groupId = NacosUtils.readFromEnvironment(properties.groupId(),
 				environment);
 		final String type;
-
-		if (NacosUtils.isReadTypeFromDataId()) {
+		
+		ConfigType typeEunm = properties.yaml() ? ConfigType.YAML : properties.type();
+		if (ConfigType.UNSET.equals(typeEunm)) {
 			type = NacosUtils.readFileExtension(dataId);
 		}
 		else {
-			type = (properties.yaml() ? ConfigType.YAML.getType()
-					: properties.type().getType());
+			type = typeEunm.getType();
 		}
 
 		final ConfigService configService = configServiceBeanBuilder

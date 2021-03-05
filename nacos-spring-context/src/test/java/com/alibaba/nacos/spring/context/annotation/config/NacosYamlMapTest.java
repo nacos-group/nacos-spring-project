@@ -43,7 +43,7 @@ import com.alibaba.nacos.spring.util.NacosUtils;
 		@NacosPropertySource(dataId = "yaml_map"
 				+ "_not_exist.yaml", autoRefreshed = true),
 		@NacosPropertySource(dataId = "yaml_map" + ".yml", autoRefreshed = true) })
-@EnableNacosConfig(readConfigTypeFromDataId = false, globalProperties = @NacosProperties(serverAddr = "${server.addr}"))
+@EnableNacosConfig(globalProperties = @NacosProperties(serverAddr = "${server.addr}"))
 @Component
 public class NacosYamlMapTest extends AbstractNacosHttpServerTestExecutionListener {
 
@@ -57,16 +57,6 @@ public class NacosYamlMapTest extends AbstractNacosHttpServerTestExecutionListen
 	private YamlMap yamlMap;
 	@NacosInjected
 	private ConfigService configService;
-
-	@BeforeClass
-	public static void beforeClass() {
-		NacosUtils.resetReadTypeFromDataId();
-	}
-
-	@AfterClass
-	public static void afterClass() {
-		NacosUtils.resetReadTypeFromDataId();
-	}
 
 	@Override
 	protected String getServerAddressPropertyName() {

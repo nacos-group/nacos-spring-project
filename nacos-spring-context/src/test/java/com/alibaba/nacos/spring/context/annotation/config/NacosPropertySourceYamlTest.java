@@ -81,12 +81,10 @@ public class NacosPropertySourceYamlTest
 
 	@BeforeClass
 	public static void beforeClass() {
-		NacosUtils.resetReadTypeFromDataId();
 	}
 
 	@AfterClass
 	public static void afterClass() {
-		NacosUtils.resetReadTypeFromDataId();
 	}
 
 	@Override

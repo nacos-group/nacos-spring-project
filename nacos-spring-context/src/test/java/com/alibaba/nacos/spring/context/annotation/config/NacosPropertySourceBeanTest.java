@@ -56,7 +56,7 @@ import com.alibaba.nacos.spring.util.NacosUtils;
 		DirtiesContextTestExecutionListener.class, NacosPropertySourceBeanTest.class })
 @NacosPropertySources(value = { @NacosPropertySource(dataId = YamlBean.DATA_ID_YAML
 		+ ".yml", autoRefreshed = true) })
-@EnableNacosConfig(readConfigTypeFromDataId = false, globalProperties = @NacosProperties(serverAddr = "${server.addr}"))
+@EnableNacosConfig(globalProperties = @NacosProperties(serverAddr = "${server.addr}"))
 @Component
 public class NacosPropertySourceBeanTest
 		extends AbstractNacosHttpServerTestExecutionListener {
@@ -69,16 +69,6 @@ public class NacosPropertySourceBeanTest
 	private ConfigService configService;
 	@Autowired
 	private YamlBean yamlBean;
-
-	@BeforeClass
-	public static void beforeClass() {
-		NacosUtils.resetReadTypeFromDataId();
-	}
-
-	@AfterClass
-	public static void afterClass() {
-		NacosUtils.resetReadTypeFromDataId();
-	}
 
 	@Override
 	public void init(EmbeddedNacosHttpServer httpServer) {

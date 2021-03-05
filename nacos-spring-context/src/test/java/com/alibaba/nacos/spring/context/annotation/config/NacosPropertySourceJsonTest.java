@@ -58,7 +58,7 @@ import com.alibaba.nacos.spring.util.NacosUtils;
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class,
 		DirtiesContextTestExecutionListener.class, NacosPropertySourceJsonTest.class })
 @NacosPropertySource(dataId = NacosPropertySourceJsonTest.DATA_ID, autoRefreshed = true, type = ConfigType.JSON)
-@EnableNacosConfig(readConfigTypeFromDataId = false, globalProperties = @NacosProperties(serverAddr = "${server.addr}"))
+@EnableNacosConfig(globalProperties = @NacosProperties(serverAddr = "${server.addr}"))
 @Component
 public class NacosPropertySourceJsonTest
 		extends AbstractNacosHttpServerTestExecutionListener {
@@ -74,16 +74,6 @@ public class NacosPropertySourceJsonTest
 	private ConfigService configService;
 	@Autowired
 	private App app;
-
-	@BeforeClass
-	public static void beforeClass() {
-		NacosUtils.resetReadTypeFromDataId();
-	}
-
-	@AfterClass
-	public static void afterClass() {
-		NacosUtils.resetReadTypeFromDataId();
-	}
 
 	@Override
 	protected String getServerAddressPropertyName() {

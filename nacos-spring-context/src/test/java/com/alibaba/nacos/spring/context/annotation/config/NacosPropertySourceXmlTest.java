@@ -55,7 +55,7 @@ import com.alibaba.nacos.spring.util.NacosUtils;
 @ContextConfiguration(classes = { NacosPropertySourceXmlTest.class })
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class,
 		DirtiesContextTestExecutionListener.class, NacosPropertySourceXmlTest.class })
-@EnableNacosConfig(globalProperties = @NacosProperties(serverAddr = "${server.addr}"), readConfigTypeFromDataId = false)
+@EnableNacosConfig(globalProperties = @NacosProperties(serverAddr = "${server.addr}"))
 @Component
 public class NacosPropertySourceXmlTest
 		extends AbstractNacosHttpServerTestExecutionListener {
@@ -70,16 +70,6 @@ public class NacosPropertySourceXmlTest
 	private ConfigService configService;
 	@Autowired
 	private XmlApp xmlApp;
-
-	@BeforeClass
-	public static void beforeClass() {
-		NacosUtils.resetReadTypeFromDataId();
-	}
-
-	@AfterClass
-	public static void afterClass() {
-		NacosUtils.resetReadTypeFromDataId();
-	}
 
 	@Override
 	protected String getServerAddressPropertyName() {
