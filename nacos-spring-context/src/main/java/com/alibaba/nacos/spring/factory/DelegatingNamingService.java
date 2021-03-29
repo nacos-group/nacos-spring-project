@@ -114,7 +114,7 @@ class DelegatingNamingService
 	@Override
 	public void deregisterInstance(String serviceName, Instance instance)
 			throws NacosException {
-		delegate.registerInstance(serviceName, instance);
+		delegate.deregisterInstance(serviceName, instance);
 	}
 
 	@Override
