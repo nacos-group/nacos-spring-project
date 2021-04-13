@@ -394,7 +394,7 @@ public class DefaultPropertiesConfigParse extends AbstractConfigParse {
 
 			CharacterReader(Resource resource) throws IOException {
 				this.reader = new LineNumberReader(new InputStreamReader(
-						resource.getInputStream(), StandardCharsets.ISO_8859_1));
+						resource.getInputStream(), StandardCharsets.UTF_8));
 			}
 
 			@Override
