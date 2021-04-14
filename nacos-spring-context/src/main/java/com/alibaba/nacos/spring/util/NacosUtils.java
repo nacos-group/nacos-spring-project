@@ -16,53 +16,43 @@
  */
 package com.alibaba.nacos.spring.util;
 
-import static com.alibaba.nacos.api.PropertyKeyConst.ACCESS_KEY;
-import static com.alibaba.nacos.api.PropertyKeyConst.CLUSTER_NAME;
-import static com.alibaba.nacos.api.PropertyKeyConst.CONTEXT_PATH;
-import static com.alibaba.nacos.api.PropertyKeyConst.ENCODE;
-import static com.alibaba.nacos.api.PropertyKeyConst.ENDPOINT;
-import static com.alibaba.nacos.api.PropertyKeyConst.NAMESPACE;
-import static com.alibaba.nacos.api.PropertyKeyConst.SECRET_KEY;
-import static com.alibaba.nacos.api.PropertyKeyConst.SERVER_ADDR;
-import static org.springframework.core.annotation.AnnotationUtils.getAnnotation;
-import static org.springframework.core.annotation.AnnotationUtils.getAnnotationAttributes;
-import static org.springframework.util.StringUtils.hasText;
-
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-import java.util.regex.Pattern;
-
-import com.alibaba.nacos.spring.enums.FileTypeEnum;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.MutablePropertyValues;
-import org.springframework.beans.PropertyValues;
-import org.springframework.core.env.Environment;
-import org.springframework.core.env.PropertyResolver;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.ReflectionUtils;
-import org.springframework.util.StringUtils;
-
 import com.alibaba.nacos.api.annotation.NacosProperties;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.config.annotation.NacosConfigurationProperties;
 import com.alibaba.nacos.api.config.annotation.NacosIgnore;
 import com.alibaba.nacos.api.config.annotation.NacosProperty;
 import com.alibaba.nacos.api.exception.NacosException;
+import com.alibaba.nacos.spring.enums.FileTypeEnum;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.MutablePropertyValues;
+import org.springframework.beans.PropertyValues;
+import org.springframework.beans.factory.config.BeanExpressionContext;
+import org.springframework.beans.factory.config.BeanExpressionResolver;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.expression.EnvironmentAccessor;
+import org.springframework.context.expression.StandardBeanExpressionResolver;
+import org.springframework.core.env.Environment;
+import org.springframework.core.env.PropertyResolver;
+import org.springframework.expression.Expression;
+import org.springframework.expression.ExpressionParser;
+import org.springframework.expression.common.TemplateParserContext;
+import org.springframework.expression.spel.standard.SpelExpressionParser;
+import org.springframework.expression.spel.support.StandardEvaluationContext;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.ReflectionUtils;
+import org.springframework.util.StringUtils;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.*;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Pattern;
+
+import static com.alibaba.nacos.api.PropertyKeyConst.*;
+import static org.springframework.core.annotation.AnnotationUtils.getAnnotation;
+import static org.springframework.core.annotation.AnnotationUtils.getAnnotationAttributes;
+import static org.springframework.util.StringUtils.hasText;
 
 /**
  * Nacos Utilities class
@@ -100,6 +90,16 @@ public abstract class NacosUtils {
 
 	private static final Set<Class<?>> NON_BEAN_CLASSES = Collections.unmodifiableSet(
 			new HashSet<Class<?>>(Arrays.asList(Object.class, Class.class)));
+
+	private static ExpressionParser parser = new SpelExpressionParser();
+
+	private static BeanExpressionResolver resolver = new StandardBeanExpressionResolver();
+
+	private static ConcurrentHashMap<String, Expression> expressionCache
+			= new ConcurrentHashMap();
+
+	private static ConcurrentHashMap<Environment, StandardEvaluationContext> environmentContextCache
+			= new ConcurrentHashMap();
 
 	private static final Logger logger = LoggerFactory.getLogger(NacosUtils.class);
 
@@ -200,7 +200,44 @@ public abstract class NacosUtils {
 	}
 
 	public static String readFromEnvironment(String label, Environment environment) {
-		return environment.resolvePlaceholders(label);
+		String value = resolvePlaceholders(label, environment);
+		return StringUtils.hasText(value)
+				? evaluate(value, environment)
+				: value;
+	}
+
+	public static Object readFromBeanFactory(String label, ConfigurableBeanFactory beanFactory) {
+		if (beanFactory == null) {
+			return label;
+		}
+		String value = beanFactory.resolveEmbeddedValue(label);
+		return StringUtils.hasText(value) ? evaluate(value, beanFactory) : value;
+	}
+
+	public static String resolvePlaceholders(String label, Environment environment) {
+
+		return environment == null ? label : environment.resolvePlaceholders(label);
+	}
+
+	public static String evaluate(String value, Environment environment) {
+		Expression expression = expressionCache.get(value);
+		if (expression == null) {
+			expression = parser.parseExpression(value, new TemplateParserContext());
+			expressionCache.put(value, expression);
+		}
+
+		StandardEvaluationContext evaluationContext = environmentContextCache.get(environment);
+		if (evaluationContext == null) {
+			evaluationContext = new StandardEvaluationContext(environment);
+			evaluationContext.addPropertyAccessor(new EnvironmentAccessor());
+			environmentContextCache.put(environment, evaluationContext);
+		}
+
+		return expression.getValue(evaluationContext, String.class);
+	}
+
+	public static Object evaluate(String value, ConfigurableBeanFactory beanFactory) {
+		return resolver.evaluate(value, new BeanExpressionContext(beanFactory, null));
 	}
 
 	public static String readFileExtension(String dataId) {
