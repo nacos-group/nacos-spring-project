@@ -67,6 +67,8 @@ public class LoggingNacosConfigMetadataEventListener
 		String nacosPropertyStr;
 		if (nacosProperties != null && nacosProperties.size() > 0) {
 			StringBuilder sb = new StringBuilder("{");
+			int size = nacosProperties.size();
+			int idx = 0;
 			for (Map.Entry<Object, Object> e : nacosProperties.entrySet()) {
 				Object key = e.getKey();
 				Object value = e.getValue();
@@ -78,7 +80,10 @@ public class LoggingNacosConfigMetadataEventListener
 				} else {
 					sb.append(value);
 				}
-				sb.append(", ");
+				if (idx < size - 1) {
+					sb.append(", ");
+				}
+				idx ++;
 			}
 			sb.append("}");
 			nacosPropertyStr = sb.toString();
