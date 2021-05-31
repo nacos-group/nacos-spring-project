@@ -28,11 +28,14 @@ import static org.springframework.core.env.StandardEnvironment.SYSTEM_PROPERTIES
 import java.util.HashMap;
 import java.util.Map;
 
+import com.alibaba.nacos.spring.factory.CacheableEventPublishingNacosServiceFactory;
+import com.alibaba.nacos.spring.factory.NacosServiceFactory;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -84,6 +87,8 @@ public class NacosPropertySourcePostProcessorTest
 			+ "PATH = /My/Path";
 	@NacosInjected
 	private ConfigService configService;
+	@Autowired
+	private NacosServiceFactory nacosServiceFactory;
 
 	@Override
 	public void init(EmbeddedNacosHttpServer httpServer) {
@@ -179,7 +184,7 @@ public class NacosPropertySourcePostProcessorTest
 		configService.publishConfig(dataId, groupId, content);
 
 		beanFactory.registerSingleton(CONFIG_SERVICE_BEAN_NAME, configService);
-
+		beanFactory.registerSingleton(NacosServiceFactory.BEAN_NAME,nacosServiceFactory);
 		context.register(AnnotationNacosInjectedBeanPostProcessor.class,
 				NacosPropertySourcePostProcessor.class, ConfigServiceBeanBuilder.class,
 				AnnotationNacosPropertySourceBuilder.class, TestConfiguration.class,
