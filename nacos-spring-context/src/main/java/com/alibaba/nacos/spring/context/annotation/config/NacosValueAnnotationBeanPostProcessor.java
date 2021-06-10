@@ -375,7 +375,7 @@ public class NacosValueAnnotationBeanPostProcessor
 
 		private String resolveExpr(String nacosValueExpr) {
 			int replaceHolderBegin = nacosValueExpr.indexOf(PLACEHOLDER_PREFIX) + PLACEHOLDER_PREFIX.length();
-			int replaceHolderEnd = nacosValueExpr.indexOf(PLACEHOLDER_SUFFIX, replaceHolderBegin);
+			int replaceHolderEnd = nacosValueExpr.lastIndexOf(PLACEHOLDER_SUFFIX);
 
 			String replaceHolder = nacosValueExpr.substring(replaceHolderBegin, replaceHolderEnd);
 			int separatorIndex = replaceHolder.indexOf(VALUE_SEPARATOR);
