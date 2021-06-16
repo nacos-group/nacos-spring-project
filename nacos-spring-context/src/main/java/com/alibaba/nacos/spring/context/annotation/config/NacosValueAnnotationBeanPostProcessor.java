@@ -73,6 +73,10 @@ public class NacosValueAnnotationBeanPostProcessor
 
 	private static final String PLACEHOLDER_SUFFIX = "}";
 
+	private static final char PLACEHOLDER_MATCH_PREFIX = '{';
+
+	private static final char PLACEHOLDER_MATCH_SUFFIX = '}';
+
 	private static final String VALUE_SEPARATOR = ":";
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -375,8 +379,15 @@ public class NacosValueAnnotationBeanPostProcessor
 
 		private String resolveExpr(String nacosValueExpr) {
 			int replaceHolderBegin = nacosValueExpr.indexOf(PLACEHOLDER_PREFIX) + PLACEHOLDER_PREFIX.length();
-			int replaceHolderEnd = nacosValueExpr.indexOf(PLACEHOLDER_SUFFIX, replaceHolderBegin);
-
+			int replaceHolderEnd = replaceHolderBegin;
+			for (int y = 0; replaceHolderEnd < nacosValueExpr.length(); replaceHolderEnd++) {
+				char charAt = nacosValueExpr.charAt(replaceHolderEnd);
+				if (PLACEHOLDER_MATCH_PREFIX == charAt) {
+					y++;
+				} else if (PLACEHOLDER_MATCH_SUFFIX == charAt && --y == -1) {
+					break;
+				}
+			}
 			String replaceHolder = nacosValueExpr.substring(replaceHolderBegin, replaceHolderEnd);
 			int separatorIndex = replaceHolder.indexOf(VALUE_SEPARATOR);
 			if (separatorIndex != -1) {
