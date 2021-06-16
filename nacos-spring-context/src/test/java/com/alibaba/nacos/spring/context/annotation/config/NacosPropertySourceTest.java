@@ -21,13 +21,17 @@ import static com.alibaba.nacos.embedded.web.server.NacosConfigHttpHandler.CONTE
 import static com.alibaba.nacos.embedded.web.server.NacosConfigHttpHandler.DATA_ID_PARAM_NAME;
 import static com.alibaba.nacos.embedded.web.server.NacosConfigHttpHandler.GROUP_ID_PARAM_NAME;
 
+import com.alibaba.nacos.api.annotation.NacosInjected;
+import com.alibaba.nacos.api.annotation.NacosProperties;
+import com.alibaba.nacos.api.config.ConfigService;
+import com.alibaba.nacos.api.config.annotation.NacosValue;
+import com.alibaba.nacos.api.exception.NacosException;
+import com.alibaba.nacos.embedded.web.server.EmbeddedNacosHttpServer;
+import com.alibaba.nacos.spring.test.AbstractNacosHttpServerTestExecutionListener;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.junit.AfterClass;
 import org.junit.Assert;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,15 +44,6 @@ import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
-
-import com.alibaba.nacos.api.annotation.NacosInjected;
-import com.alibaba.nacos.api.annotation.NacosProperties;
-import com.alibaba.nacos.api.config.ConfigService;
-import com.alibaba.nacos.api.config.annotation.NacosValue;
-import com.alibaba.nacos.api.exception.NacosException;
-import com.alibaba.nacos.embedded.web.server.EmbeddedNacosHttpServer;
-import com.alibaba.nacos.spring.test.AbstractNacosHttpServerTestExecutionListener;
-import com.alibaba.nacos.spring.util.NacosUtils;
 
 /**
  * {@link NacosPropertySource} {@link Value} Test
@@ -81,6 +76,8 @@ public class NacosPropertySourceTest
 	private static final String VALUE_6 = "lisi";
 	private static final String VALUE_7 = "wangwu";
 	private static final String VALUE_8 = "zhaoliu";
+	private static final String DEFAULT_JSON_VALUE = "{\"0\":\"1\",\"10\":\"13\"}";
+	private static final String NEW_STR_VALUE = "new json value";
 
 	@NacosInjected
 	private ConfigService configService;
@@ -140,10 +137,13 @@ public class NacosPropertySourceTest
 		Assert.assertEquals(VALUE_5, app.nacosFieldListValueAutoRefreshed.get(0));
 		Assert.assertEquals(VALUE_6, app.nacosFieldListValueAutoRefreshed.get(1));
 
+		Assert.assertEquals(DEFAULT_JSON_VALUE, app.strWithDefaultJsonValue);
+
 		configService.publishConfig(DATA_ID, DEFAULT_GROUP, "app.name=" + ANOTHER_APP_NAME
 				+ LINE_SEPARATOR + "app.nacosFieldIntValueAutoRefreshed=" + VALUE_3
 				+ LINE_SEPARATOR + "app.nacosMethodIntValueAutoRefreshed=" + VALUE_4
-				+ LINE_SEPARATOR + "app.nacosFieldListValueAutoRefreshed=" + VALUE_7 + "," + VALUE_8);
+				+ LINE_SEPARATOR + "app.nacosFieldListValueAutoRefreshed=" + VALUE_7 + "," + VALUE_8
+		        + LINE_SEPARATOR + "app.strWithDefaultJsonValue=" + NEW_STR_VALUE);
 
 		Thread.sleep(1000);
 
@@ -173,6 +173,7 @@ public class NacosPropertySourceTest
 		Assert.assertEquals(VALUE_7, app.nacosFieldListValueAutoRefreshed.get(0));
 		Assert.assertEquals(VALUE_8, app.nacosFieldListValueAutoRefreshed.get(1));
 
+		Assert.assertEquals(NEW_STR_VALUE, app.strWithDefaultJsonValue);
 	}
 
 	public static class App {
@@ -206,6 +207,9 @@ public class NacosPropertySourceTest
 
 		@NacosValue(value = "#{'${app.nacosFieldListValueAutoRefreshed}'.split(',')}", autoRefreshed = true)
 		private List nacosFieldListValueAutoRefreshed;
+
+		@NacosValue(value = "${app.strWithDefaultJsonValue:" + DEFAULT_JSON_VALUE + "}", autoRefreshed = true)
+		private String strWithDefaultJsonValue;
 
 		@NacosValue("${app.nacosMethodIntValue:" + VALUE_2 + "}")
 		public void setNacosMethodIntValue(int nacosMethodIntValue) {
