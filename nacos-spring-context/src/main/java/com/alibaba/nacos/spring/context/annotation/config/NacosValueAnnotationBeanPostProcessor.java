@@ -378,22 +378,26 @@ public class NacosValueAnnotationBeanPostProcessor
 		}
 
 		private String resolveExpr(String nacosValueExpr) {
-			int replaceHolderBegin = nacosValueExpr.indexOf(PLACEHOLDER_PREFIX) + PLACEHOLDER_PREFIX.length();
-			int replaceHolderEnd = replaceHolderBegin;
-			for (int y = 0; replaceHolderEnd < nacosValueExpr.length(); replaceHolderEnd++) {
-				char charAt = nacosValueExpr.charAt(replaceHolderEnd);
-				if (PLACEHOLDER_MATCH_PREFIX == charAt) {
-					y++;
-				} else if (PLACEHOLDER_MATCH_SUFFIX == charAt && --y == -1) {
-					break;
+			try {
+				int replaceHolderBegin = nacosValueExpr.indexOf(PLACEHOLDER_PREFIX) + PLACEHOLDER_PREFIX.length();
+				int replaceHolderEnd = replaceHolderBegin;
+				for (int i = 0; replaceHolderEnd < nacosValueExpr.length(); replaceHolderEnd++) {
+					char ch = nacosValueExpr.charAt(replaceHolderEnd);
+					if (PLACEHOLDER_MATCH_PREFIX == ch) {
+						i++;
+					} else if (PLACEHOLDER_MATCH_SUFFIX == ch && --i == -1) {
+						break;
+					}
 				}
+				String replaceHolder = nacosValueExpr.substring(replaceHolderBegin, replaceHolderEnd);
+				int separatorIndex = replaceHolder.indexOf(VALUE_SEPARATOR);
+				if (separatorIndex != -1) {
+					return nacosValueExpr.substring(0, separatorIndex + replaceHolderBegin) + nacosValueExpr.substring(replaceHolderEnd);
+				}
+				return nacosValueExpr;
+			} catch (Exception e) {
+				throw new IllegalArgumentException("The expr format is illegal, expr: " + nacosValueExpr, e);
 			}
-			String replaceHolder = nacosValueExpr.substring(replaceHolderBegin, replaceHolderEnd);
-			int separatorIndex = replaceHolder.indexOf(VALUE_SEPARATOR);
-			if (separatorIndex != -1) {
-				return nacosValueExpr.substring(0, separatorIndex + replaceHolderBegin) + nacosValueExpr.substring(replaceHolderEnd);
-			}
-			return nacosValueExpr;
 		}
 
 		protected void updateLastMD5(String newMD5) {
