@@ -16,11 +16,15 @@
  */
 package com.alibaba.nacos.spring.context.event;
 
+import com.alibaba.nacos.api.annotation.NacosProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationListener;
 
 import com.alibaba.nacos.spring.context.event.config.NacosConfigMetadataEvent;
+
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * Logging {@link NacosConfigMetadataEvent} {@link ApplicationListener}
@@ -44,12 +48,48 @@ public class LoggingNacosConfigMetadataEventListener
 
 	@Override
 	public void onApplicationEvent(NacosConfigMetadataEvent event) {
-		if (logger.isInfoEnabled()) {
-			logger.info(LOGGING_MESSAGE, event.getDataId(), event.getGroupId(),
-					event.getBeanName(), event.getBean(), event.getBeanType(),
-					event.getAnnotatedElement(), event.getXmlResource(),
-					event.getNacosProperties(), event.getNacosPropertiesAttributes(),
-					event.getSource(), event.getTimestamp());
+		if (!logger.isInfoEnabled()) { 
+			return;
 		}
+		logger.info(LOGGING_MESSAGE, event.getDataId(), event.getGroupId(),
+				event.getBeanName(), event.getBean(), event.getBeanType(),
+				event.getAnnotatedElement(), event.getXmlResource(),
+				obscuresNacosProperties(event.getNacosProperties()), event.getNacosPropertiesAttributes(),
+				event.getSource(), event.getTimestamp());
+	}
+	
+	/**
+	 * obscures some private field like password in {@link com.alibaba.nacos.api.annotation.NacosProperties}
+	 * @param nacosProperties {@link com.alibaba.nacos.api.annotation.NacosProperties}
+	 * @return the properties String after obscures
+	 */
+	private String obscuresNacosProperties(Map<Object, Object> nacosProperties) {
+		String nacosPropertyStr;
+		if (nacosProperties != null && nacosProperties.size() > 0) {
+			StringBuilder sb = new StringBuilder("{");
+			int size = nacosProperties.size();
+			int idx = 0;
+			for (Map.Entry<Object, Object> e : nacosProperties.entrySet()) {
+				Object key = e.getKey();
+				Object value = e.getValue();
+				sb.append(key);
+				sb.append('=');
+				// hide some private messages
+				if (key != null && NacosProperties.PASSWORD.equals(key.toString())) {
+					sb.append("******");
+				} else {
+					sb.append(value);
+				}
+				if (idx < size - 1) {
+					sb.append(", ");
+				}
+				idx ++;
+			}
+			sb.append("}");
+			nacosPropertyStr = sb.toString();
+		} else {
+			nacosPropertyStr = "{}";
+		}
+		return nacosPropertyStr;
 	}
 }
