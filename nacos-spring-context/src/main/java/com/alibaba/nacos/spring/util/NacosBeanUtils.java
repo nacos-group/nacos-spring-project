@@ -401,6 +401,14 @@ public abstract class NacosBeanUtils {
 		registerConfigServiceBeanBuilder(registry);
 
 		registerLoggingNacosConfigMetadataEventListener(registry);
+
+		registerCacheableEventPublishingNacosServiceFactory(registry,beanFactory);
+	}
+
+	private static void registerCacheableEventPublishingNacosServiceFactory(BeanDefinitionRegistry registry, BeanFactory beanFactory) {
+		registerInfrastructureBeanIfAbsent(registry,
+				NacosServiceFactory.BEAN_NAME,
+				CacheableEventPublishingNacosServiceFactory.class);
 	}
 
 	/**
@@ -491,21 +499,8 @@ public abstract class NacosBeanUtils {
 	 */
 	public static NacosServiceFactory getNacosServiceFactoryBean(BeanFactory beanFactory)
 			throws NoSuchBeanDefinitionException {
-		if (null == beanFactory) {
-			return getNacosServiceFactoryBean();
-		}
-		ApplicationContextHolder applicationContextHolder = getApplicationContextHolder(
-				beanFactory);
-		CacheableEventPublishingNacosServiceFactory nacosServiceFactory = CacheableEventPublishingNacosServiceFactory
-				.getSingleton();
-		nacosServiceFactory
-				.setApplicationContext(applicationContextHolder.getApplicationContext());
-		return nacosServiceFactory;
-	}
-
-	public static NacosServiceFactory getNacosServiceFactoryBean()
-			throws NoSuchBeanDefinitionException {
-		return CacheableEventPublishingNacosServiceFactory.getSingleton();
+		return  beanFactory.getBean(NacosServiceFactory.BEAN_NAME,
+				NacosServiceFactory.class);
 	}
 
 	public static ApplicationContextHolder getApplicationContextHolder(
