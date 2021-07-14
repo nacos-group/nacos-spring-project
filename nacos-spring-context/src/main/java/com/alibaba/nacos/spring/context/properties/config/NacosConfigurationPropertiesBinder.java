@@ -116,6 +116,13 @@ public class NacosConfigurationPropertiesBinder {
 
 		// Add a Listener if auto-refreshed
 		if (properties.autoRefreshed()) {
+			
+			String content = getContent(configService, dataId, groupId);
+			
+			if (hasText(content)) {
+				doBind(bean, beanName, dataId, groupId, type, properties, content,
+						configService);
+			}
 
 			Listener listener = new AbstractListener() {
 				@Override
@@ -138,13 +145,6 @@ public class NacosConfigurationPropertiesBinder {
 					logger.error(e.getMessage(), e);
 				}
 			}
-		}
-
-		String content = getContent(configService, dataId, groupId);
-
-		if (hasText(content)) {
-			doBind(bean, beanName, dataId, groupId, type, properties, content,
-					configService);
 		}
 	}
 
