@@ -28,8 +28,10 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 
+import com.alibaba.nacos.spring.util.NacosUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
 
 import com.alibaba.nacos.api.NacosFactory;
@@ -46,9 +48,7 @@ import com.alibaba.nacos.spring.context.event.config.EventPublishingConfigServic
  * @since 0.1.0
  */
 @SuppressWarnings("unchecked")
-public class CacheableEventPublishingNacosServiceFactory implements NacosServiceFactory {
-
-	private static volatile CacheableEventPublishingNacosServiceFactory SINGLETON = new CacheableEventPublishingNacosServiceFactory();
+public class CacheableEventPublishingNacosServiceFactory implements NacosServiceFactory, ApplicationContextAware {
 
 	private final Map<String, ConfigService> configServicesCache = new LinkedHashMap<String, ConfigService>(
 			2);
@@ -73,10 +73,6 @@ public class CacheableEventPublishingNacosServiceFactory implements NacosService
 		createWorkerManager.put(ServiceType.NAMING, new NamingCreateWorker());
 		createWorkerManager.put(ServiceType.MAINTAIN, new MaintainCreateWorker());
 		createWorkerManager = Collections.unmodifiableMap(createWorkerManager);
-	}
-
-	public static CacheableEventPublishingNacosServiceFactory getSingleton() {
-		return SINGLETON;
 	}
 
 	@Override
@@ -146,9 +142,9 @@ public class CacheableEventPublishingNacosServiceFactory implements NacosService
 	public void setApplicationContext(ApplicationContext applicationContext)
 			throws BeansException {
 		this.context = (ConfigurableApplicationContext) applicationContext;
-		this.nacosConfigListenerExecutor = getSingleton().nacosConfigListenerExecutor == null
+		this.nacosConfigListenerExecutor = this.nacosConfigListenerExecutor == null
 				? getNacosConfigListenerExecutorIfPresent(applicationContext)
-				: getSingleton().nacosConfigListenerExecutor;
+				: this.nacosConfigListenerExecutor;
 	}
 
 	@Override
@@ -243,6 +239,7 @@ public class CacheableEventPublishingNacosServiceFactory implements NacosService
 		public ConfigService run(Properties properties, ConfigService service)
 				throws NacosException {
 			String cacheKey = identify(properties);
+			cacheKey += NacosUtils.SEPARATOR + context.getId() + NacosUtils.SEPARATOR;
 			ConfigService configService = configServicesCache.get(cacheKey);
 
 			if (configService == null) {
@@ -250,8 +247,8 @@ public class CacheableEventPublishingNacosServiceFactory implements NacosService
 					service = NacosFactory.createConfigService(properties);
 				}
 				configService = new EventPublishingConfigService(service, properties,
-						getSingleton().context,
-						getSingleton().nacosConfigListenerExecutor);
+						CacheableEventPublishingNacosServiceFactory.this.context,
+						CacheableEventPublishingNacosServiceFactory.this.nacosConfigListenerExecutor);
 				configServicesCache.put(cacheKey, configService);
 			}
 			return configService;
