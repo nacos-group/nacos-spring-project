@@ -370,6 +370,8 @@ public abstract class NacosBeanUtils {
 	public static void registerNacosCommonBeans(BeanDefinitionRegistry registry) {
 		// Register NacosApplicationContextHolder Bean
 		registerNacosApplicationContextHolder(registry);
+		// Register CacheableEventPublishingNacosServiceFactory Bean
+		registerCacheableEventPublishingNacosServiceFactory(registry);
 		// Register AnnotationNacosInjectedBeanPostProcessor Bean
 		registerAnnotationNacosInjectedBeanPostProcessor(registry);
 	}
@@ -451,6 +453,19 @@ public abstract class NacosBeanUtils {
 				AnnotationNacosInjectedBeanPostProcessor.class);
 	}
 
+	/***
+	 * fix the issue https://github.com/nacos-group/nacos-spring-project/issues/264
+	 * Register {@link CacheableEventPublishingNacosServiceFactory} with
+	 * {@link CacheableEventPublishingNacosServiceFactory#BEAN_NAME}
+	 * @param registry {@link BeanDefinitionRegistry}
+	 */
+	private static void registerCacheableEventPublishingNacosServiceFactory(
+			BeanDefinitionRegistry registry) {
+		registerInfrastructureBeanIfAbsent(registry,
+				CacheableEventPublishingNacosServiceFactory.BEAN_NAME,
+				CacheableEventPublishingNacosServiceFactory.class);
+	}
+
 	private static void registerConfigServiceBeanBuilder(
 			BeanDefinitionRegistry registry) {
 		registerInfrastructureBeanIfAbsent(registry, ConfigServiceBeanBuilder.BEAN_NAME,
@@ -492,20 +507,10 @@ public abstract class NacosBeanUtils {
 	public static NacosServiceFactory getNacosServiceFactoryBean(BeanFactory beanFactory)
 			throws NoSuchBeanDefinitionException {
 		if (null == beanFactory) {
-			return getNacosServiceFactoryBean();
+			throw new IllegalArgumentException("beanFactory can't be null");
 		}
-		ApplicationContextHolder applicationContextHolder = getApplicationContextHolder(
-				beanFactory);
-		CacheableEventPublishingNacosServiceFactory nacosServiceFactory = CacheableEventPublishingNacosServiceFactory
-				.getSingleton();
-		nacosServiceFactory
-				.setApplicationContext(applicationContextHolder.getApplicationContext());
-		return nacosServiceFactory;
-	}
-
-	public static NacosServiceFactory getNacosServiceFactoryBean()
-			throws NoSuchBeanDefinitionException {
-		return CacheableEventPublishingNacosServiceFactory.getSingleton();
+		return beanFactory.getBean(CacheableEventPublishingNacosServiceFactory.BEAN_NAME,
+				CacheableEventPublishingNacosServiceFactory.class);
 	}
 
 	public static ApplicationContextHolder getApplicationContextHolder(
