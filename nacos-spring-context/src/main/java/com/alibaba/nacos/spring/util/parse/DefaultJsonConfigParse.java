@@ -16,13 +16,11 @@
  */
 package com.alibaba.nacos.spring.util.parse;
 
-import static com.alibaba.nacos.spring.util.parse.DefaultYamlConfigParse.createYaml;
-
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
-
 import com.alibaba.nacos.api.config.ConfigType;
+import com.alibaba.nacos.common.utils.JacksonUtils;
 import com.alibaba.nacos.spring.util.AbstractConfigParse;
+import com.fasterxml.jackson.core.type.TypeReference;
 
 /**
  * @author <a href="mailto:liaochunyhm@live.com">liaochuntao</a>
@@ -32,14 +30,7 @@ public class DefaultJsonConfigParse extends AbstractConfigParse {
 
 	@Override
 	public Map<String, Object> parse(String configText) {
-		final AtomicReference<Map<String, Object>> result = new AtomicReference<Map<String, Object>>();
-		DefaultYamlConfigParse.process(new DefaultYamlConfigParse.MatchCallback() {
-			@Override
-			public void process(Map<String, Object> map) {
-				result.set(map);
-			}
-		}, createYaml(), configText);
-		return result.get();
+		return JacksonUtils.toObj(configText, new TypeReference<Map<String,Object>>(){});
 	}
 
 	@Override
