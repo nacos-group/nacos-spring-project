@@ -30,7 +30,8 @@ public class DefaultJsonConfigParse extends AbstractConfigParse {
 
 	@Override
 	public Map<String, Object> parse(String configText) {
-		return JacksonUtils.toObj(configText, new TypeReference<Map<String,Object>>(){});
+		return JacksonUtils.toObj(configText, new TypeReference<Map<String, Object>>() {
+		});
 	}
 
 	@Override
