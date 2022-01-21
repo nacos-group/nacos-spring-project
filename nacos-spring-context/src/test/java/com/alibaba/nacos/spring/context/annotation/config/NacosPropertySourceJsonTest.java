@@ -64,7 +64,7 @@ public class NacosPropertySourceJsonTest
 		extends AbstractNacosHttpServerTestExecutionListener {
 
 	public static final String DATA_ID = "data_json";
-	private String configStr = "{\n" + "    \"people\":{\n"
+	private String configStr = "{\n\t" + "    \"people\":{\n"
 			+ "        \"a\":\"liaochuntao\",\n" + "        \"b\":\"this is test\"\n"
 			+ "    }\n" + "}";
 	private String newConfigStr = "{\n" + "    \"people\":{\n"

@@ -14,15 +14,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.alibaba.nacos.spring.util.parse;
 
+import static com.alibaba.nacos.spring.util.parse.DefaultYamlConfigParse.createYaml;
+
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
+
 import com.alibaba.nacos.api.config.ConfigType;
-import com.alibaba.nacos.common.utils.JacksonUtils;
 import com.alibaba.nacos.spring.util.AbstractConfigParse;
-import com.fasterxml.jackson.core.type.TypeReference;
 
 /**
+ * json parse.
  * @author <a href="mailto:liaochunyhm@live.com">liaochuntao</a>
  * @since 0.3.0
  */
@@ -30,8 +34,15 @@ public class DefaultJsonConfigParse extends AbstractConfigParse {
 
 	@Override
 	public Map<String, Object> parse(String configText) {
-		return JacksonUtils.toObj(configText, new TypeReference<Map<String, Object>>() {
-		});
+		final AtomicReference<Map<String, Object>> result = new AtomicReference<Map<String, Object>>();
+		configText = configText.replaceAll("\t", "");
+		DefaultYamlConfigParse.process(new DefaultYamlConfigParse.MatchCallback() {
+			@Override
+			public void process(Map<String, Object> map) {
+				result.set(map);
+			}
+		}, createYaml(), configText);
+		return result.get();
 	}
 
 	@Override
