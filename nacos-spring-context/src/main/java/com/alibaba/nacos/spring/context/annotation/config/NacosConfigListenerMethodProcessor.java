@@ -100,12 +100,12 @@ public class NacosConfigListenerMethodProcessor
 				environment);
 		final String type;
 		
-		ConfigType typeEunm = listener.type();
-		if (ConfigType.UNSET.equals(typeEunm)) {
+		ConfigType typeEnum = listener.type();
+		if (ConfigType.UNSET.equals(typeEnum)) {
 			type = NacosUtils.readFileExtension(dataId);
 		}
 		else {
-			type = typeEunm.getType();
+			type = typeEnum.getType();
 		}
 
 		long timeout = listener.timeout();
