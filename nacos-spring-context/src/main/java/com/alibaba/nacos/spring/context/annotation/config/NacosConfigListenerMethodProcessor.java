@@ -171,21 +171,6 @@ public class NacosConfigListenerMethodProcessor
 		applicationEventPublisher.publishEvent(metadataEvent);
 	}
 
-	private ConfigService resolveConfigService(Properties nacosProperties,
-			ApplicationContext applicationContext) throws BeansException {
-
-		ConfigService configService = null;
-
-		try {
-			configService = nacosServiceFactory.createConfigService(nacosProperties);
-		}
-		catch (NacosException e) {
-			throw new BeanCreationException(e.getErrMsg(), e);
-		}
-
-		return configService;
-	}
-
 	@Override
 	protected boolean isCandidateMethod(Object bean, Class<?> beanClass,
 			NacosConfigListener listener, Method method,
