@@ -33,6 +33,7 @@ public class DefaultJsonConfigParse extends AbstractConfigParse {
 	@Override
 	public Map<String, Object> parse(String configText) {
 		final AtomicReference<Map<String, Object>> result = new AtomicReference<Map<String, Object>>();
+		configText = configText.replaceAll("\t", "");
 		DefaultYamlConfigParse.process(new DefaultYamlConfigParse.MatchCallback() {
 			@Override
 			public void process(Map<String, Object> map) {
