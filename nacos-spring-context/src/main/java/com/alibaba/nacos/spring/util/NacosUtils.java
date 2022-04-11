@@ -222,6 +222,9 @@ public abstract class NacosUtils {
 	}
 
 	public static String readFileExtension(String dataId) {
+		if (!dataId.contains(".")) {
+			return "properties";
+		}
 		int lastIndex = dataId.lastIndexOf(".");
 		return dataId.substring(lastIndex + 1);
 	}
