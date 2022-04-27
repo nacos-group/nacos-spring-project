@@ -29,6 +29,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.alibaba.nacos.spring.context.annotation.config.SpringValueAnnotationBeanPostProcessor;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.ListableBeanFactory;
@@ -362,6 +363,13 @@ public abstract class NacosBeanUtils {
 				NacosValueAnnotationBeanPostProcessor.class);
 	}
 
+	public static void registerStringValueAnnotationBeanPostProcessor(
+			BeanDefinitionRegistry registry) {
+		registerInfrastructureBeanIfAbsent(registry,
+				SpringValueAnnotationBeanPostProcessor.BEAN_NAME,
+				SpringValueAnnotationBeanPostProcessor.class);
+	}
+
 	/**
 	 * Register Nacos Common Beans
 	 *
@@ -397,6 +405,8 @@ public abstract class NacosBeanUtils {
 		registerNacosConfigListenerExecutor(registry, environment);
 
 		registerNacosValueAnnotationBeanPostProcessor(registry);
+
+		registerStringValueAnnotationBeanPostProcessor(registry);
 
 		registerConfigServiceBeanBuilder(registry);
 
