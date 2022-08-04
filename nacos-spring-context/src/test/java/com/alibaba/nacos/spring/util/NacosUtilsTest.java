@@ -83,6 +83,9 @@ public class NacosUtilsTest {
 		Assert.assertEquals(expectedValue, NacosUtils.isDefault(nacosProperties));
 	}
 	
+	/**
+	 * merge test.
+	 */
 	@Test
 	public void merge() {
 		NacosUtils.merge(globalProperties, currentProperties);
