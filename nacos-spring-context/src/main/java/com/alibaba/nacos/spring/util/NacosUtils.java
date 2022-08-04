@@ -366,6 +366,11 @@ public abstract class NacosUtils {
 			if (!targetProperties.containsKey(propertyName)) {
 				String propertyValue = (String) entry.getValue();
 				targetProperties.setProperty(propertyName, propertyValue);
+			} else {
+				// when the key values of the same target and source are different, the value of source is taken
+				if (!targetProperties.get(propertyName).equals(sourceProperties.get(propertyName))) {
+					targetProperties.setProperty(propertyName, (String) sourceProperties.get(propertyName));
+				}
 			}
 		}
 
