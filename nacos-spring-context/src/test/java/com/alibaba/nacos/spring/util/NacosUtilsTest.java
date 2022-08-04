@@ -84,7 +84,7 @@ public class NacosUtilsTest {
 	}
 	
 	/**
-	 * merge test.
+	 * NacosUtils merge test.
 	 */
 	@Test
 	public void merge() {
