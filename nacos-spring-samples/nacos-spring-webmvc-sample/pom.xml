@@ -75,7 +75,7 @@
                             <!-- ServletContext 路径 -->
                             <path>/</path>
                             <buildDirectory>${user.dir}/target</buildDirectory>
-                            <finalName>${artifactId}.war</finalName>
+                            <finalName>${project.artifactId}.war</finalName>
                         </configuration>
                     </execution>
                 </executions>
