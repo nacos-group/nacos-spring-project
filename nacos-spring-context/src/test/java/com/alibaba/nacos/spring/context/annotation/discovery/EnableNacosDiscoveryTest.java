@@ -16,11 +16,6 @@
  */
 package com.alibaba.nacos.spring.context.annotation.discovery;
 
-import org.junit.Assert;
-import org.junit.Test;
-
-import org.springframework.mock.env.MockEnvironment;
-
 import static com.alibaba.nacos.spring.context.annotation.discovery.EnableNacosDiscovery.ACCESS_KEY_PLACEHOLDER;
 import static com.alibaba.nacos.spring.context.annotation.discovery.EnableNacosDiscovery.CLUSTER_NAME_PLACEHOLDER;
 import static com.alibaba.nacos.spring.context.annotation.discovery.EnableNacosDiscovery.CONTEXT_PATH_PLACEHOLDER;
@@ -29,6 +24,10 @@ import static com.alibaba.nacos.spring.context.annotation.discovery.EnableNacosD
 import static com.alibaba.nacos.spring.context.annotation.discovery.EnableNacosDiscovery.NAMESPACE_PLACEHOLDER;
 import static com.alibaba.nacos.spring.context.annotation.discovery.EnableNacosDiscovery.SECRET_KEY_PLACEHOLDER;
 import static com.alibaba.nacos.spring.context.annotation.discovery.EnableNacosDiscovery.SERVER_ADDR_PLACEHOLDER;
+
+import org.junit.Assert;
+import org.junit.Test;
+import org.springframework.mock.env.MockEnvironment;
 
 /**
  * {@link EnableNacosDiscovery} Test

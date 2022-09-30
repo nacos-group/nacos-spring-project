@@ -20,14 +20,15 @@ package com.alibaba.nacos.spring.context.event.config;
 import java.util.Properties;
 import java.util.concurrent.Executor;
 
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.ConfigurableApplicationContext;
+
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.config.listener.Listener;
 import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.spring.context.event.DeferredApplicationEventPublisher;
 import com.alibaba.nacos.spring.metadata.NacosServiceMetaData;
-
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.context.ConfigurableApplicationContext;
 
 /**
  * {@link NacosConfigEvent Event} publishing {@link ConfigService}.
@@ -35,7 +36,8 @@ import org.springframework.context.ConfigurableApplicationContext;
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
  * @since 0.1.0
  */
-public class EventPublishingConfigService implements ConfigService, NacosServiceMetaData {
+public class EventPublishingConfigService
+		implements ConfigService, NacosServiceMetaData, DisposableBean {
 
 	private final ConfigService configService;
 
@@ -111,7 +113,15 @@ public class EventPublishingConfigService implements ConfigService, NacosService
 				published));
 		return published;
 	}
-
+	
+	@Override
+	public boolean publishConfig(String dataId, String group, String content, String type) throws NacosException {
+		boolean published = configService.publishConfig(dataId, group, content, type);
+		publishEvent(new NacosConfigPublishedEvent(configService, dataId, group, content,
+				published));
+		return published;
+	}
+	
 	@Override
 	public boolean removeConfig(String dataId, String group) throws NacosException {
 		boolean removed = configService.removeConfig(dataId, group);
@@ -143,5 +153,15 @@ public class EventPublishingConfigService implements ConfigService, NacosService
 	@Override
 	public Properties getProperties() {
 		return properties;
+	}
+
+	/**
+	 * Destroy lifecycle method to invoke {@link #shutDown()}
+	 * @throws Exception
+	 * @since 1.0.0
+	 */
+	@Override
+	public void destroy() throws Exception {
+		shutDown();
 	}
 }

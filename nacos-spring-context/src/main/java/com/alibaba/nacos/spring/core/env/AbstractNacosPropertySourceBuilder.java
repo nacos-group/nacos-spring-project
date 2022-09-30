@@ -16,36 +16,6 @@
  */
 package com.alibaba.nacos.spring.core.env;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-
-import com.alibaba.nacos.api.config.ConfigType;
-import com.alibaba.nacos.spring.context.event.DeferredApplicationEventPublisher;
-import com.alibaba.nacos.spring.context.event.config.NacosConfigMetadataEvent;
-import com.alibaba.nacos.spring.util.NacosUtils;
-import com.alibaba.nacos.spring.util.config.NacosConfigLoader;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.BeanClassLoaderAware;
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.BeanFactoryAware;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.EnvironmentAware;
-import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.core.env.Environment;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
-
 import static com.alibaba.nacos.spring.context.annotation.config.NacosPropertySource.CONFIG_TYPE_ATTRIBUTE_NAME;
 import static com.alibaba.nacos.spring.context.annotation.config.NacosPropertySource.DATA_ID_ATTRIBUTE_NAME;
 import static com.alibaba.nacos.spring.context.annotation.config.NacosPropertySource.GROUP_ID_ATTRIBUTE_NAME;
@@ -59,6 +29,38 @@ import static com.alibaba.spring.util.ClassUtils.resolveGenericType;
 import static java.lang.String.format;
 import static org.springframework.util.ClassUtils.resolveClassName;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+
+import com.alibaba.nacos.api.config.ConfigService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanClassLoaderAware;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.BeanFactoryAware;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.EnvironmentAware;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.Environment;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
+
+import com.alibaba.nacos.api.config.ConfigType;
+import com.alibaba.nacos.spring.context.event.DeferredApplicationEventPublisher;
+import com.alibaba.nacos.spring.context.event.config.NacosConfigMetadataEvent;
+import com.alibaba.nacos.spring.util.NacosUtils;
+import com.alibaba.nacos.spring.util.config.NacosConfigLoader;
+
 /**
  * Abstract implementation of {@link NacosPropertySource} Builder
  *
@@ -68,7 +70,7 @@ import static org.springframework.util.ClassUtils.resolveClassName;
  */
 public abstract class AbstractNacosPropertySourceBuilder<T extends BeanDefinition>
 		implements EnvironmentAware, BeanFactoryAware, BeanClassLoaderAware,
-		ApplicationContextAware, InitializingBean {
+		ApplicationContextAware, InitializingBean, DisposableBean {
 
 	protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 	private final Class<T> beanDefinitionType;
@@ -162,14 +164,15 @@ public abstract class AbstractNacosPropertySourceBuilder<T extends BeanDefinitio
 
 		dataId = NacosUtils.readFromEnvironment(dataId, environment);
 		groupId = NacosUtils.readFromEnvironment(groupId, environment);
-
-		String type = null;
-
-		if (NacosUtils.isReadTypeFromDataId()) {
+		
+		final String type;
+		
+		ConfigType typeEunm = (ConfigType) runtimeAttributes.get(CONFIG_TYPE_ATTRIBUTE_NAME);
+		if (ConfigType.UNSET.equals(typeEunm)) {
 			type = NacosUtils.readFileExtension(dataId);
-		} else {
-			type = ((ConfigType) runtimeAttributes.get(CONFIG_TYPE_ATTRIBUTE_NAME))
-					.getType();
+		}
+		else {
+			type = typeEunm.getType();
 		}
 
 		Map<String, Object> nacosPropertiesAttributes = (Map<String, Object>) runtimeAttributes
@@ -270,6 +273,17 @@ public abstract class AbstractNacosPropertySourceBuilder<T extends BeanDefinitio
 		nacosConfigLoader = new NacosConfigLoader(environment);
 		nacosConfigLoader.setNacosServiceFactory(getNacosServiceFactoryBean(beanFactory));
 		globalNacosProperties = CONFIG.getMergedGlobalProperties(beanFactory);
+	}
+
+	@Override
+	public void destroy() throws Exception {
+		if (nacosConfigLoader == null) {
+			return;
+		}
+		ConfigService configService = nacosConfigLoader.getConfigService();
+		if (configService != null) {
+			configService.shutDown();
+		}
 	}
 
 	/**

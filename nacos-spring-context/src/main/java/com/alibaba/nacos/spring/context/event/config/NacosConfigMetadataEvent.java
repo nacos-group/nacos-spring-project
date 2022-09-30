@@ -20,15 +20,14 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
 import java.util.Map;
-import java.util.Properties;
+
+import org.springframework.context.ApplicationEvent;
+import org.springframework.core.io.Resource;
+import org.w3c.dom.Element;
 
 import com.alibaba.nacos.api.config.annotation.NacosConfigListener;
 import com.alibaba.nacos.api.config.annotation.NacosConfigurationProperties;
 import com.alibaba.nacos.spring.context.annotation.config.NacosPropertySource;
-import org.w3c.dom.Element;
-
-import org.springframework.context.ApplicationEvent;
-import org.springframework.core.io.Resource;
 
 /**
  * Nacos Config Meta-Data {@link NacosConfigEvent event}

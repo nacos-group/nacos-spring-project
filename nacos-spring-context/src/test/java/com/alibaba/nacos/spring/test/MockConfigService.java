@@ -23,11 +23,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executor;
 
+import org.springframework.util.CollectionUtils;
+
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.config.listener.Listener;
 import com.alibaba.nacos.api.exception.NacosException;
-
-import org.springframework.util.CollectionUtils;
 
 /**
  * Mock {@link ConfigService}.
@@ -97,6 +97,33 @@ public class MockConfigService implements ConfigService {
 
 		return true;
 	}
+	
+	@Override
+	public boolean publishConfig(String dataId, String group, final String content, String type)
+			throws NacosException {
+		String key = createKey(dataId, group, type);
+		contentCache.put(key, content);
+
+		List<Listener> listeners = listenersCache.get(key);
+		if (!CollectionUtils.isEmpty(listeners)) {
+			for (final Listener listener : listeners) {
+				Executor executor = listener.getExecutor();
+				if (executor != null) {
+					executor.execute(new Runnable() {
+						@Override
+						public void run() {
+							listener.receiveConfigInfo(content);
+						}
+					});
+				}
+				else {
+					listener.receiveConfigInfo(content);
+				}
+			}
+		}
+
+		return true;
+	}
 
 	@Override
 	public boolean removeConfig(String dataId, String group) throws NacosException {
@@ -122,5 +149,9 @@ public class MockConfigService implements ConfigService {
 
 	private String createKey(String dataId, String groupId) {
 		return dataId + "&" + groupId;
+	}
+	
+	private String createKey(String dataId, String groupId, String type) {
+		return dataId + "&" + groupId + "&" + type;
 	}
 }

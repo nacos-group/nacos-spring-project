@@ -19,13 +19,13 @@ package com.alibaba.nacos.spring.util;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Properties;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import org.junit.Assert;
+import org.junit.Test;
 
 import com.alibaba.nacos.spring.util.parse.DefaultPropertiesConfigParse;
 import com.alibaba.nacos.spring.util.parse.DefaultYamlConfigParse;
-import org.junit.Assert;
-import org.junit.Test;
 
 /**
  * @author liaochuntao
@@ -71,12 +71,13 @@ public class ConfigParseUtilsTest {
 
 	@Test
 	public void testPropertiesParser() {
-		final String properties = "name=yihaomen-aaa\n" + "address=wuhan\n" + "\n" + "#App\n"
-				+ "app.menus[0].title=Home\n" + "app.menus[0].name=Home\n"
+		final String properties = "name=yihaomen-aaa\n" + "address=wuhan\n" + "\n"
+				+ "#App\n" + "app.menus[0].title=Home\n" + "app.menus[0].name=Home\n"
 				+ "app.menus[0].path=/\n" + "app.menus[1].title=Login\n"
 				+ "app.menus[1].name=Login\n" + "app.menus[1].path=/login\n" + "\n"
-				+ "app.compiler.timeout=5\n" + "app.compiler.output-folder=/temp/\n" + "\n"
-				+ "app.error=/error/\n" + "\n" + "school=hangzhoudianzi \\\n" + "university";
+				+ "app.compiler.timeout=5\n" + "app.compiler.output-folder=/temp/\n"
+				+ "\n" + "app.error=/error/\n" + "\n" + "school=hangzhoudianzi \\\n"
+				+ "university";
 		DefaultPropertiesConfigParse parse = new DefaultPropertiesConfigParse();
 		Map<String, Object> p = parse.parse(properties);
 		System.out.println(p);

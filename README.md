@@ -123,7 +123,7 @@ Complete the following steps to enable Nacos for your Spring project.
 	        <dependency>
 	            <groupId>com.alibaba.nacos</groupId>
 	            <artifactId>nacos-spring-context</artifactId>
-	            <version>0.4.0</version>
+	            <version>1.1.0</version>
 	        </dependency>
 	        
 	        ...
@@ -401,7 +401,7 @@ try to retrieve properities from `@EnableNacosConfig.globalProperties()` or `@En
 
 
 
-### 4.1.4. `@NacosProperties`
+### 4.1.4. `Nacos Properties`
 
 `@NacosProperties` is a uniform annotation for global and special Nacos properties. It serves as a mediator between Java `Properties` and `NacosFactory` class.   `NacosFactory` is responsible for creating `ConfigService` or `NamingService` instances. 
 

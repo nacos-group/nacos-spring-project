@@ -16,6 +16,23 @@
  */
 package com.alibaba.nacos.spring.beans.factory.annotation;
 
+import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.CONTENT;
+import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.DATA_ID;
+import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.GROUP_ID;
+
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
+
 import com.alibaba.nacos.api.annotation.NacosInjected;
 import com.alibaba.nacos.api.annotation.NacosProperties;
 import com.alibaba.nacos.api.config.ConfigService;
@@ -26,23 +43,6 @@ import com.alibaba.nacos.spring.factory.ApplicationContextHolder;
 import com.alibaba.nacos.spring.test.AbstractNacosHttpServerTestExecutionListener;
 import com.alibaba.nacos.spring.test.TestConfiguration;
 import com.alibaba.nacos.spring.util.NacosUtils;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Bean;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
-import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
-
-import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.CONTENT;
-import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.DATA_ID;
-import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.GROUP_ID;
 
 /**
  * {@link AnnotationNacosInjectedBeanPostProcessor} Test
@@ -60,16 +60,6 @@ import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.GROUP_ID;
 @EnableNacos(globalProperties = @NacosProperties(serverAddr = "${server.addr}"))
 public class AnnotationNacosInjectedBeanPostProcessorTest
 		extends AbstractNacosHttpServerTestExecutionListener {
-
-	@BeforeClass
-	public static void beforeClass() {
-		NacosUtils.resetReadTypeFromDataId();
-	}
-
-	@AfterClass
-	public static void afterClass() {
-		NacosUtils.resetReadTypeFromDataId();
-	}
 
 	@NacosInjected
 	private ConfigService configService;

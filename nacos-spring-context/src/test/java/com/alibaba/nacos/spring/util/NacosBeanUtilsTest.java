@@ -16,15 +16,14 @@
  */
 package com.alibaba.nacos.spring.util;
 
+import static com.alibaba.nacos.spring.util.NacosBeanUtils.GLOBAL_NACOS_PROPERTIES_BEAN_NAME;
+import static com.alibaba.nacos.spring.util.NacosBeanUtils.isBeanDefinitionPresent;
+
 import java.util.Properties;
 
-import com.alibaba.nacos.spring.factory.ApplicationContextHolder;
-import com.alibaba.nacos.spring.test.TestApplicationHolder;
-import com.alibaba.nacos.spring.test.TestConfiguration;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -32,8 +31,9 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import static com.alibaba.nacos.spring.util.NacosBeanUtils.GLOBAL_NACOS_PROPERTIES_BEAN_NAME;
-import static com.alibaba.nacos.spring.util.NacosBeanUtils.isBeanDefinitionPresent;
+import com.alibaba.nacos.spring.factory.ApplicationContextHolder;
+import com.alibaba.nacos.spring.test.TestApplicationHolder;
+import com.alibaba.nacos.spring.test.TestConfiguration;
 
 /**
  * {@link NacosBeanUtils} Test

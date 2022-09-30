@@ -16,9 +16,21 @@
  */
 package com.alibaba.nacos.samples.spring.env;
 
+import static com.alibaba.nacos.api.common.Constants.DEFAULT_GROUP;
+import static com.alibaba.nacos.samples.spring.env.NacosPropertySourceConfiguration.AFTER_SYS_PROP_DATA_ID;
+import static com.alibaba.nacos.samples.spring.env.NacosPropertySourceConfiguration.BEFORE_OS_ENV_DATA_ID;
+import static com.alibaba.nacos.samples.spring.env.NacosPropertySourceConfiguration.FIRST_DATA_ID;
+import static org.springframework.core.env.StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME;
+import static org.springframework.core.env.StandardEnvironment.SYSTEM_PROPERTIES_PROPERTY_SOURCE_NAME;
+
 import java.util.Properties;
 
 import javax.annotation.PostConstruct;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
 
 import com.alibaba.nacos.api.NacosFactory;
 import com.alibaba.nacos.api.PropertyKeyConst;
@@ -26,18 +38,6 @@ import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.spring.context.annotation.config.NacosPropertySource;
 import com.alibaba.nacos.spring.context.annotation.config.NacosPropertySources;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Configuration;
-
-import static com.alibaba.nacos.api.common.Constants.DEFAULT_GROUP;
-import static com.alibaba.nacos.samples.spring.env.NacosPropertySourceConfiguration.AFTER_SYS_PROP_DATA_ID;
-import static com.alibaba.nacos.samples.spring.env.NacosPropertySourceConfiguration.BEFORE_OS_ENV_DATA_ID;
-import static com.alibaba.nacos.samples.spring.env.NacosPropertySourceConfiguration.FIRST_DATA_ID;
-import static org.springframework.core.env.StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME;
-import static org.springframework.core.env.StandardEnvironment.SYSTEM_PROPERTIES_PROPERTY_SOURCE_NAME;
 
 /**
  * {@link NacosPropertySource} {@link Configuration}
@@ -73,7 +73,7 @@ public class NacosPropertySourceConfiguration {
 		try {
 			ConfigService configService = NacosFactory.createConfigService(properties);
 			// Publish for FIRST_DATA_ID
-			publishConfig(configService, FIRST_DATA_ID, "user.name = Mercy Ma");
+			publishConfig(configService, FIRST_DATA_ID, "user.name = Mercy Ma\npeople.enable=false");
 
 			// Publish for BEFORE_OS_ENV_DATA_ID
 			publishConfig(configService, BEFORE_OS_ENV_DATA_ID, "PATH = /home/my-path");

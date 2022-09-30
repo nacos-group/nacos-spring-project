@@ -22,7 +22,6 @@ import java.util.Properties;
 
 import org.junit.Assert;
 import org.junit.Test;
-
 import org.springframework.mock.env.MockEnvironment;
 
 /**

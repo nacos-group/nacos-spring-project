@@ -16,12 +16,11 @@
  */
 package com.alibaba.nacos.spring.context.config.xml;
 
-import org.w3c.dom.Element;
-
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.beans.factory.xml.XmlReaderContext;
 import org.springframework.context.annotation.PropertySource;
+import org.w3c.dom.Element;
 
 /**
  * Nacos {@link PropertySource} XML {@link BeanDefinition}

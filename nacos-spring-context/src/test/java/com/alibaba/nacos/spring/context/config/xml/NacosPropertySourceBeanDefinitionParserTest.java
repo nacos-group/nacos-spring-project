@@ -16,20 +16,19 @@
  */
 package com.alibaba.nacos.spring.context.config.xml;
 
+import static com.alibaba.nacos.api.common.Constants.DEFAULT_GROUP;
+import static com.alibaba.nacos.embedded.web.server.NacosConfigHttpHandler.CONTENT_PARAM_NAME;
+import static com.alibaba.nacos.embedded.web.server.NacosConfigHttpHandler.DATA_ID_PARAM_NAME;
+import static com.alibaba.nacos.embedded.web.server.NacosConfigHttpHandler.GROUP_ID_PARAM_NAME;
+
 import java.util.HashMap;
 import java.util.Map;
 
-import com.alibaba.nacos.embedded.web.server.EmbeddedNacosHttpServer;
-import com.alibaba.nacos.spring.test.AbstractNacosHttpServerTestExecutionListener;
-import com.alibaba.nacos.spring.test.User;
-import com.alibaba.nacos.spring.util.NacosUtils;
 import org.junit.AfterClass;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
@@ -38,10 +37,10 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 
-import static com.alibaba.nacos.api.common.Constants.DEFAULT_GROUP;
-import static com.alibaba.nacos.embedded.web.server.NacosConfigHttpHandler.CONTENT_PARAM_NAME;
-import static com.alibaba.nacos.embedded.web.server.NacosConfigHttpHandler.DATA_ID_PARAM_NAME;
-import static com.alibaba.nacos.embedded.web.server.NacosConfigHttpHandler.GROUP_ID_PARAM_NAME;
+import com.alibaba.nacos.embedded.web.server.EmbeddedNacosHttpServer;
+import com.alibaba.nacos.spring.test.AbstractNacosHttpServerTestExecutionListener;
+import com.alibaba.nacos.spring.test.User;
+import com.alibaba.nacos.spring.util.NacosUtils;
 
 /**
  * {@link NacosPropertySourceBeanDefinitionParser} Test
@@ -61,19 +60,8 @@ import static com.alibaba.nacos.embedded.web.server.NacosConfigHttpHandler.GROUP
 public class NacosPropertySourceBeanDefinitionParserTest
 		extends AbstractNacosHttpServerTestExecutionListener {
 
-	@BeforeClass
-	public static void beforeClass() {
-		NacosUtils.resetReadTypeFromDataId();
-	}
-
-	@AfterClass
-	public static void afterClass() {
-		NacosUtils.resetReadTypeFromDataId();
-	}
-
 	private static final Long USER_ID = 1991L;
 	private static final String USER_NAME = "hxy";
-
 	@Autowired
 	private User user;
 

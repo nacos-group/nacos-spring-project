@@ -16,13 +16,13 @@
  */
 package com.alibaba.nacos.samples.spring.domain;
 
+import static com.alibaba.nacos.samples.spring.domain.Pojo.DATA_ID;
+
 import java.util.Date;
 
 import com.alibaba.nacos.api.config.annotation.NacosConfigurationProperties;
 import com.alibaba.nacos.api.config.annotation.NacosIgnore;
 import com.alibaba.nacos.api.config.annotation.NacosProperty;
-
-import static com.alibaba.nacos.samples.spring.domain.Pojo.DATA_ID;
 
 /**
  * POJO

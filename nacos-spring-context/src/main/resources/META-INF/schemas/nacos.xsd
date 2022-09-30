@@ -23,9 +23,6 @@
 	            @NacosConfigProperties / @NacosProperty / @NacosIgnore
 			]]></xsd:documentation>
         </xsd:annotation>
-        <xsd:complexType>
-            <xsd:attribute name="read-type-from-daraId" default="true"/>
-        </xsd:complexType>
     </xsd:element>
 
     <xsd:element name="global-properties">
@@ -66,7 +63,7 @@
             <xsd:attribute name="first" default="false"/>
             <xsd:attribute name="before" default=""/>
             <xsd:attribute name="after" default=""/>
-            <xsd:attribute name="type" default="properties" />
+            <xsd:attribute name="type" default="properties"/>
         </xsd:complexType>
     </xsd:element>
 

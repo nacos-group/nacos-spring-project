@@ -16,25 +16,24 @@
  */
 package com.alibaba.nacos.spring.context.event;
 
+import static com.alibaba.nacos.spring.util.NacosUtils.resolveGenericType;
+import static java.lang.reflect.Modifier.isAbstract;
+import static java.lang.reflect.Modifier.isNative;
+import static java.lang.reflect.Modifier.isPublic;
+import static java.lang.reflect.Modifier.isStatic;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.aop.support.AopUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.util.ReflectionUtils;
-
-import static com.alibaba.nacos.spring.util.NacosUtils.resolveGenericType;
-import static java.lang.reflect.Modifier.isAbstract;
-import static java.lang.reflect.Modifier.isNative;
-import static java.lang.reflect.Modifier.isPublic;
-import static java.lang.reflect.Modifier.isStatic;
 
 /**
  * Listener {@link Method method} Processor

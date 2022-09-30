@@ -16,18 +16,6 @@
  */
 package com.alibaba.nacos.spring.context.annotation.discovery;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
-import com.alibaba.nacos.api.annotation.NacosInjected;
-import com.alibaba.nacos.api.annotation.NacosProperties;
-import com.alibaba.nacos.spring.context.annotation.NacosBeanDefinitionRegistrar;
-
-import org.springframework.context.annotation.Import;
-
 import static com.alibaba.nacos.api.PropertyKeyConst.PASSWORD;
 import static com.alibaba.nacos.api.PropertyKeyConst.USERNAME;
 import static com.alibaba.nacos.api.annotation.NacosProperties.ACCESS_KEY;
@@ -38,6 +26,18 @@ import static com.alibaba.nacos.api.annotation.NacosProperties.ENDPOINT;
 import static com.alibaba.nacos.api.annotation.NacosProperties.NAMESPACE;
 import static com.alibaba.nacos.api.annotation.NacosProperties.SECRET_KEY;
 import static com.alibaba.nacos.api.annotation.NacosProperties.SERVER_ADDR;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+import org.springframework.context.annotation.Import;
+
+import com.alibaba.nacos.api.annotation.NacosInjected;
+import com.alibaba.nacos.api.annotation.NacosProperties;
+import com.alibaba.nacos.spring.context.annotation.NacosBeanDefinitionRegistrar;
 
 /**
  * Annotation for enabling Nacos discovery features.

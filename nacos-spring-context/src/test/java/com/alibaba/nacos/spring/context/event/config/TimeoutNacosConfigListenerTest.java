@@ -16,17 +16,18 @@
  */
 package com.alibaba.nacos.spring.context.event.config;
 
+import static com.alibaba.nacos.spring.context.annotation.config.NacosPropertySourceTest.DATA_ID;
+import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.GROUP_ID;
+
 import java.util.concurrent.atomic.AtomicReference;
+
+import org.junit.Assert;
+import org.junit.Test;
 
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.config.listener.Listener;
 import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.spring.test.MockConfigService;
-import org.junit.Assert;
-import org.junit.Test;
-
-import static com.alibaba.nacos.spring.context.annotation.config.NacosPropertySourceTest.DATA_ID;
-import static com.alibaba.nacos.spring.test.MockNacosServiceFactory.GROUP_ID;
 
 /**
  * {@link TimeoutNacosConfigListener} Test

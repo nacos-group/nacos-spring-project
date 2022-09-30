@@ -24,16 +24,23 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.regex.Pattern;
 
-import com.alibaba.nacos.api.config.ConfigType;
-import com.alibaba.nacos.spring.util.AbstractConfigParse;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.yaml.snakeyaml.DumperOptions;
+import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.nodes.MappingNode;
+import org.yaml.snakeyaml.nodes.Tag;
 import org.yaml.snakeyaml.parser.ParserException;
+import org.yaml.snakeyaml.representer.Representer;
+import org.yaml.snakeyaml.resolver.Resolver;
+
+import com.alibaba.nacos.api.config.ConfigType;
+import com.alibaba.nacos.spring.util.AbstractConfigParse;
 
 /**
  * DefaultYamlConfigParse.
@@ -45,9 +52,15 @@ public class DefaultYamlConfigParse extends AbstractConfigParse {
 
 	protected static final Logger LOGGER = LoggerFactory
 			.getLogger(DefaultYamlConfigParse.class);
-
+	
 	protected static Yaml createYaml() {
-		return new Yaml(new MapAppenderConstructor());
+		MapAppenderConstructor mapAppenderConstructor = new MapAppenderConstructor();
+		Representer representer = new Representer();
+		DumperOptions dumperOptions = new DumperOptions();
+		LimitedResolver resolver = new LimitedResolver();
+		LoaderOptions loaderOptions = new LoaderOptions();
+		loaderOptions.setAllowDuplicateKeys(false);
+		return new Yaml(mapAppenderConstructor, representer, dumperOptions, loaderOptions, resolver);
 	}
 
 	protected static boolean process(MatchCallback callback, Yaml yaml, String content) {
@@ -101,7 +114,18 @@ public class DefaultYamlConfigParse extends AbstractConfigParse {
 		}
 		return result;
 	}
-
+	
+	private static class LimitedResolver extends Resolver {
+		
+		@Override
+		public void addImplicitResolver(Tag tag, Pattern regexp, String first) {
+			if (tag == Tag.TIMESTAMP) {
+				return;
+			}
+			super.addImplicitResolver(tag, regexp, first);
+		}
+	}
+	
 	protected static Map<String, Object> getFlattenedMap(Map<String, Object> source) {
 		Map<String, Object> result = new LinkedHashMap<String, Object>();
 		buildFlattenedMap(result, source, null);
