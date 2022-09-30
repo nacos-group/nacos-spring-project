@@ -16,14 +16,13 @@
  */
 package com.alibaba.nacos.spring.beans.factory.annotation;
 
+import static com.alibaba.nacos.spring.util.NacosBeanUtils.getNacosServiceFactoryBean;
+import static com.alibaba.spring.util.ClassUtils.resolveGenericType;
+import static java.lang.String.format;
+import static org.springframework.core.annotation.AnnotationUtils.getAnnotationAttributes;
+
 import java.util.Map;
 import java.util.Properties;
-
-import com.alibaba.nacos.api.annotation.NacosProperties;
-import com.alibaba.nacos.api.exception.NacosException;
-import com.alibaba.nacos.spring.factory.NacosServiceFactory;
-import com.alibaba.nacos.spring.util.GlobalNacosPropertiesSource;
-import com.alibaba.nacos.spring.util.NacosUtils;
 
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.BeanFactory;
@@ -31,10 +30,11 @@ import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
 
-import static com.alibaba.nacos.spring.util.NacosBeanUtils.getNacosServiceFactoryBean;
-import static com.alibaba.spring.util.ClassUtils.resolveGenericType;
-import static java.lang.String.format;
-import static org.springframework.core.annotation.AnnotationUtils.getAnnotationAttributes;
+import com.alibaba.nacos.api.annotation.NacosProperties;
+import com.alibaba.nacos.api.exception.NacosException;
+import com.alibaba.nacos.spring.factory.NacosServiceFactory;
+import com.alibaba.nacos.spring.util.GlobalNacosPropertiesSource;
+import com.alibaba.nacos.spring.util.NacosUtils;
 
 /**
  * Abstract Nacos Service Bean Builder

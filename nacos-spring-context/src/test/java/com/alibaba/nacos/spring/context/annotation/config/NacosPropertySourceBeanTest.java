@@ -16,25 +16,20 @@
  */
 package com.alibaba.nacos.spring.context.annotation.config;
 
-import com.alibaba.nacos.api.annotation.NacosInjected;
-import com.alibaba.nacos.api.annotation.NacosProperties;
-import com.alibaba.nacos.api.config.ConfigService;
-import com.alibaba.nacos.api.config.annotation.NacosValue;
-import com.alibaba.nacos.api.exception.NacosException;
-import com.alibaba.nacos.embedded.web.server.EmbeddedNacosHttpServer;
-import com.alibaba.nacos.spring.context.annotation.EnableNacos;
-import com.alibaba.nacos.spring.test.AbstractNacosHttpServerTestExecutionListener;
-import com.alibaba.nacos.spring.test.YamlApp;
-import com.alibaba.nacos.spring.test.YamlBean;
-import com.alibaba.nacos.spring.util.NacosUtils;
+import static com.alibaba.nacos.api.common.Constants.DEFAULT_GROUP;
+import static com.alibaba.nacos.embedded.web.server.NacosConfigHttpHandler.CONTENT_PARAM_NAME;
+import static com.alibaba.nacos.embedded.web.server.NacosConfigHttpHandler.DATA_ID_PARAM_NAME;
+import static com.alibaba.nacos.embedded.web.server.NacosConfigHttpHandler.GROUP_ID_PARAM_NAME;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 import org.springframework.test.context.ContextConfiguration;
@@ -43,11 +38,14 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import static com.alibaba.nacos.api.common.Constants.DEFAULT_GROUP;
-import static com.alibaba.nacos.embedded.web.server.NacosConfigHttpHandler.*;
+import com.alibaba.nacos.api.annotation.NacosInjected;
+import com.alibaba.nacos.api.annotation.NacosProperties;
+import com.alibaba.nacos.api.config.ConfigService;
+import com.alibaba.nacos.api.exception.NacosException;
+import com.alibaba.nacos.embedded.web.server.EmbeddedNacosHttpServer;
+import com.alibaba.nacos.spring.test.AbstractNacosHttpServerTestExecutionListener;
+import com.alibaba.nacos.spring.test.YamlBean;
+import com.alibaba.nacos.spring.util.NacosUtils;
 
 /**
  * @author mai.jh
@@ -56,34 +54,21 @@ import static com.alibaba.nacos.embedded.web.server.NacosConfigHttpHandler.*;
 @ContextConfiguration(classes = { NacosPropertySourceBeanTest.class })
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class,
 		DirtiesContextTestExecutionListener.class, NacosPropertySourceBeanTest.class })
-@NacosPropertySources(value = {@NacosPropertySource(dataId = YamlBean.DATA_ID_YAML
-				+ ".yml", autoRefreshed = true) })
-@EnableNacosConfig(readConfigTypeFromDataId =  false, globalProperties = @NacosProperties(serverAddr = "${server.addr}"))
+@NacosPropertySources(value = { @NacosPropertySource(dataId = YamlBean.DATA_ID_YAML
+		+ ".yml", autoRefreshed = true) })
+@EnableNacosConfig(globalProperties = @NacosProperties(serverAddr = "${server.addr}"))
 @Component
 public class NacosPropertySourceBeanTest
 		extends AbstractNacosHttpServerTestExecutionListener {
 
-	private String yaml = "student:\n" +
-			"    name: lct-1\n" +
-			"    num: 12\n" +
-			"    testApp: \n" +
-			"       name: test";
+	private String yaml = "student:\n" + "    name: lct-1\n" + "    num: 12\n"
+			+ "    testApp: \n" + "       name: test";
 
 	private String except = "YamlBean{student=Student{name='lct-1', num='12', testApp=TestApp{name='test'}}}";
 	@NacosInjected
 	private ConfigService configService;
 	@Autowired
 	private YamlBean yamlBean;
-
-	@BeforeClass
-	public static void beforeClass() {
-		NacosUtils.resetReadTypeFromDataId();
-	}
-
-	@AfterClass
-	public static void afterClass() {
-		NacosUtils.resetReadTypeFromDataId();
-	}
 
 	@Override
 	public void init(EmbeddedNacosHttpServer httpServer) {
@@ -115,8 +100,5 @@ public class NacosPropertySourceBeanTest
 		Assert.assertEquals(except, yamlBean.toString());
 
 	}
-
-
-
 
 }

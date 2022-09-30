@@ -26,16 +26,16 @@ import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import com.alibaba.nacos.api.config.ConfigType;
-import com.alibaba.nacos.spring.util.AbstractConfigParse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
+
+import com.alibaba.nacos.api.config.ConfigType;
+import com.alibaba.nacos.spring.util.AbstractConfigParse;
 
 /**
  * @author <a href="mailto:liaochunyhm@live.com">liaochuntao</a>
@@ -64,6 +64,209 @@ public class DefaultPropertiesConfigParse extends AbstractConfigParse {
 	@Override
 	public String processType() {
 		return ConfigType.PROPERTIES.getType();
+	}
+
+	public interface OriginProvider {
+
+		/**
+		 * Return the source origin or {@code null} if the origin is not known.
+		 *
+		 * @return the origin or {@code null}
+		 */
+		Origin getOrigin();
+
+	}
+
+	public abstract static class Origin {
+
+		/**
+		 * Find the {@link Origin} that an object originated from. Checks if the source
+		 * object is an {@link OriginProvider} and also searches exception stacks.
+		 *
+		 * @param source the source object or {@code null}
+		 * @return an optional {@link Origin}
+		 */
+		static Origin from(Object source) {
+			if (source instanceof Origin) {
+				return (Origin) source;
+			}
+			Origin origin = null;
+			if (source != null && source instanceof OriginProvider) {
+				origin = ((OriginProvider) source).getOrigin();
+			}
+			if (origin == null && source != null && source instanceof Throwable) {
+				return from(((Throwable) source).getCause());
+			}
+			return origin;
+		}
+
+	}
+
+	public static class OriginTrackedValue implements OriginProvider {
+
+		private final Object value;
+
+		private final Origin origin;
+
+		private OriginTrackedValue(Object value, Origin origin) {
+			this.value = value;
+			this.origin = origin;
+		}
+
+		public static OriginTrackedValue of(Object value) {
+			return of(value, null);
+		}
+
+		/**
+		 * Create an {@link OriginTrackedValue} containing the specified {@code
+		 * value} and {@code origin}. If the source value implements {@link CharSequence}
+		 * then so will the resulting {@link OriginTrackedValue}.
+		 *
+		 * @param value the source value
+		 * @param origin the origin
+		 * @return an {@link OriginTrackedValue} or {@code null} if the source value was
+		 * {@code null}.
+		 */
+		public static OriginTrackedValue of(Object value, Origin origin) {
+			if (value == null) {
+				return null;
+			}
+			if (value instanceof CharSequence) {
+				return new OriginTrackedCharSequence((CharSequence) value, origin);
+			}
+			return new OriginTrackedValue(value, origin);
+		}
+
+		/**
+		 * Return the tracked value.
+		 *
+		 * @return the tracked value
+		 */
+		public Object getValue() {
+			return this.value;
+		}
+
+		@Override
+		public Origin getOrigin() {
+			return this.origin;
+		}
+
+		@Override
+		public String toString() {
+			return (this.value != null ? this.value.toString() : null);
+		}
+
+		@Override
+		public int hashCode() {
+			return ObjectUtils.nullSafeHashCode(this.value);
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (obj == null || obj.getClass() != getClass()) {
+				return false;
+			}
+			return ObjectUtils.nullSafeEquals(this.value,
+					((OriginTrackedValue) obj).value);
+		}
+
+		/**
+		 * {@link OriginTrackedValue} for a {@link CharSequence}.
+		 */
+		private static class OriginTrackedCharSequence extends OriginTrackedValue
+				implements CharSequence {
+
+			OriginTrackedCharSequence(CharSequence value, Origin origin) {
+				super(value, origin);
+			}
+
+			@Override
+			public int length() {
+				return getValue().length();
+			}
+
+			@Override
+			public char charAt(int index) {
+				return getValue().charAt(index);
+			}
+
+			@Override
+			public CharSequence subSequence(int start, int end) {
+				return getValue().subSequence(start, end);
+			}
+
+			@Override
+			public CharSequence getValue() {
+				return (CharSequence) super.getValue();
+			}
+
+		}
+
+	}
+
+	/**
+	 * A location (line and column number) within the resource.
+	 */
+	static class Location {
+
+		private final int line;
+
+		private final int column;
+
+		/**
+		 * Create a new {@link Location} instance.
+		 *
+		 * @param line the line number (zero indexed)
+		 * @param column the column number (zero indexed)
+		 */
+		public Location(int line, int column) {
+			this.line = line;
+			this.column = column;
+		}
+
+		/**
+		 * Return the line of the text resource where the property originated.
+		 *
+		 * @return the line number (zero indexed)
+		 */
+		public int getLine() {
+			return this.line;
+		}
+
+		/**
+		 * Return the column of the text resource where the property originated.
+		 *
+		 * @return the column number (zero indexed)
+		 */
+		public int getColumn() {
+			return this.column;
+		}
+
+		@Override
+		public int hashCode() {
+			return (31 * this.line) + this.column;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj) {
+				return true;
+			}
+			if (obj == null || getClass() != obj.getClass()) {
+				return false;
+			}
+			Location other = (Location) obj;
+			boolean result = true;
+			result = result && this.line == other.line;
+			result = result && this.column == other.column;
+			return result;
+		}
+
+		@Override
+		public String toString() {
+			return (this.line + 1) + ":" + (this.column + 1);
+		}
+
 	}
 
 	class OriginTrackedPropertiesLoader {
@@ -191,7 +394,7 @@ public class DefaultPropertiesConfigParse extends AbstractConfigParse {
 
 			CharacterReader(Resource resource) throws IOException {
 				this.reader = new LineNumberReader(new InputStreamReader(
-						resource.getInputStream(), StandardCharsets.ISO_8859_1));
+						resource.getInputStream(), StandardCharsets.UTF_8));
 			}
 
 			@Override
@@ -307,144 +510,6 @@ public class DefaultPropertiesConfigParse extends AbstractConfigParse {
 
 	}
 
-	public interface OriginProvider {
-
-		/**
-		 * Return the source origin or {@code null} if the origin is not known.
-		 *
-		 * @return the origin or {@code null}
-		 */
-		Origin getOrigin();
-
-	}
-
-	public abstract static class Origin {
-
-		/**
-		 * Find the {@link Origin} that an object originated from. Checks if the source
-		 * object is an {@link OriginProvider} and also searches exception stacks.
-		 *
-		 * @param source the source object or {@code null}
-		 * @return an optional {@link Origin}
-		 */
-		static Origin from(Object source) {
-			if (source instanceof Origin) {
-				return (Origin) source;
-			}
-			Origin origin = null;
-			if (source != null && source instanceof OriginProvider) {
-				origin = ((OriginProvider) source).getOrigin();
-			}
-			if (origin == null && source != null && source instanceof Throwable) {
-				return from(((Throwable) source).getCause());
-			}
-			return origin;
-		}
-
-	}
-
-	public static class OriginTrackedValue implements OriginProvider {
-
-		private final Object value;
-
-		private final Origin origin;
-
-		private OriginTrackedValue(Object value, Origin origin) {
-			this.value = value;
-			this.origin = origin;
-		}
-
-		/**
-		 * Return the tracked value.
-		 *
-		 * @return the tracked value
-		 */
-		public Object getValue() {
-			return this.value;
-		}
-
-		@Override
-		public Origin getOrigin() {
-			return this.origin;
-		}
-
-		@Override
-		public String toString() {
-			return (this.value != null ? this.value.toString() : null);
-		}
-
-		@Override
-		public int hashCode() {
-			return ObjectUtils.nullSafeHashCode(this.value);
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (obj == null || obj.getClass() != getClass()) {
-				return false;
-			}
-			return ObjectUtils.nullSafeEquals(this.value,
-					((OriginTrackedValue) obj).value);
-		}
-
-		public static OriginTrackedValue of(Object value) {
-			return of(value, null);
-		}
-
-		/**
-		 * Create an {@link OriginTrackedValue} containing the specified {@code
-		 * value} and {@code origin}. If the source value implements {@link CharSequence}
-		 * then so will the resulting {@link OriginTrackedValue}.
-		 *
-		 * @param value the source value
-		 * @param origin the origin
-		 * @return an {@link OriginTrackedValue} or {@code null} if the source value was
-		 * {@code null}.
-		 */
-		public static OriginTrackedValue of(Object value, Origin origin) {
-			if (value == null) {
-				return null;
-			}
-			if (value instanceof CharSequence) {
-				return new OriginTrackedCharSequence((CharSequence) value, origin);
-			}
-			return new OriginTrackedValue(value, origin);
-		}
-
-		/**
-		 * {@link OriginTrackedValue} for a {@link CharSequence}.
-		 */
-		private static class OriginTrackedCharSequence extends OriginTrackedValue
-				implements CharSequence {
-
-			OriginTrackedCharSequence(CharSequence value, Origin origin) {
-				super(value, origin);
-			}
-
-			@Override
-			public int length() {
-				return getValue().length();
-			}
-
-			@Override
-			public char charAt(int index) {
-				return getValue().charAt(index);
-			}
-
-			@Override
-			public CharSequence subSequence(int start, int end) {
-				return getValue().subSequence(start, end);
-			}
-
-			@Override
-			public CharSequence getValue() {
-				return (CharSequence) super.getValue();
-			}
-
-		}
-
-	}
-
 	public class TextResourceOrigin extends Origin {
 
 		private final Resource resource;
@@ -512,71 +577,6 @@ public class DefaultPropertiesConfigParse extends AbstractConfigParse {
 			}
 			return result.toString();
 		}
-	}
-
-	/**
-	 * A location (line and column number) within the resource.
-	 */
-	static class Location {
-
-		private final int line;
-
-		private final int column;
-
-		/**
-		 * Create a new {@link Location} instance.
-		 *
-		 * @param line the line number (zero indexed)
-		 * @param column the column number (zero indexed)
-		 */
-		public Location(int line, int column) {
-			this.line = line;
-			this.column = column;
-		}
-
-		/**
-		 * Return the line of the text resource where the property originated.
-		 *
-		 * @return the line number (zero indexed)
-		 */
-		public int getLine() {
-			return this.line;
-		}
-
-		/**
-		 * Return the column of the text resource where the property originated.
-		 *
-		 * @return the column number (zero indexed)
-		 */
-		public int getColumn() {
-			return this.column;
-		}
-
-		@Override
-		public int hashCode() {
-			return (31 * this.line) + this.column;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj) {
-				return true;
-			}
-			if (obj == null || getClass() != obj.getClass()) {
-				return false;
-			}
-			Location other = (Location) obj;
-			boolean result = true;
-			result = result && this.line == other.line;
-			result = result && this.column == other.column;
-			return result;
-		}
-
-		@Override
-		public String toString() {
-			return (this.line + 1) + ":" + (this.column + 1);
-		}
-
 	}
 
 }

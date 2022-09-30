@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
@@ -12,7 +12,7 @@
 
     <groupId>com.alibaba.nacos</groupId>
     <artifactId>nacos-spring-parent</artifactId>
-    <version>0.4.0</version>
+    <version>1.1.1</version>
     <name>Alibaba Nacos :: Spring :: POM</name>
     <packaging>pom</packaging>
 
@@ -76,18 +76,20 @@
     </licenses>
 
     <properties>
+        <argLine>-Dfile.encoding=UTF-8</argLine>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <!-- Compiler settings properties -->
         <maven.compiler.source>1.6</maven.compiler.source>
         <maven.compiler.target>1.6</maven.compiler.target>
+        <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
         <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
         <!-- Exclude all generated code -->
         <sonar.jacoco.itReportPath>${project.basedir}/../test/target/jacoco-it.exec
         </sonar.jacoco.itReportPath>
         <sonar.exclusions>file:**/generated-sources/**,**/test/**</sonar.exclusions>
         <!-- Nacos -->
-        <nacos.version>1.3.2</nacos.version>
+        <nacos.version>1.4.1</nacos.version>
         <!-- Spring -->
         <spring.framework.version>3.2.18.RELEASE</spring.framework.version>
         <!--snake-yaml-->
@@ -98,6 +100,8 @@
         <javax.annotation-api.version>1.3.2</javax.annotation-api.version>
         <!-- apache commons-lang3 -->
         <commons-lang3.version>3.4</commons-lang3.version>
+        <!-- Alibaba's Spring Context Support -->
+        <spring-context-support.version>1.0.11</spring-context-support.version>
     </properties>
 
     <!-- 管理依赖版本号,子项目不会默认依赖 -->
@@ -123,12 +127,19 @@
                 <version>${snake.yaml.version}</version>
             </dependency>
 
+            <!-- Alibaba's Spring Context Support -->
+            <dependency>
+                <groupId>com.alibaba.spring</groupId>
+                <artifactId>spring-context-support</artifactId>
+                <version>${spring-context-support.version}</version>
+            </dependency>
+
             <dependency>
                 <groupId>javax.annotation</groupId>
                 <artifactId>javax.annotation-api</artifactId>
                 <version>${javax.annotation-api.version}</version>
             </dependency>
-    
+
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-lang3</artifactId>
@@ -209,6 +220,56 @@
             </distributionManagement>
 
         </profile>
+
+        <profile>
+            <id>spring-4.0</id>
+            <properties>
+                <spring.framework.version>4.0.9.RELEASE</spring.framework.version>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>spring-4.1</id>
+            <properties>
+                <spring.framework.version>4.1.9.RELEASE</spring.framework.version>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>spring-4.2</id>
+            <properties>
+                <spring.framework.version>4.2.9.RELEASE</spring.framework.version>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>spring-4.3</id>
+            <properties>
+                <spring.framework.version>4.3.29.RELEASE</spring.framework.version>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>spring-5.0</id>
+            <properties>
+                <spring.framework.version>5.0.19.RELEASE</spring.framework.version>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>spring-5.1</id>
+            <properties>
+                <spring.framework.version>5.1.18.RELEASE</spring.framework.version>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>spring-5.2</id>
+            <properties>
+                <spring.framework.version>5.2.9.RELEASE</spring.framework.version>
+            </properties>
+        </profile>
+
     </profiles>
 
     <reporting>

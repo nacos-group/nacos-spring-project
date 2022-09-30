@@ -16,11 +16,16 @@
  */
 package com.alibaba.nacos.spring.test;
 
+import static com.alibaba.nacos.spring.util.NacosUtils.DEFAULT_TIMEOUT;
+import static com.alibaba.nacos.spring.util.NacosUtils.identify;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+
+import org.mockito.Mockito;
 
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.exception.NacosException;
@@ -28,10 +33,6 @@ import com.alibaba.nacos.api.naming.NamingMaintainService;
 import com.alibaba.nacos.api.naming.NamingService;
 import com.alibaba.nacos.client.config.NacosConfigService;
 import com.alibaba.nacos.spring.factory.NacosServiceFactory;
-import org.mockito.Mockito;
-
-import static com.alibaba.nacos.spring.util.NacosUtils.DEFAULT_TIMEOUT;
-import static com.alibaba.nacos.spring.util.NacosUtils.identify;
 
 /**
  * Mock {@link NacosServiceFactory}

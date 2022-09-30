@@ -16,12 +16,12 @@
  */
 package com.alibaba.nacos.spring.test;
 
+import static com.alibaba.nacos.spring.test.XmlApp.DATA_ID_XML;
+
 import java.util.List;
 
 import com.alibaba.nacos.api.config.ConfigType;
 import com.alibaba.nacos.api.config.annotation.NacosConfigurationProperties;
-
-import static com.alibaba.nacos.spring.test.XmlApp.DATA_ID_XML;
 
 /**
  * @author <a href="mailto:liaochunyhm@live.com">liaochuntao</a>

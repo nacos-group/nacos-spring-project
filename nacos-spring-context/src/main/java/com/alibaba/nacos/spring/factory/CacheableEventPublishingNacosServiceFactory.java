@@ -16,6 +16,9 @@
  */
 package com.alibaba.nacos.spring.factory;
 
+import static com.alibaba.nacos.spring.util.NacosBeanUtils.getNacosConfigListenerExecutorIfPresent;
+import static com.alibaba.nacos.spring.util.NacosUtils.identify;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -25,19 +28,16 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
+
 import com.alibaba.nacos.api.NacosFactory;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.api.naming.NamingMaintainService;
 import com.alibaba.nacos.api.naming.NamingService;
 import com.alibaba.nacos.spring.context.event.config.EventPublishingConfigService;
-
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ConfigurableApplicationContext;
-
-import static com.alibaba.nacos.spring.util.NacosBeanUtils.getNacosConfigListenerExecutorIfPresent;
-import static com.alibaba.nacos.spring.util.NacosUtils.identify;
 
 /**
  * Cacheable Event Publishing {@link NacosServiceFactory}

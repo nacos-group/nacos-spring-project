@@ -16,11 +16,6 @@
  */
 package com.alibaba.nacos.spring.context.annotation.config;
 
-import org.junit.Assert;
-import org.junit.Test;
-
-import org.springframework.mock.env.MockEnvironment;
-
 import static com.alibaba.nacos.spring.context.annotation.config.EnableNacosConfig.ACCESS_KEY_PLACEHOLDER;
 import static com.alibaba.nacos.spring.context.annotation.config.EnableNacosConfig.CLUSTER_NAME_PLACEHOLDER;
 import static com.alibaba.nacos.spring.context.annotation.config.EnableNacosConfig.CONTEXT_PATH_PLACEHOLDER;
@@ -29,6 +24,10 @@ import static com.alibaba.nacos.spring.context.annotation.config.EnableNacosConf
 import static com.alibaba.nacos.spring.context.annotation.config.EnableNacosConfig.NAMESPACE_PLACEHOLDER;
 import static com.alibaba.nacos.spring.context.annotation.config.EnableNacosConfig.SECRET_KEY_PLACEHOLDER;
 import static com.alibaba.nacos.spring.context.annotation.config.EnableNacosConfig.SERVER_ADDR_PLACEHOLDER;
+
+import org.junit.Assert;
+import org.junit.Test;
+import org.springframework.mock.env.MockEnvironment;
 
 /**
  * {@link EnableNacosConfig} Test

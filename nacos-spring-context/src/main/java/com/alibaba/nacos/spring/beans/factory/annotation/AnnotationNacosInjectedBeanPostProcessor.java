@@ -16,25 +16,27 @@
  */
 package com.alibaba.nacos.spring.beans.factory.annotation;
 
+import static java.lang.String.format;
+import static java.util.Collections.unmodifiableMap;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import com.alibaba.nacos.api.annotation.NacosInjected;
-import com.alibaba.nacos.api.config.ConfigService;
-import com.alibaba.nacos.api.naming.NamingService;
-import com.alibaba.spring.beans.factory.annotation.AnnotationInjectedBeanPostProcessor;
-import com.alibaba.spring.util.BeanUtils;
-
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.InjectionMetadata;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.core.annotation.AnnotationAttributes;
 
-import static java.lang.String.format;
-import static java.util.Collections.unmodifiableMap;
+import com.alibaba.nacos.api.annotation.NacosInjected;
+import com.alibaba.nacos.api.config.ConfigService;
+import com.alibaba.nacos.api.naming.NamingService;
+import com.alibaba.spring.beans.factory.annotation.AbstractAnnotationBeanPostProcessor;
+import com.alibaba.spring.beans.factory.annotation.AnnotationInjectedBeanPostProcessor;
+import com.alibaba.spring.util.BeanUtils;
 
 /**
  * {@link AnnotationInjectedBeanPostProcessor} implementation is used to inject
@@ -44,8 +46,8 @@ import static java.util.Collections.unmodifiableMap;
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
  * @since 0.1.0
  */
-public class AnnotationNacosInjectedBeanPostProcessor extends
-		AnnotationInjectedBeanPostProcessor<NacosInjected> implements InitializingBean {
+public class AnnotationNacosInjectedBeanPostProcessor
+		extends AbstractAnnotationBeanPostProcessor implements InitializingBean {
 
 	/**
 	 * The name of {@link AnnotationNacosInjectedBeanPostProcessor}
@@ -53,6 +55,10 @@ public class AnnotationNacosInjectedBeanPostProcessor extends
 	public static final String BEAN_NAME = "annotationNacosInjectedBeanPostProcessor";
 
 	private Map<Class<?>, AbstractNacosServiceBeanBuilder> nacosServiceBeanBuilderMap;
+
+	public AnnotationNacosInjectedBeanPostProcessor() {
+		super(NacosInjected.class);
+	}
 
 	@Override
 	public final void afterPropertiesSet() {
@@ -99,22 +105,21 @@ public class AnnotationNacosInjectedBeanPostProcessor extends
 	}
 
 	@Override
-	protected Object doGetInjectedBean(NacosInjected annotation, Object bean,
+	protected Object doGetInjectedBean(AnnotationAttributes attributes, Object bean,
 			String beanName, Class<?> injectedType,
-			InjectionMetadata.InjectedElement injectedElement) {
-
+			InjectionMetadata.InjectedElement injectedElement) throws Exception {
 		AbstractNacosServiceBeanBuilder serviceBeanBuilder = nacosServiceBeanBuilderMap
 				.get(injectedType);
 
-		return serviceBeanBuilder.build(annotation.properties());
+		Map<String, Object> nacosProperties = getNacosProperties(attributes);
 
+		return serviceBeanBuilder.build(nacosProperties);
 	}
 
 	@Override
-	protected String buildInjectedObjectCacheKey(NacosInjected annotation, Object bean,
-			String beanName, Class<?> injectedType,
+	protected String buildInjectedObjectCacheKey(AnnotationAttributes attributes,
+			Object bean, String beanName, Class<?> injectedType,
 			InjectionMetadata.InjectedElement injectedElement) {
-
 		StringBuilder keyBuilder = new StringBuilder(injectedType.getSimpleName());
 
 		AbstractNacosServiceBeanBuilder serviceBeanBuilder = nacosServiceBeanBuilderMap
@@ -127,12 +132,16 @@ public class AnnotationNacosInjectedBeanPostProcessor extends
 					injectedElement.getMember()));
 		}
 
-		Properties properties = serviceBeanBuilder
-				.resolveProperties(annotation.properties());
+		Map<String, Object> nacosProperties = getNacosProperties(attributes);
+
+		Properties properties = serviceBeanBuilder.resolveProperties(nacosProperties);
 
 		keyBuilder.append(properties);
 
 		return keyBuilder.toString();
+	}
 
+	private Map<String, Object> getNacosProperties(AnnotationAttributes attributes) {
+		return (Map<String, Object>) attributes.get("properties");
 	}
 }

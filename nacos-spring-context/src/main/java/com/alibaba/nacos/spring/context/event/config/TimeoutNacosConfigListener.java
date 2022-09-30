@@ -25,10 +25,11 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.alibaba.nacos.api.config.listener.AbstractListener;
-import com.alibaba.nacos.api.config.listener.Listener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.alibaba.nacos.api.config.listener.AbstractListener;
+import com.alibaba.nacos.api.config.listener.Listener;
 
 /**
  * Timeout {@link Listener Nacos Config Listener}

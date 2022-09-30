@@ -16,8 +16,23 @@
  */
 package com.alibaba.nacos.spring.context.properties.config;
 
+import static com.alibaba.nacos.spring.util.NacosBeanUtils.getConfigServiceBeanBuilder;
+import static com.alibaba.nacos.spring.util.NacosUtils.getContent;
+import static org.springframework.core.annotation.AnnotationUtils.findAnnotation;
+import static org.springframework.core.annotation.AnnotationUtils.getAnnotationAttributes;
+import static org.springframework.util.StringUtils.hasText;
+
 import java.util.Map;
 import java.util.Properties;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.PropertyValues;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.core.env.Environment;
+import org.springframework.util.Assert;
+import org.springframework.validation.DataBinder;
 
 import com.alibaba.nacos.api.annotation.NacosProperties;
 import com.alibaba.nacos.api.config.ConfigService;
@@ -33,21 +48,6 @@ import com.alibaba.nacos.spring.context.event.config.NacosConfigMetadataEvent;
 import com.alibaba.nacos.spring.context.event.config.NacosConfigurationPropertiesBeanBoundEvent;
 import com.alibaba.nacos.spring.util.NacosUtils;
 import com.alibaba.nacos.spring.util.ObjectUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import org.springframework.beans.PropertyValues;
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.core.env.Environment;
-import org.springframework.util.Assert;
-import org.springframework.validation.DataBinder;
-
-import static com.alibaba.nacos.spring.util.NacosBeanUtils.getConfigServiceBeanBuilder;
-import static com.alibaba.nacos.spring.util.NacosUtils.getContent;
-import static org.springframework.core.annotation.AnnotationUtils.findAnnotation;
-import static org.springframework.core.annotation.AnnotationUtils.getAnnotationAttributes;
-import static org.springframework.util.StringUtils.hasText;
 
 /**
  * {@link NacosConfigurationProperties} Bean Binder
@@ -102,12 +102,13 @@ public class NacosConfigurationPropertiesBinder {
 		final String groupId = NacosUtils.readFromEnvironment(properties.groupId(),
 				environment);
 		final String type;
-
-		if (NacosUtils.isReadTypeFromDataId()) {
+		
+		ConfigType typeEunm = properties.yaml() ? ConfigType.YAML : properties.type();
+		if (ConfigType.UNSET.equals(typeEunm)) {
 			type = NacosUtils.readFileExtension(dataId);
-		} else {
-			type = (properties.yaml() ? ConfigType.YAML.getType()
-					: properties.type().getType());
+		}
+		else {
+			type = typeEunm.getType();
 		}
 
 		final ConfigService configService = configServiceBeanBuilder
@@ -115,6 +116,13 @@ public class NacosConfigurationPropertiesBinder {
 
 		// Add a Listener if auto-refreshed
 		if (properties.autoRefreshed()) {
+			
+			String content = getContent(configService, dataId, groupId);
+			
+			if (hasText(content)) {
+				doBind(bean, beanName, dataId, groupId, type, properties, content,
+						configService);
+			}
 
 			Listener listener = new AbstractListener() {
 				@Override
@@ -137,13 +145,6 @@ public class NacosConfigurationPropertiesBinder {
 					logger.error(e.getMessage(), e);
 				}
 			}
-		}
-
-		String content = getContent(configService, dataId, groupId);
-
-		if (hasText(content)) {
-			doBind(bean, beanName, dataId, groupId, type, properties, content,
-					configService);
 		}
 	}
 

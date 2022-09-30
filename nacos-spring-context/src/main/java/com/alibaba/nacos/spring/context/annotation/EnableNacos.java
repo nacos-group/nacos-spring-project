@@ -22,12 +22,12 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.springframework.context.annotation.Import;
+
 import com.alibaba.nacos.api.annotation.NacosInjected;
 import com.alibaba.nacos.api.annotation.NacosProperties;
 import com.alibaba.nacos.api.config.annotation.NacosConfigListener;
 import com.alibaba.nacos.api.config.annotation.NacosConfigurationProperties;
-
-import org.springframework.context.annotation.Import;
 
 /**
  * Annotation for enabling Nacos features.
@@ -41,14 +41,6 @@ import org.springframework.context.annotation.Import;
 @Documented
 @Import(NacosBeanDefinitionRegistrar.class)
 public @interface EnableNacos {
-
-	/**
-	 * Whether to get the file type from dataId
-	 *
-	 * @return read config-type from dataId, default value is {@link Boolean#TRUE}
-	 */
-	boolean readConfigTypeFromDataId() default true;
-
 
 	/**
 	 * Global {@link NacosProperties Nacos Properties}
