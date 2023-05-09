@@ -215,8 +215,8 @@ public class DefaultYamlConfigParse extends AbstractConfigParse {
 		}
 
 		@Override
-		protected Map<Object, Object> createDefaultMap() {
-			final Map<Object, Object> delegate = super.createDefaultMap();
+		protected Map<Object, Object> createDefaultMap(int initSize) {
+			final Map<Object, Object> delegate = super.createDefaultMap(initSize);
 			return new AbstractMap<Object, Object>() {
 				@Override
 				public Object put(Object key, Object value) {

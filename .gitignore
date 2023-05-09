@@ -36,3 +36,4 @@ classes
 *.prefs
 *~
 .extract
+.flattened-pom.xml

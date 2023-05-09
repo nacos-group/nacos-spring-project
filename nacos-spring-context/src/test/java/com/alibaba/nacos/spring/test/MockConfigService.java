@@ -124,7 +124,60 @@ public class MockConfigService implements ConfigService {
 
 		return true;
 	}
-
+	
+	@Override
+	public boolean publishConfigCas(String dataId, String group, final String content, String casMd5) throws NacosException {
+		String key = createKey(dataId, group);
+		contentCache.put(key, content);
+		
+		List<Listener> listeners = listenersCache.get(key);
+		if (!CollectionUtils.isEmpty(listeners)) {
+			for (final Listener listener : listeners) {
+				Executor executor = listener.getExecutor();
+				if (executor != null) {
+					executor.execute(new Runnable() {
+						@Override
+						public void run() {
+							listener.receiveConfigInfo(content);
+						}
+					});
+				}
+				else {
+					listener.receiveConfigInfo(content);
+				}
+			}
+		}
+		
+		return true;
+	}
+	
+	@Override
+	public boolean publishConfigCas(String dataId, String group, final String content, String casMd5, String type)
+			throws NacosException {
+		String key = createKey(dataId, group, type);
+		contentCache.put(key, content);
+		
+		List<Listener> listeners = listenersCache.get(key);
+		if (!CollectionUtils.isEmpty(listeners)) {
+			for (final Listener listener : listeners) {
+				Executor executor = listener.getExecutor();
+				if (executor != null) {
+					executor.execute(new Runnable() {
+						@Override
+						public void run() {
+							listener.receiveConfigInfo(content);
+						}
+					});
+				}
+				else {
+					listener.receiveConfigInfo(content);
+				}
+			}
+		}
+		
+		return true;
+	}
+	
 	@Override
 	public boolean removeConfig(String dataId, String group) throws NacosException {
 		String key = createKey(dataId, group);
