@@ -103,7 +103,7 @@ public class NacosConfigurationPropertiesBinder {
 				environment);
 		final String type;
 		
-		ConfigType typeEunm = properties.yaml() ? ConfigType.YAML : properties.type();
+		ConfigType typeEunm = properties.type();
 		if (ConfigType.UNSET.equals(typeEunm)) {
 			type = NacosUtils.readFileExtension(dataId);
 		}

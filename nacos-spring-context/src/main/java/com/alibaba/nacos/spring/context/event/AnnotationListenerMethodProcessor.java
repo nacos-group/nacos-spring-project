@@ -26,8 +26,8 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
@@ -54,7 +54,7 @@ import org.springframework.util.ReflectionUtils;
 public abstract class AnnotationListenerMethodProcessor<A extends Annotation>
 		implements ApplicationListener<ContextRefreshedEvent> {
 
-	protected final Log logger = LogFactory.getLog(getClass());
+	protected final Logger logger = LoggerFactory.getLogger(getClass());
 	private final Class<A> annotationType;
 
 	public AnnotationListenerMethodProcessor() {
