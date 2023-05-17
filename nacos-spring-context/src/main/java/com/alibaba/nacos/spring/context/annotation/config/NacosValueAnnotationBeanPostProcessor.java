@@ -80,7 +80,7 @@ public class NacosValueAnnotationBeanPostProcessor
 
 	private static final String VALUE_SEPARATOR = ":";
 
-	private final Logger logger = LoggerFactory.getLogger(NacosValueAnnotationBeanPostProcessor.class);
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	/**
 	 * placeholder, nacosValueTarget.
