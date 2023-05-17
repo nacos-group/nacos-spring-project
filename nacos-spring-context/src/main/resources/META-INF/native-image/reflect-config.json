@@ -459,5 +459,105 @@
       {"name":"setTypeUrlBytes","parameterTypes":["com.alibaba.nacos.shaded.com.google.protobuf.ByteString"] },
       {"name":"setValue","parameterTypes":["com.alibaba.nacos.shaded.com.google.protobuf.ByteString"] }
     ]
+  },
+  {
+    "name":"com.alibaba.nacos.spring.context.annotation.config.EnableNacosConfig",
+    "queryAllDeclaredMethods":true
+  },
+  {
+    "name":"com.alibaba.nacos.spring.context.annotation.config.NacosConfigBeanDefinitionRegistrar",
+    "queryAllDeclaredConstructors":true,
+    "methods":[{"name":"<init>","parameterTypes":[] }]
+  },
+  {
+    "name":"com.alibaba.nacos.spring.context.annotation.config.NacosConfigListenerMethodProcessor",
+    "allDeclaredFields":true,
+    "queryAllDeclaredMethods":true,
+    "queryAllDeclaredConstructors":true,
+    "methods":[
+      {"name":"<init>","parameterTypes":[] },
+      {"name":"setApplicationContext","parameterTypes":["org.springframework.context.ApplicationContext"] },
+      {"name":"setApplicationEventPublisher","parameterTypes":["org.springframework.context.ApplicationEventPublisher"] },
+      {"name":"setEnvironment","parameterTypes":["org.springframework.core.env.Environment"] }
+    ]
+  },
+  {
+    "name":"com.alibaba.nacos.spring.context.annotation.config.NacosValueAnnotationBeanPostProcessor",
+    "queryAllDeclaredMethods":true,
+    "methods":[
+      {"name":"<init>","parameterTypes":[] },
+      {"name":"onApplicationEvent","parameterTypes":["org.springframework.context.ApplicationEvent"] },
+      {"name":"postProcessBeforeInitialization","parameterTypes":["java.lang.Object","java.lang.String"] },
+      {"name":"setBeanFactory","parameterTypes":["org.springframework.beans.factory.BeanFactory"] },
+      {"name":"setEnvironment","parameterTypes":["org.springframework.core.env.Environment"] }
+    ]
+  },
+  {
+    "name":"com.alibaba.nacos.spring.context.event.AnnotationListenerMethodProcessor",
+    "allDeclaredFields":true,
+    "queryAllDeclaredMethods":true,
+    "methods":[
+      {"name":"isCandidateMethod","parameterTypes":["java.lang.Object","java.lang.Class","java.lang.annotation.Annotation","java.lang.reflect.Method","org.springframework.context.ApplicationContext"] },
+      {"name":"onApplicationEvent","parameterTypes":["org.springframework.context.ApplicationEvent"] },
+      {"name":"onApplicationEvent","parameterTypes":["org.springframework.context.event.ContextRefreshedEvent"] },
+      {"name":"processListenerMethod","parameterTypes":["java.lang.String","java.lang.Object","java.lang.Class","java.lang.annotation.Annotation","java.lang.reflect.Method","org.springframework.context.ApplicationContext"] }
+    ]
+  },
+  {
+    "name":"com.alibaba.nacos.spring.context.event.LoggingNacosConfigMetadataEventListener",
+    "allDeclaredFields":true,
+    "queryAllDeclaredMethods":true,
+    "queryAllDeclaredConstructors":true,
+    "methods":[
+      {"name":"<init>","parameterTypes":[] },
+      {"name":"onApplicationEvent","parameterTypes":["org.springframework.context.ApplicationEvent"] }
+    ]
+  },
+  {
+    "name":"com.alibaba.nacos.spring.context.properties.config.NacosConfigurationPropertiesBindingPostProcessor",
+    "allDeclaredFields":true,
+    "queryAllDeclaredMethods":true,
+    "queryAllDeclaredConstructors":true,
+    "methods":[
+      {"name":"<init>","parameterTypes":[] },
+      {"name":"postProcessAfterInitialization","parameterTypes":["java.lang.Object","java.lang.String"] },
+      {"name":"postProcessBeforeInitialization","parameterTypes":["java.lang.Object","java.lang.String"] },
+      {"name":"setApplicationContext","parameterTypes":["org.springframework.context.ApplicationContext"] }
+    ]
+  },
+  {
+    "name":"com.alibaba.nacos.spring.core.env.AbstractNacosPropertySourceBuilder",
+    "queryAllDeclaredMethods":true,
+    "methods":[
+      {"name":"afterPropertiesSet","parameterTypes":[] },
+      {"name":"build","parameterTypes":["java.lang.String","org.springframework.beans.factory.config.BeanDefinition"] },
+      {"name":"createMetaEvent","parameterTypes":["com.alibaba.nacos.spring.core.env.NacosPropertySource","org.springframework.beans.factory.config.BeanDefinition"] },
+      {"name":"destroy","parameterTypes":[] },
+      {"name":"doInitMetadataEvent","parameterTypes":["com.alibaba.nacos.spring.core.env.NacosPropertySource","org.springframework.beans.factory.config.BeanDefinition","com.alibaba.nacos.spring.context.event.config.NacosConfigMetadataEvent"] },
+      {"name":"getBeanDefinitionType","parameterTypes":[] },
+      {"name":"initNacosPropertySource","parameterTypes":["com.alibaba.nacos.spring.core.env.NacosPropertySource","org.springframework.beans.factory.config.BeanDefinition","java.util.Map"] },
+      {"name":"resolveRuntimeAttributesArray","parameterTypes":["org.springframework.beans.factory.config.BeanDefinition","java.util.Properties"] },
+      {"name":"setApplicationContext","parameterTypes":["org.springframework.context.ApplicationContext"] },
+      {"name":"setBeanClassLoader","parameterTypes":["java.lang.ClassLoader"] },
+      {"name":"setBeanFactory","parameterTypes":["org.springframework.beans.factory.BeanFactory"] },
+      {"name":"setEnvironment","parameterTypes":["org.springframework.core.env.Environment"] },
+      {"name":"supports","parameterTypes":["org.springframework.beans.factory.config.BeanDefinition"] }
+    ]
+  },
+  {
+    "name":"com.alibaba.nacos.spring.core.env.AnnotationNacosPropertySourceBuilder",
+    "queryAllDeclaredMethods":true,
+    "methods":[{"name":"<init>","parameterTypes":[] }]
+  },
+  {
+    "name":"com.alibaba.nacos.spring.core.env.NacosPropertySourcePostProcessor",
+    "queryAllDeclaredMethods":true,
+    "methods":[
+      {"name":"<init>","parameterTypes":[] },
+      {"name":"getOrder","parameterTypes":[] },
+      {"name":"postProcessBeanDefinitionRegistry","parameterTypes":["org.springframework.beans.factory.support.BeanDefinitionRegistry"] },
+      {"name":"postProcessBeanFactory","parameterTypes":["org.springframework.beans.factory.config.ConfigurableListableBeanFactory"] },
+      {"name":"setEnvironment","parameterTypes":["org.springframework.core.env.Environment"] }
+    ]
   }
 ]
