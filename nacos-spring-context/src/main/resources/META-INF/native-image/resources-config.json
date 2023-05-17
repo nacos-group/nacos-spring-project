@@ -1,0 +1,10 @@
+{
+  "resources": [
+    {
+      "pattern": "nacos_default_setting\\.properties"
+    },
+    {
+      "pattern": "nacos-version\\.txt"
+    }
+  ]
+}

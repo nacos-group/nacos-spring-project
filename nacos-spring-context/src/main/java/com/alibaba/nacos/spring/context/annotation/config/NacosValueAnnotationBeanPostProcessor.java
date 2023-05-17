@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.alibaba.nacos.spring.context.annotation.AbstractAnnotationBeanPostProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -38,6 +39,7 @@ import org.springframework.beans.factory.annotation.InjectionMetadata;
 import org.springframework.beans.factory.config.BeanExpressionContext;
 import org.springframework.beans.factory.config.BeanExpressionResolver;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.config.InstantiationAwareBeanPostProcessor;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.MethodParameter;
@@ -48,7 +50,6 @@ import org.springframework.util.ReflectionUtils;
 import com.alibaba.nacos.api.config.annotation.NacosValue;
 import com.alibaba.nacos.common.utils.MD5Utils;
 import com.alibaba.nacos.spring.context.event.config.NacosConfigReceivedEvent;
-import com.alibaba.spring.beans.factory.annotation.AbstractAnnotationBeanPostProcessor;
 
 /**
  * Injected {@link NacosValue}
@@ -59,7 +60,7 @@ import com.alibaba.spring.beans.factory.annotation.AbstractAnnotationBeanPostPro
  * @since 0.1.0
  */
 public class NacosValueAnnotationBeanPostProcessor
-		extends AbstractAnnotationBeanPostProcessor implements BeanFactoryAware,
+		extends AbstractAnnotationBeanPostProcessor implements InstantiationAwareBeanPostProcessor, BeanFactoryAware,
 		EnvironmentAware, ApplicationListener<NacosConfigReceivedEvent> {
 
 	/**
@@ -79,7 +80,7 @@ public class NacosValueAnnotationBeanPostProcessor
 
 	private static final String VALUE_SEPARATOR = ":";
 
-	private final Logger logger = LoggerFactory.getLogger(getClass());
+	private final Logger logger = LoggerFactory.getLogger(NacosValueAnnotationBeanPostProcessor.class);
 
 	/**
 	 * placeholder, nacosValueTarget.
