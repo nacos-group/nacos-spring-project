@@ -75,7 +75,7 @@ public class XmlNacosPropertySourceBuilder
 				NAME_ATTRIBUTE_NAME, DEFAULT_STRING_ATTRIBUTE_VALUE));
 		// auto-refresh
 		runtimeAttributes.put(AUTO_REFRESHED_ATTRIBUTE_NAME, getAttribute(element,
-				AUTO_REFRESHED_ATTRIBUTE_NAME, DEFAULT_BOOLEAN_ATTRIBUTE_VALUE));
+				"auto-refreshed", DEFAULT_BOOLEAN_ATTRIBUTE_VALUE));
 		// is first order
 		runtimeAttributes.put(FIRST_ATTRIBUTE_NAME, getAttribute(element,
 				FIRST_ATTRIBUTE_NAME, DEFAULT_BOOLEAN_ATTRIBUTE_VALUE));
