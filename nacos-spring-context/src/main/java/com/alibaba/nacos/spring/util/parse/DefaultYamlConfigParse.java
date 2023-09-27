@@ -55,7 +55,7 @@ public class DefaultYamlConfigParse extends AbstractConfigParse {
 	
 	protected static Yaml createYaml() {
 		MapAppenderConstructor mapAppenderConstructor = new MapAppenderConstructor();
-		Representer representer = new Representer();
+		Representer representer = new Representer(new DumperOptions());
 		DumperOptions dumperOptions = new DumperOptions();
 		LimitedResolver resolver = new LimitedResolver();
 		LoaderOptions loaderOptions = new LoaderOptions();
@@ -200,7 +200,7 @@ public class DefaultYamlConfigParse extends AbstractConfigParse {
 	protected static class MapAppenderConstructor extends Constructor {
 
 		MapAppenderConstructor() {
-			super();
+			super(new LoaderOptions());
 		}
 
 		@Override
