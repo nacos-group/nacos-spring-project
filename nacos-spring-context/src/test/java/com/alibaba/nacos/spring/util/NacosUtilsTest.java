@@ -20,6 +20,12 @@ import java.lang.reflect.Field;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.MutablePropertyValues;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.util.ReflectionUtils;
 
 import com.alibaba.nacos.api.annotation.NacosInjected;
@@ -31,6 +37,8 @@ import com.alibaba.nacos.api.annotation.NacosProperties;
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
  * @since 0.1.0
  */
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = NacosUtilsTest.class)
 public class NacosUtilsTest {
 
 	@NacosInjected
@@ -38,6 +46,9 @@ public class NacosUtilsTest {
 
 	@NacosInjected(properties = @NacosProperties(serverAddr = "test"))
 	private Object object2 = new Object();
+
+	@Autowired
+	private ConfigurableBeanFactory beanFactory;
 
 	@Test
 	public void testIsDefault() {
@@ -56,5 +67,18 @@ public class NacosUtilsTest {
 
 		Assert.assertEquals(expectedValue, NacosUtils.isDefault(nacosProperties));
 
+	}
+
+	@Test
+	public void testReadFromBeanFactory() {
+		Object o = NacosUtils.readFromBeanFactory("test", beanFactory);
+		Assert.assertEquals("test", o);
+	}
+
+	@Test
+	public void testMutablePropertyValues() {
+		MutablePropertyValues propertyValues = new MutablePropertyValues();
+		propertyValues.add("testKey", "testValue");
+		Assert.assertEquals("testValue", propertyValues.get("testKey"));
 	}
 }
