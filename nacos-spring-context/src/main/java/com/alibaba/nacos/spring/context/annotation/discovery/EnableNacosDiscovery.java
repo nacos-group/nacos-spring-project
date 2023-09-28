@@ -49,7 +49,7 @@ import com.alibaba.nacos.spring.context.annotation.NacosBeanDefinitionRegistrar;
 @Target({ ElementType.TYPE, ElementType.ANNOTATION_TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Import(NacosDiscoveryBeanDefinitionRegistrar.class)
+@Import({NacosDiscoveryBeanDefinitionRegistrar.class, EnableNacosDiscoveryAotProcessor.class})
 public @interface EnableNacosDiscovery {
 	/**
 	 * The prefix of property name of Nacos discovery
