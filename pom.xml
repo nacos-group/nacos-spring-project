@@ -19,6 +19,7 @@
     <modules>
         <module>nacos-spring-context</module>
         <module>nacos-spring-samples</module>
+        <module>nacos-spring-context-aot</module>
     </modules>
     
     <scm>
@@ -75,13 +76,13 @@
     </licenses>
 
     <properties>
-        <revision>2.0.0</revision>
+        <revision>2.1.0</revision>
         <argLine>-Dfile.encoding=UTF-8</argLine>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <!-- Compiler settings properties -->
-        <maven.compiler.source>1.6</maven.compiler.source>
-        <maven.compiler.target>1.6</maven.compiler.target>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
         <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
         <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
         <!-- Exclude all generated code -->
@@ -92,6 +93,7 @@
         <nacos.version>2.2.1</nacos.version>
         <!-- Spring -->
         <spring.framework.version>5.2.9.RELEASE</spring.framework.version>
+        <spring6.framework.version>6.0.8</spring6.framework.version>
         <snake.yaml.version>1.29</snake.yaml.version>
         <!-- Servlet -->
         <servlet-api.version>3.0.1</servlet-api.version>
