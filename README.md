@@ -130,7 +130,7 @@ Complete the following steps to enable Nacos for your Spring project.
 	    </dependencies>
 	```
 
-**Note:** Support Spring 5 from version 0.2.3-RC1.
+**Note:** Support Spring 5 from version 0.2.3-RC1, support Spring 6 from version 2.1.0.
 
 2. Add the `@EnableNacos` annotation in the `@Configuration` class of Spring and specify "\${host}:${port}" of your Nacos server in the `serverAddr` attribute:
 
