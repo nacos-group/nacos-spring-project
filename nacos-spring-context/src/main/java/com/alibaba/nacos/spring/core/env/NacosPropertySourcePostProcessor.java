@@ -80,15 +80,15 @@ public class NacosPropertySourcePostProcessor
 	 */
 	public static final String BEAN_NAME = "nacosPropertySourcePostProcessor";
 
-	private static BeanFactory beanFactory;
+	protected static BeanFactory beanFactory;
 
-	private final Set<String> processedBeanNames = new LinkedHashSet<String>();
+	protected final Set<String> processedBeanNames = new LinkedHashSet<String>();
 
 	private ConfigurableEnvironment environment;
 
-	private Collection<AbstractNacosPropertySourceBuilder> nacosPropertySourceBuilders;
+	protected Collection<AbstractNacosPropertySourceBuilder> nacosPropertySourceBuilders;
 
-	private ConfigServiceBeanBuilder configServiceBeanBuilder;
+	protected ConfigServiceBeanBuilder configServiceBeanBuilder;
 
 	public static void addListenerIfAutoRefreshed(
 			final NacosPropertySource nacosPropertySource, final Properties properties,
@@ -170,7 +170,7 @@ public class NacosPropertySourcePostProcessor
 
 	}
 
-	private void processPropertySource(String beanName,
+	protected void processPropertySource(String beanName,
 			ConfigurableListableBeanFactory beanFactory) {
 
 		if (processedBeanNames.contains(beanName)) {
@@ -179,6 +179,12 @@ public class NacosPropertySourcePostProcessor
 
 		BeanDefinition beanDefinition = beanFactory.getBeanDefinition(beanName);
 
+		doProcessPropertySource(beanName, beanDefinition);
+
+		processedBeanNames.add(beanName);
+	}
+
+	protected void doProcessPropertySource(String beanName, BeanDefinition beanDefinition) {
 		// Build multiple instance if possible
 		List<NacosPropertySource> nacosPropertySources = buildNacosPropertySources(
 				beanName, beanDefinition);
@@ -190,8 +196,6 @@ public class NacosPropertySourcePostProcessor
 					.resolveProperties(nacosPropertySource.getAttributesMetadata());
 			addListenerIfAutoRefreshed(nacosPropertySource, properties, environment);
 		}
-
-		processedBeanNames.add(beanName);
 	}
 
 	private List<NacosPropertySource> buildNacosPropertySources(String beanName,

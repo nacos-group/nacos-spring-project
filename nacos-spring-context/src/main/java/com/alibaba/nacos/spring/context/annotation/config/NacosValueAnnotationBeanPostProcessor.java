@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.alibaba.nacos.spring.beans.factory.annotation.AbstractAnnotationBeanPostProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -48,7 +49,6 @@ import org.springframework.util.ReflectionUtils;
 import com.alibaba.nacos.api.config.annotation.NacosValue;
 import com.alibaba.nacos.common.utils.MD5Utils;
 import com.alibaba.nacos.spring.context.event.config.NacosConfigReceivedEvent;
-import com.alibaba.spring.beans.factory.annotation.AbstractAnnotationBeanPostProcessor;
 
 /**
  * Injected {@link NacosValue}
