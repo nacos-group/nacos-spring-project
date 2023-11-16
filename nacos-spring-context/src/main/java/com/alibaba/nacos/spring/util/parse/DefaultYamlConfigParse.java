@@ -33,6 +33,7 @@ import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
+import org.yaml.snakeyaml.constructor.SafeConstructor;
 import org.yaml.snakeyaml.nodes.MappingNode;
 import org.yaml.snakeyaml.nodes.Tag;
 import org.yaml.snakeyaml.parser.ParserException;
@@ -54,13 +55,13 @@ public class DefaultYamlConfigParse extends AbstractConfigParse {
 			.getLogger(DefaultYamlConfigParse.class);
 	
 	protected static Yaml createYaml() {
-		MapAppenderConstructor mapAppenderConstructor = new MapAppenderConstructor();
+		SafeConstructor safeConstructor = new SafeConstructor();
 		Representer representer = new Representer();
 		DumperOptions dumperOptions = new DumperOptions();
 		LimitedResolver resolver = new LimitedResolver();
 		LoaderOptions loaderOptions = new LoaderOptions();
 		loaderOptions.setAllowDuplicateKeys(false);
-		return new Yaml(mapAppenderConstructor, representer, dumperOptions, loaderOptions, resolver);
+		return new Yaml(safeConstructor, representer, dumperOptions, loaderOptions, resolver);
 	}
 
 	protected static boolean process(MatchCallback callback, Yaml yaml, String content) {
