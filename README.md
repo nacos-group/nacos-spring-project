@@ -318,11 +318,11 @@ The `UserNacosConfigConverter` class binds the `@NacosConfigListener.converter()
 
 ##### 4.1.2.1.1. Type Conversion during YAML Parsing
 
-By default, this library uses `SafeConstructor` for type conversion during YAML parsing. This is done to ensure that potentially unsafe code is not executed during the parsing process. `SafeConstructor` provides a secure construction logic for mapping YAML structures to Java objects.
+By default, starting from version 1.1.2, this library uses `SafeConstructor` for type conversion during YAML parsing. This is done to ensure that potentially unsafe code is not executed during the parsing process. `SafeConstructor` provides a secure construction logic for mapping YAML structures to Java objects.
 
 **System Property Toggle**
 
-To maintain compatibility with older versions, we have introduced a system property toggle named `yamlAllowComplexObject`. When this toggle is set to `true`, the library switches to using `Constructor`, another constructor in the SnakeYAML library that supports more complex object mapping.
+To maintain compatibility with versions prior to 1.1.2, we have introduced a system property toggle named `yamlAllowComplexObject`. Prior to version 1.1.2, the library defaulted to using `Constructor`, another constructor in the SnakeYAML library that supports more complex object mapping. Starting from version 1.1.2, the default is switched to `SafeConstructor`.
 
 **Potential Risks**
 
@@ -336,7 +336,7 @@ It's important to note that enabling `Constructor` introduces some potential ris
 
 - Ensure that the source of the YAML data is secure.
 
-**How to Enable `SafeConstructor`**
+**How to Disable `SafeConstructor`**
 
 You can set the toggle by adding a JVM system property when starting your application. For example, in the command line:
 
