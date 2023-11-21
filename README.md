@@ -83,9 +83,9 @@ Take the Spring Web MVC project for example:
 	` $ git clone git@github.com:nacos-group/nacos-spring-project.git`
 
 2. Build your source code with Maven:
-   
+    
 	`$ mvn clean package`
-   
+    
 3. Run Spring Web MVC Samples:
 
       `$ java -jar target/nacos-spring-webmvc-sample.war`
