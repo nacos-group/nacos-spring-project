@@ -65,7 +65,6 @@ public class DefaultYamlConfigParse extends AbstractConfigParse {
         } else {
             constructor = new SafeConstructor();
         }
-        constructor.setAllowDuplicateKeys(false);
         Representer representer = new Representer();
         DumperOptions dumperOptions = new DumperOptions();
         LimitedResolver resolver = new LimitedResolver();
@@ -196,42 +195,6 @@ public class DefaultYamlConfigParse extends AbstractConfigParse {
          * @param map {@link Map}
          */
         void process(Map<String, Object> map);
-    }
-    
-    protected static class MapAppenderConstructor extends Constructor {
-        
-        MapAppenderConstructor() {
-            super();
-        }
-        
-        @Override
-        protected Map<Object, Object> constructMapping(MappingNode node) {
-            try {
-                return super.constructMapping(node);
-            } catch (IllegalStateException ex) {
-                throw new ParserException("while parsing MappingNode", node.getStartMark(), ex.getMessage(),
-                        node.getEndMark());
-            }
-        }
-        
-        @Override
-        protected Map<Object, Object> createDefaultMap(int initSize) {
-            final Map<Object, Object> delegate = super.createDefaultMap(initSize);
-            return new AbstractMap<Object, Object>() {
-                @Override
-                public Object put(Object key, Object value) {
-                    if (delegate.containsKey(key)) {
-                        throw new IllegalStateException("Duplicate key: " + key);
-                    }
-                    return delegate.put(key, value);
-                }
-                
-                @Override
-                public Set<Entry<Object, Object>> entrySet() {
-                    return delegate.entrySet();
-                }
-            };
-        }
     }
     
 }
