@@ -322,7 +322,7 @@ By default, this library uses `SafeConstructor` for type conversion during YAML 
 
 **System Property Toggle**
 
-To maintain compatibility with older versions, we have introduced a system property toggle named `yaml.allow.object`. When this toggle is set to `true`, the library switches to using `Constructor`, another constructor in the SnakeYAML library that supports more complex object mapping.
+To maintain compatibility with older versions, we have introduced a system property toggle named `yamlAllowComplexObject`. When this toggle is set to `true`, the library switches to using `Constructor`, another constructor in the SnakeYAML library that supports more complex object mapping.
 
 **Potential Risks**
 
@@ -341,7 +341,7 @@ It's important to note that enabling `Constructor` introduces some potential ris
 You can set the toggle by adding a JVM system property when starting your application. For example, in the command line:
 
 ```bash
-java -Dyaml.allow.object=true -jar your-application.jar
+java -DyamlAllowComplexObject=true -jar your-application.jar
 ```
 
 - See [Type Conversion Sample of `@NacosConfigListener`](https://github.com/nacos-group/nacos-spring-project/blob/master/nacos-spring-samples/nacos-spring-webmvc-sample/src/main/java/com/alibaba/nacos/samples/spring/listener/PojoNacosConfigListener.java)

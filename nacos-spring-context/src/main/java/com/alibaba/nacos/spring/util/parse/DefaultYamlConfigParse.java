@@ -52,15 +52,15 @@ public class DefaultYamlConfigParse extends AbstractConfigParse {
     
     protected static final Logger LOGGER = LoggerFactory.getLogger(DefaultYamlConfigParse.class);
     
-    private static final String YAML_ALLOW_OBJECT = "yaml.allow.object";
+    private static final String YAML_ALLOW_COMPLEX_OBJECT = "yamlAllowComplexObject";
     
-    private static boolean getYamlAllowObject() {
-        return Boolean.getBoolean(YAML_ALLOW_OBJECT);
+    private static boolean getYamlAllowComplexObject() {
+        return Boolean.getBoolean(YAML_ALLOW_COMPLEX_OBJECT);
     }
     
     protected static Yaml createYaml() {
         SafeConstructor constructor;
-        if (getYamlAllowObject()) {
+        if (getYamlAllowComplexObject()) {
             constructor = new Constructor();
         } else {
             constructor = new SafeConstructor();
