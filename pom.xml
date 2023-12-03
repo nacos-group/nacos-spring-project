@@ -19,6 +19,7 @@
     <modules>
         <module>nacos-spring-context</module>
         <module>nacos-spring-samples</module>
+        <module>nacos-spring-context-aot</module>
     </modules>
     
     <scm>
@@ -92,6 +93,7 @@
         <nacos.version>2.2.1</nacos.version>
         <!-- Spring -->
         <spring.framework.version>5.2.9.RELEASE</spring.framework.version>
+        <spring6.framework.version>6.0.8</spring6.framework.version>
         <snake.yaml.version>1.29</snake.yaml.version>
         <!-- Servlet -->
         <servlet-api.version>3.0.1</servlet-api.version>
