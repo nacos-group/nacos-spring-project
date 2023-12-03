@@ -21,7 +21,13 @@ import static com.alibaba.nacos.spring.util.NacosBeanUtils.getNacosServiceFactor
 import static com.alibaba.nacos.spring.util.NacosUtils.DEFAULT_STRING_ATTRIBUTE_VALUE;
 import static org.springframework.util.ObjectUtils.nullSafeEquals;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Properties;
+import java.util.Set;
 
 import com.alibaba.nacos.spring.util.aot.AotDetector;
 import org.springframework.beans.BeansException;
@@ -76,15 +82,15 @@ public class NacosPropertySourcePostProcessor
 	 */
 	public static final String BEAN_NAME = "nacosPropertySourcePostProcessor";
 
-	private static BeanFactory beanFactory;
+	protected static BeanFactory beanFactory;
 
-	private final Set<String> processedBeanNames = new LinkedHashSet<String>();
+	protected final Set<String> processedBeanNames = new LinkedHashSet<String>();
 
 	private ConfigurableEnvironment environment;
 
-	private Collection<AbstractNacosPropertySourceBuilder> nacosPropertySourceBuilders;
+	protected Collection<AbstractNacosPropertySourceBuilder> nacosPropertySourceBuilders;
 
-	private ConfigServiceBeanBuilder configServiceBeanBuilder;
+	protected ConfigServiceBeanBuilder configServiceBeanBuilder;
 
 	public static void addListenerIfAutoRefreshed(
 			final NacosPropertySource nacosPropertySource, final Properties properties,
@@ -158,14 +164,6 @@ public class NacosPropertySourcePostProcessor
 		NacosPropertySourcePostProcessor.beanFactory = beanFactory;
 		this.configServiceBeanBuilder = getConfigServiceBeanBuilder(beanFactory);
 
-		if (AotDetector.useGeneratedArtifacts()) {
-			Map<String, Object> beansWithAnnotation = beanFactory.getBeansWithAnnotation(
-					com.alibaba.nacos.spring.context.annotation.config.NacosPropertySource.class);
-			for (Map.Entry<String, Object> entry : beansWithAnnotation.entrySet()) {
-				processPropertySourceForAot(entry.getKey(), entry.getValue());
-			}
-		}
-
 		String[] beanNames = beanFactory.getBeanDefinitionNames();
 
 		for (String beanName : beanNames) {
@@ -174,8 +172,9 @@ public class NacosPropertySourcePostProcessor
 
 	}
 
-	private void processPropertySource(String beanName,
-									   ConfigurableListableBeanFactory beanFactory) {
+	protected void processPropertySource(String beanName,
+			ConfigurableListableBeanFactory beanFactory) {
+
 		if (processedBeanNames.contains(beanName)) {
 			return;
 		}
@@ -187,33 +186,11 @@ public class NacosPropertySourcePostProcessor
 		processedBeanNames.add(beanName);
 	}
 
-	private void processPropertySourceForAot(String beanName, Object bean) {
-		if (processedBeanNames.contains(beanName)) {
-			return;
-		}
-
-		BeanDefinition beanDefinition = null;
-		Class<?> aClass = bean.getClass();
-		com.alibaba.nacos.spring.context.annotation.config.NacosPropertySource[] annotations
-				= aClass.getSuperclass().getAnnotationsByType(
-						com.alibaba.nacos.spring.context.annotation.config.NacosPropertySource.class);
-		if (annotations.length != 0) {
-			beanDefinition = new AnnotatedGenericBeanDefinition(aClass.getSuperclass());
-		}
-		annotations = aClass.getAnnotationsByType(com.alibaba.nacos.spring.context.annotation.config.NacosPropertySource.class);
-		if (annotations.length != 0) {
-			beanDefinition = new AnnotatedGenericBeanDefinition(aClass);
-		}
-
-		doProcessPropertySource(beanName, beanDefinition);
-
-		processedBeanNames.add(beanName);
-	}
-
-	private void doProcessPropertySource(String beanName, BeanDefinition beanDefinition) {
+	protected void doProcessPropertySource(String beanName, BeanDefinition beanDefinition) {
 		// Build multiple instance if possible
 		List<NacosPropertySource> nacosPropertySources = buildNacosPropertySources(
 				beanName, beanDefinition);
+
 		// Add Orderly
 		for (NacosPropertySource nacosPropertySource : nacosPropertySources) {
 			addNacosPropertySource(nacosPropertySource);
@@ -221,8 +198,6 @@ public class NacosPropertySourcePostProcessor
 					.resolveProperties(nacosPropertySource.getAttributesMetadata());
 			addListenerIfAutoRefreshed(nacosPropertySource, properties, environment);
 		}
-
-		processedBeanNames.add(beanName);
 	}
 
 	private List<NacosPropertySource> buildNacosPropertySources(String beanName,
