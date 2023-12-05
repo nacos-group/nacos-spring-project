@@ -12,7 +12,7 @@
 
     <groupId>com.alibaba.nacos</groupId>
     <artifactId>nacos-spring-parent</artifactId>
-    <version>1.1.1</version>
+    <version>1.1.2</version>
     <name>Alibaba Nacos :: Spring :: POM</name>
     <packaging>pom</packaging>
 
@@ -89,7 +89,7 @@
         </sonar.jacoco.itReportPath>
         <sonar.exclusions>file:**/generated-sources/**,**/test/**</sonar.exclusions>
         <!-- Nacos -->
-        <nacos.version>1.4.1</nacos.version>
+        <nacos.version>1.4.2</nacos.version>
         <!-- Spring -->
         <spring.framework.version>3.2.18.RELEASE</spring.framework.version>
         <!--snake-yaml-->
