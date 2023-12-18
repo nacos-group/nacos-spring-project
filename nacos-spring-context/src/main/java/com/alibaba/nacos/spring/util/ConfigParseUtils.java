@@ -92,7 +92,8 @@ public final class ConfigParseUtils {
 
 		if (DEFAULT_CONFIG_PARSE_MAP.containsKey(type)) {
 			ConfigParse configParse = DEFAULT_CONFIG_PARSE_MAP.get(type);
-			return configParse.parse(context);
+			Map<String, Object> parseMap = configParse.parse(context);
+			return parseMap == null ? new HashMap<>() : parseMap;
 		}
 		else {
 			throw new UnsupportedOperationException(
