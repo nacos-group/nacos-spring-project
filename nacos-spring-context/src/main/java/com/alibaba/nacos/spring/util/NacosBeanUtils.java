@@ -432,7 +432,7 @@ public abstract class NacosBeanUtils {
 	}
 
 	/**
-	 * Register {@link LoggingNacosConfigMetadataEventListener} Bean
+	 * Register {@link LoggingNacosConfigReceivedEventListener} Bean
 	 *
 	 * @param registry {@link BeanDefinitionRegistry}
 	 */
