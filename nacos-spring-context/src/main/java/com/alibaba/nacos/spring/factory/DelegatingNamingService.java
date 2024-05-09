@@ -86,7 +86,19 @@ class DelegatingNamingService
 			throws NacosException {
 		delegate.registerInstance(serviceName, groupName, instance);
 	}
-
+	
+	@Override
+	public void batchRegisterInstance(String serviceName, String groupName, List<Instance> instances)
+			throws NacosException {
+		delegate.batchRegisterInstance(serviceName, groupName, instances);
+	}
+	
+	@Override
+	public void batchDeregisterInstance(String serviceName, String groupName, List<Instance> instances)
+			throws NacosException {
+		delegate.batchDeregisterInstance(serviceName, groupName, instances);
+	}
+	
 	@Override
 	public void deregisterInstance(String serviceName, String ip, int port)
 			throws NacosException {

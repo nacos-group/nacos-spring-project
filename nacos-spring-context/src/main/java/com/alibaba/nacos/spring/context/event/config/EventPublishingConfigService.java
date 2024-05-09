@@ -123,6 +123,23 @@ public class EventPublishingConfigService
 	}
 	
 	@Override
+	public boolean publishConfigCas(String dataId, String group, String content, String casMd5) throws NacosException {
+		boolean published = configService.publishConfigCas(dataId, group, content, casMd5);
+		publishEvent(new NacosConfigPublishedEvent(configService, dataId, group, content,
+				published));
+		return published;
+	}
+	
+	@Override
+	public boolean publishConfigCas(String dataId, String group, String content, String casMd5, String type)
+			throws NacosException {
+		boolean published = configService.publishConfigCas(dataId, group, content, casMd5, type);
+		publishEvent(new NacosConfigPublishedEvent(configService, dataId, group, content,
+				published));
+		return published;
+	}
+	
+	@Override
 	public boolean removeConfig(String dataId, String group) throws NacosException {
 		boolean removed = configService.removeConfig(dataId, group);
 		publishEvent(new NacosConfigRemovedEvent(configService, dataId, group, removed));

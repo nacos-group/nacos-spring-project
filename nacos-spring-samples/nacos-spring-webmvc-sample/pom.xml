@@ -5,7 +5,7 @@
     <parent>
         <artifactId>nacos-spring-samples</artifactId>
         <groupId>com.alibaba.nacos</groupId>
-        <version>1.1.1</version>
+        <version>${revision}</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -75,7 +75,7 @@
                             <!-- ServletContext 路径 -->
                             <path>/</path>
                             <buildDirectory>${user.dir}/target</buildDirectory>
-                            <finalName>${artifactId}.war</finalName>
+                            <finalName>${project.artifactId}.war</finalName>
                         </configuration>
                     </execution>
                 </executions>

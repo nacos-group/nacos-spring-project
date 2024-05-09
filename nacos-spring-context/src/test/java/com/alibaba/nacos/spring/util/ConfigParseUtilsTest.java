@@ -26,6 +26,7 @@ import org.junit.Test;
 
 import com.alibaba.nacos.spring.util.parse.DefaultPropertiesConfigParse;
 import com.alibaba.nacos.spring.util.parse.DefaultYamlConfigParse;
+import org.springframework.core.io.ByteArrayResource;
 
 /**
  * @author liaochuntao
@@ -81,6 +82,13 @@ public class ConfigParseUtilsTest {
 		DefaultPropertiesConfigParse parse = new DefaultPropertiesConfigParse();
 		Map<String, Object> p = parse.parse(properties);
 		System.out.println(p);
+	}
+
+	@Test
+	public void testResource() {
+		ByteArrayResource resource = new ByteArrayResource(new byte[]{1, 1, 1, 1, 1, 1});
+		String description = resource.getDescription();
+		Assert.assertNotNull(description);
 	}
 
 	@Test

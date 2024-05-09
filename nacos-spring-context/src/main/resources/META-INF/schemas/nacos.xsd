@@ -35,7 +35,7 @@
         </xsd:annotation>
         <xsd:complexType>
             <xsd:attribute name="endpoint" default="${nacos.endpoint:}"/>
-            <xsd:attribute name="namespace" default="${nacos.endpoint:}"/>
+            <xsd:attribute name="namespace" default="${nacos.namespace:}"/>
             <xsd:attribute name="access-key" default="${nacos.access-key:}"/>
             <xsd:attribute name="secret-key" default="${nacos.secret-key:}"/>
             <xsd:attribute name="server-addr" default="${nacos.server-addr:}"/>

@@ -54,7 +54,7 @@ import com.alibaba.nacos.spring.context.annotation.NacosBeanDefinitionRegistrar;
 @Target({ ElementType.TYPE, ElementType.ANNOTATION_TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Import(NacosConfigBeanDefinitionRegistrar.class)
+@Import({NacosConfigBeanDefinitionRegistrar.class, EnableNacosConfigAotProcessor.class})
 public @interface EnableNacosConfig {
 
 	/**
