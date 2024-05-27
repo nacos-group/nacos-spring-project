@@ -22,6 +22,7 @@
             <artifactId>spring-beans</artifactId>
             <version>${spring6.framework.version}</version>
         </dependency>
+
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
