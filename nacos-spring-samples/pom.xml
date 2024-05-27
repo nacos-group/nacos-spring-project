@@ -20,20 +20,6 @@
         <module>nacos-spring-webmvc-sample</module>
     </modules>
 
-    <dependencyManagement>
-
-        <dependencies>
-
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-webmvc</artifactId>
-                <version>${spring.framework.version}</version>
-            </dependency>
-
-        </dependencies>
-
-    </dependencyManagement>
-
     <build>
         <plugins>
             <plugin>
@@ -46,6 +32,4 @@
             </plugin>
         </plugins>
     </build>
-
-
 </project>

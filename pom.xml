@@ -51,14 +51,12 @@
     </mailingLists>
 
     <developers>
-
         <developer>
             <id>Alibaba Nacos</id>
             <name>Nacos</name>
             <url>http://nacos.io</url>
             <email>nacos_dev@linux.alibaba.com</email>
         </developer>
-
         <developer>
             <id>mercyblitz</id>
             <name>小马哥</name>
@@ -93,8 +91,10 @@
         <nacos.version>2.2.1</nacos.version>
         <!-- Spring -->
         <spring.framework.version>5.2.9.RELEASE</spring.framework.version>
+        <logback-classic.version>1.2.9</logback-classic.version>
+        <guava.version>32.0.0-jre</guava.version>
         <spring6.framework.version>6.0.8</spring6.framework.version>
-        <snake.yaml.version>1.29</snake.yaml.version>
+        <snakeyaml.version>1.29</snakeyaml.version>
         <!-- Servlet -->
         <servlet-api.version>3.0.1</servlet-api.version>
         <!-- javax-->
@@ -103,83 +103,107 @@
         <commons-lang3.version>3.4</commons-lang3.version>
         <!-- Alibaba's Spring Context Support -->
         <spring-context-support.version>1.0.11</spring-context-support.version>
+        <jackson-core.version>2.13.4</jackson-core.version>
         <slf4j.version>1.7.7</slf4j.version>
+        <junit.version>4.12</junit.version>
+        <mockito-core.version>2.15.0</mockito-core.version>
     </properties>
 
     <!-- 管理依赖版本号,子项目不会默认依赖 -->
     <dependencyManagement>
         <dependencies>
-
             <dependency>
                 <groupId>javax.servlet</groupId>
                 <artifactId>javax.servlet-api</artifactId>
                 <version>${servlet-api.version}</version>
                 <scope>provided</scope>
             </dependency>
-
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${slf4j.version}</version>
+                <scope>compile</scope>
+            </dependency>
             <dependency>
                 <groupId>com.alibaba.nacos</groupId>
                 <artifactId>nacos-client</artifactId>
                 <version>${nacos.version}</version>
             </dependency>
-
             <!-- Alibaba's Spring Context Support -->
             <dependency>
                 <groupId>com.alibaba.spring</groupId>
                 <artifactId>spring-context-support</artifactId>
                 <version>${spring-context-support.version}</version>
             </dependency>
-
             <dependency>
                 <groupId>javax.annotation</groupId>
                 <artifactId>javax.annotation-api</artifactId>
                 <version>${javax.annotation-api.version}</version>
             </dependency>
-
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-core</artifactId>
+                <version>${jackson-core.version}</version>
+            </dependency>
+            <!--yaml-->
+            <dependency>
+                <groupId>org.yaml</groupId>
+                <artifactId>snakeyaml</artifactId>
+                <version>${snakeyaml.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-lang3</artifactId>
                 <version>${commons-lang3.version}</version>
             </dependency>
-
             <!-- Spring Framework -->
-
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-core</artifactId>
                 <version>${spring.framework.version}</version>
                 <optional>true</optional>
             </dependency>
-
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-context</artifactId>
                 <version>${spring.framework.version}</version>
                 <optional>true</optional>
             </dependency>
-
             <!-- Testing -->
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
-                <version>4.12</version>
+                <version>${junit.version}</version>
                 <scope>test</scope>
             </dependency>
-
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-test</artifactId>
                 <version>${spring.framework.version}</version>
                 <scope>test</scope>
             </dependency>
-
             <dependency>
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-core</artifactId>
-                <version>2.15.0</version>
+                <version>${mockito-core.version}</version>
                 <scope>test</scope>
             </dependency>
-
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-webmvc</artifactId>
+                <version>${spring.framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>${logback-classic.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${guava.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -282,7 +306,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>flatten-maven-plugin</artifactId>
-                <version>1.1.0</version>
+                <version>1.6.0</version>
                 <configuration>
                     <updatePomFile>true</updatePomFile>
                     <flattenMode>resolveCiFriendliesOnly</flattenMode>
