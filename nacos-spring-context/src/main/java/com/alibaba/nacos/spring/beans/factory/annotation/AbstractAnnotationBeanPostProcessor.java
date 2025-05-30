@@ -406,8 +406,10 @@ public abstract class AbstractAnnotationBeanPostProcessor implements Instantiati
 
         if (injectedObject == null) {
             injectedObject = doGetInjectedBean(attributes, bean, beanName, injectedType, injectedElement);
-            // Customized inject-object if necessary
-            injectedObjectsCache.putIfAbsent(cacheKey, injectedObject);
+            if (injectedObject != null) {
+                // Customized inject-object if necessary
+                injectedObjectsCache.putIfAbsent(cacheKey, injectedObject);  
+            }
         }
 
         return injectedObject;
