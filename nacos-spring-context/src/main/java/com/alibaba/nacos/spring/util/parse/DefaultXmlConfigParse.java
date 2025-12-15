@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import com.alibaba.nacos.api.config.ConfigType;
 import com.alibaba.nacos.spring.util.AbstractConfigParse;
@@ -76,7 +77,20 @@ import org.springframework.util.StringUtils;
  */
 public class DefaultXmlConfigParse extends AbstractConfigParse {
 
-	private DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+	private static DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+
+	static {
+		try {
+			factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+			factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+			factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+		}
+		catch (ParserConfigurationException e) {
+			throw new RuntimeException(e);
+		}
+		factory.setXIncludeAware(false);
+		factory.setExpandEntityReferences(false);
+	}
 
 	@Override
 	public Properties parse(String configText) {
