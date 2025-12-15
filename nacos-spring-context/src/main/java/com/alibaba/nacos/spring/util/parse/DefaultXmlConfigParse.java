@@ -69,6 +69,7 @@ import org.springframework.util.StringUtils;
     </Students>
 </xmlSign>
  */
+
 /**
  * Just support xml config like this
  *
@@ -84,12 +85,19 @@ public class DefaultXmlConfigParse extends AbstractConfigParse {
 			factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
 			factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
 			factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+			factory.setXIncludeAware(false);
+			factory.setExpandEntityReferences(false);
 		}
 		catch (ParserConfigurationException e) {
-			throw new RuntimeException(e);
+			System.err.println("CRITICAL: Failed to configure secure XML parser features in DefaultXmlConfigParse. "
+					+ "This may leave the application vulnerable to XML External Entity (XXE) attacks. "
+					+ "Failed to set one or more of the following features: "
+					+ "\"http://apache.org/xml/features/disallow-doctype-decl\", "
+					+ "\"http://xml.org/sax/features/external-general-entities\", "
+					+ "\"http://xml.org/sax/features/external-parameter-entities\". "
+					+ "Exception: " + e.getMessage());
+			throw new RuntimeException("Critical security configuration failure: unable to set secure XML parser features. See previous log for details.", e);
 		}
-		factory.setXIncludeAware(false);
-		factory.setExpandEntityReferences(false);
 	}
 
 	@Override
