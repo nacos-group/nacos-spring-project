@@ -180,7 +180,9 @@ public abstract class AbstractNacosPropertySourceBuilder<T extends BeanDefinitio
 
 		Properties nacosProperties = resolveProperties(nacosPropertiesAttributes,
 				environment, globalNacosProperties);
-
+		
+		NacosUtils.enrichNacosConfigProperties(nacosProperties,environment);
+		
 		String nacosConfig = nacosConfigLoader.load(dataId, groupId, nacosProperties);
 
 		if (!StringUtils.hasText(nacosConfig)) {

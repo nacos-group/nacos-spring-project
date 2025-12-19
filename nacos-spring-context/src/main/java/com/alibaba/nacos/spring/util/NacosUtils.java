@@ -23,6 +23,7 @@ import com.alibaba.nacos.api.config.annotation.NacosIgnore;
 import com.alibaba.nacos.api.config.annotation.NacosProperty;
 import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.spring.enums.FileTypeEnum;
+import com.alibaba.spring.util.PropertySourcesUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.MutablePropertyValues;
@@ -32,6 +33,7 @@ import org.springframework.beans.factory.config.BeanExpressionResolver;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.expression.EnvironmentAccessor;
 import org.springframework.context.expression.StandardBeanExpressionResolver;
+import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertyResolver;
 import org.springframework.expression.Expression;
@@ -47,6 +49,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static com.alibaba.nacos.api.PropertyKeyConst.*;
@@ -102,6 +105,8 @@ public abstract class NacosUtils {
 			= new ConcurrentHashMap();
 
 	private static final Logger logger = LoggerFactory.getLogger(NacosUtils.class);
+	
+	private static final Pattern PATTERN = Pattern.compile("-(\\w)");
 
 	/**
 	 * Build The default name of {@link NacosConfigurationProperties @NacosPropertySource}
@@ -541,6 +546,39 @@ public abstract class NacosUtils {
 			type = "yaml";
 		}
 		return ConfigParseUtils.toProperties(dataId, group, text, type);
+	}
+	
+	/**
+	 * Enrich nacos config properties.
+	 *
+	 * @param nacosConfigProperties the nacos config properties
+	 * @param environment           the environment
+	 */
+	public static void enrichNacosConfigProperties(Properties nacosConfigProperties, ConfigurableEnvironment environment){
+		if (environment == null) {
+			return;
+		}
+		Map<String, Object> properties = PropertySourcesUtils
+				.getSubProperties(environment, "nacos.config");
+		properties.forEach((k, v) -> nacosConfigProperties.putIfAbsent(resolveKey(k),
+				String.valueOf(v)));
+		
+	}
+	
+	/**
+	 * Resolve key string.
+	 *
+	 * @param key the key
+	 * @return the string
+	 */
+	public static String resolveKey(String key) {
+		Matcher matcher = PATTERN.matcher(key);
+		StringBuffer sb = new StringBuffer();
+		while (matcher.find()) {
+			matcher.appendReplacement(sb, matcher.group(1).toUpperCase());
+		}
+		matcher.appendTail(sb);
+		return sb.toString();
 	}
 
 }
