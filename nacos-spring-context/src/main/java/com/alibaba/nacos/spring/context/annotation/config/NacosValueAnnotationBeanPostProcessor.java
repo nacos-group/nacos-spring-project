@@ -80,6 +80,8 @@ public class NacosValueAnnotationBeanPostProcessor
 
 	private static final String VALUE_SEPARATOR = ":";
 
+	private static final String RESET_ON_CONFIG_DELETE = "nacosValue.resetOnConfigDelete";
+
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	/**
@@ -117,10 +119,10 @@ public class NacosValueAnnotationBeanPostProcessor
 
 	@Override
 	protected Object doGetInjectedBean(AnnotationAttributes attributes, Object bean,
-			String beanName, Class<?> injectedType,
-			InjectionMetadata.InjectedElement injectedElement) throws Exception {
-        Object value = resolveStringValue(attributes.getString("value"));
-        Member member = injectedElement.getMember();
+									   String beanName, Class<?> injectedType,
+									   InjectionMetadata.InjectedElement injectedElement) throws Exception {
+		Object value = resolveStringValue(attributes.getString("value"));
+		Member member = injectedElement.getMember();
 		if (member instanceof Field) {
 			return convertIfNecessary((Field) member, value);
 		}
@@ -134,8 +136,8 @@ public class NacosValueAnnotationBeanPostProcessor
 
 	@Override
 	protected String buildInjectedObjectCacheKey(AnnotationAttributes attributes,
-			Object bean, String beanName, Class<?> injectedType,
-			InjectionMetadata.InjectedElement injectedElement) {
+												 Object bean, String beanName, Class<?> injectedType,
+												 InjectionMetadata.InjectedElement injectedElement) {
 		return bean.getClass().getName() + attributes;
 	}
 
@@ -155,6 +157,27 @@ public class NacosValueAnnotationBeanPostProcessor
 		// In to this event receiver, the environment has been updated the
 		// latest configuration information, pull directly from the environment
 		// fix issue #142
+		if (isResetOnConfigDelete()) {
+			onApplicationEventWithReset(event);
+		} else {
+			onApplicationEventDefault(event);
+		}
+	}
+
+	private boolean isResetOnConfigDelete() {
+		// Priority: 1. System property (-D), 2. Spring Environment (application.properties)
+		String value = System.getProperty(RESET_ON_CONFIG_DELETE);
+		if (value != null) {
+			return Boolean.parseBoolean(value);
+		}
+		return Boolean.parseBoolean(environment.getProperty(RESET_ON_CONFIG_DELETE, "false"));
+	}
+
+	/**
+	 * Default behavior: keep historical value when config is deleted.
+	 * This is the original behavior for backward compatibility.
+	 */
+	private void onApplicationEventDefault(NacosConfigReceivedEvent event) {
 		for (Map.Entry<String, List<NacosValueTarget>> entry : placeholderNacosValueTargetMap
 				.entrySet()) {
 			String key = environment.resolvePlaceholders(entry.getKey());
@@ -181,8 +204,119 @@ public class NacosValueAnnotationBeanPostProcessor
 		}
 	}
 
+	/**
+	 * Reset behavior: reset to type default value when config is deleted.
+	 * If user-defined default value exists, use it instead of type default value.
+	 */
+	private void onApplicationEventWithReset(NacosConfigReceivedEvent event) {
+		for (Map.Entry<String, List<NacosValueTarget>> entry : placeholderNacosValueTargetMap
+				.entrySet()) {
+			String key = environment.resolvePlaceholders(entry.getKey());
+			String newValue = environment.getProperty(key);
+
+			List<NacosValueTarget> beanPropertyList = entry.getValue();
+			for (NacosValueTarget target : beanPropertyList) {
+				boolean isUpdate;
+				String md5String;
+
+				if (newValue == null) {
+					// Config is deleted, try user-defined default value first, then type default
+					Object nullValue = resolveAnnotationDefaultValue(target);
+					if (nullValue == null) {
+						nullValue = convertNullToDefaultValue(target);
+					}
+					// Use type-based MD5 to distinguish null values of different types
+					md5String = MD5Utils.md5Hex("null:" + target.getTargetType().getName(), "UTF-8");
+					isUpdate = !target.lastMD5.equals(md5String);
+
+					if (isUpdate) {
+						target.updateLastMD5(md5String);
+						if (target.method == null) {
+							setField(target, nullValue);
+						} else {
+							setMethod(target, nullValue);
+						}
+					}
+				} else {
+					md5String = MD5Utils.md5Hex(newValue, "UTF-8");
+					isUpdate = !target.lastMD5.equals(md5String);
+
+					if (isUpdate) {
+						target.updateLastMD5(md5String);
+						Object evaluatedValue = resolveNotifyValue(target.nacosValueExpr, key, newValue);
+						if (target.method == null) {
+							setField(target, evaluatedValue);
+						} else {
+							setMethod(target, evaluatedValue);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * Resolve user-defined annotation default value, extracts default value from expressions like ${key:defaultValue}.
+	 * Returns null if no user-defined default exists.
+	 */
+	private Object resolveAnnotationDefaultValue(NacosValueTarget target) {
+		String defaultValue = target.extractAnnotationDefaultValue();
+		if (defaultValue == null) {
+			return null;
+		}
+		Object evaluatedValue = resolveStringValue(defaultValue);
+		if (evaluatedValue == null) {
+			return null;
+		}
+		if (target.field != null) {
+			return convertIfNecessary(target.field, evaluatedValue);
+		}
+		if (target.method != null) {
+			return convertIfNecessary(target.method, evaluatedValue);
+		}
+		return evaluatedValue;
+	}
+
+	/**
+	 * Convert null value to appropriate default value based on target field/method type.
+	 * For primitive types, returns the corresponding default value (0, false, etc.).
+	 * For non-primitive types, returns null.
+	 */
+	private Object convertNullToDefaultValue(NacosValueTarget target) {
+		Class<?> targetType = target.getTargetType();
+
+		// Handle primitive types with default values
+		if (targetType.isPrimitive()) {
+			if (targetType == int.class) {
+				return 0;
+			} else if (targetType == long.class) {
+				return 0L;
+			} else if (targetType == double.class) {
+				return 0.0;
+			} else if (targetType == float.class) {
+				return 0.0f;
+			} else if (targetType == boolean.class) {
+				return false;
+			} else if (targetType == short.class) {
+				return (short) 0;
+			} else if (targetType == byte.class) {
+				return (byte) 0;
+			} else if (targetType == char.class) {
+				return '\0';
+			}
+		}
+
+		// For non-primitive types, null is the default
+		return null;
+	}
+
 	private Object resolveNotifyValue(String nacosValueExpr, String key, String newValue) {
-		String spelExpr = StringUtils.replace(nacosValueExpr, PLACEHOLDER_PREFIX + key + PLACEHOLDER_SUFFIX, newValue);
+		String spelExpr;
+		if (newValue == null) {
+			spelExpr = nacosValueExpr;
+		} else {
+			spelExpr = StringUtils.replace(nacosValueExpr, PLACEHOLDER_PREFIX + key + PLACEHOLDER_SUFFIX, newValue);
+		}
 		return resolveStringValue(spelExpr);
 	}
 
@@ -243,7 +377,7 @@ public class NacosValueAnnotationBeanPostProcessor
 	}
 
 	private void doWithAnnotation(String beanName, Object bean, NacosValue annotation,
-			int modifiers, Method method, Field field) {
+								  int modifiers, Method method, Field field) {
 		if (annotation != null) {
 			if (Modifier.isStatic(modifiers)) {
 				return;
@@ -277,15 +411,15 @@ public class NacosValueAnnotationBeanPostProcessor
 				+ PLACEHOLDER_SUFFIX.length()) {
 			return null;
 		}
-        int beginIndex = placeholder.indexOf(PLACEHOLDER_PREFIX);
+		int beginIndex = placeholder.indexOf(PLACEHOLDER_PREFIX);
 		if (beginIndex == -1) {
-		    return null;
-        }
+			return null;
+		}
 		beginIndex = beginIndex + PLACEHOLDER_PREFIX.length();
-        int endIndex = placeholder.indexOf(PLACEHOLDER_SUFFIX, beginIndex);
+		int endIndex = placeholder.indexOf(PLACEHOLDER_SUFFIX, beginIndex);
 		if (endIndex == -1) {
-		    return null;
-        }
+			return null;
+		}
 		placeholder = placeholder.substring(beginIndex, endIndex);
 
 		int separatorIndex = placeholder.indexOf(VALUE_SEPARATOR);
@@ -326,7 +460,7 @@ public class NacosValueAnnotationBeanPostProcessor
 	}
 
 	private void setField(final NacosValueTarget nacosValueTarget,
-			final Object propertyValue) {
+						  final Object propertyValue) {
 		final Object bean = nacosValueTarget.bean;
 
 		Field field = nacosValueTarget.field;
@@ -364,6 +498,8 @@ public class NacosValueAnnotationBeanPostProcessor
 
 		private final String nacosValueExpr;
 
+		private final String originalNacosValueExpr;
+
 		NacosValueTarget(Object bean, String beanName, Method method, Field field, String nacosValueExpr) {
 			this.bean = bean;
 
@@ -375,25 +511,17 @@ public class NacosValueAnnotationBeanPostProcessor
 
 			this.lastMD5 = "";
 
+			this.originalNacosValueExpr = nacosValueExpr;
+
 			this.nacosValueExpr = resolveExpr(nacosValueExpr);
 		}
 
 		private String resolveExpr(String nacosValueExpr) {
 			try {
-				int replaceHolderBegin = nacosValueExpr.indexOf(PLACEHOLDER_PREFIX) + PLACEHOLDER_PREFIX.length();
-				int replaceHolderEnd = replaceHolderBegin;
-				for (int i = 0; replaceHolderEnd < nacosValueExpr.length(); replaceHolderEnd++) {
-					char ch = nacosValueExpr.charAt(replaceHolderEnd);
-					if (PLACEHOLDER_MATCH_PREFIX == ch) {
-						i++;
-					} else if (PLACEHOLDER_MATCH_SUFFIX == ch && --i == -1) {
-						break;
-					}
-				}
-				String replaceHolder = nacosValueExpr.substring(replaceHolderBegin, replaceHolderEnd);
-				int separatorIndex = replaceHolder.indexOf(VALUE_SEPARATOR);
+				PlaceholderContent content = parsePlaceholderContent(nacosValueExpr);
+				int separatorIndex = content.replaceHolder.indexOf(VALUE_SEPARATOR);
 				if (separatorIndex != -1) {
-					return nacosValueExpr.substring(0, separatorIndex + replaceHolderBegin) + nacosValueExpr.substring(replaceHolderEnd);
+					return nacosValueExpr.substring(0, separatorIndex + content.beginIndex) + nacosValueExpr.substring(content.endIndex);
 				}
 				return nacosValueExpr;
 			} catch (Exception e) {
@@ -403,6 +531,63 @@ public class NacosValueAnnotationBeanPostProcessor
 
 		protected void updateLastMD5(String newMD5) {
 			this.lastMD5 = newMD5;
+		}
+
+		/**
+		 * Get the target type of the field or method parameter.
+		 */
+		public Class<?> getTargetType() {
+			if (field != null) {
+				return field.getType();
+			}
+			if (method != null && method.getParameterTypes().length > 0) {
+				return method.getParameterTypes()[0];
+			}
+			return Object.class;
+		}
+
+		/**
+		 * Extract user-defined default value from the original annotation value.
+		 * For ${key:defaultValue}, returns "defaultValue". Return null if no default exists.
+		 */
+		public String extractAnnotationDefaultValue() {
+			try {
+				PlaceholderContent content = parsePlaceholderContent(originalNacosValueExpr);
+				int separatorIndex = content.replaceHolder.indexOf(VALUE_SEPARATOR);
+				if (separatorIndex != -1 && separatorIndex + 1 < content.replaceHolder.length()) {
+					return content.replaceHolder.substring(separatorIndex + 1);
+				}
+				return null;
+			} catch (Exception e) {
+				return null;
+			}
+		}
+
+		private PlaceholderContent parsePlaceholderContent(String expr) {
+			int beginIndex = expr.indexOf(PLACEHOLDER_PREFIX) + PLACEHOLDER_PREFIX.length();
+			int endIndex = beginIndex;
+			for (int i = 0; endIndex < expr.length(); endIndex++) {
+				char ch = expr.charAt(endIndex);
+				if (PLACEHOLDER_MATCH_PREFIX == ch) {
+					i++;
+				} else if (PLACEHOLDER_MATCH_SUFFIX == ch && --i == -1) {
+					break;
+				}
+			}
+			String replaceHolder = expr.substring(beginIndex, endIndex);
+			return new PlaceholderContent(beginIndex, endIndex, replaceHolder);
+		}
+
+		private static class PlaceholderContent {
+			final int beginIndex;
+			final int endIndex;
+			final String replaceHolder;
+
+			PlaceholderContent(int beginIndex, int endIndex, String replaceHolder) {
+				this.beginIndex = beginIndex;
+				this.endIndex = endIndex;
+				this.replaceHolder = replaceHolder;
+			}
 		}
 
 	}
